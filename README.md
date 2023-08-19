@@ -1,5 +1,7 @@
 # Custom Commands
 
+![Sample Image](SmartSelect_20230819-233756_Termux.jpg)
+
 ### Installation
 
 Run the script `setScript.sh` to install various custom commands on your computer/phone such as:
@@ -28,6 +30,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 Version 1.0.0 (19-08-2023)
 ## New
+	- Added the git username and email feature locally to the create and clone repository commands (specific to the current working repository)
 	- Added reminder to users not to create a repository within an existing repository
 	- Added reminder to users not to clone into an existing repository
     - Added cls command to the list
