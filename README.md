@@ -1,6 +1,6 @@
 # Custom Commands
 
-![Sample Image](SmartSelect_20230819-233756_Termux.jpg)
+![Sample Image](sample_shot.jpg)
 
 ### Installation
 
@@ -28,8 +28,10 @@ Depending on the command, the usage instruction for that command is provided aft
 This file contains the notable changes made to the Custom Commands project.
 
 
+Version 1.0.1 (20-08-2023)
 Version 1.0.0 (19-08-2023)
 ## New
+	- Added sample screenshot of the menu when the script is executed
 	- Added the git username and email feature locally to the create and clone repository commands (specific to the current working repository)
 	- Added reminder to users not to create a repository within an existing repository
 	- Added reminder to users not to clone into an existing repository
@@ -48,6 +50,7 @@ Version 1.0.0 (19-08-2023)
 
 
 ## Fixes
+	- Added execute permission for all user to the files.
     - Fixed response to wrong input entered by users during installation and command execution
     - Fixed option display to be limited to alphabets and not numbers
 	- Removed repeated lines of codes that need not be
