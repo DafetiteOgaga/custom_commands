@@ -23,7 +23,7 @@ Depending on the command, the usage instruction for that command is provided aft
 
 
 # Changelog
-This file contains the notable changes to the Custom Commands project.
+This file contains the notable changes made to the Custom Commands project.
 
 
 Version 1.0.0 (19-08-2023)
