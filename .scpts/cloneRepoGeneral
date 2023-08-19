@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # Kindly supply your Github Username and Personal Access Token(without the "ghp_").
-GUSERNAME="YOUR_GUTHUB_USERNAME"
+GUSERNAME="YOUR_GITHUB_USERNAME"
 GTOKEN="YOUR_PERSONAL_ACCESS_TOKEN"
+GEMAIL="YOUR_REGISTERED_GITHUB_EMAIL"
 
 UREPO="$1"
 CHK="$2"
@@ -119,6 +120,16 @@ if [ -z "$REPONAME" ]; then
 	echo -e "You can't clone a repo without a name..."
 	exiting
 fi
+
+echo ""
+echo -e "Setting up the local user(i.e commit author) for this repo"
+echo -e "..........................................................."
+echo -e "User: $GUSERNAME"
+echo -e "Email: $GEMAIL"
+echo -e "..........................................................."
+echo -e ""
+git config user.name "$GUSERNAME"
+git config user.email "$GEMAIL"
 
 echo -e "\nYou are now cloning the repository \"$REPONAME\" in the account \"$AUSERNAME\"...\n"
 

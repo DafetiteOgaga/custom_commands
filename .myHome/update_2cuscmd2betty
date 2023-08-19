@@ -30,4 +30,7 @@ echo -e "Therefore in mybetty/myVBetty/modifications/.scpts..."
 echo -e "............................................"
 ls -a $DESTINATION/.scpts
 echo -e "....................Done...................."
+echo -e "....................................................."
+echo -e "Copied the files from /custom_commands/ to /mybetty/"
+echo -e "....................................................."
 echo ""

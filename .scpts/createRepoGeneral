@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # Kindly supply your Github Username and Personal Access token(without the "ghp_").
-GUSERNAME="YOUR_GUTHUB_USERNAME"
+GUSERNAME="YOUR_GITHUB_USERNAME"
 GTOKEN="YOUR_PERSONAL_ACCESS_TOKEN"
+GEMAIL="YOUR_REGISTERED_GITHUB_EMAIL"
 
 REPONAME="$1"
 RESP="$2"
@@ -53,6 +54,15 @@ if [[ -z "$RESP" ]]; then
 
 	elif [[ ${#RESP} =~ 1 && ("$RESP" =~ "n" || "$RESP" =~ "N") ]]; then
 		
+		echo -e "Setting up the local user(i.e commit author) for this repo"
+		echo -e "..........................................................."
+		echo -e "User: $GUSERNAME"
+		echo -e "Email: $GEMAIL"
+		echo -e "..........................................................."
+		echo -e ""
+		git config user.name "$GUSERNAME"
+		git config user.email "$GEMAIL"
+
 		git init
 		echo -e "......................Creating repo........................"
 		curl -u "$GUSERNAME:ghp_$GTOKEN" -X POST https://api.github.com/user/repos -d '{"name":"'$REPONAME'"}'
@@ -67,7 +77,7 @@ if [[ -z "$RESP" ]]; then
 		cd "$REPONAME"
 
 		echo -e "Creating a default markdown file in $(pwd)..."
-		echo -e "### $REPONAME and README auto created\n\n\n\n\n###### We Rise by Lifting." > README.md
+		echo -e "### $REPONAME and README were auto created\n\n\n\n\n###### We Rise by Lifting Others." > README.md
 		echo -e ""
 		echo -e "Staging the file..."
 		echo -e "Committing the file..."

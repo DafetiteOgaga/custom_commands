@@ -9,6 +9,7 @@ ANYWHERE="Simply run(from anywhere in your environment)"
 STRT="You can now"
 UN="YOUR_GUTHUB_USERNAME"
 TK="YOUR_PERSONAL_ACCESS_TOKEN"
+GM="YOUR_REGISTERED_GITHUB_EMAIL"
 SUP="to setup"
 SDIR=~/.my_cmds
 TILDE=~"/"
@@ -244,11 +245,12 @@ if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
 	if [[ $OPTION =~ "c" || $OPTION =~ "C" || $OPTION =~ "d" || $OPTION =~ "D" ]]; then
 		echo ""
 		echo -e "ONE more step. RUN: vi $TILDE$SHOW/$DFILENAME"
-		echo -e "When you open the file, you will replace \"$UN\" with your github username."
+		echo -e "When you open the file, you will replace \"$UN\" with your Github Username."
 		echo -e "You will also replace \"$TK\" with your classic token."
 		echo -e "Example of what the token will be is $P2 and not $P1"
 		echo -e "Therefore $P1 = ghp_ + $P2"
 		echo -e "What you need to supply is $P2 and leave out the rest."
+		echo -e "Remember to equally replace $GM with your Registered Github Account Email."
 	fi
 
 	echo -e "\ncompleted."

@@ -45,4 +45,7 @@ echo -e "Therefore in personal_revision/myVBetty/modifications/.scpts..."
 echo -e "............................................"
 ls -a $DESTINATION/myVBetty/modifications/.scpts
 echo -e "....................Done...................."
+echo -e "......................................................."
+echo -e "Copied the files from /mybetty/" to /personal_revision/
+echo -e "......................................................."
 echo ""
