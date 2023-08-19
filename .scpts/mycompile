@@ -1,0 +1,108 @@
+#!/bin/bash
+
+FILE="$1"
+OPTION="$2"
+PREFNAME="$3"
+OUT="Output file:"
+
+
+#...function .................. #
+
+function exiting ()
+{
+	echo -e "\nOperation aborted!!!....................."
+	exit 1
+}
+
+echo ""
+
+if [ "$#" = "0" ]; then
+	echo -n "Enter the filename >>> "
+	read FILE
+fi
+
+if [[ -z "$FILE" ]]; then
+		echo -e "You did not specify a file to compile."
+		exiting
+fi
+
+#for argument in "$@" ; do
+#    echo -e "\n========== $argument =========="
+#done
+
+COMP=$(basename $FILE)
+NOEXT=${COMP%.*}
+
+echo "....................Options...................."
+echo -e "NOTE: these are partial compilations(skip them for complete compilation(Default)"
+echo ""
+echo -e "Select [a] or [A] for preprocessed"
+echo -e "Select [b] or [B] for compiled file but not linked (.o file)"
+echo -e "Select [c] or [C] for assembly file (.s file)"
+echo ""
+echo -e "Select [d] or [D] to run normal compilation"
+echo -e "Select [e] or [E] to run compilation with WARNINGS == ERRORS"
+echo -e "Select [f] or [F] to run(Default) c89-standard compilation and with WARNINGS == ERRORS"
+
+echo ""
+echo -n "Select an option (blank for default i.e option f) >>> "
+read OPTION
+echo ""
+if [[ ${#OPTION} != 1 ]]; then
+		echo -e "You can only select from the options provided."
+		exiting
+fi
+echo -n "Enter output name (blank to use filename) >>> "
+read PREFNAME
+
+echo ""
+if [[ -n $PREFNAME ]]; then
+	FINNAME=$PREFNAME
+else
+	FINNAME=$NOEXT
+fi
+
+echo ""
+echo "....................Compiling...................."
+
+echo ""
+if [[ "$OPTION" =~ "a" || "$OPTION" =~ "A" ]]; then
+	echo -e "Preprocessing..."
+	echo ""
+	gcc -E $FILE -o preprocessed_$FINNAME
+	echo -e "$OUT preprocessed_$FINNAME"
+
+elif [[ "$OPTION" =~ "b" || "$OPTION" =~ "B" ]]; then
+	echo -e "Compilating without linking..."
+	echo ""
+	gcc -c $FILE -o compiled_unlinked_$FINNAME.o
+	echo -e "$OUT compiled_unlinked_$FINNAME.o"
+
+elif [[ "$OPTION" =~ "c" || "$OPTION" =~ "C" ]]; then
+	echo -e "Compilation to assembly stage..."
+	echo ""
+	gcc -S $FILE -o assembly_$FINNAME.s
+	echo -e "$OUT assembly_$FINNAME.s"
+
+elif [[ "$OPTION" =~ "d" || "$OPTION" =~ "D" ]]; then
+	echo -e "Normal compilation..."
+	echo ""
+	gcc $FILE -o $FINNAME
+	echo -e "$OUT $FINNAME"
+
+elif [[ "$OPTION" =~ "e" || "$OPTION" =~ "E" ]]; then
+	echo -e "Compilation but turns WARNINGS to ERRORS..."
+	echo ""
+	gcc -Wall -Werror -Wextra -pedantic $FILE -o $FINNAME
+	echo -e "$OUT $FINNAME"
+
+else
+	echo -e "Default compilation (c89 standard)..."
+	echo ""
+	gcc -Wall -Werror -Wextra -pedantic -std=gnu89 $FILE -o $FINNAME
+	echo -e "$OUT $FINNAME"
+fi
+
+echo ""
+echo -e "....................Done...................."
+

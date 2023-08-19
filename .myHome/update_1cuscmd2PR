@@ -1,0 +1,43 @@
+#!/bin/bash
+
+SOURCE=~/alx/custom_commands/
+DESTINATION=~/alx/personal_revision/myVBetty/modifications/
+SNAME="/alx/custom_commands/"
+DNAME="/alx/personal_revision/myVBetty/modifications"
+
+echo ""
+if [ -d "$DESTINATION" ]; then
+    echo "The directory $(basename $DESTINATION) exists."
+else
+    echo "The directory $(basename $DESTINATION) does not exist."
+	echo "Creating $(basename $DESTINATION)..."
+	mkdir -p $DESTINATION
+fi
+
+echo ""
+echo -e "........Copying from $SNAME"
+echo -e ".........into $DNAME"
+echo ""
+echo -e "NOTE: You are in $(pwd)"
+echo ""
+echo -e "Pls, wait..."
+#cp -r "$SOURCE" "$DESTINATION"
+rsync -r --exclude={.,.git,..} "$SOURCE" "$DESTINATION"
+#rsync -r --exclude={.,.git,..} "$SOURCE1" "$SOURCE2" "$DESTINATION"
+
+echo -e "Copied successfully."
+echo -e ""
+echo -e "Listing the content of the destination..."
+echo -e ""
+
+echo -e "Therefore in personal_revision/myVBetty/modifications ..."
+echo -e "............................................"
+ls -a $DESTINATION
+echo -e "............................................"
+echo ""
+
+echo -e "Therefore in personal_revision/myVBetty/modifications/.scpts..."
+echo -e "............................................"
+ls -a $DESTINATION/.scpts
+echo -e "....................Done...................."
+echo ""

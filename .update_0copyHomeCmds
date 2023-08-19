@@ -1,0 +1,36 @@
+#!/bin/bash
+
+SDIR=~/.my_cmds
+SHOME=.myHome/*
+FILES=.myHome/
+
+
+#...creating variable and profile.................. #
+
+echo -e ""
+if ! grep -q .my_cmds ~/.bashrc; then
+	echo -e "Setting up variable..."
+	echo 'export PATH="$PATH:~/.my_cmds"' >> ~/.bashrc
+else
+	echo -e "Variable good..."
+fi
+
+if ! grep -q  bashrc ~/.bash_profile; then
+	echo -e "Setting up profile...\n"
+	echo '[ -r ~/.bashrc ] && . ~/.bashrc ' >> ~/.bash_profile
+else
+	echo -e "Profile good..."
+fi
+
+
+#...copying command/scripts home................. #
+
+echo -e ""
+echo -e "Copying/replacing the following..."
+echo -e ".........................................."
+ls $FILES
+echo -e ".........................................."
+echo -e ""
+cp $SHOME "$SDIR"
+echo -e "Done."
+echo -e ""
