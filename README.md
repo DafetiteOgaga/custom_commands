@@ -55,4 +55,4 @@ Version 1.0.0 (19-08-2023)
 ##### This is a collection of some of the programs that i have written so far since i joined ALX.
 ##### I believe automating some of the processes we carry out everyday when solving projects/tasks is essential for growth. Hence, the reason for sharing.
 
-########## We Rise by Lifting.
+###### We Rise by Lifting.
