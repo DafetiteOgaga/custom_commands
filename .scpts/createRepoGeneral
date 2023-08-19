@@ -67,7 +67,7 @@ if [[ -z "$RESP" ]]; then
 		cd "$REPONAME"
 
 		echo -e "Creating a default markdown file in $(pwd)..."
-		echo "### $REPONAME and README auto created" > README.md
+		echo -e "### $REPONAME and README auto created\n\n\n\n\n###### We Rise by Lifting." > README.md
 		echo -e ""
 		echo -e "Staging the file..."
 		echo -e "Committing the file..."
