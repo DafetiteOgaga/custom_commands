@@ -13,7 +13,6 @@ if [[ -z "$RESP" ]]; then
 	echo -n "Enter a commit message [[q] to abort] >>> "
 	read RESP
 	
-	echo ""
 	if [[ -z "$RESP" ]]; then
 		echo "Commit message not found"
 		exiting
