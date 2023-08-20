@@ -4,7 +4,7 @@
 
 ### Installation
 
-Run the script `setScript.sh` to install various custom commands on your computer/phone such as:
+Run `./setScript.sh` to install various custom commands on your computer/phone such as:
 
  * push(sync) command
  * pull command
