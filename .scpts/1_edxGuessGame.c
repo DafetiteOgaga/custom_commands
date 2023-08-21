@@ -53,7 +53,7 @@ void guessGame (void)
 	if (n < 0)
 		luckyNum = (n % 10) * -1;
 	else
-		luckyNum = (n % 10)
+		luckyNum = (n % 10);
 
 	base = 1;
 	loopcnt = 0;
