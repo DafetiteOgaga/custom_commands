@@ -50,6 +50,7 @@ Version 1.0.0 (19-08-2023)
 
 
 ## Fixes
+	- Fixed and removed answer display before the start of the game
 	- Added execute permission for all user to the files.
     - Fixed response to wrong input entered by users during installation and command execution
     - Fixed option display to be limited to alphabets and not numbers
