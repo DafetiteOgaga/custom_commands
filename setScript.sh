@@ -2,19 +2,23 @@
 
 OPTION="$1"
 DFILENAME="$2"
+DUSERNAME="YOUR_GITHUB_USERNAME"
+DTOKEN="YOUR_PERSONAL_ACCESS_TOKEN"
+DEMAIL="YOUR_REGISTERED_GITHUB_EMAIL"
+NUSERNAME="$3"
+NTOKEN="$4"
+NEMAIL="$5"
 EFFT="effortlessly."
 P1="ghp_ek81wkYt15bHQzABMQVeFpiNRNcrpy46Hqc7"
 P2="ek81wkYt15bHQzABMQVeFpiNRNcrpy46Hqc7"
 ANYWHERE="Simply run(from anywhere in your environment)"
 STRT="You can now"
-UN="YOUR_GUTHUB_USERNAME"
-TK="YOUR_PERSONAL_ACCESS_TOKEN"
-GM="YOUR_REGISTERED_GITHUB_EMAIL"
 SUP="to setup"
 SDIR=~/.my_cmds
 TILDE=~"/"
 SHOW=".my_cmds"
 FILEPATH=~/$SHOW/.set
+HODN=".scpts"
 
 
 echo -e "\n.....Hey! ....."
@@ -45,6 +49,95 @@ read OPTION
 
 
 #...functions .................. #
+
+scptcpy()
+{
+	cp "$HODN/$DFILENAME" "$SDIR/$DFILENAME"
+}
+
+Ccpy()
+{
+	cp "$HODN/$DFILENAME.c" "$SDIR/$DFILENAME"
+}
+
+empt()
+{
+	local var="$1"
+
+	if [[ -z "$var" ]]; then
+		echo ""
+		echo -e "Field cannot be empty."
+		echo ""
+		exit 1
+	fi
+}
+
+pchk()
+{
+	local NUM1=36
+	local NUM2=${#NTOKEN}
+
+	if [[ $NUM2 != $NUM1 ]]; then
+		echo -e ""
+		echo -e "TOKEN: $NTOKEN which you supplied is not a classic token."
+		echo -e "Make sure to remove \"ghp_\" and there is no whitespace."
+		echo ""
+		exit 1
+	fi
+}
+
+streamedit()
+{
+	local var1="$1"
+    local var2="$2"
+
+	sed -i "s/$var1/$var2/g" "$SDIR/$DFILENAME"
+}
+
+unametokenmaill()
+{
+	local vname="$1"
+
+	echo -n "Kindly Enter your Github Username >>> "
+	read NUSERNAME
+	empt "$NUSERNAME"
+	echo -e "........................................................"
+	echo -e "Example of what the token will be is $P2"
+	echo -e "Recall that $P1 = ghp_ + $P2"
+	echo -e "What you need to supply is $P2 and leave out the rest."
+	echo -e "........................................................"
+	echo -n "Your Classic Github token >>> "
+	read NTOKEN
+	pchk
+	empt "$NTOKEN"
+	echo -n "Lastly, your Github Email >>> "
+	read NEMAIL
+	empt "$NEMAIL"
+	echo ""
+	echo -e "Confirm your details:"
+	echo -e ".................................."
+	echo -e "Username: $NUSERNAME"
+	echo -e "Token: ghp_$NTOKEN"
+	echo -e "Email: $NEMAIL"
+	echo -e ".................................."
+	echo -n "Chech that these are correct. Are they? [y/N] >>> "
+	read ANS
+	echo ""
+	if [[ ${#ANS} =~ 1 && ("$ANS" =~ "y" || "$ANS" =~ "Y") ]]; then
+		cp "$HODN/$vname" "$SDIR/$DFILENAME"
+		streamedit "$DUSERNAME" "$NUSERNAME"
+		streamedit "$DTOKEN" "$NTOKEN"
+		streamedit "$DEMAIL" "$NEMAIL"
+	elif [[ ${#ANS} =~ 1 && ("$ANS" =~ "n" || "$ANS" =~ "N") ]]; then
+		echo -e "Ok."
+		echo ""
+		exit 1
+	else
+		echo -e "You must provide these information to proceed"
+		echo ""
+		exit 1
+	fi
+}
 
 Exit() 
 {
@@ -175,30 +268,30 @@ if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
 	echo ""
 
 	if [[ $RES =~ "a" ]]; then
-		cp ".scpts/$DFILENAME" "$SDIR/$DFILENAME"
+		scptcpy
 	elif [[ $RES =~ "b" ]]; then
-		cp ".scpts/$DFILENAME" "$SDIR/$DFILENAME"
+		scptcpy
 	elif [[ $RES =~ "c" ]]; then
-		cp ".scpts/createRepoGeneral" "$SDIR/$DFILENAME"
+		unametokenmaill "createRepoGeneral"
 	elif [[ $RES =~ "d" ]]; then
-		cp ".scpts/cloneRepoGeneral" "$SDIR/$DFILENAME"
+		unametokenmaill "cloneRepoGeneral"
 	elif [[ $RES =~ "e" ]]; then
-		cp ".scpts/mycompile" "$SDIR/$DFILENAME"
+		scptcpy
 	elif [[ $RES =~ "f" ]]; then
 		echo -e "TEXT" >  $SDIR/C_template.c
-		cp ".scpts/C_template.c" "$SDIR/C_template.c"
-		cp ".scpts/defaultCTemplate" "$SDIR/$DFILENAME"
+		cp "$HODN/C_template.c" "$SDIR/C_template.c"
+		scptcpy
 	elif [[ $RES =~ "g" ]]; then
-		cp ".scpts/cls" "$SDIR/$DFILENAME"
+		scptcpy
 	# ............................................................ #
 	elif [[ $RES =~ "h" ]]; then
-		cp ".scpts/1_edxGuessGame.c" "$SDIR/$DFILENAME.c"
+		Ccpy
 	elif [[ $RES =~ "i" ]]; then
-		cp ".scpts/1_my_rot13.c" "$SDIR/$DFILENAME.c"
+		Ccpy
 	elif [[ $RES =~ "j" ]]; then
-		cp ".scpts/1_my_rot47.c" "$SDIR/$DFILENAME.c"
+		Ccpy
 	elif [[ $RES =~ "k" ]]; then
-		cp ".scpts/1_my_ascii.c" "$SDIR/$DFILENAME.c"
+		Ccpy
 	fi
 
 
@@ -244,13 +337,23 @@ if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
 
 	if [[ $OPTION =~ "c" || $OPTION =~ "C" || $OPTION =~ "d" || $OPTION =~ "D" ]]; then
 		echo ""
+		#........remove.................. #
+		echo ""
+		echo "#........remove.................. #"
+		echo ""
+		echo -e "HHAHAHAHAHAHAHAAH"
+		echo ""
+		echo "#........remove.................. #"
+		echo ""
+		echo ""
+		#........remove.................. #
 		echo -e "ONE more step. RUN: vi $TILDE$SHOW/$DFILENAME"
-		echo -e "When you open the file, you will replace \"$UN\" with your Github Username."
-		echo -e "You will also replace \"$TK\" with your classic token."
+		echo -e "When you open the file, you will replace \"$DUSERNAME\" with your Github Username."
+		echo -e "You will also replace \"$DTOKEN\" with your classic token."
 		echo -e "Example of what the token will be is $P2 and not $P1"
 		echo -e "Therefore $P1 = ghp_ + $P2"
 		echo -e "What you need to supply is $P2 and leave out the rest."
-		echo -e "Remember to equally replace $GM with your Registered Github Account Email."
+		echo -e "Remember to equally replace $DEMAIL with your Registered Github Account Email."
 	fi
 
 	echo -e "\ncompleted."
