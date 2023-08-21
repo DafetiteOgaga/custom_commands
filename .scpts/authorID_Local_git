@@ -1,0 +1,32 @@
+#!/bin/bash
+
+USERNAME="$1"
+EMAIL="$2"
+
+echo ""
+echo -e "Local Author Identity Configuration"
+echo "........................................."
+echo ""
+
+echo -n "Enter your Github Username >>> "
+read USERNAME
+
+echo ""
+
+echo -n "Enter your Github Email address >>> "
+read EMAIL
+
+echo ""
+
+if [[ -z "$USERNAME" || -z "$EMAIL" ]]; then
+	echo -e "You must supply your Username and Email to proceed"
+	echo ""
+	exit 1
+fi
+
+echo -e "Configuring Username: $USERNAME"
+echo -e "Configuring Email: $EMAIL"
+echo -e "Specific to this repo alone..."
+git config user.email "$EMAIL"
+git config user.name "$USERNAME"
+echo -e "Done...\n"
