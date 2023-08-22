@@ -32,7 +32,7 @@ This file contains the notable changes made to the Custom Commands project.
 V1.0.1 (20-08-2023)
 V1.0.0 (19-08-2023)
 ## New
-	- Added command to configure Github Author Identity Global and/or Locally
+	- Added command to configure Github Author Identity Globally and/or Locally
 	- Added sample screenshot of the menu when the script is executed
 	- Added the git username and email feature locally to the create and clone repository commands (specific to the current working repository)
 	- Added reminder to users not to create a repository within an existing repository
