@@ -65,8 +65,8 @@ if [[ "$RESP" =~ "l" || "$RESP" =~ "L" ]]; then
 	git config user.name "$USERNAME"
 elif [[ "$RESP" =~ "g" || "$RESP" =~ "G" ]]; then
 	echo -e "Global Author Identity config..."
-	git config --global user.email "$EMAIL"
-	git config --global user.name "$USERNAME"
+	sudo git config --global user.email "$EMAIL"
+	sudo git config --global user.name "$USERNAME"
 fi
 echo "........................................."
 echo -e "Done...\n"
