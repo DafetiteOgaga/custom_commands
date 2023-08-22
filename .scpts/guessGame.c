@@ -55,10 +55,6 @@ void guessGame (void)
 	else
 		luckyNum = (n % 10);
 
-	//...................
-	printf("Ans: %d\n", luckyNum);
-	//...................
-
 	base = 1;
 	loopcnt = 0;
 
