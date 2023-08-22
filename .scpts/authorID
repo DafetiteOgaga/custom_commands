@@ -37,7 +37,7 @@ fi
 empty1 "$RESP"
 
 if [[ "$RESP" =~ "l" || "$RESP" =~ "L" ]]; then
-	echo -n "Check your path be sure you are in a Repo, are you? [y/N] >>> "
+	echo -n "Check your PATH AND CURRENT DIRECTORY to be sure you are in a Repo, are you? [y/N] >>> "
 	read YNREPO
 	if [[ "$YNREPO" =~ "y" || "$YNREPO" =~ "Y" ]]; then
 		echo -e "Great! Let us proceed."
