@@ -53,16 +53,6 @@ if [[ -z "$RESP" ]]; then
 		exiting
 
 	elif [[ ${#RESP} =~ 1 && ("$RESP" =~ "n" || "$RESP" =~ "N") ]]; then
-		
-		echo -e "Setting up the local user(i.e commit author) for this repo"
-		echo -e "..........................................................."
-		echo -e "User: $GUSERNAME"
-		echo -e "Email: $GEMAIL"
-		echo -e "..........................................................."
-		echo -e ""
-		git config user.name "$GUSERNAME"
-		git config user.email "$GEMAIL"
-
 		git init
 		echo -e "......................Creating repo........................"
 		curl -u "$GUSERNAME:ghp_$GTOKEN" -X POST https://api.github.com/user/repos -d '{"name":"'$REPONAME'"}'
@@ -75,6 +65,15 @@ if [[ -z "$RESP" ]]; then
 		echo -e ""
 		echo -e "cd-ing into the repo \"$REPONAME\"..."
 		cd "$REPONAME"
+
+		echo -e "Setting up the local user(i.e commit author) for this repo"
+		echo -e "..........................................................."
+		echo -e "User: $GUSERNAME"
+		echo -e "Email: $GEMAIL"
+		echo -e "..........................................................."
+		echo -e ""
+		git config user.name "$GUSERNAME"
+		git config user.email "$GEMAIL"
 
 		echo -e "Creating a default markdown file in $(pwd)..."
 		echo -e "### $REPONAME and README were auto created\n\n\n\n\n###### We Rise by Lifting Others." > README.md

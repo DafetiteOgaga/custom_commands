@@ -120,7 +120,18 @@ if [ -z "$REPONAME" ]; then
 	echo -e "You can't clone a repo without a name..."
 	exiting
 fi
+echo -e "\nYou are now cloning the repository \"$REPONAME\" in the account \"$AUSERNAME\"...\n"
 
+echo -e "......................Cloning repo........................"
+if [ -z "$TOKEN" ]; then
+	git clone https://github.com/$AUSERNAME/$REPONAME.git
+else
+	git clone https://ghp_$TOKEN@github.com/$AUSERNAME/$REPONAME.git
+fi
+
+echo ""
+echo -e "cd-ing into the repo \"$REPONAME\"..."
+cd "$REPONAME"
 echo ""
 echo -e "Setting up the local user(i.e commit author) for this repo"
 echo -e "..........................................................."
@@ -131,14 +142,6 @@ echo -e ""
 git config user.name "$GUSERNAME"
 git config user.email "$GEMAIL"
 
-echo -e "\nYou are now cloning the repository \"$REPONAME\" in the account \"$AUSERNAME\"...\n"
-
-echo -e "......................Cloning repo........................"
-if [ -z "$TOKEN" ]; then
-	git clone https://github.com/$AUSERNAME/$REPONAME.git
-else
-	git clone https://ghp_$TOKEN@github.com/$AUSERNAME/$REPONAME.git
-fi
 
 echo -e "\n....................Tada! All done!...................."
 echo "This repo \"$REPONAME\" has been cloned in this directory: $(pwd)."
