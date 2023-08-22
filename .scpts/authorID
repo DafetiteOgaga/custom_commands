@@ -1,0 +1,72 @@
+#!/bin/bash
+
+USERNAME="$1"
+EMAIL="$2"
+
+empty1()
+{
+	local var="$1"
+
+	if [[ -z "$var" ]]; then
+		echo ""
+		echo -e "This field cannot be empty"
+		echo ""
+		exit 1
+	fi
+}
+
+echo ""
+echo -e "Author Identity Configuration"
+echo "........................................."
+echo ""
+echo -n "Global or Local Identity congiguration? [g - Global] && [l - Local] >>> "
+read RESP
+echo ""
+if [[ ${#RESP} != 1 ]]; then
+	echo -e "Invalid response."
+	echo ""
+	exit 1
+else
+	if [[ "$RESP" != "l" && "$RESP" != "L"
+				&& "$RESP" != "g" && "$RESP" != "G" ]]; then
+		echo -e "Respond with either [g/L]."
+		echo ""
+		exit 1
+	fi
+fi
+empty1 "$RESP"
+
+if [[ "$RESP" =~ "l" || "$RESP" =~ "L" ]]; then
+	echo -n "Check your path be sure you are in a Repo, are you? [y/N] >>> "
+	read YNREPO
+	if [[ "$YNREPO" =~ "y" || "$YNREPO" =~ "Y" ]]; then
+		echo -e "Great! Let us proceed."
+	elif [[  -z "$YNREPO" || "$YNREPO" =~ "n" || "$YNREPO" =~ "N" ]]; then
+		echo -e "Response cannot be empty and must be [y/N]."
+		exit 1
+	fi
+fi
+echo -n "Enter your Github Username >>> "
+read USERNAME
+empty1 "$USERNAME"
+
+echo -n "Enter your Github Email address >>> "
+read EMAIL
+empty1 "$EMAIL"
+
+echo ""
+echo -e "Configuring Username: $USERNAME"
+echo -e "Configuring Email: $EMAIL"
+echo -e "Specific to this repo alone..."
+echo "........................................."
+if [[ "$RESP" =~ "l" || "$RESP" =~ "L" ]]; then
+	echo -e "Local Author Identity config..."
+	git config user.email "$EMAIL"
+	git config user.name "$USERNAME"
+elif [[ "$RESP" =~ "g" || "$RESP" =~ "G" ]]; then
+	echo -e "Global Author Identity config..."
+	git config --global user.email "$EMAIL"
+	git config --global user.name "$USERNAME"
+fi
+echo "........................................."
+echo -e "Done...\n"

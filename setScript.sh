@@ -36,11 +36,12 @@ echo -e "[d] or [D] - $SUP clone repo command"
 echo -e "[e] or [E] - $SUP compile command (with options including common flags)"
 echo -e "[f] or [F] - $SUP a default C source file template"
 echo -e "[g] or [G] - $SUP and use \"cls\" command to clear"
+echo -e "[h] or [H] - $SUP Github Author Identity(Global and Local) command"
 #...C files....................... #
-echo -e "[h] or [H] - $SUP a Guessing Game command(To unwind)"
-echo -e "[i] or [I] - $SUP a Rot13 Cipher command"
-echo -e "[j] or [J] - $SUP a Rot47 Cipher command"
-echo -e "[k] or [K] - $SUP a simple ASCII table command"
+echo -e "[i] or [I] - $SUP a Guessing Game command(To unwind)"
+echo -e "[j] or [J] - $SUP a Rot13 Cipher command"
+echo -e "[k] or [K] - $SUP a Rot47 Cipher command"
+echo -e "[l] or [L] - $SUP a simple ASCII table command"
 #................................. #
 echo ""
 
@@ -168,23 +169,25 @@ options()
 		RES="f"
 	elif [[ $OPTION =~ "g" || $OPTION =~ "G" ]]; then
 		RES="g"
-	# ............................................................ #
 	elif [[ $OPTION =~ "h" || $OPTION =~ "H" ]]; then
 		RES="h"
+	# ............................................................ #
 	elif [[ $OPTION =~ "i" || $OPTION =~ "I" ]]; then
 		RES="i"
 	elif [[ $OPTION =~ "j" || $OPTION =~ "J" ]]; then
 		RES="j"
 	elif [[ $OPTION =~ "k" || $OPTION =~ "K" ]]; then
 		RES="k"
+	elif [[ $OPTION =~ "l" || $OPTION =~ "L" ]]; then
+		RES="l"
 	fi
 
 	#....tags............................. #
 	
 	if [[ $RES =~ "a" || $RES =~ "b" || $RES =~ "c" || $RES =~ "d" ||
-		$RES =~ "e" || $RES =~ "f" || $RES =~ "g" ]]; then
+		$RES =~ "e" || $RES =~ "f" || $RES =~ "g" || $RES =~ "h" ]]; then
 		FILETYPE="script"
-	elif [[ $RES =~ "h" || $RES =~ "i" || $RES =~ "j" || $RES =~ "k" ]]; then
+	elif [[ $RES =~ "i" || $RES =~ "j" || $RES =~ "k" || $RES =~ "l" ]]; then
 		FILETYPE="cfile"
 	fi
 }
@@ -221,14 +224,16 @@ if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
 		DFILENAME="ctemp"
 	elif [[ $RES =~ "g" ]]; then
 		DFILENAME="cls"
-	# ............................................................ #
 	elif [[ $RES =~ "h" ]]; then
-		DFILENAME="guessGame"
+		DFILENAME="authorID"
+	# ............................................................ #
 	elif [[ $RES =~ "i" ]]; then
-		DFILENAME="rot13"
+		DFILENAME="guessGame"
 	elif [[ $RES =~ "j" ]]; then
-		DFILENAME="rot47"
+		DFILENAME="rot13"
 	elif [[ $RES =~ "k" ]]; then
+		DFILENAME="rot47"
+	elif [[ $RES =~ "l" ]]; then
 		DFILENAME="myascii"
 	else
 		echo -e "You can only choose from the options provided"
@@ -283,14 +288,16 @@ if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
 		scptcpy
 	elif [[ $RES =~ "g" ]]; then
 		scptcpy
-	# ............................................................ #
 	elif [[ $RES =~ "h" ]]; then
-		Ccpy
+		scptcpy
+	# ............................................................ #
 	elif [[ $RES =~ "i" ]]; then
 		Ccpy
 	elif [[ $RES =~ "j" ]]; then
 		Ccpy
 	elif [[ $RES =~ "k" ]]; then
+		Ccpy
+	elif [[ $RES =~ "l" ]]; then
 		Ccpy
 	fi
 
@@ -321,39 +328,17 @@ if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
 		echo -e "$STRT create default C source file templates $EFFT $ANYWHERE: $DFILENAME <filename>"
 	elif [[ $RES =~ "g" ]]; then
 		echo -e "$STRT clear your screen $EFFT $ANYWHERE: $DFILENAME"
-	# ............................................................ #
 	elif [[ $RES =~ "h" ]]; then
-		echo -e "$STRT play guessing game $EFFT $ANYWHERE: $DFILENAME"
+		echo -e "$STRT configure your GitHub identity both globally and locally within your environment $EFFT $ANYWHERE: $DFILENAME"
+	# ............................................................ #
 	elif [[ $RES =~ "i" ]]; then
-		echo -e "$STRT encode and decode your texts with Rot13 $EFFT $ANYWHERE: $DFILENAME"
+		echo -e "$STRT play guessing game $EFFT $ANYWHERE: $DFILENAME"
 	elif [[ $RES =~ "j" ]]; then
-		echo -e "$STRT encode and decode your texts with Rot47 $EFFT $ANYWHERE: $DFILENAME"
+		echo -e "$STRT encode and decode your texts with Rot13 $EFFT $ANYWHERE: $DFILENAME"
 	elif [[ $RES =~ "k" ]]; then
+		echo -e "$STRT encode and decode your texts with Rot47 $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $RES =~ "l" ]]; then
 		echo -e "$STRT check the ASCII table $EFFT $ANYWHERE: $DFILENAME"
-	fi
-
-
-	#...more instructions(how to configure).................. #
-
-	if [[ $OPTION =~ "c" || $OPTION =~ "C" || $OPTION =~ "d" || $OPTION =~ "D" ]]; then
-		echo ""
-		#........remove.................. #
-		echo ""
-		echo "#........remove.................. #"
-		echo ""
-		echo -e "HHAHAHAHAHAHAHAAH"
-		echo ""
-		echo "#........remove.................. #"
-		echo ""
-		echo ""
-		#........remove.................. #
-		echo -e "ONE more step. RUN: vi $TILDE$SHOW/$DFILENAME"
-		echo -e "When you open the file, you will replace \"$DUSERNAME\" with your Github Username."
-		echo -e "You will also replace \"$DTOKEN\" with your classic token."
-		echo -e "Example of what the token will be is $P2 and not $P1"
-		echo -e "Therefore $P1 = ghp_ + $P2"
-		echo -e "What you need to supply is $P2 and leave out the rest."
-		echo -e "Remember to equally replace $DEMAIL with your Registered Github Account Email."
 	fi
 
 	echo -e "\ncompleted."
