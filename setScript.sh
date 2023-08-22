@@ -58,7 +58,7 @@ scptcpy()
 
 Ccpy()
 {
-	cp "$HODN/$DFILENAME.c" "$SDIR/$DFILENAME"
+	cp "$HODN/$DFILENAME.c" "$SDIR/$DFILENAME.c"
 }
 
 empt()
