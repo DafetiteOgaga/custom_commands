@@ -23,39 +23,6 @@ HODN=".scpts"
 
 #...................................................... #
 
-# phpc()
-# {
-# 	if [[ "$WHICH" =~ "c" || "$WHICH" =~ "C" ]]; then
-# 		sudo echo -e "\n.....Hi $USER! ....."
-# 		WHICH="a_pc"
-# 	elif [[ "$WHICH" =~ "p" || "$WHICH" =~ "P" ]]; then
-# 		WHICH="a_pc"
-# 	fi
-# }
-# checkfor()
-# {
-# 	phpc
-# 	# if [[ "$WHICH" =~ "c" || "$WHICH" =~ "C" ]]; then
-# 	# 	sudo echo -e "\n.....Hi $USER! ....."
-# 	# 	WHICH="a_pc"
-# 	# elif [[ "$WHICH" =~ "p" || "$WHICH" =~ "P" ]]; then
-# 	# 	WHICH="a_pc"
-# 	if [[ "$WHICH" =~ "q" || "$WHICH" =~ "Q" ]]; then
-# 		echo ""
-# 		echo -e "Ok."
-# 		exit 1
-# 	fi
-# }
-
-# repeatq()
-# {
-# 	phpc
-# 	echo ""
-# 	echo -e "Let's try again"
-# 	echo -n "Is this a phone or a pc? [P/C/Q] >>> "
-# 	read WHICH
-# }
-
 echo "[p] - Phone"
 echo "[c] - PC"
 echo "[q] - quit"
