@@ -21,8 +21,101 @@ FILEPATH=~/$SHOW/.set
 HODN=".scpts"
 
 
-echo -e "\n.....Hey! ....."
+#...................................................... #
+
+# phpc()
+# {
+# 	if [[ "$WHICH" =~ "c" || "$WHICH" =~ "C" ]]; then
+# 		sudo echo -e "\n.....Hi $USER! ....."
+# 		WHICH="a_pc"
+# 	elif [[ "$WHICH" =~ "p" || "$WHICH" =~ "P" ]]; then
+# 		WHICH="a_pc"
+# 	fi
+# }
+# checkfor()
+# {
+# 	phpc
+# 	# if [[ "$WHICH" =~ "c" || "$WHICH" =~ "C" ]]; then
+# 	# 	sudo echo -e "\n.....Hi $USER! ....."
+# 	# 	WHICH="a_pc"
+# 	# elif [[ "$WHICH" =~ "p" || "$WHICH" =~ "P" ]]; then
+# 	# 	WHICH="a_pc"
+# 	if [[ "$WHICH" =~ "q" || "$WHICH" =~ "Q" ]]; then
+# 		echo ""
+# 		echo -e "Ok."
+# 		exit 1
+# 	fi
+# }
+
+# repeatq()
+# {
+# 	phpc
+# 	echo ""
+# 	echo -e "Let's try again"
+# 	echo -n "Is this a phone or a pc? [P/C/Q] >>> "
+# 	read WHICH
+# }
+
+echo "[p] - Phone"
+echo "[c] - PC"
+echo "[q] - quit"
+echo -n "Is this a phone or a pc? [P/C/Q] >>> "
+read WHICH
+
+echo -e "\n before WHICH = $WHICH"
+
+if [[ ${#WHICH} == 1  ]]; then
+	echo -e "WHICH == 1 .................."
+	# while [[ "$WHICH" != "a_pc" ]]; do
+	echo -e "In the loop .................."
+	# checkfor
+	if [[ "$WHICH" =~ "c" || "$WHICH" =~ "C" ]]; then
+		sudo echo -e "\n.....Hi $USER! ....."
+		# break
+	elif [[ "$WHICH" =~ "p" || "$WHICH" =~ "P" ]]; then
+		# break
+		echo -e "\n.....Hi USER! ....."
+	elif [[ "$WHICH" =~ "q" || "$WHICH" =~ "Q" ]]; then
+		echo ""
+		echo -e "Ok."
+		exit 1
+	fi
+	# done
+else
+	echo -e "WHICH != 1 .................."
+	echo ""
+	echo -e "The options are [P/C/Q]"
+	exit 1
+	# while [[ "$WHICH" != "a_pc" ]]; do
+	# 	repeatq
+	# done
+fi
+
+echo -e "\n after WHICH = $WHICH"
+
+
+if [[ "$WHICH" == "p" || "$WHICH" == "P" ]]; then
+	echo -e "\nWHICH[p] = $WHICH"
+else
+	echo -e "\nWHICH[c] = $WHICH"
+fi
+
+
+#...................................................... #
+
+# path="/home/dafetite/alx/custom"
+CHECKER_PC_PH=$(echo "$SDIR" | cut -d '/' -f 2)
+echo "CHECKER_PC_PH == $CHECKER_PC_PH"
+
+#...................................................... #
+
+
+# echo -e "\n.....Hey! ....."
 mkdir -p $SDIR
+
+#.....................current stage..
+exit 1
+#.....................current stage..
 
 
 #...options display.................. #
@@ -312,7 +405,7 @@ if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
 	#...instructions(how to use).................. #	
 
 	echo ""
-	# echo -e "Now, RESTART YOUR TERMINAL or START A NEW SESSION."
+	echo -e "Now, RESTART YOUR TERMINAL or START A NEW SESSION."
 
 	if [[ $RES =~ "a" ]]; then
 		echo -e "$STRT push(sync) to github. $ANYWHERE: $DFILENAME"
@@ -341,12 +434,7 @@ if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
 		echo -e "$STRT check the ASCII table $EFFT $ANYWHERE: $DFILENAME"
 	fi
 
-
-	#...refresh/restart.................. #
-	
-	source ~/.bashrc 
-
-	echo -e "\nRefreshed and completed."
+	echo -e "\ncompleted."
 
 else
 	echo -e "Invalid! You must select an option"
