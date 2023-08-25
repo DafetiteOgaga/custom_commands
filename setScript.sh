@@ -74,7 +74,7 @@ echo ""
 #...Script files.................. #
 echo -e "[a] or [A] - $SUP push(sync) command"
 echo -e "[b] or [B] - $SUP pull command"
-echo -e "[c] or [C] - $SUP create repo command(Without opening the github website)"
+echo -e "[c] or [C] - $SUP create repo command(Without opening github website)"
 echo -e "[d] or [D] - $SUP clone repo command"
 echo -e "[e] or [E] - $SUP compile command (with options including common flags)"
 echo -e "[f] or [F] - $SUP a default C source file template"
