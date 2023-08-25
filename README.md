@@ -1,6 +1,6 @@
 # Custom Commands
 
-![Sample Image](sample_shot.jpg)
+![Sample Image](.sample_shot.jpg)
 
 ### Installation
 
