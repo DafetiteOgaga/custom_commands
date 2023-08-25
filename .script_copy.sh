@@ -21,7 +21,26 @@ FILEPATH=~/$SHOW/.set
 HODN=".scpts"
 
 
-echo -e "before SDIR =~ $SDIR .................."
+wrongput()
+{
+	echo ""
+	echo -e "Invalid input.\nThe options are [P/C/Q]"
+	echo ""
+	exit 1
+}
+
+echo ""
+CHECKER_PC_PH=$(echo "$SDIR" | cut -d '/' -f 2)
+# echo "CHECKER_PC_PH == $CHECKER_PC_PH"
+if [[ "$CHECKER_PC_PH" == "home" || "$CHECKER_PC_PH" == "Users" ]]; then
+	echo -e "I can see that this is a PC"
+elif [[ "$CHECKER_PC_PH" == "data" ]]; then
+	echo -e "I can see that this is a Phone"
+else
+	echo -e "I can't figure out your type of device"
+fi
+echo -e "However, please go on and select your device:"
+
 #...................................................... #
 
 echo "[p] - Phone"
@@ -30,61 +49,26 @@ echo "[q] - quit"
 echo -n "Is this a phone or a pc? [P/C/Q] >>> "
 read WHICH
 
-echo -e "\n before WHICH = $WHICH"
-
-if [[ ${#WHICH} == 1  ]]; then
-	echo -e "WHICH == 1 .................."
-	# while [[ "$WHICH" != "a_pc" ]]; do
-	echo -e "In the loop .................."
-	# checkfor
+if [[ ${#WHICH} == 1 ]]; then
 	if [[ "$WHICH" =~ "c" || "$WHICH" =~ "C" ]]; then
 		sudo -E echo -e "\n.....Hi $USER! ....."
-		# break
 	elif [[ "$WHICH" =~ "p" || "$WHICH" =~ "P" ]]; then
-		# break
 		echo -e "\n.....Hi USER! ....."
 	elif [[ "$WHICH" =~ "q" || "$WHICH" =~ "Q" ]]; then
 		echo ""
 		echo -e "Ok."
 		exit 1
+	else
+		wrongput
 	fi
-	# done
 else
-	echo -e "WHICH != 1 .................."
-	echo ""
-	echo -e "The options are [P/C/Q]"
-	exit 1
-	# while [[ "$WHICH" != "a_pc" ]]; do
-	# 	repeatq
-	# done
-fi
-
-echo -e "\n after WHICH = $WHICH"
-
-
-if [[ "$WHICH" == "p" || "$WHICH" == "P" ]]; then
-	echo -e "\nWHICH[p] = $WHICH"
-else
-	echo -e "\nWHICH[c] = $WHICH"
+	wrongput
 fi
 
 
-#...................................................... #
+#...dir.................. #
 
-# path="/home/dafetite/alx/custom"
-CHECKER_PC_PH=$(echo "$SDIR" | cut -d '/' -f 2)
-echo "CHECKER_PC_PH == $CHECKER_PC_PH"
-
-#...................................................... #
-
-
-# echo -e "\n.....Hey! ....."
 mkdir -p $SDIR
-
-# echo -e "after SDIR =~ $SDIR .................."
-# #.....................current stage..
-# exit 1
-# #.....................current stage..
 
 
 #...options display.................. #
@@ -315,48 +299,38 @@ if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
 	fi
 
 
-	# echo -e "after SDIR =~ $SDIR .................."
-	# #.....................current stage..
-	# exit 1
-	# #.....................current stage..
-
 	#...creating variable and profile.................. #
-
-	# file_path="/path/to/directory/file.txt"
-
+	#...creating variable.................. #
+	echo ""
 	if [ ! -f ~/.bashrc ]; then
 		touch ~/.bashrc
-		echo "Variable created."
+		echo "Creating Variable..."
 	else
-		echo "Variable exists."
+		echo "Variable exists..."
 	fi
-
-	if [ ! -f ~/.bash_profile ]; then
-		touch ~/.bash_profile
-		echo "Profile created."
-	else
-		echo "Profile already exists."
-	fi
-
 
 	if ! grep -q .my_cmds ~/.bashrc; then
 		echo -e "Setting up variable..."
 		echo 'export PATH="$PATH:~/.my_cmds"' >> ~/.bashrc
 	else
-		echo -e "Variable appended..."
+		echo -e "Variable good..."
+	fi
+
+	#...creating Profile.................. #
+	echo ""
+	if [ ! -f ~/.bash_profile ]; then
+		touch ~/.bash_profile
+		echo "Creating profile..."
+	else
+		echo "Profile exists..."
 	fi
 
 	if ! grep -q  bashrc ~/.bash_profile; then
-		echo -e "Setting up profile...\n"
+		echo -e "Setting up profile..."
 		echo '[ -r ~/.bashrc ] && . ~/.bashrc ' >> ~/.bash_profile
 	else
-		echo -e "Profile appended..."
+		echo -e "Profile good..."
 	fi
-
-	# echo -e "after SDIR =~ $SDIR .................."
-	# #.....................current stage..
-	# exit 1
-	# #.....................current stage..
 
 
 	echo ""
@@ -391,22 +365,16 @@ if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
 	fi
 
 
-	echo -e "after SDIR =~ $SDIR .................."
-	#.....................current stage..
-	exit 1
-	#.....................current stage..
-
-
 	#....make............................. #
 
 	if [[ $FILETYPE =~ "cfile" ]]; then
 		make $SDIR/$DFILENAME
+		echo ""
 	fi
 
 
 	#...instructions(how to use).................. #	
 
-	echo ""
 	echo -e "Now, RESTART YOUR TERMINAL or START A NEW SESSION."
 
 	if [[ $RES =~ "a" ]]; then
@@ -436,8 +404,8 @@ if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
 		echo -e "$STRT check the ASCII table $EFFT $ANYWHERE: $DFILENAME"
 	fi
 
-	echo -e "\ncompleted."
 
+	echo -e "\ncompleted."
 else
 	echo -e "Invalid! You must select an option"
 	echo ""
