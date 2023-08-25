@@ -21,7 +21,53 @@ FILEPATH=~/$SHOW/.set
 HODN=".scpts"
 
 
-echo -e "\n.....Hey! ....."
+wrongput()
+{
+	echo ""
+	echo -e "Invalid input.\nThe options are [P/C/Q]"
+	echo ""
+	exit 1
+}
+
+echo ""
+CHECKER_PC_PH=$(echo "$SDIR" | cut -d '/' -f 2)
+# echo "CHECKER_PC_PH == $CHECKER_PC_PH"
+if [[ "$CHECKER_PC_PH" == "home" || "$CHECKER_PC_PH" == "Users" ]]; then
+	echo -e "I can see that this is a PC"
+elif [[ "$CHECKER_PC_PH" == "data" ]]; then
+	echo -e "I can see that this is a Phone"
+else
+	echo -e "I can't figure out your type of device"
+fi
+echo -e "However, please go on and select your device:"
+
+#...................................................... #
+
+echo "[p] - Phone"
+echo "[c] - PC"
+echo "[q] - quit"
+echo -n "Is this a phone or a pc? [P/C/Q] >>> "
+read WHICH
+
+if [[ ${#WHICH} == 1 ]]; then
+	if [[ "$WHICH" =~ "c" || "$WHICH" =~ "C" ]]; then
+		sudo -E echo -e "\n.....Hi $USER! ....."
+	elif [[ "$WHICH" =~ "p" || "$WHICH" =~ "P" ]]; then
+		echo -e "\n.....Hi USER! ....."
+	elif [[ "$WHICH" =~ "q" || "$WHICH" =~ "Q" ]]; then
+		echo ""
+		echo -e "Ok."
+		exit 1
+	else
+		wrongput
+	fi
+else
+	wrongput
+fi
+
+
+#...dir.................. #
+
 mkdir -p $SDIR
 
 
@@ -254,6 +300,14 @@ if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
 
 
 	#...creating variable and profile.................. #
+	#...creating variable.................. #
+	echo ""
+	if [ ! -f ~/.bashrc ]; then
+		touch ~/.bashrc
+		echo "Creating Variable..."
+	else
+		echo "Variable exists..."
+	fi
 
 	if ! grep -q .my_cmds ~/.bashrc; then
 		echo -e "Setting up variable..."
@@ -262,8 +316,17 @@ if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
 		echo -e "Variable good..."
 	fi
 
+	#...creating Profile.................. #
+	echo ""
+	if [ ! -f ~/.bash_profile ]; then
+		touch ~/.bash_profile
+		echo "Creating profile..."
+	else
+		echo "Profile exists..."
+	fi
+
 	if ! grep -q  bashrc ~/.bash_profile; then
-		echo -e "Setting up profile...\n"
+		echo -e "Setting up profile..."
 		echo '[ -r ~/.bashrc ] && . ~/.bashrc ' >> ~/.bash_profile
 	else
 		echo -e "Profile good..."
@@ -306,13 +369,13 @@ if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
 
 	if [[ $FILETYPE =~ "cfile" ]]; then
 		make $SDIR/$DFILENAME
+		echo ""
 	fi
 
 
 	#...instructions(how to use).................. #	
 
-	echo ""
-	# echo -e "Now, RESTART YOUR TERMINAL or START A NEW SESSION."
+	echo -e "Now, RESTART YOUR TERMINAL or START A NEW SESSION."
 
 	if [[ $RES =~ "a" ]]; then
 		echo -e "$STRT push(sync) to github. $ANYWHERE: $DFILENAME"
@@ -342,12 +405,7 @@ if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
 	fi
 
 
-	#...refresh/restart.................. #
-	
-	source ~/.bashrc 
-
-	echo -e "\nRefreshed and completed."
-
+	echo -e "\ncompleted."
 else
 	echo -e "Invalid! You must select an option"
 	echo ""
