@@ -15,9 +15,6 @@ ANYWHERE="Simply run(from anywhere in your environment)"
 STRT="You can now"
 SUP="to setup"
 SDIR=~/.my_cmds
-TILDE=~"/"
-SHOW=".my_cmds"
-FILEPATH=~/$SHOW/.set
 HODN=".scpts"
 
 
