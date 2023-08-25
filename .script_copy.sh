@@ -21,6 +21,7 @@ FILEPATH=~/$SHOW/.set
 HODN=".scpts"
 
 
+echo -e "before SDIR =~ $SDIR .................."
 #...................................................... #
 
 echo "[p] - Phone"
@@ -37,7 +38,7 @@ if [[ ${#WHICH} == 1  ]]; then
 	echo -e "In the loop .................."
 	# checkfor
 	if [[ "$WHICH" =~ "c" || "$WHICH" =~ "C" ]]; then
-		sudo echo -e "\n.....Hi $USER! ....."
+		sudo -E echo -e "\n.....Hi $USER! ....."
 		# break
 	elif [[ "$WHICH" =~ "p" || "$WHICH" =~ "P" ]]; then
 		# break
@@ -80,9 +81,10 @@ echo "CHECKER_PC_PH == $CHECKER_PC_PH"
 # echo -e "\n.....Hey! ....."
 mkdir -p $SDIR
 
-#.....................current stage..
-exit 1
-#.....................current stage..
+# echo -e "after SDIR =~ $SDIR .................."
+# #.....................current stage..
+# exit 1
+# #.....................current stage..
 
 
 #...options display.................. #
@@ -313,21 +315,48 @@ if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
 	fi
 
 
+	# echo -e "after SDIR =~ $SDIR .................."
+	# #.....................current stage..
+	# exit 1
+	# #.....................current stage..
+
 	#...creating variable and profile.................. #
+
+	# file_path="/path/to/directory/file.txt"
+
+	if [ ! -f ~/.bashrc ]; then
+		touch ~/.bashrc
+		echo "Variable created."
+	else
+		echo "Variable exists."
+	fi
+
+	if [ ! -f ~/.bash_profile ]; then
+		touch ~/.bash_profile
+		echo "Profile created."
+	else
+		echo "Profile already exists."
+	fi
+
 
 	if ! grep -q .my_cmds ~/.bashrc; then
 		echo -e "Setting up variable..."
 		echo 'export PATH="$PATH:~/.my_cmds"' >> ~/.bashrc
 	else
-		echo -e "Variable good..."
+		echo -e "Variable appended..."
 	fi
 
 	if ! grep -q  bashrc ~/.bash_profile; then
 		echo -e "Setting up profile...\n"
 		echo '[ -r ~/.bashrc ] && . ~/.bashrc ' >> ~/.bash_profile
 	else
-		echo -e "Profile good..."
+		echo -e "Profile appended..."
 	fi
+
+	# echo -e "after SDIR =~ $SDIR .................."
+	# #.....................current stage..
+	# exit 1
+	# #.....................current stage..
 
 
 	echo ""
@@ -360,6 +389,12 @@ if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
 	elif [[ $RES =~ "l" ]]; then
 		Ccpy
 	fi
+
+
+	echo -e "after SDIR =~ $SDIR .................."
+	#.....................current stage..
+	exit 1
+	#.....................current stage..
 
 
 	#....make............................. #
