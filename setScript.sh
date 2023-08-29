@@ -14,8 +14,11 @@ P2="ek81wkYt15bHQzABMQVeFpiNRNcrpy46Hqc7"
 ANYWHERE="Simply run(from anywhere in your environment)"
 STRT="You can now"
 SUP="to setup"
-SDIR=~/.my_cmds
+SDIR="$HOME/.bin"
+DBIN=".bin"
 HODN=".scpts"
+DEL1="$HOME/.my_cmds"
+DEL2="$HOME/dafCom"
 
 
 wrongput()
@@ -26,70 +29,163 @@ wrongput()
 	exit 1
 }
 
-echo ""
-CHECKER_PC_PH=$(echo "$SDIR" | cut -d '/' -f 2)
-# echo "CHECKER_PC_PH == $CHECKER_PC_PH"
-if [[ "$CHECKER_PC_PH" == "home" || "$CHECKER_PC_PH" == "Users" ]]; then
-	echo -e "I can see that this is a PC"
-elif [[ "$CHECKER_PC_PH" == "data" ]]; then
-	echo -e "I can see that this is a Phone"
-else
-	echo -e "I can't figure out your type of device"
-fi
-echo -e "However, please go on and select your device:"
 
+Exit() 
+{
+    if [[ -z "$OPTION" || $OPTION =~ [qQ] ]]; then
+		if [[ $OPTION =~ [qQ] ]]; then
+			echo ""
+			echo -e "Cheers!"
+		else
+			echo -e "You must select an option"
+		fi
+		echo ""
+		exit 1
+	fi
+}
+
+
+#...options display.................. #
+#...options display.................. #
+options=(
+    #...Script files.................. #
+	"[a] or [A] - $SUP push(sync) command"
+	"[b] or [B] - $SUP pull command"
+	"[c] or [C] - $SUP create repo command(Without opening the github website)"
+	"[d] or [D] - $SUP clone repo command"
+	"[e] or [E] - $SUP compile command (with options including common flags)"
+	"[f] or [F] - $SUP a default C source file template"
+	"[g] or [G] - $SUP and use \"cls\" command to clear"
+	"[h] or [H] - $SUP Github Author Identity(Global and Local) command"
+	# #...C files....................... #
+	"[i] or [I] - $SUP a Guessing Game command(To unwind)"
+	"[j] or [J] - $SUP a Rot13 Cipher command"
+	"[k] or [K] - $SUP a Rot47 Cipher command"
+	"[l] or [L] - $SUP a simple ASCII table command"
+)
 #...................................................... #
+#...................................................... #
+intro()
+{
+	local whch="$1"
 
+	# echo ""
+	CHECKER_PC_PH=$(echo "$SDIR" | cut -d '/' -f 2)
+	if [[ "$CHECKER_PC_PH" =~ [hH]ome|[uU]sers ]]; then
+		if [[ "$whch" =~ "0" ]]; then
+			echo -e "I can see that this is a PC"
+		else
+			echo -e "Configuring for a $rep"
+		fi
+	elif [[ "$CHECKER_PC_PH" == "data" ]]; then
+		if [[ "$whch" =~ "0" ]]; then
+			echo -e "I can see that this is a Phone"
+		else
+			echo -e "Configuring for a $rep"
+		fi
+	else
+		if [[ "$whch" =~ "0" ]]; then
+			echo -e "I can't figure out your type of device"
+		else
+			echo -e "Oh! Great. Configuring for a $rep"
+		fi
+	fi
+}
+#...................................................... #
+#...................................................... #
+intro "0"
+echo -e "However, please go on and select your device:"
 echo "[p] - Phone"
 echo "[c] - PC"
 echo "[q] - quit"
 echo -n "Is this a phone or a pc? [P/C/Q] >>> "
 read WHICH
 
-if [[ ${#WHICH} == 1 ]]; then
-	if [[ "$WHICH" =~ "c" || "$WHICH" =~ "C" ]]; then
-		sudo -E echo -e "\n.....Hi $USER! ....."
-	elif [[ "$WHICH" =~ "p" || "$WHICH" =~ "P" ]]; then
-		echo -e "\n.....Hi USER! ....."
-	elif [[ "$WHICH" =~ "q" || "$WHICH" =~ "Q" ]]; then
-		echo ""
-		echo -e "Ok."
-		exit 1
+auth()
+{
+	local var="$WHICH"
+
+	if [[ ${#var} == 1 ]]; then
+		if [[ "$var" =~ [cC] ]]; then
+			rep="PC"
+			sudo -E echo -e "\n.....Hi $USER! ....."
+		elif [[ "$var" =~ [pP] ]]; then
+			rep="Phone"
+			echo -e "\n.....Hi USER! ....."
+		elif [[ "$var" =~ [qQ] ]]; then
+			echo ""
+			echo -e "Ok."
+			exit 1
+		else
+			wrongput
+		fi
 	else
 		wrongput
 	fi
-else
-	wrongput
-fi
+}
+
+#...................................................... #
+#...................................................... #
+page=1
+items_per_page=8
+
+while true; do
+    clear
+	auth $WHICH
+	intro "1"
+    echo ""
+    echo "Page $page:"
+    start=$((($page - 1) * $items_per_page))
+    end=$(($page * $items_per_page))
+    
+    for ((i = $start; i < $end && i < ${#options[@]}; i++)); do
+        echo -e "${options[$i]}"
+    done
+
+    echo ""
+    echo -e "More options"
+    if (( $page > 1 )); then
+        echo "[p] - Previous Page"
+    fi
+    
+    if (( $end < ${#options[@]} )); then
+        echo "[n] - Next Page"
+    fi
+    
+    echo "[q] - Quit"
+    echo ""
+    echo -n "What do you want to do? [q] - quit >>> "
+    read -n 1 -s -r OPTION
+    case $OPTION in
+        n|N)
+            if (( $end < ${#options[@]} )); then
+                ((page++))
+            fi
+            ;;
+        p|P)
+            if (( $page > 1 )); then
+                ((page--))
+            fi
+            ;;
+        a|b|c|d|e|f|g|h|i|j|k|l|A|B|C|D|E|F|G|H|I|J|K|L)
+			echo -n "$OPTION"
+            break
+            ;;
+		q|Q)
+			echo -n "$OPTION"
+            Exit
+            ;;
+    esac
+done
+#...options display.................. #
+#...options display.................. #
 
 
 #...dir.................. #
 
 mkdir -p $SDIR
 
-
-#...options display.................. #
-
 echo ""
-#...Script files.................. #
-echo -e "[a] or [A] - $SUP push(sync) command"
-echo -e "[b] or [B] - $SUP pull command"
-echo -e "[c] or [C] - $SUP create repo command(Without opening the github website)"
-echo -e "[d] or [D] - $SUP clone repo command"
-echo -e "[e] or [E] - $SUP compile command (with options including common flags)"
-echo -e "[f] or [F] - $SUP a default C source file template"
-echo -e "[g] or [G] - $SUP and use \"cls\" command to clear"
-echo -e "[h] or [H] - $SUP Github Author Identity(Global and Local) command"
-#...C files....................... #
-echo -e "[i] or [I] - $SUP a Guessing Game command(To unwind)"
-echo -e "[j] or [J] - $SUP a Rot13 Cipher command"
-echo -e "[k] or [K] - $SUP a Rot47 Cipher command"
-echo -e "[l] or [L] - $SUP a simple ASCII table command"
-#................................. #
-echo ""
-
-echo -n "What do you want to do? [q] - quit >>> "
-read OPTION
 
 
 #...functions .................. #
@@ -167,12 +263,12 @@ unametokenmaill()
 	echo -n "Chech that these are correct. Are they? [y/N] >>> "
 	read ANS
 	echo ""
-	if [[ ${#ANS} =~ 1 && ("$ANS" =~ "y" || "$ANS" =~ "Y") ]]; then
+	if [[ ${#ANS} =~ 1 && ("$ANS" =~ [yY]) ]]; then
 		cp "$HODN/$vname" "$SDIR/$DFILENAME"
 		streamedit "$DUSERNAME" "$NUSERNAME"
 		streamedit "$DTOKEN" "$NTOKEN"
 		streamedit "$DEMAIL" "$NEMAIL"
-	elif [[ ${#ANS} =~ 1 && ("$ANS" =~ "n" || "$ANS" =~ "N") ]]; then
+	elif [[ ${#ANS} =~ 1 && ("$ANS" =~ [nN]) ]]; then
 		echo -e "Ok."
 		echo ""
 		exit 1
@@ -183,54 +279,40 @@ unametokenmaill()
 	fi
 }
 
-Exit() 
-{
-    if [[ -z "$OPTION" || $OPTION =~ "q" || $OPTION =~ "Q" ]]; then
-		if [[ $OPTION =~ "q" || $OPTION =~ "Q" ]]; then
-			echo -e "Cheers!"
-		else
-			echo -e "You must select an option"
-		fi
-		echo ""
-		exit 1
-	fi
-}
-
 options()
 {
-	if [[ $OPTION =~ "a" || $OPTION =~ "A" ]]; then
+	if [[ $OPTION =~ [aA] ]]; then
 		RES="a"
-	elif [[ $OPTION =~ "b" || $OPTION =~ "B" ]]; then
+	elif [[ $OPTION =~ [bB] ]]; then
 		RES="b"
-	elif [[ $OPTION =~ "c" || $OPTION =~ "C" ]]; then
+	elif [[ $OPTION =~ [cC] ]]; then
 		RES="c"
-	elif [[ $OPTION =~ "d" || $OPTION =~ "D" ]]; then
+	elif [[ $OPTION =~ [dD] ]]; then
 		RES="d"
-	elif [[ $OPTION =~ "e" || $OPTION =~ "E" ]]; then
+	elif [[ $OPTION =~ [eE] ]]; then
 		RES="e"
-	elif [[ $OPTION =~ "f" || $OPTION =~ "F" ]]; then
+	elif [[ $OPTION =~ [fF] ]]; then
 		RES="f"
-	elif [[ $OPTION =~ "g" || $OPTION =~ "G" ]]; then
+	elif [[ $OPTION =~ [gG] ]]; then
 		RES="g"
-	elif [[ $OPTION =~ "h" || $OPTION =~ "H" ]]; then
+	elif [[ $OPTION =~ [hH] ]]; then
 		RES="h"
 	# ............................................................ #
-	elif [[ $OPTION =~ "i" || $OPTION =~ "I" ]]; then
+	elif [[ $OPTION =~ [iI] ]]; then
 		RES="i"
-	elif [[ $OPTION =~ "j" || $OPTION =~ "J" ]]; then
+	elif [[ $OPTION =~ [jJ] ]]; then
 		RES="j"
-	elif [[ $OPTION =~ "k" || $OPTION =~ "K" ]]; then
+	elif [[ $OPTION =~ [kK] ]]; then
 		RES="k"
-	elif [[ $OPTION =~ "l" || $OPTION =~ "L" ]]; then
+	elif [[ $OPTION =~ [lL] ]]; then
 		RES="l"
 	fi
 
 	#....tags............................. #
 	
-	if [[ $RES =~ "a" || $RES =~ "b" || $RES =~ "c" || $RES =~ "d" ||
-		$RES =~ "e" || $RES =~ "f" || $RES =~ "g" || $RES =~ "h" ]]; then
+	if [[ $RES =~ [abcdefgh] ]]; then
 		FILETYPE="script"
-	elif [[ $RES =~ "i" || $RES =~ "j" || $RES =~ "k" || $RES =~ "l" ]]; then
+	elif [[ $RES =~ [ijkl] ]]; then
 		FILETYPE="cfile"
 	fi
 }
@@ -297,41 +379,75 @@ if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
 
 
 	#...creating variable and profile.................. #
-	#...creating variable.................. #
+	#...creating bshell variable.................. #
 	echo ""
-	if [ ! -f ~/.bashrc ]; then
-		touch ~/.bashrc
-		echo "Creating Variable..."
+	if [ ! -f "$HOME/.bashrc" ]; then
+		touch "$HOME/.bashrc"
+		echo "Creating bshell variable..."
 	else
-		echo "Variable exists..."
+		echo "Variable bshell exists..."
 	fi
 
-	if ! grep -q .my_cmds ~/.bashrc; then
-		echo -e "Setting up variable..."
-		echo 'export PATH="$PATH:~/.my_cmds"' >> ~/.bashrc
+	if ! grep -q "$DBIN" "$HOME/.bashrc"; then
+		echo -e "Setting up bshell variable..."
+		echo 'export PATH="$PATH:$HOME/'$(basename "$SDIR")'"' >> "$HOME/.bashrc"
 	else
-		echo -e "Variable good..."
+		echo -e "Bshell variable good..."
+	fi
+
+	#...creating zshell variable.................. #
+	echo ""
+	if [ ! -f "$HOME/.zshrc" ]; then
+		touch "$HOME/.zshrc"
+		echo "Creating zshell variable..."
+	else
+		echo "Zshell variable exists..."
+	fi
+
+	if ! grep -q "$DBIN" "$HOME/.zshrc"; then
+		echo -e "Setting up zshell variable..."
+		echo 'export PATH="$PATH:$HOME/'$(basename "$SDIR")'"' >> "$HOME/.zshrc"
+	else
+		echo -e "Zshell variable good..."
 	fi
 
 	#...creating Profile.................. #
 	echo ""
-	if [ ! -f ~/.bash_profile ]; then
-		touch ~/.bash_profile
+	if [ ! -f "$HOME/.bash_profile" ]; then
+		touch "$HOME/.bash_profile"
 		echo "Creating profile..."
 	else
 		echo "Profile exists..."
 	fi
 
-	if ! grep -q  bashrc ~/.bash_profile; then
+	if ! grep -q  bashrc "$HOME/.bash_profile"; then
 		echo -e "Setting up profile..."
-		echo '[ -r ~/.bashrc ] && . ~/.bashrc ' >> ~/.bash_profile
+		echo '[ -r ~/.bashrc ] && . ~/.bashrc ' >> "$HOME/.bash_profile"
 	else
 		echo -e "Profile good..."
 	fi
 
+	#...remove old dir.................. #
+	echo ""
+	if [ ! -f "$DEL2" ]; then
+		echo -e "Nothing to backup1"
+	else
+		cp $DEL2/* "$SDIR"
+		mv "$DEL2" "$HOME/.${(basename ${DEL2})}_backup_$(date +"%Y-%m-%d %H:%M:%S")"
+		echo "Old dir1 backed up..."
+	fi
+
+	if [ ! -f "$DEL1" ]; then
+		echo -e "Nothing to backup2"
+	else
+		cp $DEL1/* "$SDIR"
+		mv "$DEL1" "$HOME/${(basename ${DEL1})}_backup_$(date +"%Y-%m-%d %H:%M:%S")"
+		echo "Old dir2 backed up..."
+	fi
+	#...remove old dir.................. #
+
 
 	echo ""
-
 	if [[ $RES =~ "a" ]]; then
 		scptcpy
 	elif [[ $RES =~ "b" ]]; then
