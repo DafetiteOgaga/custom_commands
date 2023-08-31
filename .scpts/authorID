@@ -3,6 +3,32 @@
 USERNAME="$1"
 EMAIL="$2"
 
+
+auth()
+{
+	local var="$WHICH"
+
+	if [[ ${#var} == 1 ]]; then
+		if [[ "$var" =~ [cC] ]]; then
+			# echo -e "Global Author Identity config..."
+			sudo git config --global user.email "$EMAIL"
+			sudo git config --global user.name "$USERNAME"
+		elif [[ "$var" =~ [pP] ]]; then
+			git config --global user.email "$EMAIL"
+			git config --global user.name "$USERNAME"
+		elif [[ "$var" =~ [qQ] ]]; then
+			echo ""
+			echo -e "Ok."
+			exit 1
+		else
+			echo -e "Invalid"
+		fi
+	else
+		echo -e "Invalid"
+	fi
+}
+
+
 empty1()
 {
 	local var="$1"
@@ -54,6 +80,15 @@ echo -n "Enter your Github Email address >>> "
 read EMAIL
 empty1 "$EMAIL"
 
+
+echo -e "Select your device:"
+echo "[p] - Phone"
+echo "[c] - PC"
+echo "[q] - quit"
+echo -n "Is this a phone or a pc? [P/C/Q] >>> "
+read WHICH
+
+
 echo ""
 echo -e "Configuring Username: $USERNAME"
 echo -e "Configuring Email: $EMAIL"
@@ -65,8 +100,7 @@ if [[ "$RESP" =~ "l" || "$RESP" =~ "L" ]]; then
 	git config user.name "$USERNAME"
 elif [[ "$RESP" =~ "g" || "$RESP" =~ "G" ]]; then
 	echo -e "Global Author Identity config..."
-	sudo git config --global user.email "$EMAIL"
-	sudo git config --global user.name "$USERNAME"
+        auth $WHICH
 fi
 echo "........................................."
 echo -e "Done...\n"
