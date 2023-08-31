@@ -186,28 +186,28 @@ done
 mkdir -p $SDIR
 
 echo ""
-<<<<<<< HEAD
-=======
+# <<<<<<< HEAD
+# =======
 #...Script files.................. #
-echo -e "[a] or [A] - $SUP push(sync) command"
-echo -e "[b] or [B] - $SUP pull command"
-echo -e "[c] or [C] - $SUP create repo command(Without opening github website)"
-echo -e "[d] or [D] - $SUP clone repo command"
-echo -e "[e] or [E] - $SUP compile command (with options including common flags)"
-echo -e "[f] or [F] - $SUP a default C source file template"
-echo -e "[g] or [G] - $SUP and use \"cls\" command to clear"
-echo -e "[h] or [H] - $SUP Github Author Identity(Global and Local) command"
+# echo -e "[a] or [A] - $SUP push(sync) command"
+# echo -e "[b] or [B] - $SUP pull command"
+# echo -e "[c] or [C] - $SUP create repo command(Without opening github website)"
+# echo -e "[d] or [D] - $SUP clone repo command"
+# echo -e "[e] or [E] - $SUP compile command (with options including common flags)"
+# echo -e "[f] or [F] - $SUP a default C source file template"
+# echo -e "[g] or [G] - $SUP and use \"cls\" command to clear"
+# echo -e "[h] or [H] - $SUP Github Author Identity(Global and Local) command"
 #...C files....................... #
-echo -e "[i] or [I] - $SUP a Guessing Game command(To unwind)"
-echo -e "[j] or [J] - $SUP a Rot13 Cipher command"
-echo -e "[k] or [K] - $SUP a Rot47 Cipher command"
-echo -e "[l] or [L] - $SUP a simple ASCII table command"
+# echo -e "[i] or [I] - $SUP a Guessing Game command(To unwind)"
+# echo -e "[j] or [J] - $SUP a Rot13 Cipher command"
+# echo -e "[k] or [K] - $SUP a Rot47 Cipher command"
+# echo -e "[l] or [L] - $SUP a simple ASCII table command"
 #................................. #
-echo ""
+# echo ""
 
-echo -n "What do you want to do? [q] - quit >>> "
-read OPTION
->>>>>>> e5cf2fc59e0dc6788fc5a4c54599813068bdd8f5
+# echo -n "What do you want to do? [q] - quit >>> "
+# read OPTION
+# >>>>>>> e5cf2fc59e0dc6788fc5a4c54599813068bdd8f5
 
 
 #...functions .................. #
