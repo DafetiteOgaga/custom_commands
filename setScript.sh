@@ -14,8 +14,8 @@ P2="ek81wkYt15bHQzABMQVeFpiNRNcrpy46Hqc7"
 ANYWHERE="Simply run(from anywhere in your environment)"
 STRT="You can now"
 SUP="to setup"
-SDIR="$HOME/.bin"
-DBIN=".bin"
+SDIR="$HOME/.xbin"
+DBIN=".xbin"
 HODN=".scpts"
 DEL1="$HOME/.my_cmds"
 DEL2="$HOME/dafCom"
@@ -450,22 +450,22 @@ if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
 	fi
 
 	#...remove old dir.................. #
-	echo ""
-	if [ ! -f "$DEL2" ]; then
-		echo -e "Nothing to backup1"
-	else
-		cp $DEL2/* "$SDIR"
-		mv "$DEL2" "$HOME/.${(basename ${DEL2})}_backup_$(date +"%Y-%m-%d %H:%M:%S")"
-		echo "Old dir1 backed up..."
-	fi
+	# echo ""
+	# if [ ! -f "$DEL2" ]; then
+	# 	echo -e "Nothing to backup1"
+	# else
+	# 	cp $DEL2/* "$SDIR"
+	# 	mv "$DEL2" "$HOME/.${(basename ${DEL2})}_backup_$(date +"%Y-%m-%d %H:%M:%S")"
+	# 	echo "Old dir1 backed up..."
+	# fi
 
-	if [ ! -f "$DEL1" ]; then
-		echo -e "Nothing to backup2"
-	else
-		cp $DEL1/* "$SDIR"
-		mv "$DEL1" "$HOME/${(basename ${DEL1})}_backup_$(date +"%Y-%m-%d %H:%M:%S")"
-		echo "Old dir2 backed up..."
-	fi
+	# if [ ! -f "$DEL1" ]; then
+	# 	echo -e "Nothing to backup2"
+	# else
+	# 	cp $DEL1/* "$SDIR"
+	# 	mv "$DEL1" "$HOME/${(basename ${DEL1})}_backup_$(date +"%Y-%m-%d %H:%M:%S")"
+	# 	echo "Old dir2 backed up..."
+	# fi
 	#...remove old dir.................. #
 
 
