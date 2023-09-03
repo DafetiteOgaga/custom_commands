@@ -1,6 +1,0 @@
-#!/bin/bash
-
-echo ""
-echo "....................Listing/view my_cmds files...................."
-ls -a ~/.my_cmds
-echo -e "....................Done....................\n"
