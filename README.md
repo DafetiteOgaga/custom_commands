@@ -1,7 +1,7 @@
 # Custom Commands
 
 ![Device check Image](.intro.jpg)
-![Main menu Image](.main_menu.jpg.jpg)
+![Main menu Image](.main_menu.jpg)
 
 ### Installation
 
