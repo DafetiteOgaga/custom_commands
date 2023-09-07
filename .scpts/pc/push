@@ -23,7 +23,7 @@ if [[ -z "$RESP" ]]; then
 fi
 
 echo ""
-echo ".....It's good to pull before pushing. So, i'm pulling........"
+echo ".....It's good to pull before pushing. So, I'm pulling........"
 echo ""
 
 git pull
