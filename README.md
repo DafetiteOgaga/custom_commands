@@ -31,7 +31,7 @@ Depending on the command, the usage instruction for that command is provided aft
 This file contains the notable changes made to the Custom Commands project.
 
 
-V1.2.1 (07-09-2023)
+### V1.2.1 (07-09-2023)
 ## New
 	- Added Support for 64-bit operating system computers
 	- Added Support for AARCH64/ARM64 operating system for phones
