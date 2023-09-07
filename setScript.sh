@@ -231,7 +231,7 @@ unametokenmaill()
 	echo -e "Token: ghp_$NTOKEN"
 	echo -e "Email: $NEMAIL"
 	echo -e ".................................."
-	echo -n "Chech that these are correct. Are they? [y/N] >>> "
+	echo -n "Check that these are correct. Are they? [y/N] >>> "
 	read ANS
 	echo ""
 	if [[ ${#ANS} =~ 1 && ("$ANS" =~ [yY]) ]]; then
