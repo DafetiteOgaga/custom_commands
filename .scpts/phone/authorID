@@ -1,0 +1,106 @@
+#!/bin/bash
+
+USERNAME="$1"
+EMAIL="$2"
+
+
+auth()
+{
+	local var="$WHICH"
+
+	if [[ ${#var} == 1 ]]; then
+		if [[ "$var" =~ [cC] ]]; then
+			# echo -e "Global Author Identity config..."
+			sudo git config --global user.email "$EMAIL"
+			sudo git config --global user.name "$USERNAME"
+		elif [[ "$var" =~ [pP] ]]; then
+			git config --global user.email "$EMAIL"
+			git config --global user.name "$USERNAME"
+		elif [[ "$var" =~ [qQ] ]]; then
+			echo ""
+			echo -e "Ok."
+			exit 1
+		else
+			echo -e "Invalid"
+		fi
+	else
+		echo -e "Invalid"
+	fi
+}
+
+
+empty1()
+{
+	local var="$1"
+
+	if [[ -z "$var" ]]; then
+		echo ""
+		echo -e "This field cannot be empty"
+		echo ""
+		exit 1
+	fi
+}
+
+echo ""
+echo -e "Author Identity Configuration"
+echo "........................................."
+echo ""
+echo -n "Global or Local Identity congiguration? [g - Global] && [l - Local] >>> "
+read RESP
+echo ""
+if [[ ${#RESP} != 1 ]]; then
+	echo -e "Invalid response."
+	echo ""
+	exit 1
+else
+	if [[ "$RESP" != "l" && "$RESP" != "L"
+				&& "$RESP" != "g" && "$RESP" != "G" ]]; then
+		echo -e "Respond with either [g/L]."
+		echo ""
+		exit 1
+	fi
+fi
+empty1 "$RESP"
+
+if [[ "$RESP" =~ "l" || "$RESP" =~ "L" ]]; then
+	echo -n "Check your PATH AND CURRENT DIRECTORY to be sure you are in a Repo, are you? [y/N] >>> "
+	read YNREPO
+	if [[ "$YNREPO" =~ "y" || "$YNREPO" =~ "Y" ]]; then
+		echo -e "Great! Let us proceed."
+	elif [[  -z "$YNREPO" || "$YNREPO" =~ "n" || "$YNREPO" =~ "N" ]]; then
+		echo -e "Response cannot be empty and must be [y/N]."
+		exit 1
+	fi
+fi
+echo -n "Enter your Github Username >>> "
+read USERNAME
+empty1 "$USERNAME"
+
+echo -n "Enter your Github Email address >>> "
+read EMAIL
+empty1 "$EMAIL"
+
+
+echo -e "Select your device:"
+echo "[p] - Phone"
+echo "[c] - PC"
+echo "[q] - quit"
+echo -n "Is this a phone or a pc? [P/C/Q] >>> "
+read WHICH
+
+
+echo ""
+echo -e "Configuring Username: $USERNAME"
+echo -e "Configuring Email: $EMAIL"
+echo -e "Specific to this repo alone..."
+echo "........................................."
+if [[ "$RESP" =~ "l" || "$RESP" =~ "L" ]]; then
+	echo -e "Local Author Identity config..."
+	git config user.email "$EMAIL"
+	git config user.name "$USERNAME"
+elif [[ "$RESP" =~ "g" || "$RESP" =~ "G" ]]; then
+	echo -e "Global Author Identity config..."
+        auth $WHICH
+fi
+echo "........................................."
+echo -e "Done...\n"

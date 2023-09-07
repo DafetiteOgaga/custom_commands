@@ -168,7 +168,13 @@ scptcpy()
 
 	echo -e "TEXT" >  $SDIR/$DFILENAME
 	chmod 744 $SDIR/$DFILENAME
-	cp "$HODN/$DFILENAME" "$SDIR/$DFILENAME"
+	if [[ "$WHICH" =~ 'p' ]]; then
+		cp "$HODN/phone/$DFILENAME" "$SDIR/$DFILENAME"
+	elif [[ "$WHICH" =~ 'c' ]]; then
+		cp "$HODN/pc/$DFILENAME" "$SDIR/$DFILENAME"
+	else
+		cp "$HODN/$DFILENAME" "$SDIR/$DFILENAME"
+	fi
 }
 
 empt()

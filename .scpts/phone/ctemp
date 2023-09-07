@@ -1,0 +1,24 @@
+#!/bin/bash
+
+FILE="$1"
+SDIR=~/.my_cmds
+OUT="Output file:"
+
+echo ""
+if [ "$#" = "0" ]; then
+	echo -n "Enter the filename >>> "
+	read FILE
+fi
+
+
+echo "....................Creating C file...................."
+for chk in "$FILE" ; do
+	if [[ $chk == *.c ]]; then
+		cp "$SDIR/C_template.c" "$FILE"
+		echo -e "$OUT $FILE"
+	else
+		cp "$SDIR/C_template.c" "$FILE.c"
+		echo -e "$OUT $FILE.c"
+	fi
+done
+echo -e "....................Done............................."

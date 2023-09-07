@@ -33,6 +33,8 @@ This file contains the notable changes made to the Custom Commands project.
 
 V1.2.0 (05-09-2023)
 ## New
+	- Added Support for 64-bit operating system computers
+	- Added Support for AARCH64/ARM64 operating system for phones
 	- Added Support for PC and Phone and device detection
 	- Added Support for root user password request for PC
 	- Added command to configure Github Author Identity Globally and/or Locally
@@ -59,6 +61,7 @@ V1.2.0 (05-09-2023)
 
 
 ## Fixes
+	- Fixed exec: format errors caused by variation in operating system architectures for both phones and computers
 	- Commands creation now runs contineously until you quit the process
 	- Source files and compilations has been removed from the operations for optimization
 	- The authorID, create and clone repo commands now automatically configures local author during operation

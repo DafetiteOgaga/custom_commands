@@ -1,0 +1,37 @@
+#!/bin/bash
+
+RESP="$1"
+
+exiting()
+{
+	echo ".........Operation aborted.........."
+	echo ""
+	exit 1
+}
+
+if [[ -z "$RESP" ]]; then
+	echo -n "Enter a commit message [[q] to abort] >>> "
+	read RESP
+	
+	if [[ -z "$RESP" ]]; then
+		echo "Commit message not found"
+		exiting
+	elif [[ ${#RESP} =~ 1 && ("$RESP" =~ "q" || "$RESP" =~ "Q") ]]; then
+		echo "Ok."
+		exiting
+	fi
+fi
+
+echo ""
+echo ".....It's good to pull before pushing. So, i'm pulling........"
+echo ""
+
+git pull
+
+echo ""
+echo "....................Now, pushing...................."
+git add .
+git commit -m "$RESP"
+git push
+echo "....................Done...................."
+
