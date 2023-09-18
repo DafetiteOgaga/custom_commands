@@ -6,9 +6,9 @@
 
 ### Installation
 
-### **1. Clone the Repo**
-### **2. cd into the Repo**
-### **3. while you are inside the repo, run `./setScript.sh` to install the various custom commands on your computer/phone such as:**
+#### **1. Clone the Repo**
+#### **2. cd into the Repo**
+#### **3. while you are inside the repo, run `./setScript.sh` to install the various custom commands on your computer/phone such as:**
 
  * push(sync) command
  * pull command
