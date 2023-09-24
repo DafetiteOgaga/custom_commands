@@ -1,0 +1,43 @@
+#!/bin/bash
+
+echo ""
+echo -n "Enter path to the directory >>> "
+read FILE
+echo ""
+echo -e "Looking in $FILE"
+echo ""
+for file in $FILE/*.py; do
+    echo "$(basename $file)"
+done
+for file in $FILE/*.c; do
+    echo "$(basename $file)"
+done
+echo -n "if this correct? [y/N] >>> "
+read YN
+echo ""
+if [[ "$YN" =~ [yY] ]]; then
+    if ls "$FILE"/*.py >/dev/null 2>&1; then
+        for file in "$FILE"/*.py; do
+            sed -i '/Author/d' "$file"
+            sed -i '/author/d' "$file"
+        done
+        echo "python scripts cleaned."
+    else
+        echo "No python scripts found."
+    fi
+
+    if ls "$FILE"/*.c >/dev/null 2>&1; then
+        for file in "$FILE"/*.c; do
+            sed -i '/Author/d' "$file"
+            sed -i '/author/d' "$file"
+        done
+        echo "C scripts cleaned."
+    else
+        echo "No C scripts found."
+    fi
+
+    echo "Done."
+elif [[ "$YN" =~ [nN] ]]; then
+    echo "Ok."
+    exit 1
+fi

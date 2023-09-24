@@ -32,9 +32,13 @@ Depending on the command, the usage instruction for that command is provided aft
 # Changelog
 This file contains the notable changes made to the Custom Commands project.
 
-
-### V1.2.1 (07-09-2023)
 ## New
+	- Added support for multiple arguments for pycode, pycodemore and pycompile commands
+	- pycompile command that compiles python codes to .pyc executables
+	- pycodemore command a detailed version of pycode (according to EP 8 conventions)
+	- pycode command(a short for pycodestyle) for python code compliance according to PEP 8 conventions
+	- Added betty linter command for source files
+	- Added installations of betty linter and pycodestyle(PEP 8)
 	- Added Support for 64-bit operating system computers
 	- Added Support for AARCH64/ARM64 operating system for phones
 	- Added Support for PC and Phone and device detection
@@ -63,6 +67,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Fixes
+	- Fixed bugs in ctemp command
 	- Fixed exec: format errors caused by variation in operating system architectures for both phones and computers
 	- Commands creation now runs contineously until you quit the process
 	- Source files and compilations has been removed from the operations for optimization

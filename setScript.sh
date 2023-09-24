@@ -31,149 +31,48 @@ UINPUT="$6"
 # echo "Sum: $result"
 #..................... #
 
-opertn()
+auth()
 {
-	#...dir.................. #
+	local var="$WHICH"
 
-	mkdir -p $SDIR
-
-	#... command assignment.................. #
-
-	if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
-
-		Exit
-		options
-
-		if [[ $RES =~ "a" ]]; then
-			DFILENAME="push"
-		elif [[ $RES =~ "b" ]]; then
-			DFILENAME="pull"
-		elif [[ $RES =~ "c" ]]; then
-			DFILENAME="createRepo"
-		elif [[ $RES =~ "d" ]]; then
-			DFILENAME="cloneRepo"
-		elif [[ $RES =~ "e" ]]; then
-			DFILENAME="mycompile"
-		elif [[ $RES =~ "f" ]]; then
-			DFILENAME="ctemp"
-		elif [[ $RES =~ "g" ]]; then
-			DFILENAME="cls"
-		elif [[ $RES =~ "h" ]]; then
-			DFILENAME="authorID"
-		# ............................................................ #
-		elif [[ $RES =~ "i" ]]; then
-			DFILENAME="guessGame"
-		elif [[ $RES =~ "j" ]]; then
-			DFILENAME="rot13"
-		elif [[ $RES =~ "k" ]]; then
-			DFILENAME="rot47"
-		elif [[ $RES =~ "l" ]]; then
-			DFILENAME="myascii"
-		else
-			echo -e "You can only choose from the options provided"
+	if [[ ${#var} == 1 ]]; then
+		if [[ "$var" =~ [cC] ]]; then
+			rep="PC"
+			sudo -E echo -e "\n.....Hi $USER! ....."
+		elif [[ "$var" =~ [pP] ]]; then
+			rep="Phone"
+			echo -e "\n.....Hi USER! ....."
+		elif [[ "$var" =~ [qQ] ]]; then
+			echo ""
+			echo -e "Ok."
 			exit 1
-		fi
-
-
-		#...creating variable and profile.................. #
-		#...creating bshell variable.................. #
-		echo ""
-		if [ ! -f "$HOME/.bashrc" ]; then
-			touch "$HOME/.bashrc"
-			echo "Creating bshell variable..."
 		else
-			echo "Variable bshell exists..."
+			wrongput
 		fi
-
-		if ! grep -q "$DBIN" "$HOME/.bashrc"; then
-			echo -e "Setting up bshell variable..."
-			echo 'export PATH="$PATH:$HOME/'$(basename "$SDIR")'"' >> "$HOME/.bashrc"
-		else
-			echo -e "Bshell variable good..."
-		fi
-
-		#...creating zshell variable.................. #
-		echo ""
-		if [ ! -f "$HOME/.zshrc" ]; then
-			touch "$HOME/.zshrc"
-			echo "Creating zshell variable..."
-		else
-			echo "Zshell variable exists..."
-		fi
-
-		if ! grep -q "$DBIN" "$HOME/.zshrc"; then
-			echo -e "Setting up zshell variable..."
-			echo 'export PATH="$PATH:$HOME/'$(basename "$SDIR")'"' >> "$HOME/.zshrc"
-		else
-			echo -e "Zshell variable good..."
-		fi
-
-		#...creating Profile.................. #
-		echo ""
-		if [ ! -f "$HOME/.bash_profile" ]; then
-			touch "$HOME/.bash_profile"
-			echo "Creating profile..."
-		else
-			echo "Profile exists..."
-		fi
-
-		if ! grep -q  bashrc "$HOME/.bash_profile"; then
-			echo -e "Setting up profile..."
-			echo '[ -r ~/.bashrc ] && . ~/.bashrc ' >> "$HOME/.bash_profile"
-		else
-			echo -e "Profile good..."
-		fi
-
-
-		echo ""
-		if [[ $RES =~ "a" ]]; then
-			scptcpy
-		elif [[ $RES =~ "b" ]]; then
-			scptcpy
-		elif [[ $RES =~ "c" ]]; then
-			unametokenmaill "createRepoGeneral"
-		elif [[ $RES =~ "d" ]]; then
-			unametokenmaill "cloneRepoGeneral"
-		elif [[ $RES =~ "e" ]]; then
-			scptcpy
-		elif [[ $RES =~ "f" ]]; then
-			echo -e "TEXT" >  $SDIR/C_template.c
-			cp "$HODN/C_template.c" "$SDIR/C_template.c"
-			scptcpy
-		elif [[ $RES =~ "g" ]]; then
-			scptcpy
-		elif [[ $RES =~ "h" ]]; then
-			scptcpy
-		# ............................................................ #
-		elif [[ $RES =~ "i" ]]; then
-			scptcpy
-		elif [[ $RES =~ "j" ]]; then
-			scptcpy
-		elif [[ $RES =~ "k" ]]; then
-			scptcpy
-		elif [[ $RES =~ "l" ]]; then
-			scptcpy
-		fi
-
 	else
-		echo -e "Invalid! You must select an option"
-		echo ""
-		exit 1
+		wrongput
 	fi
 }
 
-scptcpy()
+wrongput()
 {
-	echo -e "Creating $DFILENAME as a command..."
+	echo ""
+	echo -e "Invalid input.\nThe options are [P/C/Q]"
+	echo ""
+	exit 1
+}
 
-	echo -e "TEXT" >  $SDIR/$DFILENAME
-	chmod 744 $SDIR/$DFILENAME
-	if [[ "$WHICH" =~ 'p' ]]; then
-		cp "$HODN/phone/$DFILENAME" "$SDIR/$DFILENAME"
-	elif [[ "$WHICH" =~ 'c' ]]; then
-		cp "$HODN/pc/$DFILENAME" "$SDIR/$DFILENAME"
-	else
-		cp "$HODN/$DFILENAME" "$SDIR/$DFILENAME"
+Exit()
+{
+    if [[ -z "$OPTION" || $OPTION =~ [qQ] ]]; then
+		if [[ $OPTION =~ [qQ] ]]; then
+			echo ""
+			echo -e "Cheers!"
+		else
+			echo -e "You must select an option"
+		fi
+		echo ""
+		exit 1
 	fi
 }
 
@@ -242,14 +141,6 @@ unametokenmaill()
 	echo ""
 	if [[ ${#ANS} =~ 1 && ("$ANS" =~ [yY]) ]]; then
 		scptcpy
-		# if [[ "$WHICH" =~ 'p' ]]; then
-		# 	cp "$HODN/phone/$DFILENAME" "$SDIR/$DFILENAME"
-		# elif [[ "$WHICH" =~ 'c' ]]; then
-		# 	cp "$HODN/pc/$DFILENAME" "$SDIR/$DFILENAME"
-		# else
-		# 	cp "$HODN/$DFILENAME" "$SDIR/$DFILENAME"
-		# fi
-		# cp "$HODN/$vname" "$SDIR/$DFILENAME"
 		streamedit "$DUSERNAME" "$NUSERNAME"
 		streamedit "$DTOKEN" "$NTOKEN"
 		streamedit "$DEMAIL" "$NEMAIL"
@@ -264,120 +155,14 @@ unametokenmaill()
 	fi
 }
 
-options()
+cpfunc()
 {
-	if [[ $OPTION =~ [aA] ]]; then
-		RES="a"
-	elif [[ $OPTION =~ [bB] ]]; then
-		RES="b"
-	elif [[ $OPTION =~ [cC] ]]; then
-		RES="c"
-	elif [[ $OPTION =~ [dD] ]]; then
-		RES="d"
-	elif [[ $OPTION =~ [eE] ]]; then
-		RES="e"
-	elif [[ $OPTION =~ [fF] ]]; then
-		RES="f"
-	elif [[ $OPTION =~ [gG] ]]; then
-		RES="g"
-	elif [[ $OPTION =~ [hH] ]]; then
-		RES="h"
-	# ............................................................ #
-	elif [[ $OPTION =~ [iI] ]]; then
-		RES="i"
-	elif [[ $OPTION =~ [jJ] ]]; then
-		RES="j"
-	elif [[ $OPTION =~ [kK] ]]; then
-		RES="k"
-	elif [[ $OPTION =~ [lL] ]]; then
-		RES="l"
-	fi
-
-	#....tags............................. #
-	
-	if [[ $RES =~ [abcdefgh] ]]; then
-		FILETYPE="script"
-	elif [[ $RES =~ [ijkl] ]]; then
-		FILETYPE="cfile"
+	if [[ "$WHICH" =~ 'p' ]]; then
+		cp "$HODN/phone/$DFILENAME" "$SDIR/$DFILENAME"
+	elif [[ "$WHICH" =~ 'c' ]]; then
+		cp "$HODN/pc/$DFILENAME" "$SDIR/$DFILENAME"
 	fi
 }
-
-instructn()
-{
-	echo -e "Now, RESTART YOUR TERMINAL or START A NEW SESSION."
-
-	if [[ $RES =~ "a" ]]; then
-		echo -e "$STRT push(sync) to github. $ANYWHERE: $DFILENAME"
-	elif [[ $RES =~ "b" ]]; then
-		echo -e "$STRT pull from github. $ANYWHERE: $DFILENAME"
-	elif [[ $RES =~ "c" ]]; then
-		echo -e "$STRT create a github repo right from your terminal. $ANYWHERE: $DFILENAME"
-	elif [[ $RES =~ "d" ]]; then
-		echo -e "$STRT clone repos from github. $ANYWHERE: $DFILENAME"
-	elif [[ $RES =~ "e" ]]; then
-		echo -e "$STRT compile your files $EFFT $ANYWHERE: $DFILENAME <filename>"
-	elif [[ $RES =~ "f" ]]; then
-		echo -e "$STRT create default C source file templates $EFFT $ANYWHERE: $DFILENAME <filename>"
-	elif [[ $RES =~ "g" ]]; then
-		echo -e "$STRT clear your screen $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $RES =~ "h" ]]; then
-		echo -e "$STRT configure your GitHub identity both globally and locally within your environment $EFFT $ANYWHERE: $DFILENAME"
-	# ............................................................ #
-	elif [[ $RES =~ "i" ]]; then
-		echo -e "$STRT play guessing game $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $RES =~ "j" ]]; then
-		echo -e "$STRT encode and decode your texts with Rot13 $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $RES =~ "k" ]]; then
-		echo -e "$STRT encode and decode your texts with Rot47 $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $RES =~ "l" ]]; then
-		echo -e "$STRT check the ASCII table $EFFT $ANYWHERE: $DFILENAME"
-	fi
-}
-
-wrongput()
-{
-	echo ""
-	echo -e "Invalid input.\nThe options are [P/C/Q]"
-	echo ""
-	exit 1
-}
-
-Exit()
-{
-    if [[ -z "$OPTION" || $OPTION =~ [qQ] ]]; then
-		if [[ $OPTION =~ [qQ] ]]; then
-			echo ""
-			echo -e "Cheers!"
-		else
-			echo -e "You must select an option"
-		fi
-		echo ""
-		exit 1
-	fi
-}
-
-
-#...options display.................. #
-
-dOptions=(
-    #...Script files.................. #
-	"[a] or [A] - $SUP push(sync) command"
-	"[b] or [B] - $SUP pull command"
-	"[c] or [C] - $SUP createRepo command(Without opening the github website)"
-	"[d] or [D] - $SUP cloneRepo command"
-	"[e] or [E] - $SUP compile command(with options including common flags)"
-	"[f] or [F] - $SUP a default C source file template"
-	"[g] or [G] - $SUP and use \"cls\" command to clear"
-	"[h] or [H] - $SUP Github Author Identity(Global and Local) command"
-	# #...C files....................... #
-	"[i] or [I] - $SUP a Guessing Game command(To unwind)"
-	"[j] or [J] - $SUP a Rot13 Cipher command"
-	"[k] or [K] - $SUP a Rot47 Cipher command"
-	"[l] or [L] - $SUP a simple ASCII table command"
-)
-
-#...................................................... #
-#...................................................... #
 
 intro()
 {
@@ -405,26 +190,326 @@ intro()
 	fi
 }
 
-auth()
-{
-	local var="$WHICH"
+#...options display.................. #
+#...2.................. #
 
-	if [[ ${#var} == 1 ]]; then
-		if [[ "$var" =~ [cC] ]]; then
-			rep="PC"
-			sudo -E echo -e "\n.....Hi $USER! ....."
-		elif [[ "$var" =~ [pP] ]]; then
-			rep="Phone"
-			echo -e "\n.....Hi USER! ....."
-		elif [[ "$var" =~ [qQ] ]]; then
-			echo ""
-			echo -e "Ok."
-			exit 1
+dOptions=(
+    #...Script files.................. #
+	"[0] - $SUP the \"pycodestyle\" code compliance checker command"
+	"[1] - install and $SUP the \"pycodestyle\" \"pycode\" command"
+	"[a] or [A] - $SUP push(sync) command"
+	"[b] or [B] - $SUP pull command"
+	"[c] or [C] - $SUP createRepo command(Without opening the github website)"
+	"[d] or [D] - $SUP cloneRepo command"
+	"[e] or [E] - $SUP source files compile command(with options)"
+	"[f] or [F] - $SUP a default C source file template"
+	"[g] or [G] - $SUP and use \"cls\" command to clear"
+	"[h] or [H] - $SUP Github Author Identity(Global and Local) command"
+	"[i] or [I] - $SUP \"pycodemore\" command(pycode with details)"
+	"[j] or [J] - $SUP python file compile command"
+	# #...C files....................... #
+	"[k] or [K] - $SUP a Guessing Game command(To unwind)"
+	"[l] or [L] - $SUP a Rot13 Cipher command"
+	"[m] or [M] - $SUP a Rot47 Cipher command"
+	"[n] or [N] - $SUP a simple ASCII table command"
+)
+
+#...................................................... #
+#...................................................... #
+
+#...3.................. #
+options()
+{
+	if [[ $OPTION =~ "0" ]]; then
+		RES="0"
+	elif [[ $OPTION =~ "1" ]]; then
+		RES="1"
+	elif [[ $OPTION =~ [aA] ]]; then
+		RES="a"
+	elif [[ $OPTION =~ [bB] ]]; then
+		RES="b"
+	elif [[ $OPTION =~ [cC] ]]; then
+		RES="c"
+	elif [[ $OPTION =~ [dD] ]]; then
+		RES="d"
+	elif [[ $OPTION =~ [eE] ]]; then
+		RES="e"
+	elif [[ $OPTION =~ [fF] ]]; then
+		RES="f"
+	elif [[ $OPTION =~ [gG] ]]; then
+		RES="g"
+	elif [[ $OPTION =~ [hH] ]]; then
+		RES="h"
+	elif [[ $OPTION =~ [iI] ]]; then
+		RES="i"
+	elif [[ $OPTION =~ [jJ] ]]; then
+		RES="j"
+	# ............................................................ #
+	elif [[ $OPTION =~ [kK] ]]; then
+		RES="k"
+	elif [[ $OPTION =~ [lL] ]]; then
+		RES="l"
+	elif [[ $OPTION =~ [mM] ]]; then
+		RES="m"
+	elif [[ $OPTION =~ [nN] ]]; then
+		RES="n"
+	fi
+
+	#....tags............................. #
+	
+	if [[ $RES =~ [01abcdefghij] ]]; then
+		FILETYPE="script"
+	elif [[ $RES =~ [klmn] ]]; then
+		FILETYPE="cfile"
+	fi
+}
+
+#...4.................. #
+opertn()
+{
+	#...dir.................. #
+
+	mkdir -p $SDIR
+
+	#... command assignment.................. #
+
+	if [[  -z "$OPTION" || ${#OPTION} =~ 1 ]]; then
+
+		Exit
+		options
+
+		if [[ $RES =~ "0" ]]; then
+			DFILENAME="betty"
+		elif [[ $RES =~ "1" ]]; then
+			DFILENAME="pycode"
+		elif [[ $RES =~ "a" ]]; then
+			DFILENAME="push"
+		elif [[ $RES =~ "b" ]]; then
+			DFILENAME="pull"
+		elif [[ $RES =~ "c" ]]; then
+			DFILENAME="createRepo"
+		elif [[ $RES =~ "d" ]]; then
+			DFILENAME="cloneRepo"
+		elif [[ $RES =~ "e" ]]; then
+			DFILENAME="mycompile"
+		elif [[ $RES =~ "f" ]]; then
+			DFILENAME="ctemp"
+		elif [[ $RES =~ "g" ]]; then
+			DFILENAME="cls"
+		elif [[ $RES =~ "h" ]]; then
+			DFILENAME="authorID"
+		elif [[ $RES =~ "i" ]]; then
+			DFILENAME="pycodemore"
+		elif [[ $RES =~ "j" ]]; then
+			DFILENAME="pycompile"
+		# ............................................................ #
+		elif [[ $RES =~ "k" ]]; then
+			DFILENAME="guessGame"
+		elif [[ $RES =~ "l" ]]; then
+			DFILENAME="rot13"
+		elif [[ $RES =~ "m" ]]; then
+			DFILENAME="rot47"
+		elif [[ $RES =~ "n" ]]; then
+			DFILENAME="myascii"
 		else
-			wrongput
+			echo -e "You can only choose from the options provided"
+			exit 1
+		fi
+
+
+		#...creating variable and profile.................. #
+		#...creating bshell variable.................. #
+		echo ""
+		if [ ! -f "$HOME/.bashrc" ]; then
+			touch "$HOME/.bashrc"
+			echo "Creating bshell variable..."
+		else
+			echo "Variable bshell exists..."
+		fi
+
+		if ! grep -q "$DBIN" "$HOME/.bashrc"; then
+			echo -e "Setting up bshell variable..."
+			echo 'export PATH="$PATH:$HOME/'$(basename "$SDIR")'"' >> "$HOME/.bashrc"
+		else
+			echo -e "Bshell variable good..."
+		fi
+
+		#...creating zshell variable.................. #
+		echo ""
+		if [ ! -f "$HOME/.zshrc" ]; then
+			touch "$HOME/.zshrc"
+			echo "Creating zshell variable..."
+		else
+			echo "Zshell variable exists..."
+		fi
+
+		if ! grep -q "$DBIN" "$HOME/.zshrc"; then
+			echo -e "Setting up zshell variable..."
+			echo 'export PATH="$PATH:$HOME/'$(basename "$SDIR")'"' >> "$HOME/.zshrc"
+		else
+			echo -e "Zshell variable good..."
+		fi
+
+		#...creating Profile.................. #
+		echo ""
+		if [ ! -f "$HOME/.bash_profile" ]; then
+			touch "$HOME/.bash_profile"
+			echo "Creating profile..."
+		else
+			echo "Profile exists..."
+		fi
+
+		if ! grep -q  bashrc "$HOME/.bash_profile"; then
+			echo -e "Setting up profile..."
+			echo '[ -r ~/.bashrc ] && . ~/.bashrc ' >> "$HOME/.bash_profile"
+		else
+			echo -e "Profile good..."
+		fi
+
+		echo ""
+		if [[ $RES =~ "0" ]]; then
+			scptcpy
+		elif [[ $RES =~ "1" ]]; then
+			scptcpy
+		elif [[ $RES =~ "a" ]]; then
+			scptcpy
+		elif [[ $RES =~ "b" ]]; then
+			scptcpy
+		elif [[ $RES =~ "c" ]]; then
+			unametokenmaill "createRepoGeneral"
+		elif [[ $RES =~ "d" ]]; then
+			unametokenmaill "cloneRepoGeneral"
+		elif [[ $RES =~ "e" ]]; then
+			scptcpy
+		elif [[ $RES =~ "f" ]]; then
+			echo -e "TEXT" >  $SDIR/C_template.c
+			cp "$HODN/C_template.c" "$SDIR/C_template.c"
+			scptcpy
+		elif [[ $RES =~ "g" ]]; then
+			scptcpy
+		elif [[ $RES =~ "h" ]]; then
+			scptcpy
+		elif [[ $RES =~ "i" ]]; then
+			scptcpy
+		elif [[ $RES =~ "j" ]]; then
+			scptcpy
+		# ............................................................ #
+		elif [[ $RES =~ "k" ]]; then
+			scptcpy
+		elif [[ $RES =~ "l" ]]; then
+			scptcpy
+		elif [[ $RES =~ "m" ]]; then
+			scptcpy
+		elif [[ $RES =~ "n" ]]; then
+			scptcpy
+		fi
+
+	else
+		echo -e "Invalid! You must select an option"
+		echo ""
+		exit 1
+	fi
+}
+
+#...5.................. #
+scptcpy()
+{
+	local ZERO
+
+	if [[ $RES =~ "0" ]]; then
+		ZERO="yes"
+	else
+		ZERO="no"
+	fi
+	
+	echo -e "Creating $DFILENAME as a command..."
+
+	echo -e "TEXT" >  $SDIR/$DFILENAME
+	chmod 744 $SDIR/$DFILENAME
+	if [[ "$WHICH" =~ 'p' ]]; then
+		if [[ "$ZERO" =~ "yes" ]]; then
+			bLinter
+		elif [[ "$RES" =~ "1" ]]; then
+			cpfunc
+			pip install pycodestyle
+		else
+			cpfunc
+		fi
+
+	elif [[ "$WHICH" =~ 'c' ]]; then
+		if [[ "$ZERO" =~ "yes" ]]; then
+			bLinter
+		elif [[ "$RES" =~ "1" ]]; then
+			cpfunc
+			sudo apt install pycodestyle
+		else
+			cpfunc
 		fi
 	else
-		wrongput
+		cp "$HODN/$DFILENAME" "$SDIR/$DFILENAME"
+	fi
+}
+
+#...5a.................. #
+bLinter()
+{
+	mkdir -p tempo
+	cd tempo
+	git clone https://github.com/alx-tools/Betty.git
+
+	if [[ "$WHICH" =~ 'p' ]]; then
+		echo -e "$(pwd)"
+		git clone https://github.com/DafetiteOgaga/betty_wrapper.git
+		cp betty_wrapper/phone-betty.sh betty_wrapper/phone-install.sh Betty
+		cd Betty
+		./phone-install.sh
+
+	elif [[ "$WHICH" =~ 'c' ]]; then
+		cd Betty
+		sudo ./install.sh
+	fi
+	cd ../..
+	rm -rf tempo
+}
+
+#...6.................. #
+instructn()
+{
+	echo -e "Now, RESTART YOUR TERMINAL or START A NEW SESSION."
+
+	if [[ $RES =~ "0" ]]; then
+		echo -e "$STRT check your source files. $ANYWHERE: $DFILENAME <filename(s)>"
+	elif [[ $RES =~ "1" ]]; then
+		echo -e "$STRT check your python files. $ANYWHERE: $DFILENAME <filename(s)>"
+	elif [[ $RES =~ "a" ]]; then
+		echo -e "$STRT push(sync) to github. $ANYWHERE: $DFILENAME"
+	elif [[ $RES =~ "b" ]]; then
+		echo -e "$STRT pull from github. $ANYWHERE: $DFILENAME"
+	elif [[ $RES =~ "c" ]]; then
+		echo -e "$STRT create a github repo right from your terminal. $ANYWHERE: $DFILENAME"
+	elif [[ $RES =~ "d" ]]; then
+		echo -e "$STRT clone repos from github. $ANYWHERE: $DFILENAME"
+	elif [[ $RES =~ "e" ]]; then
+		echo -e "$STRT compile your files $EFFT $ANYWHERE: $DFILENAME <filename>"
+	elif [[ $RES =~ "f" ]]; then
+		echo -e "$STRT create default C source file templates $EFFT $ANYWHERE: $DFILENAME <filename>"
+	elif [[ $RES =~ "g" ]]; then
+		echo -e "$STRT clear your screen $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $RES =~ "h" ]]; then
+		echo -e "$STRT configure your GitHub identity both globally and locally within your environment $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $RES =~ "i" ]]; then
+		echo -e "$STRT check your python file with line details $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
+	elif [[ $RES =~ "j" ]]; then
+		echo -e "$STRT compile your python scripts to a .pyc $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
+	# ............................................................ #
+	elif [[ $RES =~ "k" ]]; then
+		echo -e "$STRT play guessing game $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $RES =~ "l" ]]; then
+		echo -e "$STRT encode and decode your texts with Rot13 $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $RES =~ "m" ]]; then
+		echo -e "$STRT encode and decode your texts with Rot47 $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $RES =~ "n" ]]; then
+		echo -e "$STRT check the ASCII table $EFFT $ANYWHERE: $DFILENAME"
 	fi
 }
 
@@ -445,6 +530,8 @@ read WHICH
 #...main operation.................. #
 
 #...options display.................. #
+
+#...1.................. #
 count=0
 while [[ "$UINPUT" != [nN] ]]; do
 	page=1
@@ -499,7 +586,7 @@ while [[ "$UINPUT" != [nN] ]]; do
 					((page--))
 				fi
 				;;
-			a|b|c|d|e|f|g|h|i|j|k|l|A|B|C|D|E|F|G|H|I|J|K|L)
+			0|1|a|b|c|d|e|f|g|h|i|j|k|l|m|n|A|B|C|D|E|F|G|H|I|J|K|L|M|N)
 				echo -n "$OPTION"
 				break
 				;;
