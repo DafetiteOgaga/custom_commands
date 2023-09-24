@@ -10,14 +10,18 @@
 #### **2. cd into the repository**
 #### **3. while you are inside the repository, run `./setScript.sh` to install the various custom commands on your computer/phone such as:**
 
+ * betty command
+ * pycode command
  * push(sync) command
  * pull command
  * create repo a command(Without opening the github website)
  * clone repo a command
- * compile command (with options including common flags)
+ * source files compile command (with options)
  * default C source file template command
  * cls command to clear
  * Github Author Identity(Global and Local) command
+ * pycodemore command
+ * pycompile command
  * Guessing Game command(To unwind)
  * Rot13 Cipher command
  * Rot47 Cipher command
