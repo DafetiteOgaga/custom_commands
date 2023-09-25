@@ -211,7 +211,7 @@ dOptions=(
 	"[k] or [K] - $SUP a Guessing Game command(To unwind)"
 	"[l] or [L] - $SUP a Rot13 Cipher command"
 	"[m] or [M] - $SUP a Rot47 Cipher command"
-	"[n] or [N] - $SUP a simple ASCII table command"
+	"[o] or [O] - $SUP a simple ASCII table command"
 )
 
 #...................................................... #
@@ -251,15 +251,15 @@ options()
 		RES="l"
 	elif [[ $OPTION =~ [mM] ]]; then
 		RES="m"
-	elif [[ $OPTION =~ [nN] ]]; then
-		RES="n"
+	elif [[ $OPTION =~ [oO] ]]; then
+		RES="o"
 	fi
 
 	#....tags............................. #
 	
 	if [[ $RES =~ [01abcdefghij] ]]; then
 		FILETYPE="script"
-	elif [[ $RES =~ [klmn] ]]; then
+	elif [[ $RES =~ [klmo] ]]; then
 		FILETYPE="cfile"
 	fi
 }
@@ -309,7 +309,7 @@ opertn()
 			DFILENAME="rot13"
 		elif [[ $RES =~ "m" ]]; then
 			DFILENAME="rot47"
-		elif [[ $RES =~ "n" ]]; then
+		elif [[ $RES =~ "o" ]]; then
 			DFILENAME="myascii"
 		else
 			echo -e "You can only choose from the options provided"
@@ -400,7 +400,7 @@ opertn()
 			scptcpy
 		elif [[ $RES =~ "m" ]]; then
 			scptcpy
-		elif [[ $RES =~ "n" ]]; then
+		elif [[ $RES =~ "o" ]]; then
 			scptcpy
 		fi
 
@@ -508,7 +508,7 @@ instructn()
 		echo -e "$STRT encode and decode your texts with Rot13 $EFFT $ANYWHERE: $DFILENAME"
 	elif [[ $RES =~ "m" ]]; then
 		echo -e "$STRT encode and decode your texts with Rot47 $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $RES =~ "n" ]]; then
+	elif [[ $RES =~ "o" ]]; then
 		echo -e "$STRT check the ASCII table $EFFT $ANYWHERE: $DFILENAME"
 	fi
 }
@@ -586,7 +586,7 @@ while [[ "$UINPUT" != [nN] ]]; do
 					((page--))
 				fi
 				;;
-			0|1|a|b|c|d|e|f|g|h|i|j|k|l|m|n|A|B|C|D|E|F|G|H|I|J|K|L|M|N)
+			0|1|a|b|c|d|e|f|g|h|i|j|k|l|m|o|A|B|C|D|E|F|G|H|I|J|K|L|M|O)
 				echo -n "$OPTION"
 				break
 				;;
