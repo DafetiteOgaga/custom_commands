@@ -72,6 +72,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Fixes
+	- Fixed bugs in "[n] option display and selection"
 	- Fixed bugs in ctemp command
 	- Fixed exec: format errors caused by variation in operating system architectures for both phones and computers
 	- Commands creation now runs contineously until you quit the process
