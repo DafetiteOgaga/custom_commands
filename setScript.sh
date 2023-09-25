@@ -195,8 +195,8 @@ intro()
 
 dOptions=(
     #...Script files.................. #
-	"[0] - $SUP the \"pycodestyle\" code compliance checker command"
-	"[1] - install and $SUP the \"pycodestyle\" \"pycode\" command"
+	"[0] - install and $SUP the \"betty\" code compliance checker command"
+	"[1] - install and $SUP the \"pycodestyle (PEP 8)\" as \"pycode\" command"
 	"[a] or [A] - $SUP push(sync) command"
 	"[b] or [B] - $SUP pull command"
 	"[c] or [C] - $SUP createRepo command(Without opening the github website)"
