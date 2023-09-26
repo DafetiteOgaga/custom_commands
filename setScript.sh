@@ -538,7 +538,7 @@ read WHICH
 count=0
 while [[ "$UINPUT" != [nN] ]]; do
 	page=1
-	items_per_page=7
+	items_per_page=10
 
 	while true; do
 		clear
