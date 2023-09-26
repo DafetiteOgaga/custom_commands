@@ -453,6 +453,7 @@ scptcpy()
 #...5a.................. #
 bLinter()
 {
+	echo -e ""
 	mkdir -p tempo
 	cd tempo
 	git clone https://github.com/alx-tools/Betty.git
