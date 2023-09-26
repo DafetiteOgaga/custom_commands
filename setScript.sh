@@ -458,13 +458,15 @@ bLinter()
 	git clone https://github.com/alx-tools/Betty.git
 
 	if [[ "$WHICH" =~ 'p' ]]; then
-		echo -e "$(pwd)"
+		echo -e ""
 		git clone https://github.com/DafetiteOgaga/betty_wrapper.git
 		cp betty_wrapper/phone-betty.sh betty_wrapper/phone-install.sh Betty
+		echo -e ""
 		cd Betty
 		./phone-install.sh
 
 	elif [[ "$WHICH" =~ 'c' ]]; then
+		echo -e ""
 		cd Betty
 		sudo ./install.sh
 	fi
