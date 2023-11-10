@@ -10,7 +10,7 @@
 #### **2. cd into the repository**
 #### **3. while you are inside the repository, run `./setScript.sh` to install the various custom commands on your computer/phone such as:**
 
-## Note: **You can view all your custom commands by running `custom_commands` from anywhere on your terminal**
+### Note: **You can view all your custom commands by running `custom_commands` from anywhere on your terminal**
 
 **Install:**
  * and use Betty linter(betty command)
