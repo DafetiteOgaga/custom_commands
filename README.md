@@ -38,6 +38,7 @@ Depending on the command, the usage instruction for that command is provided aft
 This file contains the notable changes made to the Custom Commands project.
 
 ## New
+	- Added curfol command. This automatically opens the current working directory in file explorer
 	- Added support for multiple arguments for pycode, pycodemore and pycompile commands
 	- pycompile command that compiles python codes to .pyc executables
 	- pycodemore command a detailed version of pycode (according to EP 8 conventions)

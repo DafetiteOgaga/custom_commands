@@ -1,0 +1,5 @@
+#!/bin/bash
+echo ""
+echo "Wait for it..."
+explorer.exe .
+echo -e "....................Done....................\n"

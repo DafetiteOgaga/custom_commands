@@ -207,11 +207,12 @@ dOptions=(
 	"[h] or [H] - $SUP Github Author Identity(Global and Local) command"
 	"[i] or [I] - $SUP \"pycodemore\" command(pycode with details)"
 	"[j] or [J] - $SUP python file compile command"
+	"[k] or [K] - $SUP curfol(current folder) command -opens it in file explorer"
 	# #...C files....................... #
-	"[k] or [K] - $SUP a Guessing Game command(To unwind)"
-	"[l] or [L] - $SUP a Rot13 Cipher command"
-	"[m] or [M] - $SUP a Rot47 Cipher command"
-	"[o] or [O] - $SUP a simple ASCII table command"
+	"[l] or [L] - $SUP a Guessing Game command(To unwind)"
+	"[m] or [M] - $SUP a Rot13 Cipher command"
+	"[o] or [O] - $SUP a Rot47 Cipher command"
+	"[r] or [R] - $SUP a simple ASCII table command"
 )
 
 #...................................................... #
@@ -244,22 +245,24 @@ options()
 		RES="i"
 	elif [[ $OPTION =~ [jJ] ]]; then
 		RES="j"
-	# ............................................................ #
 	elif [[ $OPTION =~ [kK] ]]; then
 		RES="k"
+	# ............................................................ #
 	elif [[ $OPTION =~ [lL] ]]; then
 		RES="l"
 	elif [[ $OPTION =~ [mM] ]]; then
 		RES="m"
 	elif [[ $OPTION =~ [oO] ]]; then
 		RES="o"
+	elif [[ $OPTION =~ [rR] ]]; then
+		RES="r"
 	fi
 
 	#....tags............................. #
 	
-	if [[ $RES =~ [01abcdefghij] ]]; then
+	if [[ $RES =~ [01abcdefghijk] ]]; then
 		FILETYPE="script"
-	elif [[ $RES =~ [klmo] ]]; then
+	elif [[ $RES =~ [lmor] ]]; then
 		FILETYPE="cfile"
 	fi
 }
@@ -302,14 +305,16 @@ opertn()
 			DFILENAME="pycodemore"
 		elif [[ $RES =~ "j" ]]; then
 			DFILENAME="pycompile"
-		# ............................................................ #
 		elif [[ $RES =~ "k" ]]; then
-			DFILENAME="guessGame"
+			DFILENAME="curfol"
+		# ............................................................ #
 		elif [[ $RES =~ "l" ]]; then
-			DFILENAME="rot13"
+			DFILENAME="guessGame"
 		elif [[ $RES =~ "m" ]]; then
-			DFILENAME="rot47"
+			DFILENAME="rot13"
 		elif [[ $RES =~ "o" ]]; then
+			DFILENAME="rot47"
+		elif [[ $RES =~ "r" ]]; then
 			DFILENAME="myascii"
 		else
 			echo -e "You can only choose from the options provided"
@@ -393,14 +398,16 @@ opertn()
 			scptcpy
 		elif [[ $RES =~ "j" ]]; then
 			scptcpy
-		# ............................................................ #
 		elif [[ $RES =~ "k" ]]; then
 			scptcpy
+		# ............................................................ #
 		elif [[ $RES =~ "l" ]]; then
 			scptcpy
 		elif [[ $RES =~ "m" ]]; then
 			scptcpy
 		elif [[ $RES =~ "o" ]]; then
+			scptcpy
+		elif [[ $RES =~ "r" ]]; then
 			scptcpy
 		fi
 
@@ -504,14 +511,16 @@ instructn()
 		echo -e "$STRT check your python file with line details $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
 	elif [[ $RES =~ "j" ]]; then
 		echo -e "$STRT compile your python scripts to a .pyc $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
-	# ............................................................ #
 	elif [[ $RES =~ "k" ]]; then
-		echo -e "$STRT play guessing game $EFFT $ANYWHERE: $DFILENAME"
+		echo -e "$STRT open your current working directory $EFFT $ANYWHERE: $DFILENAME"
+	# ............................................................ #
 	elif [[ $RES =~ "l" ]]; then
-		echo -e "$STRT encode and decode your texts with Rot13 $EFFT $ANYWHERE: $DFILENAME"
+		echo -e "$STRT play guessing game $EFFT $ANYWHERE: $DFILENAME"
 	elif [[ $RES =~ "m" ]]; then
-		echo -e "$STRT encode and decode your texts with Rot47 $EFFT $ANYWHERE: $DFILENAME"
+		echo -e "$STRT encode and decode your texts with Rot13 $EFFT $ANYWHERE: $DFILENAME"
 	elif [[ $RES =~ "o" ]]; then
+		echo -e "$STRT encode and decode your texts with Rot47 $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $RES =~ "r" ]]; then
 		echo -e "$STRT check the ASCII table $EFFT $ANYWHERE: $DFILENAME"
 	fi
 }
@@ -589,7 +598,7 @@ while [[ "$UINPUT" != [nN] ]]; do
 					((page--))
 				fi
 				;;
-			0|1|a|b|c|d|e|f|g|h|i|j|k|l|m|o|A|B|C|D|E|F|G|H|I|J|K|L|M|O)
+			0|1|a|b|c|d|e|f|g|h|i|j|k|l|m|o|r|A|B|C|D|E|F|G|H|I|J|K|L|M|O|R)
 				echo -n "$OPTION"
 				break
 				;;
