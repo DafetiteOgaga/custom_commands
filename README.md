@@ -10,6 +10,9 @@
 #### **2. cd into the repository**
 #### **3. while you are inside the repository, run `./setScript.sh` to install the various custom commands on your computer/phone such as:**
 
+**Note:**
+#### **You can view all your custom commands by running `custom_commands` from anywhere on your terminal**
+
 **Install:**
  * and use Betty linter(betty command)
  * and use pycodestyle(as pycode command)
@@ -38,6 +41,7 @@ Depending on the command, the usage instruction for that command is provided aft
 This file contains the notable changes made to the Custom Commands project.
 
 ## New
+	- Added custom_commands as a command that displays all of the commands created so far
 	- Added curfol command. This automatically opens the current working directory in file explorer
 	- Added support for multiple arguments for pycode, pycodemore and pycompile commands
 	- pycompile command that compiles python codes to .pyc executables

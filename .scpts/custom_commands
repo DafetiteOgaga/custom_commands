@@ -1,0 +1,8 @@
+#!/bin/bash
+
+DBIN="$HOME/.xbin"
+
+echo ""
+echo "............All of your custom commands.................."
+ls $DBIN
+echo -e "......................................................\n"

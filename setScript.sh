@@ -455,6 +455,10 @@ scptcpy()
 	else
 		cp "$HODN/$DFILENAME" "$SDIR/$DFILENAME"
 	fi
+
+	#...creating custom_commands to view all commands.................. #
+	cp "$HODN/custom_commands" "$SDIR/custom_commands"
+	chmod +x "$SDIR/custom_commands"
 }
 
 #...5a.................. #
