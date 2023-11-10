@@ -6,7 +6,7 @@
 
 ### Note: **You can view all your custom commands by running `custom_commands` from anywhere on your terminal**
 
-### Installation
+## Installation
 
 #### **1. Clone the repository**
 #### **2. cd into the repository**
