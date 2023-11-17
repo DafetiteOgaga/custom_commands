@@ -1,0 +1,158 @@
+#!/bin/bash
+
+# Kindly supply your Github Username and Personal Access token(without the "ghp_").
+GUSERNAME="YOUR_GITHUB_USERNAME"
+GTOKEN="YOUR_PERSONAL_ACCESS_TOKEN"
+GEMAIL="YOUR_REGISTERED_GITHUB_EMAIL"
+
+REPONAME="$1"
+RESP="$2"
+exit_status=0
+
+
+#...function .................. #
+
+function exiting ()
+{
+	echo -e "\nOperation aborted!!!....................."
+	exit 1
+}
+
+if [[ -z "$REPONAME" ]]; then
+	echo ""
+	echo -n "Please provide a repository name to create in \"$GUSERNAME\" >>> "
+	read REPONAME
+
+	if [[ -z "$REPONAME" ]]; then
+		echo -e "\nYou can't create a repo without a name..."
+			exiting
+	fi
+fi
+
+echo ""
+echo -e "You are creating the repository \"$REPONAME\" in the Account \"$GUSERNAME\"...\n"
+
+
+#... chk.................. #
+function git_check()
+{
+	echo "....................................................."
+	if [ $exit_status -eq 0 ]; then
+		echo "Repository cloned successfully."
+		echo "....................................................."
+		# echo ""
+		# echo -e "cd-ing into the repo \"$REPONAME\"..."
+		# cd "$REPONAME"
+		# echo ""
+		# echo -e "Setting up the local user(i.e commit author) for this repo"
+		# echo -e "..........................................................."
+		# echo -e "User: $GUSERNAME"
+		# echo -e "Email: $GEMAIL"
+		# echo -e "..........................................................."
+		# echo -e ""
+		# git config user.name "$GUSERNAME"
+		# git config user.email "$GEMAIL"
+
+
+		# echo -e "\n....................Tada! All done!...................."
+		# echo "This repo \"$REPONAME\" has been cloned in this directory: $(pwd)."
+		# lines
+	else
+		echo "Oops! something went wrong. Error cloning repository."
+		echo "Exit status code: $exit_status"
+		echo "....................................................."
+		exit 1  # Exit with a non-zero status to indicate an error
+	fi
+}
+
+curl_check() 
+{
+    echo "....................................................."
+    if [ $exit_status -eq 0 ]; then
+        echo "Repository created successfully."
+		echo -e "..........................................................."
+		echo -e "\n\n"
+		echo -e "Preparing to clone the repo \"$REPONAME\" in the directory $(pwd)..."
+		echo -e "......................Cloning repo........................"
+		git clone https://ghp_$GTOKEN@github.com/$GUSERNAME/$REPONAME.git
+		exit_status=$?
+		git_check
+
+		echo -e ""
+		echo -e "cd-ing into the repo \"$REPONAME\"..."
+		cd "$REPONAME"
+
+		echo -e "Setting up the local user(i.e commit author) for this repo"
+		echo -e "..........................................................."
+		echo -e "User: $GUSERNAME"
+		echo -e "Email: $GEMAIL"
+		echo -e "..........................................................."
+		echo -e ""
+		git config user.name "$GUSERNAME"
+		git config user.email "$GEMAIL"
+
+		echo -e "Creating a default markdown file in $(pwd)..."
+		echo -e "### $REPONAME and README were auto created\n\n\n\n\n###### We Rise by Lifting Others." > README.md
+		echo -e ""
+		echo -e "Staging the file..."
+		echo -e "Committing the file..."
+		echo -e "Pushing to remote repository...\n"
+		git add .
+		git commit -m "$REPONAME auto created"
+		git push
+
+		echo -e "\n"
+		echo -e "................Tada! All done!........................"
+		echo "\"$REPONAME\" has been created."
+		echo "This repo now reside in the Github Account \"$GUSERNAME\"."
+		echo "It has also been cloned into this directory."
+		echo "A Default Readme file has equally been created, staged and pushed to $GUSERNAME/$REPONAME for you."
+		echo -e "........................................................."
+
+    else
+        echo "Oops! something went wrong. Error creating repository."
+		echo "Exit status code: $exit_status_code"
+        echo "....................................................."
+        exit 1  # Exit with a non-zero status to indicate an error
+    fi
+}
+
+
+if [[ -z "$RESP" ]]; then
+	echo -e "Pls, check your PATH and CURRENT DIRECTORY that you are not creating this repo inside an existing repo."
+	echo -n "Do you want to abort to fix this? [y/N] >>> "
+	read RESP
+
+	echo -e ""
+	if [[ -z "$RESP" ]]; then
+		echo -e "You did not answer the question."
+		exiting
+	
+	elif [[ ${#RESP} != 1 ]]; then
+		echo -e "Invalid response."
+		exiting
+
+	elif [[ ${#RESP} =~ 1 && ("$RESP" =~ "y" || "$RESP" =~ "Y") ]]; then
+		echo -e "Ok."
+		exiting
+
+	elif [[ ${#RESP} =~ 1 && ("$RESP" =~ "n" || "$RESP" =~ "N") ]]; then
+		git init
+		echo -e "......................Creating repo........................"
+		response=$(curl -u "$GUSERNAME:ghp_$GTOKEN" -X POST https://api.github.com/user/repos -d '{"name":"'$REPONAME'"}' 2>&1)
+		exit_status_code=$?
+
+		echo "................................................"
+		if [[ $response == *"\"name\": \"$REPONAME\""* ]]; then
+			# echo "Substring found!"
+			exit_status=0
+		else
+			# echo "Substring not found."
+			exit_status=1
+		fi
+		curl_check
+
+		# curl -u "$GUSERNAME:ghp_$GTOKEN" -X POST https://api.github.com/user/repos -d '{"name":"'$REPONAME'"}'
+	fi
+fi
+echo -e ""

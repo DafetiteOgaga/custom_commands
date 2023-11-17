@@ -13,6 +13,7 @@ RESP="$5"
 TOKEN="$6"
 REPONAME="$7"
 NUM1=36
+exit_status=0
 
 #...functions .................. #
 
@@ -122,29 +123,47 @@ if [ -z "$REPONAME" ]; then
 fi
 echo -e "\nYou are now cloning the repository \"$REPONAME\" in the account \"$AUSERNAME\"...\n"
 
+# ........................................................................... X
+function git_check()
+{
+	echo "....................................................."
+	if [ $exit_status -eq 0 ]; then
+		echo "Repository cloned successfully."
+		echo "....................................................."
+		echo ""
+		echo -e "cd-ing into the repo \"$REPONAME\"..."
+		cd "$REPONAME"
+		echo ""
+		echo -e "Setting up the local user(i.e commit author) for this repo"
+		echo -e "..........................................................."
+		echo -e "User: $GUSERNAME"
+		echo -e "Email: $GEMAIL"
+		echo -e "..........................................................."
+		echo -e ""
+		git config user.name "$GUSERNAME"
+		git config user.email "$GEMAIL"
+
+
+		echo -e "\n....................Tada! All done!...................."
+		echo "This repo \"$REPONAME\" has been cloned in this directory: $(pwd)."
+		lines
+	else
+		echo "Oops! something went wrong. Error cloning repository."
+		echo "Exit status code: $exit_status"
+		echo "....................................................."
+		exit 1  # Exit with a non-zero status to indicate an error
+	fi
+}
+# ........................................................................... X
+
 echo -e "......................Cloning repo........................"
 if [ -z "$TOKEN" ]; then
 	git clone https://github.com/$AUSERNAME/$REPONAME.git
+	exit_status=$?
 else
 	git clone https://ghp_$TOKEN@github.com/$AUSERNAME/$REPONAME.git
+	exit_status=$?
 fi
 
-echo ""
-echo -e "cd-ing into the repo \"$REPONAME\"..."
-cd "$REPONAME"
-echo ""
-echo -e "Setting up the local user(i.e commit author) for this repo"
-echo -e "..........................................................."
-echo -e "User: $GUSERNAME"
-echo -e "Email: $GEMAIL"
-echo -e "..........................................................."
-echo -e ""
-git config user.name "$GUSERNAME"
-git config user.email "$GEMAIL"
+git_check
 
-
-echo -e "\n....................Tada! All done!...................."
-echo "This repo \"$REPONAME\" has been cloned in this directory: $(pwd)."
-lines
-echo "NOTE: If you accidentally supplied inaccurate informaion. The repo will NOT be cloned regardless of the successful execution of this program."
-lines

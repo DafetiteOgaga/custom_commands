@@ -157,10 +157,14 @@ unametokenmaill()
 
 cpfunc()
 {
-	if [[ "$WHICH" =~ 'p' ]]; then
-		cp "$HODN/phone/$DFILENAME" "$SDIR/$DFILENAME"
-	elif [[ "$WHICH" =~ 'c' ]]; then
-		cp "$HODN/pc/$DFILENAME" "$SDIR/$DFILENAME"
+	if [[ "$FILETYPE" =~ "script" ]]; then
+		cp "$HODN/$DFILENAME" "$SDIR/$DFILENAME"
+	elif [[ "$FILETYPE" =~ "cfile" ]]; then
+		if [[ "$WHICH" =~ 'p' ]]; then
+			cp "$HODN/phone/$DFILENAME" "$SDIR/$DFILENAME"
+		elif [[ "$WHICH" =~ 'c' ]]; then
+			cp "$HODN/pc/$DFILENAME" "$SDIR/$DFILENAME"
+		fi
 	fi
 }
 
@@ -375,7 +379,7 @@ opertn()
 		if [[ $RES =~ "0" ]]; then
 			scptcpy
 		elif [[ $RES =~ "1" ]]; then
-			scptcpy
+			scptcpy "1"
 		elif [[ $RES =~ "a" ]]; then
 			scptcpy
 		elif [[ $RES =~ "b" ]]; then
@@ -395,7 +399,7 @@ opertn()
 		elif [[ $RES =~ "h" ]]; then
 			scptcpy
 		elif [[ $RES =~ "i" ]]; then
-			scptcpy
+			scptcpy "i"
 		elif [[ $RES =~ "j" ]]; then
 			scptcpy
 		elif [[ $RES =~ "k" ]]; then
@@ -422,6 +426,13 @@ opertn()
 scptcpy()
 {
 	local ZERO
+	local pyarname="$1"
+	# for pycodemore command installation
+	if [[ $pyarname =~ "i" || $pyarname =~ "1" ]]; then
+		GO="go"
+	else
+		GO="dont"
+	fi
 
 	if [[ $RES =~ "0" ]]; then
 		ZERO="yes"
@@ -436,7 +447,7 @@ scptcpy()
 	if [[ "$WHICH" =~ 'p' ]]; then
 		if [[ "$ZERO" =~ "yes" ]]; then
 			bLinter
-		elif [[ "$RES" =~ "1" ]]; then
+		elif [[ "$GO" =~ "go" ]]; then
 			cpfunc
 			pip install pycodestyle
 		else
@@ -446,14 +457,14 @@ scptcpy()
 	elif [[ "$WHICH" =~ 'c' ]]; then
 		if [[ "$ZERO" =~ "yes" ]]; then
 			bLinter
-		elif [[ "$RES" =~ "1" ]]; then
+		elif [[ "$GO" =~ "go" ]]; then
 			cpfunc
 			sudo apt install pycodestyle
 		else
 			cpfunc
 		fi
-	else
-		cp "$HODN/$DFILENAME" "$SDIR/$DFILENAME"
+	# else
+	# 	cp "$HODN/$DFILENAME" "$SDIR/$DFILENAME"
 	fi
 
 	#...creating custom_commands to view all commands.................. #

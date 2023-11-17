@@ -76,6 +76,10 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Fixes
+	- Fixed bugs in createRepo command"
+	- Fixed scripts repetition for PCs and Phones"
+	- Fixed bugs in cloneRepo command"
+	- Fixed bugs preventing pycodemore command from working due to pycodestyle"
 	- Fixed bugs in "[n] option display and selection"
 	- Fixed bugs in ctemp command
 	- Fixed exec: format errors caused by variation in operating system architectures for both phones and computers
