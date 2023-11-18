@@ -13,6 +13,7 @@
 #### **3. while you are inside the repository, run `./setScript.sh` to install the various custom commands on your computer/phone such as:**
 
 **Install:**
+ * custom_command (This command is installed automatically for you) - displays all the custom commands installed on your machine
  * and use Betty linter(betty command)
  * and use pycodestyle(as pycode command)
  * push(sync) command
@@ -25,6 +26,7 @@
  * Github Author Identity(Global and Local) command
  * pycodemore command
  * pycompile command
+ * curfol - opens the current directory in explorer
  * Guessing Game command(To unwind)
  * Rot13 Cipher command
  * Rot47 Cipher command
