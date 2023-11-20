@@ -40,23 +40,6 @@ function git_check()
 	if [ $exit_status -eq 0 ]; then
 		echo "Repository cloned successfully."
 		echo "....................................................."
-		# echo ""
-		# echo -e "cd-ing into the repo \"$REPONAME\"..."
-		# cd "$REPONAME"
-		# echo ""
-		# echo -e "Setting up the local user(i.e commit author) for this repo"
-		# echo -e "..........................................................."
-		# echo -e "User: $GUSERNAME"
-		# echo -e "Email: $GEMAIL"
-		# echo -e "..........................................................."
-		# echo -e ""
-		# git config user.name "$GUSERNAME"
-		# git config user.email "$GEMAIL"
-
-
-		# echo -e "\n....................Tada! All done!...................."
-		# echo "This repo \"$REPONAME\" has been cloned in this directory: $(pwd)."
-		# lines
 	else
 		echo "Oops! something went wrong. Error cloning repository."
 		echo "Exit status code: $exit_status"
@@ -71,7 +54,7 @@ curl_check()
     if [ $exit_status -eq 0 ]; then
         echo "Repository created successfully."
 		echo -e "..........................................................."
-		echo -e "\n\n"
+		echo -e ""
 		echo -e "Preparing to clone the repo \"$REPONAME\" in the directory $(pwd)..."
 		echo -e "......................Cloning repo........................"
 		git clone https://ghp_$GTOKEN@github.com/$GUSERNAME/$REPONAME.git
@@ -142,12 +125,10 @@ if [[ -z "$RESP" ]]; then
 		response=$(curl -u "$GUSERNAME:ghp_$GTOKEN" -X POST https://api.github.com/user/repos -d '{"name":"'$REPONAME'"}' 2>&1)
 		exit_status_code=$?
 
-		echo "................................................"
+		# echo "................................................"
 		if [[ $response == *"\"name\": \"$REPONAME\""* ]]; then
-			# echo "Substring found!"
 			exit_status=0
 		else
-			# echo "Substring not found."
 			exit_status=1
 		fi
 		curl_check
