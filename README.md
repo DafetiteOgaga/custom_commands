@@ -4,13 +4,19 @@
 ![Main menu page 1](.main_menu.jpg)
 ![Main menu page 2](.main_menu2.jpg)
 
-### Note: **You can view all your custom commands by running `custom_commands` from anywhere on your terminal**
+### Note: **You can view all your custom commands by running `custom_commands` on your terminal**
 
 # Installation
 
 #### **1. Clone the repository**
+   ```
+   git clone https://github.com/DafetiteOgaga/custom_commands.git
+   ```
 #### **2. cd into the repository**
-#### **3. while you are inside the repository, run `./setScript.sh` to install the various custom commands on your computer/phone such as:**
+   ```
+   cd custom_commands
+   ```
+#### **3. Then, run `./setScript.sh` to access various commands that you can install on your computer/phone such as:**
 
 **Install:**
  * custom_command (This command is installed automatically for you) - displays all the custom commands installed on your machine
@@ -98,8 +104,5 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 
-
-##### This is a collection of some of the programs that I have written so far since I joined ALX.
-##### I believe automating some of the processes we carry out everyday when solving projects/tasks is essential for growth. Hence, why I am sharing.
 
 ###### We Rise by Lifting Others.
