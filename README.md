@@ -41,7 +41,7 @@
    * Rot47 Cipher command
    * simple ASCII table command
 
-
+<br>
 ### Usage
 
 Depending on the command, the usage instruction for that command is provided after its successful installation.
