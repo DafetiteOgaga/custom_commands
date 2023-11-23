@@ -20,9 +20,8 @@
    ```
    ./setScript.sh
    ```
-   **to access various commands that you can install on your computer/phone such as:**
+   ### **to access various commands that you can install on your computer/phone such as:**
 
-   **Install:**
    * custom_command (This command is installed automatically for you) - displays all the custom commands installed on your machine
    * and use Betty linter(betty command)
    * and use pycodestyle(as pycode command)
