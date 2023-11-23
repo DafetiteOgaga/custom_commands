@@ -12,11 +12,11 @@
    ```
    git clone https://github.com/DafetiteOgaga/custom_commands.git
    ```
-#### **2. cd into the repository:**
+#### 2. **cd into the repository:**
    ```
    cd custom_commands
    ```
-#### **3. Then, run:
+3. ### **Then, run:
    ```
    ./setScript.sh
    ```
