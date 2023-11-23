@@ -47,6 +47,7 @@
 
 Depending on the command, the usage instruction for that command is provided after its successful installation.
 
+<br>
 
 # Changelog
 This file contains the notable changes made to the Custom Commands project.
