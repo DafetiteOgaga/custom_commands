@@ -8,35 +8,39 @@
 
 # Installation
 
-#### **1. Clone the repository**
+   #### **1. Clone the repository:**
    ```
    git clone https://github.com/DafetiteOgaga/custom_commands.git
    ```
-#### **2. cd into the repository**
+   #### **2. cd into the repository:**
    ```
    cd custom_commands
    ```
-#### **3. Then, run `./setScript.sh` to access various commands that you can install on your computer/phone such as:**
+   #### **3. Then, run:
+   ```
+   ./setScript.sh
+   ```
+   to access various commands that you can install on your computer/phone such as:**
 
-**Install:**
- * custom_command (This command is installed automatically for you) - displays all the custom commands installed on your machine
- * and use Betty linter(betty command)
- * and use pycodestyle(as pycode command)
- * push(sync) command
- * pull command
- * createRepo command(Without opening the github website)
- * cloneRepo command
- * source files compile command (with options)
- * default C source file template command
- * cls command to clear your terminal
- * Github Author Identity(Global and Local) command
- * pycodemore command
- * pycompile command
- * curfol - opens the current directory in explorer
- * Guessing Game command(To unwind)
- * Rot13 Cipher command
- * Rot47 Cipher command
- * simple ASCII table command
+   **Install:**
+    * custom_command (This command is installed automatically for you) - displays all the custom commands installed on your machine
+    * and use Betty linter(betty command)
+    * and use pycodestyle(as pycode command)
+    * push(sync) command
+    * pull command
+    * createRepo command(Without opening the github website)
+    * cloneRepo command
+    * source files compile command (with options)
+    * default C source file template command
+    * cls command to clear your terminal
+    * Github Author Identity(Global and Local) command
+    * pycodemore command
+    * pycompile command
+    * curfol - opens the current directory in explorer
+    * Guessing Game command(To unwind)
+    * Rot13 Cipher command
+    * Rot47 Cipher command
+    * simple ASCII table command
 
 
 ### Usage
