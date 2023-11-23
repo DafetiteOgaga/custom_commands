@@ -42,6 +42,7 @@
    * simple ASCII table command
 
 <br>
+
 ### Usage
 
 Depending on the command, the usage instruction for that command is provided after its successful installation.
@@ -49,6 +50,8 @@ Depending on the command, the usage instruction for that command is provided aft
 
 # Changelog
 This file contains the notable changes made to the Custom Commands project.
+
+<br>
 
 ## New
 	- Added custom_commands as a command that displays all of the commands created so far
