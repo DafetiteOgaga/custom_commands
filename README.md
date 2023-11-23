@@ -8,21 +8,21 @@
 
 # Installation
 
-   1. Clone the repository:
+1. Clone the repository:
    ```
    git clone https://github.com/DafetiteOgaga/custom_commands.git
    ```
-   #### **2. cd into the repository:**
+#### **2. cd into the repository:**
    ```
    cd custom_commands
    ```
-   #### **3. Then, run:
+#### **3. Then, run:
    ```
    ./setScript.sh
    ```
    to access various commands that you can install on your computer/phone such as:**
 
-   **Install:**
+**Install:**
     * custom_command (This command is installed automatically for you) - displays all the custom commands installed on your machine
     * and use Betty linter(betty command)
     * and use pycodestyle(as pycode command)
