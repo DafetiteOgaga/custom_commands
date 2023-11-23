@@ -74,6 +74,8 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Changes
+	- Readme file was updated
+	- "from" word was removed from the parting message after installation
 	- Change to multiple display in pages and its navigation
 	- Minor changes made to guessing game, rot13, rot47 and my ascii codes to enhance performance
 	- clone and create repo commands now collect users information during installation
