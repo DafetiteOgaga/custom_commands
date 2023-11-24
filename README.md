@@ -9,15 +9,15 @@
 # Installation
 
 1. ### **Clone the repository:**
-   ```
+   ```bash
    git clone https://github.com/DafetiteOgaga/custom_commands.git
    ```
 2. ### **cd into the repository:**
-   ```
+   ```bash
    cd custom_commands
    ```
 3. ### **Then, run:**
-   ```
+   ```bash
    ./setScript.sh
    ```
    ### **to access various commands that you can install on your computer/phone such as:**
