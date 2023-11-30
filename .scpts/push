@@ -23,13 +23,13 @@ if [[ -z "$RESP" ]]; then
 fi
 
 echo ""
-echo ".....It's good to pull before pushing. So, I'm pulling........"
+echo ".....pulling ...################################################"
 echo ""
 
 git pull
 
 echo ""
-echo "....................Now, pushing...................."
+echo ".....pushing ...################################################"
 git add .
 git commit -m "$RESP"
 git push
