@@ -212,11 +212,12 @@ dOptions=(
 	"[i] or [I] - $SUP \"pycodemore\" command(pycode with details)"
 	"[j] or [J] - $SUP python file compile command"
 	"[k] or [K] - $SUP curfol(current folder) command -opens it in file explorer"
+	"[l] or [L] - $SUP pyxecute - appends shebang and makes your python files executable"
 	# #...C files....................... #
-	"[l] or [L] - $SUP a Guessing Game command(To unwind)"
-	"[m] or [M] - $SUP a Rot13 Cipher command"
-	"[o] or [O] - $SUP a Rot47 Cipher command"
-	"[r] or [R] - $SUP a simple ASCII table command"
+	"[m] or [M] - $SUP a Guessing Game command(To unwind)"
+	"[o] or [O] - $SUP a Rot13 Cipher command"
+	"[r] or [R] - $SUP a Rot47 Cipher command"
+	"[s] or [S] - $SUP a simple ASCII table command"
 )
 
 #...................................................... #
@@ -251,22 +252,24 @@ options()
 		RES="j"
 	elif [[ $OPTION =~ [kK] ]]; then
 		RES="k"
-	# ............................................................ #
 	elif [[ $OPTION =~ [lL] ]]; then
 		RES="l"
+	# ............................................................ #
 	elif [[ $OPTION =~ [mM] ]]; then
 		RES="m"
 	elif [[ $OPTION =~ [oO] ]]; then
 		RES="o"
 	elif [[ $OPTION =~ [rR] ]]; then
 		RES="r"
+	elif [[ $OPTION =~ [sS] ]]; then
+		RES="s"
 	fi
 
 	#....tags............................. #
 	
-	if [[ $RES =~ [01abcdefghijk] ]]; then
+	if [[ $RES =~ [01abcdefghijkl] ]]; then
 		FILETYPE="script"
-	elif [[ $RES =~ [lmor] ]]; then
+	elif [[ $RES =~ [mors] ]]; then
 		FILETYPE="cfile"
 	fi
 }
@@ -311,14 +314,16 @@ opertn()
 			DFILENAME="pycompile"
 		elif [[ $RES =~ "k" ]]; then
 			DFILENAME="curfol"
-		# ............................................................ #
 		elif [[ $RES =~ "l" ]]; then
-			DFILENAME="guessGame"
+			DFILENAME="pyxecute"
+		# ............................................................ #
 		elif [[ $RES =~ "m" ]]; then
-			DFILENAME="rot13"
+			DFILENAME="guessGame"
 		elif [[ $RES =~ "o" ]]; then
-			DFILENAME="rot47"
+			DFILENAME="rot13"
 		elif [[ $RES =~ "r" ]]; then
+			DFILENAME="rot47"
+		elif [[ $RES =~ "s" ]]; then
 			DFILENAME="myascii"
 		else
 			echo -e "You can only choose from the options provided"
@@ -404,14 +409,16 @@ opertn()
 			scptcpy
 		elif [[ $RES =~ "k" ]]; then
 			scptcpy
-		# ............................................................ #
 		elif [[ $RES =~ "l" ]]; then
 			scptcpy
+		# ............................................................ #
 		elif [[ $RES =~ "m" ]]; then
 			scptcpy
 		elif [[ $RES =~ "o" ]]; then
 			scptcpy
 		elif [[ $RES =~ "r" ]]; then
+			scptcpy
+		elif [[ $RES =~ "s" ]]; then
 			scptcpy
 		fi
 
@@ -528,14 +535,16 @@ instructn()
 		echo -e "$STRT compile your python scripts to a .pyc $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
 	elif [[ $RES =~ "k" ]]; then
 		echo -e "$STRT open your current working directory $EFFT $ANYWHERE: $DFILENAME"
-	# ............................................................ #
 	elif [[ $RES =~ "l" ]]; then
-		echo -e "$STRT play guessing game $EFFT $ANYWHERE: $DFILENAME"
+		echo -e "$STRT turn your file(s) to executable file(s) $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
+	# ............................................................ #
 	elif [[ $RES =~ "m" ]]; then
-		echo -e "$STRT encode and decode your texts with Rot13 $EFFT $ANYWHERE: $DFILENAME"
+		echo -e "$STRT play guessing game $EFFT $ANYWHERE: $DFILENAME"
 	elif [[ $RES =~ "o" ]]; then
-		echo -e "$STRT encode and decode your texts with Rot47 $EFFT $ANYWHERE: $DFILENAME"
+		echo -e "$STRT encode and decode your texts with Rot13 $EFFT $ANYWHERE: $DFILENAME"
 	elif [[ $RES =~ "r" ]]; then
+		echo -e "$STRT encode and decode your texts with Rot47 $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $RES =~ "s" ]]; then
 		echo -e "$STRT check the ASCII table $EFFT $ANYWHERE: $DFILENAME"
 	fi
 }
@@ -613,7 +622,7 @@ while [[ "$UINPUT" != [nN] ]]; do
 					((page--))
 				fi
 				;;
-			0|1|a|b|c|d|e|f|g|h|i|j|k|l|m|o|r|A|B|C|D|E|F|G|H|I|J|K|L|M|O|R)
+			0|1|a|b|c|d|e|f|g|h|i|j|k|l|m|o|r|s|A|B|C|D|E|F|G|H|I|J|K|L|M|O|R|S)
 				echo -n "$OPTION"
 				break
 				;;

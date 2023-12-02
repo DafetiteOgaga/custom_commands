@@ -36,6 +36,7 @@
    * pycodemore command
    * pycompile command
    * curfol - opens the current directory in explorer
+   * pyxecute - appends the python3 shebang line and turn python file(s) to executable file(s)
    * Guessing Game command(To unwind)
    * Rot13 Cipher command
    * Rot47 Cipher command
@@ -55,7 +56,8 @@ This file contains the notable changes made to the Custom Commands project.
 <br>
 
 ## New
-   -  Added custom_commands as a command that displays all of the commands created so far
+   - Added pyxecute command. Easily turns py scripts into executables
+   - Added custom_commands as a command that displays all of the commands created so far
    - Added curfol command. This automatically opens the current working directory in file explorer
    - Added support for multiple arguments for pycode, pycodemore and pycompile commands
    - pycompile command that compiles python codes to .pyc executables
@@ -78,7 +80,8 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Changes
-   - 
+   - pyxecute also appends the python3 shebang line to the first line of the script
+   - pyxecute command now checks for the presence of py scripts and responds accordingly
    - Readme file was updated
    - "from" word was removed from the parting message after installation
    - Change to multiple display in pages and its navigation
@@ -94,7 +97,6 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Fixes
-   - 
    - Fixed bugs in createRepo command"
    - Fixed scripts repetition for PCs and Phones"
    - Fixed bugs in cloneRepo command"
