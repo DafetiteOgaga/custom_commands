@@ -1,7 +1,7 @@
 #!/bin/bash
 
 FILE="$1"
-SDIR=~/.my_cmds
+SDIR=~/.xbin
 OUT="Output file:"
 
 echo ""
