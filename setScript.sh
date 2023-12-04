@@ -157,9 +157,13 @@ unametokenmaill()
 
 cpfunc()
 {
-	if [[ "$FILETYPE" =~ "script" ]]; then
+	if [[ "$FILETYPE" =~ "bashscript" || "$FILETYPE" =~ "pyscript" ]]; then
+		# copies the content
 		cp "$HODN/$DFILENAME" "$SDIR/$DFILENAME"
+		# make the script executable
+		chmod 744 $SDIR/$DFILENAME
 	elif [[ "$FILETYPE" =~ "cfile" ]]; then
+		# copies the content
 		if [[ "$WHICH" =~ 'p' ]]; then
 			cp "$HODN/phone/$DFILENAME" "$SDIR/$DFILENAME"
 		elif [[ "$WHICH" =~ 'c' ]]; then
@@ -198,7 +202,7 @@ intro()
 #...2.................. #
 
 dOptions=(
-    #...Script files.................. #
+    #...bash script files.................. #
 	"[0] - install and $SUP the \"betty\" code compliance checker command"
 	"[1] - install and $SUP the \"pycodestyle (PEP 8)\" as \"pycode\" command"
 	"[a] or [A] - $SUP push(sync) command"
@@ -218,6 +222,8 @@ dOptions=(
 	"[o] or [O] - $SUP a Rot13 Cipher command"
 	"[r] or [R] - $SUP a Rot47 Cipher command"
 	"[s] or [S] - $SUP a simple ASCII table command"
+	# #...py script files....................... #
+	"[t] or [T] - $SUP wcount - counts the lines, words and chars in files"
 )
 
 #...................................................... #
@@ -227,50 +233,77 @@ dOptions=(
 options()
 {
 	if [[ $OPTION =~ "0" ]]; then
-		RES="0"
+		DFILENAME="betty"
+		# RES="0"
 	elif [[ $OPTION =~ "1" ]]; then
-		RES="1"
+		DFILENAME="pycode"
+		# RES="1"
 	elif [[ $OPTION =~ [aA] ]]; then
-		RES="a"
+		DFILENAME="push"
+		# RES="a"
 	elif [[ $OPTION =~ [bB] ]]; then
-		RES="b"
+		DFILENAME="pull"
+		# RES="b"
 	elif [[ $OPTION =~ [cC] ]]; then
-		RES="c"
+		DFILENAME="createRepo"
+		# RES="c"
 	elif [[ $OPTION =~ [dD] ]]; then
-		RES="d"
+		DFILENAME="cloneRepo"
+		# RES="d"
 	elif [[ $OPTION =~ [eE] ]]; then
-		RES="e"
+		DFILENAME="mycompile"
+		# RES="e"
 	elif [[ $OPTION =~ [fF] ]]; then
-		RES="f"
+		DFILENAME="ctemp"
+		# RES="f"
 	elif [[ $OPTION =~ [gG] ]]; then
-		RES="g"
+		DFILENAME="cls"
+		# RES="g"
 	elif [[ $OPTION =~ [hH] ]]; then
-		RES="h"
+		DFILENAME="authorID"
+		# RES="h"
 	elif [[ $OPTION =~ [iI] ]]; then
-		RES="i"
+		DFILENAME="pycodemore"
+		# RES="i"
 	elif [[ $OPTION =~ [jJ] ]]; then
-		RES="j"
+		DFILENAME="pycompile"
+		# RES="j"
 	elif [[ $OPTION =~ [kK] ]]; then
-		RES="k"
+		DFILENAME="curfol"
+		# RES="k"
 	elif [[ $OPTION =~ [lL] ]]; then
-		RES="l"
+		DFILENAME="pyxecute"
+		# RES="l"
 	# ............................................................ #
 	elif [[ $OPTION =~ [mM] ]]; then
-		RES="m"
+		DFILENAME="guessGame"
+		# RES="m"
 	elif [[ $OPTION =~ [oO] ]]; then
-		RES="o"
+		DFILENAME="rot13"
+		# RES="o"
 	elif [[ $OPTION =~ [rR] ]]; then
-		RES="r"
+		DFILENAME="rot47"
+		# RES="r"
 	elif [[ $OPTION =~ [sS] ]]; then
-		RES="s"
+		DFILENAME="myascii"
+		# RES="s"
+	# ............................................................ #
+	elif [[ $OPTION =~ [tT] ]]; then
+		DFILENAME="wcount"
+		# RES="t"
+	else
+		echo -e "You can only choose from the options provided"
+		exit 1
 	fi
 
 	#....tags............................. #
 	
-	if [[ $RES =~ [01abcdefghijkl] ]]; then
-		FILETYPE="script"
-	elif [[ $RES =~ [mors] ]]; then
+	if [[ $OPTION =~ [01abcdefghijklABCDEFGHIJKL] ]]; then
+		FILETYPE="bashscript"
+	elif [[ $OPTION =~ [morsMORS] ]]; then
 		FILETYPE="cfile"
+	elif [[ $OPTION =~ [tT] ]]; then
+		FILETYPE="pyscript"
 	fi
 }
 
@@ -288,47 +321,51 @@ opertn()
 		Exit
 		options
 
-		if [[ $RES =~ "0" ]]; then
-			DFILENAME="betty"
-		elif [[ $RES =~ "1" ]]; then
-			DFILENAME="pycode"
-		elif [[ $RES =~ "a" ]]; then
-			DFILENAME="push"
-		elif [[ $RES =~ "b" ]]; then
-			DFILENAME="pull"
-		elif [[ $RES =~ "c" ]]; then
-			DFILENAME="createRepo"
-		elif [[ $RES =~ "d" ]]; then
-			DFILENAME="cloneRepo"
-		elif [[ $RES =~ "e" ]]; then
-			DFILENAME="mycompile"
-		elif [[ $RES =~ "f" ]]; then
-			DFILENAME="ctemp"
-		elif [[ $RES =~ "g" ]]; then
-			DFILENAME="cls"
-		elif [[ $RES =~ "h" ]]; then
-			DFILENAME="authorID"
-		elif [[ $RES =~ "i" ]]; then
-			DFILENAME="pycodemore"
-		elif [[ $RES =~ "j" ]]; then
-			DFILENAME="pycompile"
-		elif [[ $RES =~ "k" ]]; then
-			DFILENAME="curfol"
-		elif [[ $RES =~ "l" ]]; then
-			DFILENAME="pyxecute"
-		# ............................................................ #
-		elif [[ $RES =~ "m" ]]; then
-			DFILENAME="guessGame"
-		elif [[ $RES =~ "o" ]]; then
-			DFILENAME="rot13"
-		elif [[ $RES =~ "r" ]]; then
-			DFILENAME="rot47"
-		elif [[ $RES =~ "s" ]]; then
-			DFILENAME="myascii"
-		else
-			echo -e "You can only choose from the options provided"
-			exit 1
-		fi
+		# if [[ $RES =~ "0" ]]; then
+		# 	DFILENAME="betty"
+		# elif [[ $RES =~ "1" ]]; then
+		# 	DFILENAME="pycode"
+		# elif [[ $RES =~ "a" ]]; then
+		# 	DFILENAME="push"
+		# elif [[ $RES =~ "b" ]]; then
+		# 	DFILENAME="pull"
+		# elif [[ $RES =~ "c" ]]; then
+		# 	DFILENAME="createRepo"
+		# elif [[ $RES =~ "d" ]]; then
+		# 	DFILENAME="cloneRepo"
+		# elif [[ $RES =~ "e" ]]; then
+		# 	DFILENAME="mycompile"
+		# elif [[ $RES =~ "f" ]]; then
+		# 	DFILENAME="ctemp"
+		# elif [[ $RES =~ "g" ]]; then
+		# 	DFILENAME="cls"
+		# elif [[ $RES =~ "h" ]]; then
+		# 	DFILENAME="authorID"
+		# elif [[ $RES =~ "i" ]]; then
+		# 	DFILENAME="pycodemore"
+		# elif [[ $RES =~ "j" ]]; then
+		# 	DFILENAME="pycompile"
+		# elif [[ $RES =~ "k" ]]; then
+		# 	DFILENAME="curfol"
+		# elif [[ $RES =~ "l" ]]; then
+		# 	DFILENAME="pyxecute"
+		# # ............................................................ #
+		# elif [[ $RES =~ "m" ]]; then
+		# 	DFILENAME="guessGame"
+		# elif [[ $RES =~ "o" ]]; then
+		# 	DFILENAME="rot13"
+		# elif [[ $RES =~ "r" ]]; then
+		# 	DFILENAME="rot47"
+		# elif [[ $RES =~ "s" ]]; then
+		# 	DFILENAME="myascii"
+		# # ............................................................ #
+		# elif [[ $RES =~ "t" ]]; then
+		# 	DFILENAME="wcount"
+		# # ............................................................ #
+		# else
+		# 	echo -e "You can only choose from the options provided"
+		# 	exit 1
+		# fi
 
 
 		#...creating variable and profile.................. #
@@ -381,45 +418,50 @@ opertn()
 		fi
 
 		echo ""
-		if [[ $RES =~ "0" ]]; then
+		if [[ $OPTION =~ [01abeghijklmorstABEGHIJKLMORST] ]]; then
 			scptcpy
-		elif [[ $RES =~ "1" ]]; then
-			scptcpy "1"
-		elif [[ $RES =~ "a" ]]; then
-			scptcpy
-		elif [[ $RES =~ "b" ]]; then
-			scptcpy
-		elif [[ $RES =~ "c" ]]; then
+		# if [[ $RES =~ "0" ]]; then
+		# 	scptcpy
+		# elif [[ $RES =~ "1" ]]; then
+		# 	scptcpy "1"
+		# elif [[ $RES =~ "a" ]]; then
+		# 	scptcpy
+		# elif [[ $RES =~ "b" ]]; then
+		# 	scptcpy
+		elif [[ $OPTION =~ [cc] ]]; then
 			unametokenmaill "createRepoGeneral"
-		elif [[ $RES =~ "d" ]]; then
+		elif [[ $OPTION =~ [dD] ]]; then
 			unametokenmaill "cloneRepoGeneral"
-		elif [[ $RES =~ "e" ]]; then
-			scptcpy
-		elif [[ $RES =~ "f" ]]; then
+		# elif [[ $RES =~ "e" ]]; then
+		# 	scptcpy
+		elif [[ $OPTION =~ [Ff] ]]; then
 			echo -e "TEXT" >  $SDIR/C_template.c
 			cp "$HODN/C_template.c" "$SDIR/C_template.c"
 			scptcpy
-		elif [[ $RES =~ "g" ]]; then
-			scptcpy
-		elif [[ $RES =~ "h" ]]; then
-			scptcpy
-		elif [[ $RES =~ "i" ]]; then
-			scptcpy "i"
-		elif [[ $RES =~ "j" ]]; then
-			scptcpy
-		elif [[ $RES =~ "k" ]]; then
-			scptcpy
-		elif [[ $RES =~ "l" ]]; then
-			scptcpy
-		# ............................................................ #
-		elif [[ $RES =~ "m" ]]; then
-			scptcpy
-		elif [[ $RES =~ "o" ]]; then
-			scptcpy
-		elif [[ $RES =~ "r" ]]; then
-			scptcpy
-		elif [[ $RES =~ "s" ]]; then
-			scptcpy
+		# elif [[ $RES =~ "g" ]]; then
+		# 	scptcpy
+		# elif [[ $RES =~ "h" ]]; then
+		# 	scptcpy
+		# elif [[ $RES =~ "i" ]]; then
+		# 	scptcpy "i"
+		# elif [[ $RES =~ "j" ]]; then
+		# 	scptcpy
+		# elif [[ $RES =~ "k" ]]; then
+		# 	scptcpy
+		# elif [[ $RES =~ "l" ]]; then
+		# 	scptcpy
+		# # ............................................................ #
+		# elif [[ $RES =~ "m" ]]; then
+		# 	scptcpy
+		# elif [[ $RES =~ "o" ]]; then
+		# 	scptcpy
+		# elif [[ $RES =~ "r" ]]; then
+		# 	scptcpy
+		# elif [[ $RES =~ "s" ]]; then
+		# 	scptcpy
+		# # ............................................................ #
+		# elif [[ $RES =~ "t" ]]; then
+		# 	scptcpy
 		fi
 
 	else
@@ -433,46 +475,136 @@ opertn()
 scptcpy()
 {
 	local ZERO
-	local pyarname="$1"
-	# for pycodemore command installation
-	if [[ $pyarname =~ "i" || $pyarname =~ "1" ]]; then
-		GO="go"
-	else
-		GO="dont"
-	fi
+	# local pyarname="$1"
 
-	if [[ $RES =~ "0" ]]; then
-		ZERO="yes"
-	else
-		ZERO="no"
-	fi
-	
 	echo -e "Creating $DFILENAME as a command..."
+	# cpfunc
+	# for betty command installation
+	if [[ $DFILENAME =~ "betty" ]]; then
+		bLinter
+		# ZERO="yes"
+	# else
+	# 	ZERO="no"
 
-	echo -e "TEXT" >  $SDIR/$DFILENAME
-	chmod 744 $SDIR/$DFILENAME
-	if [[ "$WHICH" =~ 'p' ]]; then
-		if [[ "$ZERO" =~ "yes" ]]; then
-			bLinter
-		elif [[ "$GO" =~ "go" ]]; then
-			cpfunc
-			pip install pycodestyle
+	# for pycodemore command installation
+	elif [[ $DFILENAME =~ "pycode" || $DFILENAME =~ "pycodemore" || $FILETYPE =~ "pyscript" ]]; then
+		cpfunc
+		# Check if Python3 is installed
+		if command -v python3 &> /dev/null; then
+			echo "Python 3 is already installed."
 		else
-			cpfunc
+			# Attempt to install Python3
+			echo "Installing Python3..."
+			# other package managers command
+			
+			if [[ "$WHICH" =~ 'p' ]]; then
+				# for phone
+				pkg update
+				pkg install python
+			elif [[ "$WHICH" =~ 'c' ]]; then
+				# for pc
+				sudo apt-get update
+				sudo apt-get install -y python3
+			fi
 		fi
-
-	elif [[ "$WHICH" =~ 'c' ]]; then
-		if [[ "$ZERO" =~ "yes" ]]; then
-			bLinter
-		elif [[ "$GO" =~ "go" ]]; then
-			cpfunc
+		# elif [[ "$GO" =~ "go" ]]; then
+		# cpfunc
+		if [[ "$WHICH" =~ 'c' ]]; then
+			# cpfunc
+			# installation for pc
 			sudo apt install pycodestyle
-		else
-			cpfunc
+		elif [[ "$WHICH" =~ 'p' ]]; then
+			# installation for phone
+			pip install pycodestyle
 		fi
+	else
+		# for other commands
+		cpfunc
 	# else
 	# 	cp "$HODN/$DFILENAME" "$SDIR/$DFILENAME"
 	fi
+
+		# GO="go"
+	# else
+	# 	GO="dont"
+	# fi
+
+	# for python3 installation
+	# if [[ "$FILETYPE" =~ "pyscript" || "$GO" =~ "go" ]]; then
+	# 	# Check if Python3 is installed
+	# 	if command -v python3 &> /dev/null; then
+	# 		echo "Python 3 is already installed."
+	# 	else
+	# 		# Attempt to install Python3
+	# 		echo "Installing Python3..."
+	# 		# other package managers command
+			
+	# 		if [[ "$WHICH" =~ 'p' ]]; then
+	# 			# for phone
+	# 			pkg update
+	# 			pkg install python
+	# 		elif [[ "$WHICH" =~ 'c' ]]; then
+	# 			# for pc
+	# 			sudo apt-get update
+	# 			sudo apt-get install -y python3
+	# 		fi
+	# 	fi
+	# fi
+
+	# # for betty command installation
+	# if [[ $RES =~ "0" ]]; then
+	# 	bLinter
+	# 	# ZERO="yes"
+	# # else
+	# # 	ZERO="no"
+	# fi
+	
+	# echo -e "Creating $DFILENAME as a command..."
+
+	# creating the file
+	# echo -e "TEXT" >  $SDIR/$DFILENAME
+	# making the file an executable
+	# chmod 744 $SDIR/$DFILENAME
+
+
+	# installation for phone
+	# if [[ "$WHICH" =~ 'p' ]]; then
+	# 	# for betty
+	# 	if [[ "$ZERO" =~ "yes" ]]; then
+	# 		bLinter
+	# 	# for pycode and pycodemore
+	# 	elif [[ "$GO" =~ "go" ]]; then
+	# 		cpfunc
+	# 		pip install pycodestyle
+	# 	else
+	# 		# for other commands
+	# 		cpfunc
+	# 	fi
+
+	# installation for pc
+	# elif [[ "$WHICH" =~ 'c' ]]; then
+
+	# for betty
+	# if [[ "$ZERO" =~ "yes" ]]; then
+	# 	bLinter
+	# for pycode and pycodemore
+	# elif [[ "$GO" =~ "go" ]]; then
+	# 	cpfunc
+	# 	if [[ "$WHICH" =~ 'c' ]]; then
+	# 		# cpfunc
+	# 		# installation for pc
+	# 		sudo apt install pycodestyle
+	# 	elif [[ "$WHICH" =~ 'p' ]]; then
+	# 		# installation for phone
+	# 		pip install pycodestyle
+	# 	fi
+	# else
+	# 	# for other commands
+	# 	cpfunc
+	# 	fi
+	# # else
+	# # 	cp "$HODN/$DFILENAME" "$SDIR/$DFILENAME"
+	# fi
 
 	#...creating custom_commands to view all commands.................. #
 	cp "$HODN/custom_commands" "$SDIR/custom_commands"
@@ -483,8 +615,11 @@ scptcpy()
 bLinter()
 {
 	echo -e ""
+	# pwd
 	mkdir -p tempo
+	# pwd
 	cd tempo
+	# pwd
 	git clone https://github.com/alx-tools/Betty.git
 
 	if [[ "$WHICH" =~ 'p' ]]; then
@@ -493,15 +628,21 @@ bLinter()
 		cp betty_wrapper/phone-betty.sh betty_wrapper/phone-install.sh Betty
 		echo -e ""
 		cd Betty
+		# pwd
 		./phone-install.sh
 
 	elif [[ "$WHICH" =~ 'c' ]]; then
 		echo -e ""
 		cd Betty
+		# pwd
 		sudo ./install.sh
 	fi
-	cd ../..
-	rm -rf tempo
+	# pwd
+	# cd 
+	rm -rf ../../tempo
+	# pwd
+	cd ../../
+	# pwd
 }
 
 #...6.................. #
@@ -509,43 +650,46 @@ instructn()
 {
 	echo -e "Now, RESTART YOUR TERMINAL or START A NEW SESSION."
 
-	if [[ $RES =~ "0" ]]; then
+	if [[ $DFILENAME =~ "betty" ]]; then
 		echo -e "$STRT check your source files. $ANYWHERE: $DFILENAME <filename(s)>"
-	elif [[ $RES =~ "1" ]]; then
+	elif [[ $DFILENAME =~ "pycode" ]]; then
 		echo -e "$STRT check your python files. $ANYWHERE: $DFILENAME <filename(s)>"
-	elif [[ $RES =~ "a" ]]; then
+	elif [[ $DFILENAME =~ "push" ]]; then
 		echo -e "$STRT push(sync) to github. $ANYWHERE: $DFILENAME"
-	elif [[ $RES =~ "b" ]]; then
+	elif [[ $DFILENAME =~ "pull" ]]; then
 		echo -e "$STRT pull from github. $ANYWHERE: $DFILENAME"
-	elif [[ $RES =~ "c" ]]; then
+	elif [[ $DFILENAME =~ "createRepo" ]]; then
 		echo -e "$STRT create a github repo right from your terminal. $ANYWHERE: $DFILENAME"
-	elif [[ $RES =~ "d" ]]; then
+	elif [[ $DFILENAME =~ "cloneRepo" ]]; then
 		echo -e "$STRT clone repos from github. $ANYWHERE: $DFILENAME"
-	elif [[ $RES =~ "e" ]]; then
+	elif [[ $DFILENAME =~ "mycompile" ]]; then
 		echo -e "$STRT compile your files $EFFT $ANYWHERE: $DFILENAME <filename>"
-	elif [[ $RES =~ "f" ]]; then
+	elif [[ $DFILENAME =~ "ctemp" ]]; then
 		echo -e "$STRT create default C source file templates $EFFT $ANYWHERE: $DFILENAME <filename>"
-	elif [[ $RES =~ "g" ]]; then
+	elif [[ $DFILENAME =~ "cls" ]]; then
 		echo -e "$STRT clear your screen $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $RES =~ "h" ]]; then
+	elif [[ $DFILENAME =~ "authorID" ]]; then
 		echo -e "$STRT configure your GitHub identity both globally and locally within your environment $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $RES =~ "i" ]]; then
+	elif [[ $DFILENAME =~ "pycodemore" ]]; then
 		echo -e "$STRT check your python file with line details $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
-	elif [[ $RES =~ "j" ]]; then
+	elif [[ $DFILENAME =~ "pycompile" ]]; then
 		echo -e "$STRT compile your python scripts to a .pyc $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
-	elif [[ $RES =~ "k" ]]; then
+	elif [[ $DFILENAME =~ "curfol" ]]; then
 		echo -e "$STRT open your current working directory $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $RES =~ "l" ]]; then
+	elif [[ $DFILENAME =~ "pyxecute" ]]; then
 		echo -e "$STRT turn your file(s) to executable file(s) $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
 	# ............................................................ #
-	elif [[ $RES =~ "m" ]]; then
+	elif [[ $DFILENAME =~ "guessGame" ]]; then
 		echo -e "$STRT play guessing game $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $RES =~ "o" ]]; then
+	elif [[ $DFILENAME =~ "rot13" ]]; then
 		echo -e "$STRT encode and decode your texts with Rot13 $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $RES =~ "r" ]]; then
+	elif [[ $DFILENAME =~ "rot47" ]]; then
 		echo -e "$STRT encode and decode your texts with Rot47 $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $RES =~ "s" ]]; then
+	elif [[ $DFILENAME =~ "myascii" ]]; then
 		echo -e "$STRT check the ASCII table $EFFT $ANYWHERE: $DFILENAME"
+	# ............................................................ #
+	elif [[ $DFILENAME =~ "wcount" ]]; then
+		echo -e "$STRT check the number of lines, words and characters in your file $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
 	fi
 }
 
@@ -604,6 +748,8 @@ while [[ "$UINPUT" != [nN] ]]; do
 			echo -e ""
 			instructn
 			echo -e ""
+			echo -e "Last option entered: $OPTION"
+			echo -e "Last command created: $DFILENAME"
 			echo -e "Another operation?"
 			echo -n "Select another option? [q] - quit >>> "
 		else
@@ -622,7 +768,7 @@ while [[ "$UINPUT" != [nN] ]]; do
 					((page--))
 				fi
 				;;
-			0|1|a|b|c|d|e|f|g|h|i|j|k|l|m|o|r|s|A|B|C|D|E|F|G|H|I|J|K|L|M|O|R|S)
+			0|1|a|b|c|d|e|f|g|h|i|j|k|l|m|o|r|s|t|A|B|C|D|E|F|G|H|I|J|K|L|M|O|R|S|T)
 				echo -n "$OPTION"
 				break
 				;;
