@@ -41,6 +41,7 @@
    * Rot13 Cipher command
    * Rot47 Cipher command
    * simple ASCII table command
+   * wcount - outputs the total number of lines, words and characters in your file
 
 <br>
 
@@ -56,6 +57,7 @@ This file contains the notable changes made to the Custom Commands project.
 <br>
 
 ## New
+   - Added wcount command. calculates and output the number of lines, words and characters in your file
    - Added pyxecute command. Easily turns py scripts into executables
    - Added custom_commands as a command that displays all of the commands created so far
    - Added curfol command. This automatically opens the current working directory in file explorer
@@ -80,6 +82,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Changes
+   - Minor changes made to the script and display for effectiveness
    - pyxecute also appends the python3 shebang line to the first line of the script
    - pyxecute command now checks for the presence of py scripts and responds accordingly
    - Readme file was updated
@@ -97,6 +100,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Fixes
+   - Resolve issue of invalid path in ctemp command
    - Fixed bugs in createRepo command
    - Fixed scripts repetition for PCs and Phones
    - Fixed bugs in cloneRepo command
