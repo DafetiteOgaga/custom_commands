@@ -1,37 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
-RESP="$1"
+import git_codes as p
 
-exiting()
-{
-	echo ".........Operation aborted.........."
-	echo ""
-	exit 1
-}
-
-if [[ -z "$RESP" ]]; then
-	echo -n "Enter a commit message [[q] to abort] >>> "
-	read RESP
-	
-	if [[ -z "$RESP" ]]; then
-		echo "Commit message not found"
-		exiting
-	elif [[ ${#RESP} =~ 1 && ("$RESP" =~ "q" || "$RESP" =~ "Q") ]]; then
-		echo "Ok."
-		exiting
-	fi
-fi
-
-echo ""
-echo "#### pulling ...################################################"
-echo ""
-
-git pull
-
-echo ""
-echo "#### pushing ...################################################"
-git add .
-git commit -m "$RESP"
-git push
-echo "....................Done...................."
-
+user_list = [(p.os.listdir())[i] for i in range(1, len(p.os.listdir()))]
+p.add_commit_all()
+p.pull()
+p.push(user_list)
