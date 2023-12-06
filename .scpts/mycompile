@@ -46,7 +46,7 @@ echo -e "Select [f] or [F] to run(Default) c89-standard compilation and with WAR
 
 echo ""
 echo -n "Select an option (blank for default i.e option f) >>> "
-read OPTION
+read -n 1 -s -r OPTION
 echo ""
 if [[ ${#OPTION} != 1 ]]; then
 		echo -e "You can only select from the options provided."
