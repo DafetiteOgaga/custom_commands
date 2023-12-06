@@ -23,25 +23,27 @@
    ### **to access various commands that you can install on your computer/phone such as:**
 
    * #### custom_command (This command is installed automatically for you) - displays all the custom commands installed on your machine
-   * and use Betty linter(betty command)
-   * and use pycodestyle(as pycode command)
-   * push(sync) command
-   * pull command
-   * createRepo command(Without opening the github website)
-   * cloneRepo command
-   * source files compile command (with options)
-   * default C source file template command
-   * cls command to clear your terminal
-   * Github Author Identity(Global and Local) command
-   * pycodemore command
-   * pycompile command
-   * curfol - opens the current directory in explorer
-   * pyxecute - appends the python3 shebang line and turn python file(s) to executable file(s)
-   * Guessing Game command(To unwind)
-   * Rot13 Cipher command
-   * Rot47 Cipher command
-   * simple ASCII table command
-   * wcount - outputs the total number of lines, words and characters in your file
+   * betty linter command
+   * pycode command - a pycodestyle (PEP 8) linter
+   * push command - synchronse rather than just push
+   * pull command - updates your local machine from remote
+   * createRepo command - creates a github repository right from the command line
+   * cloneRepo command - clone a repository with less commands
+   * mycompile command - compile C source files (with options)
+   * ctemp command - generates a default C source file template
+   * cls command - clear your screen
+   * authorID - configures your Github Identity(Global and Local) on your local machine
+   * pycodemore command(pycode with details)
+   * pycompile command - compile python files
+   * curfol command - opens current working directory using file explorer
+   * pyxecute - appends shebang and makes your python files executable
+   * guessGame command- a Guessing Game(To unwind)
+   * rot13 command - Rot13 Cipher
+   * rot47 command - Rot47 Cipher
+   * myascii command - prints a simple version of the ASCII table
+   * wcount command - counts the lines, words and chars in files
+   * clear_commit command - clears the staging area and recent commits on your local machine
+   * pushfile command - similar to "push" command but it updates the remote with individual file commit messages for good practice
 
 <br>
 
@@ -57,6 +59,10 @@ This file contains the notable changes made to the Custom Commands project.
 <br>
 
 ## New
+   - clear_commit command clears the local staging area and commits
+   - pushfile command updates the remote with individual commits to each files
+   - pyxecute can now make python scripts that has no .py extension into executables and still filter out non python files
+   - Added the last choice of command and the command it created to the display
    - Added wcount command. calculates and output the number of lines, words and characters in your file
    - Added pyxecute command. Easily turns py scripts into executables
    - Added custom_commands as a command that displays all of the commands created so far
@@ -82,6 +88,9 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Changes
+   - new updates and improvements implemented to the the program
+   - pull and push commands has been updated for robust perfomances
+   - Improved user experience with a little bit of animated display
    - Minor changes made to the script and display for effectiveness
    - pyxecute also appends the python3 shebang line to the first line of the script
    - pyxecute command now checks for the presence of py scripts and responds accordingly
@@ -100,6 +109,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Fixes
+   - "Next" and "Previous" choices no longer reinstall the previous command and clears the screen off information belonging to the previous command
    - Resolve issue of invalid path in ctemp command
    - Fixed bugs in createRepo command
    - Fixed scripts repetition for PCs and Phones
