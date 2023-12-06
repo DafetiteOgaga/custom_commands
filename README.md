@@ -23,27 +23,27 @@
    ### **to access various commands that you can install on your computer/phone such as:**
 
    * #### custom_command (This command is installed automatically for you) - displays all the custom commands installed on your machine
-   * betty linter command
-   * pycode command - a pycodestyle (PEP 8) linter
    * push command - synchronse rather than just push
    * pull command - updates your local machine from remote
+   * pushfile command - similar to "push" command but it updates the remote with individual file commit messages for good practice
    * createRepo command - creates a github repository right from the command line
    * cloneRepo command - clone a repository with less commands
-   * mycompile command - compile C source files (with options)
-   * ctemp command - generates a default C source file template
-   * cls command - clear your screen
-   * authorID - configures your Github Identity(Global and Local) on your local machine
-   * pycodemore command(pycode with details)
-   * pycompile command - compile python files
+   * betty linter command
+   * pycode command - a pycodestyle (PEP 8) linter
    * curfol command - opens current working directory using file explorer
    * pyxecute - appends shebang and makes your python files executable
-   * guessGame command- a Guessing Game(To unwind)
+   * pycodemore command(pycode with details)
+   * cls command - clear your screen
+   * authorID - configures your Github Identity(Global and Local) on your local machine
+   * wcount command - counts the lines, words and chars in files
+   * ctemp command - generates a default C source file template
+   * clear_commit command - clears the staging area and recent commits on your local machine
+   * mycompile command - compile C source files (with options)
+   * pycompile command - compile python files
+   * myascii command - prints a simple version of the ASCII table
    * rot13 command - Rot13 Cipher
    * rot47 command - Rot47 Cipher
-   * myascii command - prints a simple version of the ASCII table
-   * wcount command - counts the lines, words and chars in files
-   * clear_commit command - clears the staging area and recent commits on your local machine
-   * pushfile command - similar to "push" command but it updates the remote with individual file commit messages for good practice
+   * guessGame command- a Guessing Game(To unwind)
 
 <br>
 
