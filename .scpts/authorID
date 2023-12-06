@@ -46,7 +46,7 @@ echo -e "Author Identity Configuration"
 echo "........................................."
 echo ""
 echo -n "Global or Local Identity congiguration? [g - Global] && [l - Local] >>> "
-read RESP
+read -n 1 -s -r RESP
 echo ""
 if [[ ${#RESP} != 1 ]]; then
 	echo -e "Invalid response."
@@ -64,7 +64,7 @@ empty1 "$RESP"
 
 if [[ "$RESP" =~ "l" || "$RESP" =~ "L" ]]; then
 	echo -n "Check your PATH AND CURRENT DIRECTORY to be sure you are in a Repo, are you? [y/N] >>> "
-	read YNREPO
+	read -n 1 -s -r YNREPO
 	if [[ "$YNREPO" =~ "y" || "$YNREPO" =~ "Y" ]]; then
 		echo -e "Great! Let us proceed."
 	elif [[  -z "$YNREPO" || "$YNREPO" =~ "n" || "$YNREPO" =~ "N" ]]; then
@@ -86,7 +86,7 @@ echo "[p] - Phone"
 echo "[c] - PC"
 echo "[q] - quit"
 echo -n "Is this a phone or a pc? [P/C/Q] >>> "
-read WHICH
+read -n 1 -s -r WHICH
 
 
 echo ""
