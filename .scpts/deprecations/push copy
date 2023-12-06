@@ -1,0 +1,8 @@
+#!/usr/bin/env python3
+
+import git_codes as p
+
+user_list = [(p.os.listdir())[i] for i in range(1, len(p.os.listdir()))]
+p.add_commit_all()
+p.pull()
+p.push(user_list)
