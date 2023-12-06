@@ -1,4 +1,5 @@
-#!/bin/bash
-echo ".....pulling ...################################################"
-git pull
-echo -e "....................Done....................\n"
+#!/usr/bin/env python3
+
+import git_codes as p
+
+p.pull()
