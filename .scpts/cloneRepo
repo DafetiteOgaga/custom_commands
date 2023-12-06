@@ -32,7 +32,7 @@ function lines ()
 echo ""
 echo -e "You are attempting to clone a Github repo...\n"
 echo -n "Is the Github Account \"$GUSERNAME\" yours? [y/N] >>> "
-read UREPO
+read -n 1 -s -r UREPO
 
 
 if [[ ${#UREPO} =~ 1 && ("$UREPO" =~ "y" || "$UREPO" =~ "Y") ]]; then
@@ -52,7 +52,7 @@ echo ""
 echo -e "Pls, check your PATH and CURRENT DIRECTORY that you are not cloning into an existing repo."
 
 echo -n "Do you want to abort to fix this? [y/N] >>> "
-read CLCR
+read -n 1 -s -r CLCR
 
 if [[ ${#CLCR} != 1 ]]; then
 	echo ""
@@ -78,7 +78,7 @@ if [[ "$CHK" =~ "no" ]]; then
 
 	echo ""
 	echo -n "Do you have the PAT(classic) for $AUSERNAME's repo? [y/N] >>> "
-	read RESP
+	read -n 1 -s -r RESP
 
 	if [ -z "$RESP" ]; then
 		lines
