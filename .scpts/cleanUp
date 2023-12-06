@@ -13,7 +13,7 @@ for file in $FILE/*.c; do
     echo "$(basename $file)"
 done
 echo -n "if this correct? [y/N] >>> "
-read YN
+read -n 1 -s -r YN
 echo ""
 if [[ "$YN" =~ [yY] ]]; then
     if ls "$FILE"/*.py >/dev/null 2>&1; then
