@@ -104,7 +104,7 @@ curl_check()
 if [[ -z "$RESP" ]]; then
 	echo -e "Pls, check your PATH and CURRENT DIRECTORY that you are not creating this repo inside an existing repo."
 	echo -n "Do you want to abort to fix this? [y/N] >>> "
-	read RESP
+	read -n 1 -s -r RESP
 
 	echo -e ""
 	if [[ -z "$RESP" ]]; then
