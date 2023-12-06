@@ -4,24 +4,35 @@ if [ "$#" = "0" ]; then
     echo "No arguments passed."
     exit 1
 fi
+
+make_exe()
+{
+	echo -e "\n========== $argument =========="
+	pycount=$((count + 1))
+	if [[ $(head -n 1 "$argument" | grep -c "#!/usr/bin/env python3") -eq 0 ]]; then
+		tmpfile=$(mktemp)
+		echo -e "#!/usr/bin/env python3\n" > "$tmpfile"
+		cat "$argument" >> "$tmpfile"
+
+		mv "$tmpfile" "$argument"
+	fi
+	sleep 1
+	chmod +x "$argument"
+	echo -e "$argument is now executable."
+}
+
 count=1
 for argument in "$@" ; do
     if [[ $argument == *".py" ]]; then
-		echo -e "\n========== $argument =========="
-		pycount=$((count + 1))
-		if [[ $(head -n 1 "$argument" | grep -c "#!/usr/bin/env python3") -eq 0 ]]; then
-            tmpfile=$(mktemp)
-            echo -e "#!/usr/bin/env python3\n" > "$tmpfile"
-            cat "$argument" >> "$tmpfile"
-
-            mv "$tmpfile" "$argument"
-		fi
-
-		sleep 1
-        chmod +x "$argument"
-		echo -e "$argument is now executable."
+		make_exe
 	else
-		nopycount=$((count + 1))
+		echo -n "is $argument a python file? [y/N] >>> "
+		read -n 1 -s -r RES
+		if [[ $RES =~ "y" ]]; then
+			make_exe
+		else
+			nopycount=$((count + 1))
+		fi
     fi
 	count=$((count + 1))
 done
