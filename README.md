@@ -27,6 +27,7 @@
    * pull command - updates your local machine from remote
    * pushfile command - similar to "push" command but it updates the remote with individual file commit messages for good practice
    * createRepo command - creates a github repository right from the command line
+   * deleteRepo command - deletes a github repository right from the command line
    * cloneRepo command - clone a repository with less commands
    * betty linter command
    * pycode command - a pycodestyle (PEP 8) linter
@@ -59,6 +60,7 @@ This file contains the notable changes made to the Custom Commands project.
 <br>
 
 ## New
+   - deleteRepo command -checks and deletes github repositories
    - clear_commit command clears the local staging area and commits
    - pushfile command updates the remote with individual commits to each files
    - pyxecute can now make python scripts that has no .py extension into executables and still filter out non python files
@@ -88,7 +90,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Changes
-   - new updates and improvements implemented to the the program
+   - new updates and general improvements to the the program
    - pull and push commands has been updated for robust perfomances
    - Improved user experience with a little bit of animated display
    - Minor changes made to the script and display for effectiveness
