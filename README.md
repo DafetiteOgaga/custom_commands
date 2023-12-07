@@ -110,7 +110,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 ## Fixes
    - you don't have to enter your information twice anymore when running createRepo and/or cloneRepo anymore, in a single execution
-   - "Next" and "Previous" choices no longer reinstall the previous command and clears the screen off information belonging to the previous command
+   - "Next" and "Previous" choices no longer reinstall the previous command and clears off the screen, any information belonging to the previous command
    - Resolve issue of invalid path in ctemp command
    - Fixed bugs in createRepo command
    - Fixed scripts repetition for PCs and Phones
