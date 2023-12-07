@@ -229,6 +229,7 @@ dOptions=(
 	"  pushfile command - updates the remote with individual file commit messages"
 	#...bash script files.................. #
 	"  createRepo command - creates a github repository right from CLI"
+	"  deleteRepo command - deletes a github repository right from CLI"
 	"  cloneRepo command - clone a repository with less commands"
 	"  betty linter command"
 	"  pycode command a \"pycodestyle (PEP 8)\" linter"
@@ -266,10 +267,12 @@ category()
 		new_value="$(( ($value) + 400 ))"
 		if [[ "$btype" == "cr" ]]; then
 			new_value=11111
-		elif [[ "$btype" == "cl" ]]; then
+		elif [[ "$btype" == "dr" ]]; then
 			new_value=22222
-		elif [[ "$btype" == "ct" ]]; then
+		elif [[ "$btype" == "cl" ]]; then
 			new_value=33333
+		elif [[ "$btype" == "ct" ]]; then
+			new_value=44444
 		fi
 	elif [[ "$type" == "c" ]]; then
 		new_value="$(( ($value) + 100 ))"
@@ -296,66 +299,69 @@ options()
 		DFILENAME="createRepo"
 		category b "$converted_selection" "cr"
 	elif [[ "$converted_selection" == 4 ]]; then
+		DFILENAME="deleteRepo"
+		category b "$converted_selection" "dr"
+	elif [[ "$converted_selection" == 5 ]]; then
 		DFILENAME="cloneRepo"
 		category b "$converted_selection" "cl"
-	elif [[ "$converted_selection" == 5 ]]; then
+	elif [[ "$converted_selection" == 6 ]]; then
 		DFILENAME="betty"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 6 ]]; then
+	elif [[ "$converted_selection" == 7 ]]; then
 		DFILENAME="pycode"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 7 ]]; then
+	elif [[ "$converted_selection" == 8 ]]; then
 		DFILENAME="curfol"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 8 ]]; then
+	elif [[ "$converted_selection" == 9 ]]; then
 		DFILENAME="pyxecute"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 9 ]]; then
+	elif [[ "$converted_selection" == 10 ]]; then
 		DFILENAME="pycodemore"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 10 ]]; then
+	elif [[ "$converted_selection" == 11 ]]; then
 		DFILENAME="cls"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 11 ]]; then
+	elif [[ "$converted_selection" == 12 ]]; then
 		DFILENAME="authorID"
 		category b "$converted_selection"
 	# ...py script files..................................... #
-	elif [[ "$converted_selection" == 12 ]]; then
+	elif [[ "$converted_selection" == 13 ]]; then
 		DFILENAME="wcount"
 		category p "$converted_selection"
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 13 ]]; then
+	elif [[ "$converted_selection" == 14 ]]; then
 		DFILENAME="ctemp"
 		category b "$converted_selection" "ct"
 	# ...py script files..................................... #
-	elif [[ "$converted_selection" == 14 ]]; then
+	elif [[ "$converted_selection" == 15 ]]; then
 		DFILENAME="clear_commit"
 		category p "$converted_selection"
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 15 ]]; then
+	elif [[ "$converted_selection" == 16 ]]; then
 		DFILENAME="mycompile"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 16 ]]; then
+	elif [[ "$converted_selection" == 17 ]]; then
 		DFILENAME="pycompile"
 		category b "$converted_selection"
 	# ...C files............................................. #
-	elif [[ "$converted_selection" == 17 ]]; then
+	elif [[ "$converted_selection" == 18 ]]; then
 		DFILENAME="myascii"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 18 ]]; then
+	elif [[ "$converted_selection" == 19 ]]; then
 		DFILENAME="rot13"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 19 ]]; then
+	elif [[ "$converted_selection" == 20 ]]; then
 		DFILENAME="rot47"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 20 ]]; then
+	elif [[ "$converted_selection" == 21 ]]; then
 		DFILENAME="guessGame"
 		category c "$converted_selection"
 	fi
 
 	#....tags............................. #
 	
-	if [[ "$new_value" =~ [4-6][0-9][0-9]|11111|22222|33333 ]]; then
+	if [[ "$new_value" =~ [4-6][0-9][0-9]|11111|22222|33333|44444 ]]; then
 		FILETYPE="bashscript"
 	elif [[ "$new_value" =~ [1-3][0-9][0-9] ]]; then
 		FILETYPE="cfile"
@@ -436,11 +442,15 @@ opertn()
 		echo -e "Creating $DFILENAME as a command..."
 		echo -e ""
 		
-		if [[ "$new_value" == 11111 ]]; then
-			unametokenmaill "createRepoGeneral"
-		elif [[ "$new_value" == 22222 ]]; then
-			unametokenmaill "cloneRepoGeneral"
-		elif [[ "$new_value" == 33333 ]]; then
+		# if [[ "$new_value" == 11111 ]]; then
+		# 	unametokenmaill "createRepoGeneral"
+		# elif [[ "$new_value" == 22222 ]]; then
+		# 	unametokenmaill "createRepoGeneral"
+		# elif [[ "$new_value" == 33333 ]]; then
+		# 	unametokenmaill "cloneRepoGeneral"
+		if [[ "$new_value" =~ ^(11111|22222|33333)$ ]]; then
+			unametokenmaill
+		elif [[ "$new_value" == 44444 ]]; then
 			echo -e "custom commands" >  $SDIR/C_template.c
 			cp "$HODN/C_template.c" "$SDIR/C_template.c"
 			scptcpy
@@ -550,6 +560,8 @@ instructn()
 		echo -e "$STRT pull from github. $ANYWHERE: $DFILENAME"
 	elif [[ $DFILENAME == "createRepo" ]]; then
 		echo -e "$STRT create a github repo right from your terminal. $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "deleteRepo" ]]; then
+		echo -e "$STRT delete a github repo right from your terminal. $ANYWHERE: $DFILENAME"
 	elif [[ $DFILENAME == "cloneRepo" ]]; then
 		echo -e "$STRT clone repos from github. $ANYWHERE: $DFILENAME"
 	elif [[ $DFILENAME == "mycompile" ]]; then
@@ -619,6 +631,7 @@ while true; do
 done
 
 #...main operation.................. #
+#...Entry point.................. #
 
 #...options display.................. #
 
