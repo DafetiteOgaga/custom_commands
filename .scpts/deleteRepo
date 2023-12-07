@@ -106,6 +106,7 @@ echo ""
 if [ -d "$REPONAME" ]; then
     echo -n "Do you want to DELETE the local repository \"$REPONAME/\" from \"$PWD\"? (y/n) >>> "
     read -n 1 -s -r CONFIRM
+    echo -e "\n"
     if [[ -z "$CONFIRM" ]]; then
         echo -e "You did not answer the question."
 		exiting
@@ -116,7 +117,7 @@ if [ -d "$REPONAME" ]; then
 
 	elif [[ ${#CONFIRM} =~ 1 && ("$CONFIRM" =~ "y" || "CONFIRM" =~ "Y") ]]; then
         rm -rf "$REPONAME"
-        echo -n "\nLocal repository \"$REPONAME/\" deleted successfully."
+        echo -e "Local repository \"$REPONAME/\" deleted successfully."
     else
         echo "Deletion aborted."
     fi
