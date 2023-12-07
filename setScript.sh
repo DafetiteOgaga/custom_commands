@@ -31,16 +31,7 @@ auth()
 		elif [[ "$var" =~ [pP] ]]; then
 			rep="Phone"
 			echo -e "\n.....Hi USER! ....."
-		elif [[ "$var" =~ [qQ] ]]; then
-			echo ""
-			echo -e "Ok."
-			exit 1
-		else
-			wrongput
 		fi
-	else
-		wrongput
-		sleep 0.1
 	fi
 }
 
@@ -53,39 +44,6 @@ invalid_selection()
 		echo -e "Another operation?"
 	fi
 }
-wrongput()
-{
-	echo ""
-	echo -e "Invalid input.\nThe options are [P/C/Q]"
-	echo ""
-	exit 1
-}
-
-Exit()
-{
-    if [[ -z "$OPTION" || $OPTION =~ [qQ] ]]; then
-		if [[ $OPTION =~ [qQ] ]]; then
-			echo ""
-			echo -e "Cheers!"
-		else
-			echo -e "You must select an option"
-		fi
-		echo ""
-		exit 1
-	fi
-}
-
-empt()
-{
-	local var="$1"
-
-	if [[ -z "$var" ]]; then
-		echo ""
-		echo -e "Field cannot be empty."
-		echo ""
-		exit 1
-	fi
-}
 
 pchk()
 {
@@ -95,7 +53,7 @@ pchk()
 	if [[ $NUM2 != $NUM1 ]]; then
 		echo -e ""
 		echo -e "TOKEN: $NTOKEN which you supplied is not a classic token."
-		echo -e "Make sure to remove \"ghp_\" and there is no whitespace."
+		echo -e "Make sure to remove \"ghp_\" and that there is no whitespace."
 		echo ""
 		exit 1
 	fi
@@ -109,43 +67,103 @@ streamedit()
 	sed -i "s/$var1/$var2/g" "$SDIR/$DFILENAME"
 }
 
-unametokenmaill()
+details()
 {
-	local vname="$1"
+	echo -e ".................................."
+	echo -e "Username: $NUSERNAME"
+	echo -e "Token: ghp_$NTOKEN"
+	echo -e "Email: $NEMAIL"
+	echo -e ".................................."
+}
 
-	echo -n "Kindly Enter your Github Username >>> "
-	read NUSERNAME
-	empt "$NUSERNAME"
+unametokenmaill2()
+{
+	while [[ -z "$NUSERNAME" ]]; do
+		echo -n "Kindly Enter your Github Username >>> "
+		read NUSERNAME
+		if [[ -z "$NUSERNAME" ]]; then
+			echo -e "You must provide your Github Username to proceed."
+			echo -e ""
+		fi
+	done
 	echo -e "........................................................"
 	echo -e "Example of what the token will be is $P2"
 	echo -e "Recall that $P1 = ghp_ + $P2"
 	echo -e "What you need to supply is $P2 and leave out the rest."
 	echo -e "........................................................"
 	sleep 0.1
-	echo -n "Your Classic Github token >>> "
-	read NTOKEN
+	while [[ -z "$NTOKEN" ]]; do
+		echo -n "Your Classic Github token >>> "
+		read NTOKEN
+		if [[ -z "$NTOKEN" ]]; then
+			echo -e "You must provide your Classic Github token to proceed."
+			echo -e ""
+		fi
+	done
 	pchk
-	empt "$NTOKEN"
-	echo -n "Lastly, your Github Email >>> "
-	read NEMAIL
-	empt "$NEMAIL"
+	while [[ -z "$NEMAIL" ]]; do
+		echo -n "Lastly, your Github Email >>> "
+		read NEMAIL
+		if [[ -z "$NEMAIL" ]]; then
+			echo -e "You must provide your Github Email to proceed."
+			echo -e ""
+		fi
+	done
 	echo ""
 	sleep 0.1
 	echo -e "Confirm your details:"
-	echo -e ".................................."
-	echo -e "Username: $NUSERNAME"
-	echo -e "Token: ghp_$NTOKEN"
-	echo -e "Email: $NEMAIL"
-	echo -e ".................................."
-	echo -n "Check that these are correct. Are they? [y/N] >>> "
-	read -n 1 -s -r ANS
+	details
+}
+
+unametokenmaill()
+{
+	if [[ "$NUSERNAME" && "$NTOKEN" && "$NEMAIL" ]]; then
+		echo -e "Hey! I still have your details"
+		while [[ "$VALS" != [yYnN] ]]; do
+			details
+			echo -n "Would you rather use this values? [y/N] >>> "
+			read -n 1 -s -r VALS
+			echo -e ""
+			if [[ "$VALS" != [yYnN] ]]; then
+				echo -e ""
+				echo -e "You must decide to proceed."
+			fi
+		done
+		# echo -e "Hey! I still have your details"
+		# details
+		# echo -n "Would you rather use this values? [y/N] >>> "
+		# read -n 1 -s -r VALS
+		# echo -e ""
+		if [[ "$VALS" =~ [yY] ]]; then
+			echo -e ""
+		elif [[ "$VALS" =~ [nN] ]]; then
+			NUSERNAME=""
+			NTOKEN=""
+			NEMAIL=""
+			echo -e ""
+			unametokenmaill2
+		fi
+		VALS=""
+	else
+		unametokenmaill2
+	fi
+	while [[ -z "$ANS" ]]; do
+		echo -n "Check that these are correct. Are they? [y/N] >>> "
+		read -n 1 -s -r ANS
+		if [[ -z "$ANS" ]]; then
+			echo -e "You must decide to proceed."
+			echo -e ""
+		fi
+	done
+	# echo -n "Check that these are correct. Are they? [y/N] >>> "
+	# read -n 1 -s -r ANS
 	echo ""
-	if [[ ${#ANS} =~ 1 && ("$ANS" =~ [yY]) ]]; then
+	if [[ "$ANS" =~ [yY] ]]; then
 		scptcpy
 		streamedit "$DUSERNAME" "$NUSERNAME"
 		streamedit "$DTOKEN" "$NTOKEN"
 		streamedit "$DEMAIL" "$NEMAIL"
-	elif [[ ${#ANS} =~ 1 && ("$ANS" =~ [nN]) ]]; then
+	elif [[ "$ANS" =~ [nN] ]]; then
 		echo -e "Ok."
 		echo ""
 		exit 1
@@ -154,10 +172,12 @@ unametokenmaill()
 		echo ""
 		exit 1
 	fi
+	ANS=""
 }
 
 cpfunc()
 {
+	echo "custom commands" > "$SDIR/$DFILENAME"
 	if [[ "$FILETYPE" =~ "bashscript" || "$FILETYPE" =~ "pyscript" ]]; then
 		# copies the content
 		cp "$HODN/$DFILENAME" "$SDIR/$DFILENAME"
@@ -204,37 +224,57 @@ intro()
 
 dOptions=(
 	#...py script files....................... #
-	"  $SUP push command - synchronse rather than just push"
-	"  $SUP pull command - updates your local machine from remote"
-	"  $SUP pushfile command - updates the remote with individual file commit messages"
+	"  push command - synchronse rather than just push"
+	"  pull command - updates your local machine from remote"
+	"  pushfile command - updates the remote with individual file commit messages"
 	#...bash script files.................. #
-	"  $SUP createRepo command - creates a github repository right from CLI"
-	"  $SUP cloneRepo command - clone a repository with less commands"
-	"  $SUP betty linter command"
-	"  $SUP pycode command a \"pycodestyle (PEP 8)\" linter"
-	"  $SUP curfol command - opens cwd using file explorer"
-	"  $SUP pyxecute - appends shebang and makes your python files executable"
-	"  $SUP pycodemore command(pycode with details)"
-	"  $SUP cls command - clear your screen"
-	"  $SUP authorID - configures your Github Identity(Global and Local) on your machine"
+	"  createRepo command - creates a github repository right from CLI"
+	"  cloneRepo command - clone a repository with less commands"
+	"  betty linter command"
+	"  pycode command a \"pycodestyle (PEP 8)\" linter"
+	"  curfol command - opens cwd using file explorer"
+	"  pyxecute - appends shebang and makes your python files executable"
+	"  pycodemore command(pycode with details)"
+	"  cls command - clear your screen"
+	"  authorID - configures your Github Identity(Global and Local) on your machine"
 	#...py script files....................... #
-	"  $SUP wcount command - counts the lines, words and chars in files"
+	"  wcount command - counts the lines, words and chars in files"
     #...bash script files.................. #
-	"  $SUP ctemp - generates a default C source file template"
+	"  ctemp - generates a default C source file template"
 	#...py script files....................... #
-	"  $SUP clear_commit command - clears unstaged and recent commits on your machine"
+	"  clear_commit command - clears unstaged and recent commits on your machine"
 	#...bash script files.................. #
-	"  $SUP mycompile command - compile C source files (with options)"
-	"  $SUP pycompile command - compile python files"
+	"  mycompile command - compile C source files (with options)"
+	"  pycompile command - compile python files"
 	#...C files....................... #
-	"  $SUP myascii command - prints a simple version of the ASCII table"
-	"  $SUP rot13 command - Rot13 Cipher"
-	"  $SUP rot47 command - Rot47 Cipher"
-	"  $SUP guessGame command- a Guessing Game(To unwind)"
+	"  myascii command - prints a simple version of the ASCII table"
+	"  rot13 command - Rot13 Cipher"
+	"  rot47 command - Rot47 Cipher"
+	"  guessGame command- a Guessing Game(To unwind)"
 	
 	
 )
 
+category()
+{
+	local type="$1"
+	local value="$2"
+	local btype="$3"
+	if [[ "$type" == "p" ]]; then
+		new_value="$(( ($value) + 700 ))"
+	elif [[ "$type" == "b" ]]; then
+		new_value="$(( ($value) + 400 ))"
+		if [[ "$btype" == "cr" ]]; then
+			new_value=11111
+		elif [[ "$btype" == "cl" ]]; then
+			new_value=22222
+		elif [[ "$btype" == "ct" ]]; then
+			new_value=33333
+		fi
+	elif [[ "$type" == "c" ]]; then
+		new_value="$(( ($value) + 100 ))"
+	fi
+}
 #...................................................... #
 #...................................................... #
 
@@ -244,61 +284,82 @@ options()
 	# ...py script files.................................... #
 	if [[ "$converted_selection" == 0 ]]; then
 		DFILENAME="push"
+		category p "$converted_selection"
 	elif [[ "$converted_selection" == 1 ]]; then
 		DFILENAME="pull"
+		category p "$converted_selection"
 	elif [[ "$converted_selection" == 2 ]]; then
 		DFILENAME="pushfile"
+		category p "$converted_selection"
 	# ...bash script files................................... #
 	elif [[ "$converted_selection" == 3 ]]; then
 		DFILENAME="createRepo"
+		category b "$converted_selection" "cr"
 	elif [[ "$converted_selection" == 4 ]]; then
 		DFILENAME="cloneRepo"
+		category b "$converted_selection" "cl"
 	elif [[ "$converted_selection" == 5 ]]; then
 		DFILENAME="betty"
+		category b "$converted_selection"
 	elif [[ "$converted_selection" == 6 ]]; then
 		DFILENAME="pycode"
+		category b "$converted_selection"
 	elif [[ "$converted_selection" == 7 ]]; then
 		DFILENAME="curfol"
+		category b "$converted_selection"
 	elif [[ "$converted_selection" == 8 ]]; then
 		DFILENAME="pyxecute"
+		category b "$converted_selection"
 	elif [[ "$converted_selection" == 9 ]]; then
 		DFILENAME="pycodemore"
+		category b "$converted_selection"
 	elif [[ "$converted_selection" == 10 ]]; then
 		DFILENAME="cls"
+		category b "$converted_selection"
 	elif [[ "$converted_selection" == 11 ]]; then
 		DFILENAME="authorID"
+		category b "$converted_selection"
 	# ...py script files..................................... #
 	elif [[ "$converted_selection" == 12 ]]; then
 		DFILENAME="wcount"
+		category p "$converted_selection"
 	# ...bash script files................................... #
 	elif [[ "$converted_selection" == 13 ]]; then
 		DFILENAME="ctemp"
+		category b "$converted_selection" "ct"
 	# ...py script files..................................... #
 	elif [[ "$converted_selection" == 14 ]]; then
 		DFILENAME="clear_commit"
+		category p "$converted_selection"
 	# ...bash script files................................... #
 	elif [[ "$converted_selection" == 15 ]]; then
 		DFILENAME="mycompile"
+		category b "$converted_selection"
 	elif [[ "$converted_selection" == 16 ]]; then
 		DFILENAME="pycompile"
+		category b "$converted_selection"
 	# ...C files............................................. #
 	elif [[ "$converted_selection" == 17 ]]; then
 		DFILENAME="myascii"
+		category c "$converted_selection"
 	elif [[ "$converted_selection" == 18 ]]; then
 		DFILENAME="rot13"
+		category c "$converted_selection"
 	elif [[ "$converted_selection" == 19 ]]; then
 		DFILENAME="rot47"
+		category c "$converted_selection"
 	elif [[ "$converted_selection" == 20 ]]; then
 		DFILENAME="guessGame"
+		category c "$converted_selection"
 	fi
 
 	#....tags............................. #
 	
-	if [[ "$converted_selection" =~ [3-9]|1[0-1]|13|1[5-6] ]]; then
+	if [[ "$new_value" =~ [4-6][0-9][0-9]|11111|22222|33333 ]]; then
 		FILETYPE="bashscript"
-	elif [[ "$converted_selection" =~ 1[7-9]|20 ]]; then
+	elif [[ "$new_value" =~ [1-3][0-9][0-9] ]]; then
 		FILETYPE="cfile"
-	elif [[ "$converted_selection" =~ [0-2]|12|14 ]]; then
+	elif [[ "$new_value" =~ [7-9][0-9][0-9] ]]; then
 		FILETYPE="pyscript"
 	fi
 }
@@ -312,9 +373,8 @@ opertn()
 
 	#... command assignment.................. #
 
-	if [[  -z "$converted_selection" || ${#OPTION} =~ 1 ]]; then
+	if [[ ${#OPTION} =~ 1 ]]; then
 
-		Exit
 		options
 
 		#...creating variable and profile.................. #
@@ -376,21 +436,17 @@ opertn()
 		echo -e "Creating $DFILENAME as a command..."
 		echo -e ""
 		
-		if [[ "$converted_selection" =~ [0-2]|[5-9]|1[0-2]|1[4-9]|20 ]]; then
-			scptcpy
-		elif [[ "$converted_selection" == 3 ]]; then
+		if [[ "$new_value" == 11111 ]]; then
 			unametokenmaill "createRepoGeneral"
-		elif [[ "$converted_selection" == 4 ]]; then
+		elif [[ "$new_value" == 22222 ]]; then
 			unametokenmaill "cloneRepoGeneral"
-		elif [[ "$converted_selection" == 13 ]]; then
-			echo -e "TEXT" >  $SDIR/C_template.c
+		elif [[ "$new_value" == 33333 ]]; then
+			echo -e "custom commands" >  $SDIR/C_template.c
 			cp "$HODN/C_template.c" "$SDIR/C_template.c"
 			scptcpy
+		elif [[ "$new_value" =~ [1-9][0-9][0-9] ]]; then
+			scptcpy
 		fi
-
-	else
-		echo -e "Invalid! You must select an optionxxx"
-		exit 1
 	fi
 	echo ""
 }
@@ -398,10 +454,6 @@ opertn()
 #...5.................. #
 scptcpy()
 {
-	local ZERO
-
-	# echo -e ""
-	# echo -e "Creating $DFILENAME as a command..."
 	sleep 0.1
 	# for betty command installation
 	if [[ $DFILENAME =~ "betty" ]]; then
@@ -409,7 +461,7 @@ scptcpy()
 
 	# for pycodemore command installation
 	elif [[ $DFILENAME =~ "pycode" || $DFILENAME =~ "pycodemore" || $FILETYPE =~ "pyscript" ]]; then
-		echo "text" > "$SDIR/git_codes.py"
+		echo "custom commands" > "$SDIR/git_codes.py"
 		cp "$HODN/git_codes.py" "$SDIR/git_codes.py"
 		
 		cpfunc
@@ -488,49 +540,49 @@ instructn()
 	echo -e "Now, RESTART YOUR TERMINAL or START A NEW SESSION."
 	sleep 0.1
 
-	if [[ $DFILENAME =~ "betty" ]]; then
+	if [[ $DFILENAME == "betty" ]]; then
 		echo -e "$STRT check your source files. $ANYWHERE: $DFILENAME <filename(s)>"
-	elif [[ $DFILENAME =~ "pycode" ]]; then
+	elif [[ $DFILENAME == "pycode" ]]; then
 		echo -e "$STRT check your python files. $ANYWHERE: $DFILENAME <filename(s)>"
-	elif [[ $DFILENAME =~ "push" ]]; then
+	elif [[ $DFILENAME == "push" ]]; then
 		echo -e "$STRT push(sync) to github. $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME =~ "pull" ]]; then
+	elif [[ $DFILENAME == "pull" ]]; then
 		echo -e "$STRT pull from github. $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME =~ "createRepo" ]]; then
+	elif [[ $DFILENAME == "createRepo" ]]; then
 		echo -e "$STRT create a github repo right from your terminal. $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME =~ "cloneRepo" ]]; then
+	elif [[ $DFILENAME == "cloneRepo" ]]; then
 		echo -e "$STRT clone repos from github. $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME =~ "mycompile" ]]; then
+	elif [[ $DFILENAME == "mycompile" ]]; then
 		echo -e "$STRT compile your files $EFFT $ANYWHERE: $DFILENAME <filename>"
-	elif [[ $DFILENAME =~ "ctemp" ]]; then
+	elif [[ $DFILENAME == "ctemp" ]]; then
 		echo -e "$STRT create default C source file templates $EFFT $ANYWHERE: $DFILENAME <filename>"
-	elif [[ $DFILENAME =~ "cls" ]]; then
+	elif [[ $DFILENAME == "cls" ]]; then
 		echo -e "$STRT clear your screen $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME =~ "authorID" ]]; then
+	elif [[ $DFILENAME == "authorID" ]]; then
 		echo -e "$STRT configure your GitHub identity both globally and locally within your environment $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME =~ "pycodemore" ]]; then
+	elif [[ $DFILENAME == "pycodemore" ]]; then
 		echo -e "$STRT check your python file with line details $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
-	elif [[ $DFILENAME =~ "pycompile" ]]; then
+	elif [[ $DFILENAME == "pycompile" ]]; then
 		echo -e "$STRT compile your python scripts to a .pyc $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
-	elif [[ $DFILENAME =~ "curfol" ]]; then
+	elif [[ $DFILENAME == "curfol" ]]; then
 		echo -e "$STRT open your current working directory $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME =~ "pyxecute" ]]; then
+	elif [[ $DFILENAME == "pyxecute" ]]; then
 		echo -e "$STRT turn your file(s) to executable file(s) $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
 	# ............................................................ #
-	elif [[ $DFILENAME =~ "guessGame" ]]; then
+	elif [[ $DFILENAME == "guessGame" ]]; then
 		echo -e "$STRT play guessing game $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME =~ "rot13" ]]; then
+	elif [[ $DFILENAME == "rot13" ]]; then
 		echo -e "$STRT encode and decode your texts with Rot13 $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME =~ "rot47" ]]; then
+	elif [[ $DFILENAME == "rot47" ]]; then
 		echo -e "$STRT encode and decode your texts with Rot47 $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME =~ "myascii" ]]; then
+	elif [[ $DFILENAME == "myascii" ]]; then
 		echo -e "$STRT check the ASCII table $EFFT $ANYWHERE: $DFILENAME"
 	# ............................................................ #
-	elif [[ $DFILENAME =~ "wcount" ]]; then
+	elif [[ $DFILENAME == "wcount" ]]; then
 		echo -e "$STRT check the number of lines, words and characters in your file $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
-	elif [[ $DFILENAME =~ "clear_commit" ]]; then
+	elif [[ $DFILENAME == "clear_commit" ]]; then
 		echo -e "$STRT unstage your files, clear commit messages on your local machine(provided, you are yet to push to remote). Revert to the same state as your remote $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME =~ "pushfile" ]]; then
+	elif [[ $DFILENAME == "pushfile" ]]; then
 		echo -e "$STRT stage and commit individual files before pushing them all to remote $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
 	
 	sleep 0.1
@@ -558,8 +610,11 @@ while true; do
 		sleep 0.05
 	done
 	read -n 1 -s -r -p "Is this a phone or a pc? [P/C/Q] >>> " WHICH
-	if [[ "$WHICH" =~ [pPcCqQ] ]]; then
+	if [[ "$WHICH" =~ [pPcC] ]]; then
 		break
+	elif [[ "$WHICH" =~ [qQ] ]]; then
+		echo -e "Ok."
+		exit 0
 	fi
 done
 
@@ -654,8 +709,10 @@ while [[ "$UINPUT" != [nN] ]]; do
                 break
                 ;;
             q|Q)
-                echo -n "$OPTION"
-                Exit
+				echo -e "Ok."
+				echo ""
+				echo -e "Cheers!"
+                exit 0
                 ;;
         esac
     done
