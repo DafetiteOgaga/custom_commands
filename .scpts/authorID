@@ -19,7 +19,7 @@ auth()
 		elif [[ "$var" =~ [qQ] ]]; then
 			echo ""
 			echo -e "Ok."
-			exit 1
+			exit 0
 		else
 			echo -e "Invalid"
 		fi

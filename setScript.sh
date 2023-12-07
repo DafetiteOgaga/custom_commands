@@ -166,7 +166,7 @@ unametokenmaill()
 	elif [[ "$ANS" =~ [nN] ]]; then
 		echo -e "Ok."
 		echo ""
-		exit 1
+		exit 0
 	else
 		echo -e "You must provide these information to proceed"
 		echo ""

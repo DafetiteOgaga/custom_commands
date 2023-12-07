@@ -39,5 +39,5 @@ if [[ "$YN" =~ [yY] ]]; then
     echo "Done."
 elif [[ "$YN" =~ [nN] ]]; then
     echo "Ok."
-    exit 1
+    exit 0
 fi
