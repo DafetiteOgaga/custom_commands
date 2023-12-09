@@ -25,7 +25,7 @@
    * #### custom_command (This command is installed automatically for you) - displays all the custom commands installed on your machine
    * push command - synchronse rather than just push
    * pull command - updates your local machine from remote
-   * pushfile command - similar to "push" command but it updates the remote with individual file commit messages for good practice
+   * pushfile command - similar to "push" command but it updates the remote with individual file commit messages for good practice (Note: you can set and remove "Update README.md" as your default commit message for all README.md files)
    * createRepo command - creates a github repository right from the command line
    * deleteRepo command - deletes a github repository right from the command line
    * cloneRepo command - clone a repository with less commands
@@ -90,6 +90,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Changes
+   - added the ability to set "Update README.md" as your default commit message to all README.md files
    - new updates and general improvements to the the program
    - pull and push commands has been updated for robust perfomances
    - Improved user experience with a little bit of animated display
