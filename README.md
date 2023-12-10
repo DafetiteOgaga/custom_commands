@@ -90,6 +90,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Changes
+   - you can now observe the progress of setting up auto commit message for README.md files via a progress bar
    - added the ability to set "Update README.md" as your default commit message to all README.md files
    - new updates and general improvements to the the program
    - pull and push commands has been updated for robust perfomances
@@ -112,6 +113,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Fixes
+   - every prompt that require single character as response are now auto executing soon as the character is provided
    - you don't have to enter your information twice anymore when running createRepo and/or cloneRepo anymore in the same session
    - "Next" and "Previous" choices no longer reinstall the previous command and clears off the screen, any information belonging to the previous command
    - Resolve issue of invalid path in ctemp command
