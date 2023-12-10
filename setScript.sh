@@ -461,6 +461,29 @@ opertn()
 	echo ""
 }
 
+pyfiles() {
+    mkdir -p "$SDIR/pyfiles"
+
+    for file in "$HODN/pyfiles/"*; do
+        if [[ -f "$file" ]]; then
+            filename=$(basename "$file")
+            destination="$SDIR/pyfiles/$filename"
+
+            if [[ -f "$destination" ]]; then
+                # File exists in destination, replace it
+                cp "$file" "$destination"
+                # echo "Replaced: $filename #################***************##########"
+            else
+                # File doesn't exist in destination, create it
+                echo "custom commands" > "$destination"
+				cp "$file" "$destination"
+                # echo "Created: $filename #################***************##########"
+            fi
+        fi
+    done
+}
+
+
 #...5.................. #
 scptcpy()
 {
@@ -471,9 +494,7 @@ scptcpy()
 
 	# for pycodemore command installation
 	elif [[ $DFILENAME =~ "pycode" || $DFILENAME =~ "pycodemore" || $FILETYPE =~ "pyscript" ]]; then
-		echo "custom commands" > "$SDIR/git_codes.py"
-		cp "$HODN/git_codes.py" "$SDIR/git_codes.py"
-		
+		pyfiles
 		cpfunc
 		# Check if Python3 is installed
 		if command -v python3 &> /dev/null; then
