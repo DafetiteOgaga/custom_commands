@@ -14,14 +14,19 @@ def counter(files):
 	length = check_arg(files)
 	print()
 	for file in range(1, length):
-		check = os.path.join((files[0].split(os.path.sep))[0], files[file])
-		if os.path.isdir(check):
-			continue
-		time.sleep(.8)
-		shell_return = subprocess.run(["wc", files[file]], capture_output=True)
-		lines, words, chars, name = shell_return.stdout.decode().strip().split()
-		print("============= {} =============".format(name))
-		print("lines: {}, words: {}, characters: {}".format(lines, words, chars))
+		try:
+			check = os.path.join((files[0].split(os.path.sep))[0], files[file])
+			if os.path.isdir(check):
+				continue
+			time.sleep(.8)
+			shell_return = subprocess.run(["wc", files[file]], capture_output=True)
+			lines, words, chars, name = shell_return.stdout.decode().strip().split()
+			print("============= {} =============".format(name))
+			print("lines: {}, words: {}, characters: {}".format(lines, words, chars))
+		except ValueError:
+			print('Error: "{}" is not a valid filename.'.format(files[file]))
+		except Exception as e:
+			print(f"An unexpected error occurred: {e}")
 		print()
 
 
