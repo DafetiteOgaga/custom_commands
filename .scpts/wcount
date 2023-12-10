@@ -1,21 +1,12 @@
 #!/usr/bin/env python3
 
-import subprocess, sys, time, os
+import sys
+from pyfiles.word_counter import counter, lines_words_chars_file
 
 files = sys.argv
-length = len(files)
-if length == 1:
-	print("No argument(s) provided.")
-	# sys.exit()
-else:
-	print()
-	for file in range(1, length):
-		check = os.path.join((files[0].split(os.path.sep))[0], files[file])
-		if os.path.isdir(check):
-			continue
-		time.sleep(.8)
-		shell_return = subprocess.run(["wc", files[file]], capture_output=True)
-		lines, words, chars, name = shell_return.stdout.decode().strip().split()
-		print("============= {} =============".format(name))
-		print("lines: {}, words: {}, characters: {}".format(lines, words, chars))
-		print()
+counter(files)
+
+# print(f"lines: {(lines_words_chars_file(files))[0]}")
+# print(f"words: {(lines_words_chars_file(files))[1]}")
+# print(f"chars: {(lines_words_chars_file(files))[2]}")
+# print(f"file: {(lines_words_chars_file(files))[3]}")
