@@ -33,11 +33,12 @@ echo ""
 echo -e "You are attempting to clone a Github repo...\n"
 echo -n "Is the Github Account \"$GUSERNAME\" yours? [y/N] >>> "
 read -n 1 -s -r UREPO
+echo -e "$UREPO"
 
 
-if [[ ${#UREPO} =~ 1 && ("$UREPO" =~ "y" || "$UREPO" =~ "Y") ]]; then
+if [[ ${#UREPO} =~ 1 && ("$UREPO" =~ [yY]) ]]; then
 	CHK="yes"
-elif [[ ${#UREPO} =~ 1 && ("$UREPO" =~ "n" || "$UREPO" =~ "N") ]]; then
+elif [[ ${#UREPO} =~ 1 && ("$UREPO" =~ [nN]) ]]; then
 	CHK="no"
 else
 	lines
@@ -53,19 +54,20 @@ echo -e "Pls, check your PATH and CURRENT DIRECTORY that you are not cloning int
 
 echo -n "Do you want to abort to fix this? [y/N] >>> "
 read -n 1 -s -r CLCR
+echo -e "$CLCR"
 
 if [[ ${#CLCR} != 1 ]]; then
 	echo ""
 	echo -e "Invalid response."
 	exiting
 
-elif [[ ${#CLCR} =~ 1 && "$CLCR" =~ "y" || "$CLCR" =~ "Y" ]]; then
+elif [[ ${#CLCR} =~ 1 && "$CLCR" =~ [yY] ]]; then
 	echo ""
 	echo -e "Ok."
 	exiting
 fi
 
-if [[ "$CHK" =~ "no" ]]; then
+if [[ "$CHK" == "no" ]]; then
 	echo ""
 	echo -n "Provide the Github Username >>> "
 	read AUSERNAME
@@ -79,6 +81,7 @@ if [[ "$CHK" =~ "no" ]]; then
 	echo ""
 	echo -n "Do you have the PAT(classic) for $AUSERNAME's repo? [y/N] >>> "
 	read -n 1 -s -r RESP
+	echo -e "$RESP"
 
 	if [ -z "$RESP" ]; then
 		lines
@@ -87,7 +90,7 @@ if [[ "$CHK" =~ "no" ]]; then
 	fi
 
 	
-	if [[ ${#RESP} && ("$RESP" =~ "y" || "$RESP" =~ "Y") ]]; then
+	if [[ ${#RESP} && ("$RESP" =~ [yY]) ]]; then
 		echo ""
 		echo -n "Enter the PAT(classic) without the \"ghp_\" >>> "
 		read TOKEN
@@ -144,7 +147,8 @@ function git_check()
 		git config user.email "$GEMAIL"
 
 
-		echo -e "\n....................Tada! All done!...................."
+		echo -e ""
+		echo -e "Successful."
 		echo "This repo \"$REPONAME\" has been cloned in this directory: $(pwd)."
 		lines
 	else
