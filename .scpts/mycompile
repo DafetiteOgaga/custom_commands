@@ -47,7 +47,7 @@ echo -e "Select [f] or [F] to run(Default) c89-standard compilation and with WAR
 echo ""
 echo -n "Select an option (blank for default i.e option f) >>> "
 read -n 1 -s -r OPTION
-echo ""
+echo "$OPTION"
 if [[ ${#OPTION} != 1 ]]; then
 		echo -e "You can only select from the options provided."
 		exiting
@@ -66,31 +66,31 @@ echo ""
 echo "....................Compiling...................."
 
 echo ""
-if [[ "$OPTION" =~ "a" || "$OPTION" =~ "A" ]]; then
+if [[ "$OPTION" =~ [aA] ]]; then
 	echo -e "Preprocessing..."
 	echo ""
 	gcc -E $FILE -o preprocessed_$FINNAME
 	echo -e "$OUT preprocessed_$FINNAME"
 
-elif [[ "$OPTION" =~ "b" || "$OPTION" =~ "B" ]]; then
+elif [[ "$OPTION" =~ [bB] ]]; then
 	echo -e "Compilating without linking..."
 	echo ""
 	gcc -c $FILE -o compiled_unlinked_$FINNAME.o
 	echo -e "$OUT compiled_unlinked_$FINNAME.o"
 
-elif [[ "$OPTION" =~ "c" || "$OPTION" =~ "C" ]]; then
+elif [[ "$OPTION" =~ [cC] ]]; then
 	echo -e "Compilation to assembly stage..."
 	echo ""
 	gcc -S $FILE -o assembly_$FINNAME.s
 	echo -e "$OUT assembly_$FINNAME.s"
 
-elif [[ "$OPTION" =~ "d" || "$OPTION" =~ "D" ]]; then
+elif [[ "$OPTION" =~ [dD] ]]; then
 	echo -e "Normal compilation..."
 	echo ""
 	gcc $FILE -o $FINNAME
 	echo -e "$OUT $FINNAME"
 
-elif [[ "$OPTION" =~ "e" || "$OPTION" =~ "E" ]]; then
+elif [[ "$OPTION" =~ [eE] ]]; then
 	echo -e "Compilation but turns WARNINGS to ERRORS..."
 	echo ""
 	gcc -Wall -Werror -Wextra -pedantic $FILE -o $FINNAME
