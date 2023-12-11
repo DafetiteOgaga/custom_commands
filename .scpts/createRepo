@@ -61,8 +61,8 @@ curl_check()
 		git commit -m "$REPONAME auto created"
 		git push
 
-		echo -e "\n"
-		echo -e "................Tada! All done!........................"
+		echo -e ".........................................................."
+		echo -e "Successful."
 		echo "\"$REPONAME\" has been created."
 		echo "This repo now reside in the Github Account \"$GUSERNAME\"."
 		echo "It has also been cloned into this directory."
@@ -139,14 +139,14 @@ existing_repo=$(curl -u "$GUSERNAME:ghp_$GTOKEN" "https://api.github.com/user/re
   | grep -o "\"name\": *\"$REPONAME\"" | wc -l)
 
 if [ "$existing_repo" -gt 0 ]; then
-  echo -e "Repository \"$REPONAME\" already exists in https://github.com/$GUSERNAME\nAborting creation."
-  exiting
+	echo -e "Repository \"$REPONAME\" already exists in https://github.com/$GUSERNAME\nAborting creation."
+	exiting
 fi
 
 
 echo -n "Do you want the repository to be private? [Y/N] >>> "
 read -n 1 -s -r PRIVATE_OPTION
-echo -e ""
+echo -e "$PRIVATE_OPTION"
 
 if [[ -z "$PRIVATE_OPTION" ]]; then
 	echo -e "You did not answer the question."
@@ -155,10 +155,10 @@ elif [[ ${#PRIVATE_OPTION} != 1 ]]; then
 	echo -e "Invalid response."
 	exiting
 
-elif [[ ${#PRIVATE_OPTION} =~ 1 && ("$PRIVATE_OPTION" =~ "y" || "$PRIVATE_OPTION" =~ "Y") ]]; then
+elif [[ ${#PRIVATE_OPTION} =~ 1 && ("$PRIVATE_OPTION" =~ [yY]) ]]; then
 	PRIVATE_OPTION="true"
 
-elif [[ ${#PRIVATE_OPTION} =~ 1 && ("$PRIVATE_OPTION" =~ "n" || "$PRIVATE_OPTION" =~ "N") ]]; then
+elif [[ ${#PRIVATE_OPTION} =~ 1 && ("$PRIVATE_OPTION" =~ [nN]) ]]; then
 	PRIVATE_OPTION="false"
 fi
 
@@ -170,8 +170,7 @@ if [[ -z "$RESP" ]]; then
 	echo -e "Current Directory is: $PWD\n"
 	echo -n "Do you want to abort to fix this? [y/N] >>> "
 	read -n 1 -s -r RESP
-
-	echo -e ""
+	echo -e "$RESP"
 	if [[ -z "$RESP" ]]; then
 		echo -e "You did not answer the question."
 		exiting
@@ -180,13 +179,14 @@ if [[ -z "$RESP" ]]; then
 		echo -e "Invalid response."
 		exiting
 
-	elif [[ ${#RESP} =~ 1 && ("$RESP" =~ "y" || "$RESP" =~ "Y") ]]; then
+	elif [[ ${#RESP} =~ 1 && ("$RESP" =~ [yY]) ]]; then
 		echo -e "Ok."
 		exiting
 
-	elif [[ ${#RESP} =~ 1 && ("$RESP" =~ "n" || "$RESP" =~ "N") ]]; then
-
-
+	elif [[ ${#RESP} =~ 1 && ("$RESP" =~ [nN]) ]]; then
+		echo -e ""
+		git init
+		echo -e ""
 		echo -e "\nCreating $REPONAME as $( [[ "$PRIVATE_OPTION" == "true" ]] && echo "private" || echo "public" )\
  in \"https://github.com/$GUSERNAME\" ......\n"
 
