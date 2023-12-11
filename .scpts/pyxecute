@@ -26,9 +26,10 @@ for argument in "$@" ; do
     if [[ $argument == *".py" ]]; then
 		make_exe
 	else
-		echo -n "is $argument a python file? [y/N] >>> "
+		echo -n "Is $argument a python file? [y/N] >>> "
 		read -n 1 -s -r RES
-		if [[ $RES =~ "y" ]]; then
+		echo -e "$RES"
+		if [[ $RES =~ [yY] ]]; then
 			make_exe
 		else
 			nopycount=$((count + 1))
