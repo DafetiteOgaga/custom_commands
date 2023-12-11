@@ -1,36 +1,12 @@
 #!/bin/bash
 
-# Kindly supply your Github Username and Personal Access token(without the "ghp_").
-GUSERNAME="YOUR_GITHUB_USERNAME"
-GTOKEN="YOUR_PERSONAL_ACCESS_TOKEN"
-GEMAIL="YOUR_REGISTERED_GITHUB_EMAIL"
-
-REPONAME="$1"
-RESP="$2"
-exit_status=0
-
-
-#...function .................. #
+#...functions.................. #
 
 function exiting ()
 {
 	echo -e "\nOperation aborted!!!....................."
 	exit 1
 }
-
-if [[ -z "$REPONAME" ]]; then
-	echo ""
-	echo -n "Please provide a repository name to create in \"$GUSERNAME\" >>> "
-	read REPONAME
-
-	if [[ -z "$REPONAME" ]]; then
-		echo -e "\nYou can't create a repo without a name..."
-			exiting
-	fi
-fi
-
-echo ""
-echo -e "You are creating the repository \"$REPONAME\" in the Account \"$GUSERNAME\"...\n"
 
 
 #... chk.................. #
@@ -48,7 +24,8 @@ function git_check()
 	fi
 }
 
-curl_check() 
+
+curl_check()
 {
     echo "....................................................."
     if [ $exit_status -eq 0 ]; then
@@ -101,8 +78,96 @@ curl_check()
 }
 
 
+function get_git_details()
+{
+	read -p "Enter GitHub username >>> " GUSERNAME
+	if [[ -z "$GUSERNAME" ]]; then
+		echo -e "You did not answer the question."
+		exiting
+	fi
+
+	RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "https://api.github.com/users/$GUSERNAME")
+	if [ "$RESPONSE" -ne 200 ]; then
+		echo "Username \"$GUSERNAME\" does not exist on GitHub or there was an issue confirming the existence of the username."
+		exiting
+	fi
+
+	read -p "Enter your GitHub personal access token (without the \"ghp_\") >>> " GTOKEN
+    GTOKEN="${GTOKEN#ghp_}" #used to remove "ghp_" if user adds it
+	if [[ -z "$GTOKEN" ]]; then
+		echo -e "You did not answer the question."
+		exiting
+	fi
+}
+
+
+# ENTRY-POINT
+
+# Kindly supply your Github Username and Personal Access token(without the "ghp_").
+GUSERNAME="YOUR_GITHUB_USERNAME"
+GTOKEN="YOUR_PERSONAL_ACCESS_TOKEN"
+GEMAIL="YOUR_REGISTERED_GITHUB_EMAIL"
+
+REPONAME="$1"
+RESP="$2"
+exit_status=0
+
+if [[ -z "$GUSERNAME" ]]; then
+	get_git_details
+else
+	RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "https://api.github.com/users/$GUSERNAME")
+	if [ "$RESPONSE" -ne 200 ]; then
+		echo "Username \"$GUSERNAME\" does not exist on GitHub or there was an issue confirming the existence of the username."
+		exiting
+	fi
+fi
+
+
+if [[ -z "$REPONAME" ]]; then
+	echo ""
+	echo -n "Please provide a repository name to create in \"$GUSERNAME\" >>> "
+	read REPONAME
+
+	if [[ -z "$REPONAME" ]]; then
+		echo -e "\nYou can't create a repo without a name..."
+			exiting
+	fi
+fi
+echo ""
+
+existing_repo=$(curl -u "$GUSERNAME:ghp_$GTOKEN" "https://api.github.com/user/repos" 2>/dev/null \
+  | grep -o "\"name\": *\"$REPONAME\"" | wc -l)
+
+if [ "$existing_repo" -gt 0 ]; then
+  echo -e "Repository \"$REPONAME\" already exists in https://github.com/$GUSERNAME\nAborting creation."
+  exiting
+fi
+
+
+echo -n "Do you want the repository to be private? [Y/N] >>> "
+read -n 1 -s -r PRIVATE_OPTION
+echo -e ""
+
+if [[ -z "$PRIVATE_OPTION" ]]; then
+	echo -e "You did not answer the question."
+	exiting
+elif [[ ${#PRIVATE_OPTION} != 1 ]]; then
+	echo -e "Invalid response."
+	exiting
+
+elif [[ ${#PRIVATE_OPTION} =~ 1 && ("$PRIVATE_OPTION" =~ "y" || "$PRIVATE_OPTION" =~ "Y") ]]; then
+	PRIVATE_OPTION="true"
+
+elif [[ ${#PRIVATE_OPTION} =~ 1 && ("$PRIVATE_OPTION" =~ "n" || "$PRIVATE_OPTION" =~ "N") ]]; then
+	PRIVATE_OPTION="false"
+fi
+
+
+echo -e "\nYou are creating the repository \"$REPONAME\" in the Account \"https://github.com/$GUSERNAME\"...\n"
+sleep 2
 if [[ -z "$RESP" ]]; then
 	echo -e "Pls, check your PATH and CURRENT DIRECTORY that you are not creating this repo inside an existing repo."
+	echo -e "Current Directory is: $PWD\n"
 	echo -n "Do you want to abort to fix this? [y/N] >>> "
 	read -n 1 -s -r RESP
 
@@ -110,7 +175,7 @@ if [[ -z "$RESP" ]]; then
 	if [[ -z "$RESP" ]]; then
 		echo -e "You did not answer the question."
 		exiting
-	
+
 	elif [[ ${#RESP} != 1 ]]; then
 		echo -e "Invalid response."
 		exiting
@@ -120,20 +185,22 @@ if [[ -z "$RESP" ]]; then
 		exiting
 
 	elif [[ ${#RESP} =~ 1 && ("$RESP" =~ "n" || "$RESP" =~ "N") ]]; then
-		git init
-		echo -e "......................Creating repo........................"
-		response=$(curl -u "$GUSERNAME:ghp_$GTOKEN" -X POST https://api.github.com/user/repos -d '{"name":"'$REPONAME'"}' 2>&1)
+
+
+		echo -e "\nCreating $REPONAME as $( [[ "$PRIVATE_OPTION" == "true" ]] && echo "private" || echo "public" )\
+ in \"https://github.com/$GUSERNAME\" ......\n"
+
+		response=$(curl -u "$GUSERNAME:ghp_$GTOKEN" -X POST "https://api.github.com/user/repos" -d '{"name":"'$REPONAME'", "private":'"$PRIVATE_OPTION"'}' 2>&1)
 		exit_status_code=$?
 
 		# echo "................................................"
+
 		if [[ $response == *"\"name\": \"$REPONAME\""* ]]; then
 			exit_status=0
 		else
 			exit_status=1
 		fi
 		curl_check
-
-		# curl -u "$GUSERNAME:ghp_$GTOKEN" -X POST https://api.github.com/user/repos -d '{"name":"'$REPONAME'"}'
 	fi
 fi
 echo -e ""
