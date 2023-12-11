@@ -1,12 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-from pyfiles.word_counter import counter, lines_words_chars_file
+from pyfiles.git_codes import counter
 
 files = sys.argv
 counter(files)
-
-# print(f"lines: {(lines_words_chars_file(files))[0]}")
-# print(f"words: {(lines_words_chars_file(files))[1]}")
-# print(f"chars: {(lines_words_chars_file(files))[2]}")
-# print(f"file: {(lines_words_chars_file(files))[3]}")
