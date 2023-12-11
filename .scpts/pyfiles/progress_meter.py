@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys, time
+import time
 
 def progress_bar(duration: int, resp: str):
     total_iterations = 100
