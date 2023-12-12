@@ -185,8 +185,8 @@ if [[ -z "$RESP" ]]; then
 
 	elif [[ ${#RESP} =~ 1 && ("$RESP" =~ [nN]) ]]; then
 		echo -e ""
-		git init
-		echo -e ""
+		# git init
+		# echo -e ""
 		echo -e "\nCreating $REPONAME as $( [[ "$PRIVATE_OPTION" == "true" ]] && echo "private" || echo "public" )\
  in \"https://github.com/$GUSERNAME\" ......\n"
 
