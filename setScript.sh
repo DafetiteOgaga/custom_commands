@@ -129,11 +129,7 @@ unametokenmaill()
 				echo -e "You must decide to proceed."
 			fi
 		done
-		# echo -e "Hey! I still have your details"
-		# details
-		# echo -n "Would you rather use this values? [y/N] >>> "
-		# read -n 1 -s -r VALS
-		# echo -e ""
+		
 		if [[ "$VALS" =~ [yY] ]]; then
 			echo -e ""
 		elif [[ "$VALS" =~ [nN] ]]; then
@@ -155,8 +151,7 @@ unametokenmaill()
 			echo -e ""
 		fi
 	done
-	# echo -n "Check that these are correct. Are they? [y/N] >>> "
-	# read -n 1 -s -r ANS
+
 	echo ""
 	if [[ "$ANS" =~ [yY] ]]; then
 		scptcpy
@@ -231,6 +226,7 @@ dOptions=(
 	"  createRepo command - creates a github repository right from CLI"
 	"  deleteRepo command - deletes a github repository right from CLI"
 	"  cloneRepo command - clone a repository with less commands"
+	"  viewRepos command - displays the list of repos from any account right from CLI"
 	"  betty linter command"
 	"  pycode command a \"pycodestyle (PEP 8)\" linter"
 	"  curfol command - opens cwd using file explorer"
@@ -271,6 +267,8 @@ category()
 			new_value=22222
 		elif [[ "$btype" == "cl" ]]; then
 			new_value=33333
+		elif [[ "$btype" == "vr" ]]; then
+			new_value=55555
 		elif [[ "$btype" == "ct" ]]; then
 			new_value=44444
 		fi
@@ -305,63 +303,66 @@ options()
 		DFILENAME="cloneRepo"
 		category b "$converted_selection" "cl"
 	elif [[ "$converted_selection" == 6 ]]; then
+		DFILENAME="viewRepos"
+		category b "$converted_selection" "vr"
+	elif [[ "$converted_selection" == 7 ]]; then
 		DFILENAME="betty"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 7 ]]; then
+	elif [[ "$converted_selection" == 8 ]]; then
 		DFILENAME="pycode"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 8 ]]; then
+	elif [[ "$converted_selection" == 9 ]]; then
 		DFILENAME="curfol"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 9 ]]; then
+	elif [[ "$converted_selection" == 10 ]]; then
 		DFILENAME="pyxecute"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 10 ]]; then
+	elif [[ "$converted_selection" == 11 ]]; then
 		DFILENAME="pycodemore"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 11 ]]; then
+	elif [[ "$converted_selection" == 12 ]]; then
 		DFILENAME="cls"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 12 ]]; then
+	elif [[ "$converted_selection" == 13 ]]; then
 		DFILENAME="authorID"
 		category b "$converted_selection"
 	# ...py script files..................................... #
-	elif [[ "$converted_selection" == 13 ]]; then
+	elif [[ "$converted_selection" == 14 ]]; then
 		DFILENAME="wcount"
 		category p "$converted_selection"
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 14 ]]; then
+	elif [[ "$converted_selection" == 15 ]]; then
 		DFILENAME="ctemp"
 		category b "$converted_selection" "ct"
 	# ...py script files..................................... #
-	elif [[ "$converted_selection" == 15 ]]; then
+	elif [[ "$converted_selection" == 16 ]]; then
 		DFILENAME="clear_commit"
 		category p "$converted_selection"
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 16 ]]; then
+	elif [[ "$converted_selection" == 17 ]]; then
 		DFILENAME="mycompile"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 17 ]]; then
+	elif [[ "$converted_selection" == 18 ]]; then
 		DFILENAME="pycompile"
 		category b "$converted_selection"
 	# ...C files............................................. #
-	elif [[ "$converted_selection" == 18 ]]; then
+	elif [[ "$converted_selection" == 19 ]]; then
 		DFILENAME="myascii"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 19 ]]; then
+	elif [[ "$converted_selection" == 20 ]]; then
 		DFILENAME="rot13"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 20 ]]; then
+	elif [[ "$converted_selection" == 21 ]]; then
 		DFILENAME="rot47"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 21 ]]; then
+	elif [[ "$converted_selection" == 22 ]]; then
 		DFILENAME="guessGame"
 		category c "$converted_selection"
 	fi
 
 	#....tags............................. #
 	
-	if [[ "$new_value" =~ [4-6][0-9][0-9]|11111|22222|33333|44444 ]]; then
+	if [[ "$new_value" =~ [4-6][0-9][0-9]|11111|22222|33333|44444|55555 ]]; then
 		FILETYPE="bashscript"
 	elif [[ "$new_value" =~ [1-3][0-9][0-9] ]]; then
 		FILETYPE="cfile"
@@ -442,13 +443,7 @@ opertn()
 		echo -e "Creating $DFILENAME as a command..."
 		echo -e ""
 		
-		# if [[ "$new_value" == 11111 ]]; then
-		# 	unametokenmaill "createRepoGeneral"
-		# elif [[ "$new_value" == 22222 ]]; then
-		# 	unametokenmaill "createRepoGeneral"
-		# elif [[ "$new_value" == 33333 ]]; then
-		# 	unametokenmaill "cloneRepoGeneral"
-		if [[ "$new_value" =~ ^(11111|22222|33333)$ ]]; then
+		if [[ "$new_value" =~ ^(11111|22222|33333|55555)$ ]]; then
 			unametokenmaill
 		elif [[ "$new_value" == 44444 ]]; then
 			echo -e "custom commands" >  $SDIR/C_template.c
@@ -470,14 +465,10 @@ pyfiles() {
             destination="$SDIR/pyfiles/$filename"
 
             if [[ -f "$destination" ]]; then
-                # File exists in destination, replace it
                 cp "$file" "$destination"
-                # echo "Replaced: $filename #################***************##########"
             else
-                # File doesn't exist in destination, create it
                 echo "custom commands" > "$destination"
 				cp "$file" "$destination"
-                # echo "Created: $filename #################***************##########"
             fi
         fi
     done
@@ -585,6 +576,8 @@ instructn()
 		echo -e "$STRT delete a github repo right from your terminal. $ANYWHERE: $DFILENAME"
 	elif [[ $DFILENAME == "cloneRepo" ]]; then
 		echo -e "$STRT clone repos from github. $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "viewRepos" ]]; then
+		echo -e "$STRT view the public repos of any github account. $ANYWHERE: $DFILENAME"
 	elif [[ $DFILENAME == "mycompile" ]]; then
 		echo -e "$STRT compile your files $EFFT $ANYWHERE: $DFILENAME <filename>"
 	elif [[ $DFILENAME == "ctemp" ]]; then
