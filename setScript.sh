@@ -181,8 +181,6 @@ cpfunc()
 	if [[ "$FILETYPE" =~ "bashscript" || "$FILETYPE" =~ "pyscript" ]]; then
 		# copies the content
 		cp "$HODN/$DFILENAME" "$SDIR/$DFILENAME"
-		# make the script executable
-		chmod 744 $SDIR/$DFILENAME
 	elif [[ "$FILETYPE" =~ "cfile" ]]; then
 		# copies the content
 		if [[ "$WHICH" =~ 'p' ]]; then
@@ -191,6 +189,8 @@ cpfunc()
 			cp "$HODN/pc/$DFILENAME" "$SDIR/$DFILENAME"
 		fi
 	fi
+	# make the script executable
+	chmod +x $SDIR/$DFILENAME
 }
 
 intro()

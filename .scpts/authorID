@@ -9,20 +9,20 @@ auth()
 	local var="$WHICH"
 
 	if [[ ${#var} == 1 ]]; then
-		if [[ "$var" =~ [cC] ]]; then
-			# echo -e "Global Author Identity config..."
-			sudo git config --global user.email "$EMAIL"
-			sudo git config --global user.name "$USERNAME"
-		elif [[ "$var" =~ [pP] ]]; then
-			git config --global user.email "$EMAIL"
-			git config --global user.name "$USERNAME"
-		elif [[ "$var" =~ [qQ] ]]; then
-			echo ""
-			echo -e "Ok."
-			exit 0
-		else
-			echo -e "Invalid"
-		fi
+		# if [[ "$var" =~ [cC] ]]; then
+		# 	# echo -e "Global Author Identity config..."
+		# 	sudo git config --global user.email "$EMAIL"
+		# 	sudo git config --global user.name "$USERNAME"
+		# elif [[ "$var" =~ [pP] ]]; then
+		git config --global user.email "$EMAIL"
+		git config --global user.name "$USERNAME"
+		# elif [[ "$var" =~ [qQ] ]]; then
+		# 	echo ""
+		# 	echo -e "Ok."
+		# 	exit 0
+		# else
+		# 	echo -e "Invalid"
+		# fi
 	else
 		echo -e "Invalid"
 	fi
@@ -61,7 +61,7 @@ else
 fi
 empty1 "$RESP"
 
-if [[ "$RESP" =~ [lL] ]]; then
+if [[ "$RESP" =~ [lgLG] ]]; then
 	echo -n "Check your PATH AND CURRENT DIRECTORY to be sure you are in a Repo, are you? [y/N] >>> "
 	read -n 1 -s -r YNREPO
 	echo -e "$YNREPO"
@@ -99,9 +99,9 @@ if [[ "$RESP" =~ [lL] ]]; then
 	echo -e "Local Author Identity config..."
 	git config user.email "$EMAIL"
 	git config user.name "$USERNAME"
-elif [[ "$RESP" [gG] ]]; then
+elif [[ "$RESP" =~ [gG] ]]; then
 	echo -e "Global Author Identity config..."
-        auth $WHICH
+        auth "$WHICH"
 fi
 echo "........................................."
 echo -e "Done...\n"
