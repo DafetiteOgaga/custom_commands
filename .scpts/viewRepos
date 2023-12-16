@@ -1,0 +1,155 @@
+#!/bin/bash
+
+# Kindly supply your Github Username and Personal Access Token(without the "ghp_").
+GUSERNAME="YOUR_GITHUB_USERNAME"
+GTOKEN="YOUR_PERSONAL_ACCESS_TOKEN"
+GEMAIL="YOUR_REGISTERED_GITHUB_EMAIL"
+TOKEN=""
+
+disp()
+{
+    page_size=9
+    total_repos=${#repo_names[@]}
+    num_pages=$(( (total_repos + page_size - 1) / page_size ))
+
+    page=1
+    while true; do
+        clear
+        echo "Available repositories in $AUSERNAME:"
+        echo "Page $page:"
+        
+        serial_number=0
+        for ((i = (page - 1) * page_size; i < page * page_size && i < total_repos; i++)); do
+            ((serial_number++))
+            echo "$serial_number. ${repo_names[i]}"
+            sleep 0.05
+        done
+
+        echo -e ""
+        if (( $page > 1 )); then
+            echo "[p] - Previous Page"
+        fi
+
+        if (( $page < $num_pages )); then
+            echo "[n] - Next Page"
+        fi
+		echo "[q] - quit"
+
+
+		selection=""
+        echo -e ""
+        read -n 1 -s -r -p ">>> " selection
+        echo -e "$selection"
+
+        if [[ "$selection" =~ [qQ] ]]; then
+			echo -e ""
+			echo -e "Cheers."
+			exit 0
+		elif [[ "$selection" =~ [nN] && "$page" -lt "$num_pages" ]]; then
+            ((page++))
+        elif [[ "$selection" =~ [pP] && "$page" -gt 1 ]]; then
+            ((page--))
+        fi
+    done
+}
+
+get_repo_name()
+{
+	echo ""
+	echo "Fetching repositories ..."
+	echo ""
+	if [[ -z "$TOKEN" ]]; then
+		public_list
+	elif [[ "$TOKEN" ]]; then
+		public_response=$(curl -s "https://api.github.com/users/$AUSERNAME/repos?type=public&per_page=100")
+
+		private_response=$(curl -s -H "Authorization: token $TOKEN" \
+		"https://api.github.com/user/repos?visibility=private")
+
+		if [[ "$public_response" == *"message"* && "$public_response" == *"Not Found"* ]]; then
+			echo "User $AUSERNAME not found on GitHub."
+			exit 1
+		fi
+
+		if [[ "$private_response" == *"message"* && "$private_response" == *"Bad credentials"* ]]; then
+			echo "Bad credentials. Make sure your GitHub token is valid and has the required permissions."
+			exit 1
+		fi
+
+		if [[ "$public_response" == "" || "$private_response" == "" ]]; then
+			echo -e "Could not connect to https://github.com/$AUSERNAME"
+			echo -e "Check your internet connection."
+			echo -e ""
+			exit 1
+		fi
+
+		public_resp=$(echo "$public_response" | grep -oP '"full_name": "\K[^"]+' | awk -F'/' '{print $2}')
+
+    	private_resp=$(echo "$private_response" | grep -oP '"full_name": "\K[^"]+' | awk -F'/' '{print $2}')
+		
+		pub_arr=($public_resp)
+		pri_arr=($private_resp)
+
+		for ((i=0; i<${#pub_arr[@]}; i++)); do
+			pub_arr[$i]="${pub_arr[$i]} (pub)"
+		done
+
+		for ((i=0; i<${#pri_arr[@]}; i++)); do
+			pri_arr[$i]="${pri_arr[$i]} (priv)"
+		done
+
+		repo_names=("${pub_arr[@]}" "${pri_arr[@]}")
+		disp
+	fi
+}
+
+public_list()
+{
+	public_response=$(curl -s "https://api.github.com/users/$AUSERNAME/repos?type=public&per_page=100")
+
+	if [[ "$public_response" == *"message"* && "$public_response" == *"Not Found"* ]]; then
+		echo "User $AUSERNAME not found on GitHub."
+		exit 1
+	fi
+
+	if [[ "$public_response" == "" ]]; then
+		echo -e "Could not connect to https://github.com/$AUSERNAME"
+		echo -e "Check your internet connection."
+		echo -e ""
+		exit 1
+	fi
+
+	public_resp=$(echo "$public_response" | grep -oP '"full_name": "\K[^"]+' | awk -F'/' '{print $2}')
+
+	repo_names=($public_resp)
+
+	for ((i=0; i<${#repo_names[@]}; i++)); do
+		repo_names[$i]="${repo_names[$i]} (pub)"
+	done
+	disp
+}
+
+
+# main ...
+while true; do
+	echo ""
+	echo -n "Are you viewing your Github Account by the name \"$GUSERNAME\"? [y/N] >>> "
+	read -n 1 -s -r UREPO
+	echo -e "$UREPO"
+	if [[ "$UREPO" =~ [ynqYNQ] || "$UREPO" == "" ]]; then
+		break
+	fi
+done
+
+if [[ "$UREPO" =~ [yY] || "$UREPO" == "" ]]; then
+	AUSERNAME="$GUSERNAME"
+	TOKEN="ghp_$GTOKEN"
+elif [[ "$UREPO" =~ [nN] ]]; then
+	echo ""
+	echo -n "Provide the Github Username >>> "
+	read AUSERNAME
+fi
+
+while true; do
+		get_repo_name
+done
