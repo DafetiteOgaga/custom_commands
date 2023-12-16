@@ -28,7 +28,8 @@
    * pushfile command - similar to "push" command but it updates the remote with individual file commit messages for good practice (Note: you can set and remove "Update README.md" as your default commit message for all README.md files)
    * createRepo command - creates a github repository right from the command line
    * deleteRepo command - deletes a github repository right from the command line
-   * cloneRepo command - clone a repository with less commands
+   * cloneRepo command - displays the list of repositories and clone them from any account right from the command line. Collaboration has never been more interesting!
+   * viewRepos command - displays the list of repositories from any account right from the command line. Bringing the information to you on the go!
    * betty linter command
    * pycode command - a pycodestyle (PEP 8) linter
    * curfol command - opens current working directory using file explorer
@@ -60,7 +61,8 @@ This file contains the notable changes made to the Custom Commands project.
 <br>
 
 ## New
-   - deleteRepo command -checks and deletes github repositories
+   - added viewRepos command - you can now view any github repositories right from you CLI
+   - deleteRepo command - checks and deletes github repositories
    - clear_commit command clears the local staging area and commits
    - pushfile command updates the remote with individual commits to each files
    - pyxecute can now make python scripts that has no .py extension into executables and still filter out non python files
@@ -90,6 +92,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Changes
+   - massive improvements made to cloneRepo command. All you now need to clone your repo is just to run the command. It displays all your private and public repositories, giving you the option of cloning any of them with the selection menu. To clone another person's public repo, you only need the username. Collaboration has never been more interesting, you can now do so easily using this command
    - you can now observe the progress of setting up auto commit message for README.md files via a progress bar
    - added the ability to set "Update README.md" as your default commit message to all README.md files
    - new updates and general improvements to the the program
@@ -113,6 +116,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Fixes
+   - minor bug fixes made to setScript, cloneRepo and createRepo commands
    - every prompt that require single character as response are now auto executing soon as the character is provided
    - you don't have to enter your information twice anymore when running createRepo and/or cloneRepo anymore in the same session
    - "Next" and "Previous" choices no longer reinstall the previous command and clears off the screen, any information belonging to the previous command
