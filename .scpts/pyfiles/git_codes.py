@@ -6,9 +6,10 @@ from .my_prompt import main as prompt_1ch
 
 def add_commit(file):
 	"""This function will:
-	1. the input is a directory and dress it for processing
-	2. Check if the input file/directory exists in the 
+	1. Check if the input is a directory and dress it for processing
+	2. Check if the file/directory exists in the 
 		current working directory
+	3. Check and skip files/directories that have been staged
 	3. Loop through the files as provided via the command line. 
 		Then, add and commit to each files separately
 	"""
@@ -20,7 +21,7 @@ def add_commit(file):
 	file = re_file
 	if file not in os.listdir():
 		print()
-		print("::::: {} does not exist".format(file))
+		print("::::: {} does not exist in the current directory".format(file))
 		print()
 		print("...................................................")
 		return 1
@@ -168,6 +169,9 @@ def set_default_commit_msg(par: str):
 
 
 def print_set_commit(var: str):
+	"""This function prints information regarding the state of "Update README.md" setting.
+	"""
+
 	print("........................................................................................")
 	if var.lower() == "unset":
 		print('"Update README.md" is no longer your default commit message to all README.md files')
@@ -207,16 +211,16 @@ def push(file_list: list):
 	print("#### pushing ...################################################")
 	push = subprocess.run(["git", "push"])
 	if push.returncode == 0:
-		print("\nThe file(s)/folder(s): {} are in the remote.".format([xfile for xfile in file_list]))
+		print()
+		print("The file(s)/folder(s): {} are in the working tree.".format([xfile for xfile in file_list]))
 	else:
 		print("Oops! I got {}".format(push.stderr))
 		sys.exit()
 
 
 def add_commit_all():
-	"""This function stages and commit a single message to all the
-		changes in the current working directory intended to be
-		updated to the remote
+	"""This function stages and commits a message to all the changes in
+		the working tree
 	"""
 
 	while True:
@@ -237,9 +241,14 @@ def add_commit_all():
 
 
 def print_stdout(stdout: str):
+	"""This function nicely prints out the output stream the result of the returned
+		argument passed to it
+	"""
+
 	for i in stdout.split("\n"):
 		time.sleep(.03)
 		print(f"::::: {i}")
+
 
 def quit(val):
 	"""
@@ -253,9 +262,9 @@ def quit(val):
 
 
 def clear_staged_and_commit():
-	"""This function unstage and clears the recent changes on the
+	"""This function will unstage and clears the recent changes on the
 		local machine and revert the machine to the same state as
-		the most recent on the remote
+		the most recent on the working tree
 	"""
 
 	print()
@@ -268,6 +277,7 @@ Are you sure that you want to proceed? [y/N] >>> """)
 		clear = subprocess.run(["git", "reset", "--hard", f"origin/{current_branch.stdout.strip()}"])
 		print("Revert successful...")
 		print("Recent changes on local machine cleaned.")
+		print("Most recent state of the working tree restored.")
 	else:
 		print("Operation aborted.")
 	print()
@@ -328,7 +338,7 @@ def main_enrty():
 
 		while True:
 			# print('[y] or "Enter" to push these changes to remote')
-			print('[y] to push these changes to remote')
+			print('[y] (push) update your working tree with these changes')
 			print('[q] to abort')
 #			print('[u] to unset auto commit message for README.md files') # xmodification
 			print('[r] to clear your staging area and commits')
@@ -411,7 +421,6 @@ def lines_words_chars_file(files):
 		print("lines: {}, words: {}, characters: {}".format(lines, words, chars))
 	
 	return lines, words, chars, name
-
 
 
 if __name__ == "__main__":
