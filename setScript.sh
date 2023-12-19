@@ -20,6 +20,16 @@ HODN=".scpts"
 UINPUT="$6"
 
 
+quit()
+{
+	local var="$1"
+	if [[ "$var" == "q" || "$var" == "Q" ]]; then
+	echo ""
+		echo "Operation aborted."
+		exit 0
+	fi
+}
+
 auth()
 {
 	local var="$WHICH"
@@ -45,20 +55,6 @@ invalid_selection()
 	fi
 }
 
-pchk()
-{
-	local NUM1=36
-	local NUM2=${#NTOKEN}
-
-	if [[ $NUM2 != $NUM1 ]]; then
-		echo -e ""
-		echo -e "TOKEN: $NTOKEN which you supplied is not a classic token."
-		echo -e "Make sure to remove \"ghp_\" and that there is no whitespace."
-		echo ""
-		exit 1
-	fi
-}
-
 streamedit()
 {
 	local var1="$1"
@@ -81,6 +77,7 @@ unametokenmaill2()
 	while [[ -z "$NUSERNAME" ]]; do
 		echo -n "Kindly Enter your Github Username >>> "
 		read NUSERNAME
+		quit "$NUSERNAME"
 		if [[ -z "$NUSERNAME" ]]; then
 			echo -e "You must provide your Github Username to proceed."
 			echo -e ""
@@ -92,18 +89,33 @@ unametokenmaill2()
 	echo -e "What you need to supply is $P2 and leave out the rest."
 	echo -e "........................................................"
 	sleep 0.1
-	while [[ -z "$NTOKEN" ]]; do
-		echo -n "Your Classic Github token >>> "
+	pass=10
+	while true; do
+		echo -n "Your Classic Github token (without \"ghp_\") >>> "
 		read NTOKEN
-		if [[ -z "$NTOKEN" ]]; then
-			echo -e "You must provide your Classic Github token to proceed."
+		quit "$NTOKEN"
+		NUM2=${#NTOKEN}
+		echo -e "$NUM2"
+		if [[ $NUM2 -ne 36 && $NUM2 -ne 40 ]]; then
 			echo -e ""
+			echo -e "TOKEN: $NTOKEN which you supplied is not a classic token."
+			echo -e "Make sure to remove \"ghp_\" and that there is no whitespace."
+			echo ""
 		fi
+		if [[ $NUM2 -eq 40 && "$NTOKEN" == *"ghp_"* ]]; then
+			NTOKEN="${NTOKEN#ghp_}"
+			break
+		elif [[ $NUM2 -eq 36 ]]; then
+			break
+		fi
+		echo -e "You must provide your Classic Github token to proceed."
+		echo -e ""
 	done
-	pchk
+	
 	while [[ -z "$NEMAIL" ]]; do
 		echo -n "Lastly, your Github Email >>> "
 		read NEMAIL
+		quit "$NEMAIL"
 		if [[ -z "$NEMAIL" ]]; then
 			echo -e "You must provide your Github Email to proceed."
 			echo -e ""
