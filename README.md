@@ -27,7 +27,7 @@
    * pull command - updates your local machine from remote
    * pushfile command - similar to "push" command but it updates the remote with individual file commit messages for good practice (Note: you can set and remove "Update README.md" as your default commit message for all README.md files)
    * createRepo command - creates a github repository right from the command line
-   * deleteRepo command - deletes a github repository right from the command line
+   * deleteRepo command - deletes a github repository right from the command line. NOTE: THIS COMMAND IS TO BE USED WITH CAUTION, any repository deleted CANNOT be reversed.
    * cloneRepo command - displays the list of repositories and clone them from any account right from the command line. Collaboration has never been more interesting!
    * viewRepos command - displays the list of repositories from any account right from the command line. Bringing the information to you on the go!
    * betty linter command
@@ -61,6 +61,7 @@ This file contains the notable changes made to the Custom Commands project.
 <br>
 
 ## New
+   - pushfile commands will now skip already staged and committed files during usage. making the use of "pushfile *" more robust
    - added viewRepos command - you can now view any github repositories right from you CLI
    - deleteRepo command - checks and deletes github repositories
    - clear_commit command clears the local staging area and commits
@@ -92,6 +93,8 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Changes
+   - deleting your repo is now much flexible as all you have to is select the number corresponding to the repo from the display me listing all of your repos
+   - error of "... divergent branches ... reconcile divergent branches" has been fixed for all pull processes
    - massive improvements made to cloneRepo command. All you now need to clone your repo is just to run the command. It displays all your private and public repositories, giving you the option of cloning any of them with the selection menu. To clone another person's public repo, you only need the username. Collaboration has never been more interesting, you can now do so easily using this command
    - you can now observe the progress of setting up auto commit message for README.md files via a progress bar
    - added the ability to set "Update README.md" as your default commit message to all README.md files
