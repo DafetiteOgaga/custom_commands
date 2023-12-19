@@ -59,7 +59,14 @@ def add_commit(file):
 			pass  # xnorm
 #		commit_message = "Update README.md" # xmodification
 #		set_default = "auto" # xmodification
-	if not set_default:
+	file_status = subprocess.run(["git", "status"], capture_output=True, text=True)
+	if file not in file_status.stdout:
+		time.sleep(.04)
+		print("::#:: {} has previously been staged and committed".format(file))
+		return 3
+	else:
+		print()
+	if not set_default:		
 		commit_message = input("Enter a commit message for {} [q] to abort >>> ".format(file))
 #		if commit_message.lower() == "unset commit" and file != "README.md": # xmodification
 #			success_mode = set_default_commit_msg("n") # xmodification
@@ -74,20 +81,16 @@ def add_commit(file):
 		return 2
 		
 	add = subprocess.run(["git", "add", file], capture_output=True, text=True)
-	for i in add.stdout.split("\n"):
-		print(f"::::: {i}")
-		time.sleep(.03)
 	if add.returncode != 0:
 		print("Oops! I got {}. When trying to stage {}".format(add.stderr, file))
 		sys.exit()
 	else:
+		print_stdout(add.stdout)
 		print("{} successfully staged.".format(file))
 		
 	commit = subprocess.run(["git", "commit", "-m", commit_message], capture_output=True, text=True)
-	for i in commit.stdout.split("\n"):
-		print(f"::::: {i}")
-		time.sleep(.03)
 	if commit.returncode == 0:
+		print_stdout(commit.stdout)
 		print('"{}" successfully committed to {}.'.format(commit_message, file))
 	elif commit.returncode == 1:
 		if "nothing to commit, working tree clean" in commit.stdout.split("\n"): # and commit.stderr == None:
@@ -148,7 +151,7 @@ def set_default_commit_msg(par: str):
 				# print(':::::::::: {}'.format(line.strip()))
 
 			progress = count / total_iterations # for bar
-			print("\r{}. please wait... : %-40s done %d%%".format(my_str) % ('>' * int(40 * progress), int(100 * progress)), end='') # for bar
+			print("\r{}. please wait... : %-40s %d%% done.".format(my_str) % ('>' * int(40 * progress), int(100 * progress)), end='') # for bar
 			count += 1 # for bar
 		print("") # for bar
 	shutil.copy(temp_file, source_file)
@@ -180,13 +183,20 @@ def pull():
 
 	print()
 	print("#### pulling ...################################################")
-	pull = subprocess.run(["git", "pull"])
+	pull = subprocess.run(["git", "pull"], capture_output=True, text=True)
 	if pull.returncode == 0:
-		print("\nPull successful...")
-		print()
+		print_stdout(pull.stdout)
+	elif "You have divergent branches and need to specify how to reconcile them" in pull.stderr\
+			and "Need to specify how to reconcile divergent branches" in pull.stderr:
+		rebase = subprocess.run(["git", "config", "pull.rebase", "true"])
+		pull = subprocess.run(["git", "pull"], capture_output=True, text=True)
+		if pull.returncode == 0:
+			print_stdout(pull.stdout)
 	else:
 		print("Oops! I got {}".format(pull.stderr))
 		sys.exit()
+	print("Pull successful...")
+	print()
 
 
 def push(file_list: list):
@@ -220,8 +230,16 @@ def add_commit_all():
 		print("You have to provide a commit message.")
 	print("#### staging and committing ...################################")
 	subprocess.run(["git", "add", "."])
-	subprocess.run(["git", "commit", "-m", commit_message])
+	commit = subprocess.run(["git", "commit", "-m", commit_message], capture_output=True, text=True)
+	if commit.returncode == 0:
+		print_stdout(commit.stdout)
+		print('"{}" successfully committed to files.'.format(commit_message))
 
+
+def print_stdout(stdout: str):
+	for i in stdout.split("\n"):
+		time.sleep(.03)
+		print(f"::::: {i}")
 
 def quit(val):
 	"""
@@ -262,17 +280,20 @@ def main_enrty():
 
 	arg_len = len(sys.argv)
 	count = 0
-	print("...................................................")
+	print("...............................................................")
+#	print("Enter \"unset commit\" to unset default README.md commit message.") # xmodification
+#	print("...............................................................")	# xmodification
 	if arg_len > 0:
 		if arg_len > 1:
 			all_files = []
-#			print("Enter \"unset commit\" to unset default README.md commit message.") # xmodification
 			while count != (arg_len - 1):
 				file = (sys.argv)[count + 1]
 				res_add_commit = add_commit(file)
-				if res_add_commit == 1:
+				# moves to the next file
+				if res_add_commit in [1, 3]:
 					count += 1
 					continue
+				# stays on the current file
 				elif res_add_commit == 2:
 					continue
 				if res_add_commit == "mod":
@@ -283,7 +304,6 @@ def main_enrty():
 		
 		if arg_len == 1:
 			all_files = []
-#			print("Enter \"unset commit\" to unset default README.md commit message.") # xmodification
 			while True:
 				file = input("Enter file(s). Enter [q] after last file >>> ")
 				quit(file)
@@ -293,9 +313,11 @@ def main_enrty():
 				
 				if file:
 					res_add_commit = add_commit(file)
-					if res_add_commit == 1:
+					# moves to the next file
+					if res_add_commit in [1, 3]:
 						count += 1
 						continue
+					# stays on the current file
 					elif res_add_commit == 2:
 						continue
 					if res_add_commit == "mod":
