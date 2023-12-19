@@ -247,8 +247,8 @@ public_list()
 
 # main ...
 echo ""
-echo -e "You are attempting to clone a Github repository.\n"
-echo -n "Is the Github Account \"$GUSERNAME\" yours? [y/N] >>> "
+echo -e "You are attempting to clone a Github repository."
+echo -n "Do you want to clone from the Github Account \"$GUSERNAME\"? [y/N] >>> "
 read -n 1 -s -r UREPO
 echo -e "$UREPO"
 
@@ -266,8 +266,9 @@ fi
 #... chk.................. #
 while true; do
 	echo ""
-	echo -e "Pls, check your PATH and CURRENT DIRECTORY that you are not cloning into an existing repo."
-
+	echo -e "Pls, cnofirm that this is the directory where you want to clone the repo:"
+	echo -e "Current Directory: $(pwd)"
+	echo ""
 	echo -n "Do you want to abort to fix this? [y/N] >>> "
 	read -n 1 -s -r CLCR
 	echo -e "$CLCR"
