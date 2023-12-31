@@ -1,0 +1,104 @@
+#!/bin/bash
+
+disp()
+{
+    page_size=9
+    total_repos=${#entries_arr[@]}
+    num_pages=$(( (total_repos + page_size - 1) / page_size ))
+
+    page=1
+    while true; do
+        clear
+        echo "Available commit history in working directory: $repo_name"
+        echo "Page $page:"
+        
+        serial_number=0
+        for ((i = (page - 1) * page_size; i < page * page_size && i < total_repos; i++)); do
+            ((serial_number++))
+            echo -e "$serial_number. ${entries_arr[i]}"
+            sleep 0.05
+        done
+
+        echo -e ""
+        if (( $page > 1 )); then
+            echo "[p] - Previous Page"
+        fi
+
+        if (( $page < $num_pages )); then
+            echo "[n] - Next Page"
+        fi
+		echo "[q] - quit"
+
+		selection=""
+        echo -e ""
+        read -n 1 -s -r -p "Enter the number corresponding to the repository you want to clone >>> " selection
+        echo -e "$selection"
+
+        if [[ "$selection" =~ [qQ] ]]; then
+			echo ""
+			echo "Cheers"
+			exit 0
+		elif [[ "$selection" =~ [nN] && "$page" -lt "$num_pages" ]]; then
+            ((page++))
+        elif [[ "$selection" =~ [pP] && "$page" -gt 1 ]]; then
+            ((page--))
+        elif [[ "$selection" =~ ^[1-9]|[1-9][0-9]|[1-9][0-9][0-9]*$ && "$selection" -le "$serial_number" ]]; then
+            converted_selection="$(( ($page - 1) * $page_size + $((selection-1)) ))"
+            selected_commit=${subject_entries[$converted_selection]}
+            
+			echo -e ""
+            echo "Commit: $selected_commit"
+            break
+        else
+            echo "Invalid selection."
+        fi
+    done
+}
+
+BLUE='\033[0;34m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+MAGENTA='\033[0;35m'
+# ...............
+
+repo_name=$(git config -l | grep -oP '(?<=\/)[^\/]+(?=\.git)')
+subject_entries=()
+entries_arr=()
+while read -r line; do
+    commit_hash=$(echo "$line" | awk '{print substr($1, 1, 10)}')
+    author=$(echo "$line" | awk '{print $2}')
+    email=$(echo "$line" | awk '{print $3}')
+    date=$(echo "$line" | awk '{print $4, $5, $6, $7, $8, $9}')
+    subject=$(echo "$line" | awk '{ s = ""; for (i=10; i<=NF; i++) { s = s $i " "; if (length(s) > 20) { s = substr(s, 1, 20) "... "; break; } } print s }')
+    subject_complete=$(echo "$line" | awk '{for (i=10; i<=NF; i++) printf "%s ", $i; print ""}')
+
+    colored_commit_hash="${BLUE}$commit_hash\033[0m"
+    colored_author="${YELLOW}$author\033[0m"
+    colored_email="${GREEN}$email\033[0m"
+    colored_subject="${MAGENTA}$subject\033[0m"
+
+	colored_line="[$colored_commit_hash] $colored_author $date $colored_subject"
+
+    entries_arr+=("$colored_line")
+    subject_entries+=("$subject_complete")
+done < <(git log --oneline --format="%H %an %ae %ad %s")
+
+count=0
+while true; do
+    if [[ "$count" -eq 0 ]]; then
+        selection="y"
+    else
+        echo ""
+        read -n 1 -s -r -p "Look another? [y/N] >>> " selection
+        echo "$selection"
+    fi
+    if [[ "$selection" =~ [nqNQ] ]]; then
+        echo ""
+        echo "Cheers."
+        exit 0
+    elif [[ "$selection" =~ [yY] ]]; then
+        disp
+    fi
+    ((count++))
+done
+
