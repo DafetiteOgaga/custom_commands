@@ -1,0 +1,152 @@
+#!/bin/bash
+
+RED='\033[0;31m'
+BLUE='\033[0;34m'
+GREEN='\033[0;32m'
+
+lines=".............................................."
+
+file_check()
+{
+	local MAINFILE="$1"
+	local var="$2"
+	if [[ "$var" == "in" ]]; then
+		local PATCHFILE="$PATCHFILE"
+	else
+		local PATCHFILE="$3"
+	fi
+
+	file_type="Regular"
+	echo "main file: $MAINFILE"
+	if [[ "$PATCHFILE" =~ \.patch$|\.diff$ ]]; then
+		file_type="Patch"
+		echo "file name: $PATCHFILE"
+		echo "file type: $file_type"
+		fix_file "$PATCHFILE"
+	fi
+	
+	if [[ "$file_type" != "patch" ]]; then
+		# echo "diff -u \"$1\" \"$PATCHFILE\"  1"
+		echo "file type: $file_type"
+		patch_output=$(diff -u "$MAINFILE" "$PATCHFILE" 2>&1)
+		err_message="$(echo "$patch_output" | awk '{print $2}') does not exist"
+	fi
+}
+
+quit()
+{
+	local var="$1"
+	if [[ "$var" =~ [qQ] ]]; then
+		echo ""
+		echo "Cheers."
+		exit 0
+	fi
+}
+
+fix_file()
+{
+	local patch="$1"
+	echo ""
+	read -n 1 -s -r -p "Use "$patch" to fix "$MAINFILE"? [y/N] [q] to quit >>> " FIX
+	echo -e "$FIX"
+	echo ""
+	quit "$FIX"
+	if [[ $FIX =~ [yY] ]]; then
+		patch -i "$patch" "$MAINFILE"
+		echo "Successful ..."
+		exit 0
+	fi
+}
+
+# entry point
+count=0
+entry_point()
+{
+	while true; do
+		patch_output=""
+		echo ""
+		if [[ "$#" = "0" ]]; then
+			echo "No arguments passed."
+			exit 1
+		fi
+
+		if [ "$#" -gt "2" ]; then
+			echo "Too many arguments passed."
+			exit 1
+		fi
+
+		if [[ "$#" = "1" ]]; then
+			echo "One argument passed."
+			if [[ "$count" -eq 0 ]]; then
+				read -p "Enter path to the fixed file or patch file [q] to quit >>> " PATCHFILE
+			else
+				read -p "Try again [q] to quit >>> " PATCHFILE
+			fi
+			echo ""
+			quit "$PATCHFILE"
+			file_check "$1" "in"
+			if [[ "$patch_output" == *"No such file or directory" ]]; then
+				echo "$err_message"
+				((count++))
+				continue
+			fi
+		fi
+
+		if [[ "$#" = "2" ]]; then
+			file_check "$1" "out" "$2"
+			if [[ "$patch_output" == *"No such file or directory" ]]; then
+				echo "$err_message"
+				exit 1
+			fi
+		fi
+
+		MAINFILE="$1"
+		if [[ "$2" ]]; then
+			PATCHFILE="$2"
+		fi
+		
+		if [[ "$PATCHFILE" =~ \.patch$|\.diff$ ]]; then
+			if [[ "$2" ]]; then
+				file_check "$1" "out" "$2"
+			fi
+		else
+			echo "updated file: $PATCHFILE"
+			if [[ "$MAINFILE" == *"."* ]]; then
+				bare_name=$(echo "$MAINFILE" | cut -d "." -f1)
+				patch_file="$bare_name.patch"
+			else
+				patch_file="$MAINFILE.patch"
+			fi
+			# echo "diff -u \"$1\" \"$PATCHFILE\"  2"
+			diff -u "$MAINFILE" "$PATCHFILE" > "$patch_file"
+			echo "patch file: $patch_file"
+			echo ""
+
+			read -n 1 -s -r -p "View the content of "$patch_file"? [y/N] [q] to quit >>> " RES
+			echo -e "$RES"
+			quit "$RES"
+			if [[ $RES =~ [yY] ]]; then
+				echo "$lines"
+				readarray -t disp < "$patch_file"
+				for line in "${disp[@]}"; do
+					if [[ "$line" =~ ^@ ]]; then
+						echo -e "${BLUE}$line\e[0m"
+					elif [[ "$line" =~ ^\+ ]]; then
+						echo -e "${GREEN}$line\e[0m"
+					elif [[ "$line" =~ ^- ]]; then
+						echo -e "${RED}$line\e[0m"
+					else
+						echo -e "$line\e[0m"
+					fi
+				done
+				echo "$lines"
+				fix_file "$patch_file"
+			else
+				quit "q"
+			fi
+		fi
+		((count++))
+	done
+}
+
+entry_point "$@"
