@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
 
-from pyfiles import git_codes as p
+from pyfiles.pushfile_main_codes import main_enrty
 
-p.main_enrty()
+main_enrty()
