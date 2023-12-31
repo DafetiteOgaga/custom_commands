@@ -14,9 +14,9 @@ P2="ek81wkYt15bHQzABMQVeFpiNRNcrpy46Hqc7"
 ANYWHERE="Simply run(anywhere in your environment)"
 STRT="You can now"
 SUP="to setup"
-SDIR="$HOME/.xbin"
+XBIN="$HOME/.xbin"
 DBIN=".xbin"
-HODN=".scpts"
+SCPTS=".scpts"
 UINPUT="$6"
 
 
@@ -60,7 +60,7 @@ streamedit()
 	local var1="$1"
 	local var2="$2"
 
-	sed -i "s/$var1/$var2/g" "$SDIR/$DFILENAME"
+	sed -i "s/$var1/$var2/g" "$XBIN/$DFILENAME"
 }
 
 details()
@@ -89,7 +89,6 @@ unametokenmaill2()
 	echo -e "What you need to supply is $P2 and leave out the rest."
 	echo -e "........................................................"
 	sleep 0.1
-	pass=10
 	while true; do
 		echo -n "Your Classic Github token (without \"ghp_\") >>> "
 		read NTOKEN
@@ -184,27 +183,27 @@ unametokenmaill()
 
 cpfunc()
 {
-	echo "custom commands" > "$SDIR/$DFILENAME"
+	echo "custom commands" > "$XBIN/$DFILENAME"
 	if [[ "$FILETYPE" =~ "bashscript" || "$FILETYPE" =~ "pyscript" ]]; then
 		# copies the content
-		cp "$HODN/$DFILENAME" "$SDIR/$DFILENAME"
+		cp "$SCPTS/$DFILENAME" "$XBIN/$DFILENAME"
 	elif [[ "$FILETYPE" =~ "cfile" ]]; then
 		# copies the content
 		if [[ "$WHICH" =~ 'p' ]]; then
-			cp "$HODN/phone/$DFILENAME" "$SDIR/$DFILENAME"
+			cp "$SCPTS/phone/$DFILENAME" "$XBIN/$DFILENAME"
 		elif [[ "$WHICH" =~ 'c' ]]; then
-			cp "$HODN/pc/$DFILENAME" "$SDIR/$DFILENAME"
+			cp "$SCPTS/pc/$DFILENAME" "$XBIN/$DFILENAME"
 		fi
 	fi
 	# make the script executable
-	chmod +x $SDIR/$DFILENAME
+	chmod +x $XBIN/$DFILENAME
 }
 
 intro()
 {
 	local whch="$1"
 
-	CHECKER_PC_PH=$(echo "$SDIR" | cut -d '/' -f 2)
+	CHECKER_PC_PH=$(echo "$XBIN" | cut -d '/' -f 2)
 	if [[ "$CHECKER_PC_PH" =~ [hH]ome|[uU]sers ]]; then
 		if [[ "$whch" =~ "0" ]]; then
 			echo -e "I can see that this is a PC"
@@ -231,9 +230,10 @@ intro()
 
 dOptions=(
 	#...py script files....................... #
-	"  push command - synchronse rather than just push"
-	"  pull command - updates your local machine from remote"
-	"  pushfile command - updates the remote with individual file commit messages"
+	"  push command - stage, commit and updates the local/remote repos with changes in the current dir"
+	"  pull command - updates your local branch with changes from the remote"
+	"  pushfile command - stage, commit individual files then updates the local/remote repos the changes"
+	"  pushall command - stage, commit and updates the local/remote repos with changes in the working tree"
 	#...bash script files.................. #
 	"  createRepo command - creates a github repository right from CLI"
 	"  deleteRepo command - deletes a github repository right from CLI"
@@ -241,17 +241,35 @@ dOptions=(
 	"  viewRepos command - displays the list of repos from any account right from CLI"
 	"  betty linter command"
 	"  pycode command a \"pycodestyle (PEP 8)\" linter"
+	#...py script files....................... #
+	"  branch command - creates and also switch between branches"
+	"  merge command - merges changes in the current branch to main/master branch"
+	"  status command - displays information about tracked and untracked changes in the branch"
+	#...bash script files.................. #
 	"  curfol command - opens cwd using file explorer"
 	"  pyxecute - appends shebang and makes your python files executable"
+	"  shxecute - appends shebang and makes your bash files executable"
 	"  pycodemore command(pycode with details)"
+	"  createPatch command - creates a .patch file (changes) between two files"
+	"  rollback command - reverts the current branch to an earlier commit"
 	"  cls command - clear your screen"
 	"  authorID - configures your Github Identity(Global and Local) on your machine"
+	"  commitree command - displays a tree of your commit history"
 	#...py script files....................... #
+	"  compare command - displays the content of uncommited changes on the working tree"
+	"  commitdir command - commits all the changes in the current dir"
+	"  commitall command - commits all the changes in the working tree"
 	"  wcount command - counts the lines, words and chars in files"
+	"  stash command - saves uncommitted changes in the working tree"
+	"  viewStash command - displays a list of stashed changes that can be applied to the current branch"
+	"  logit command - displays a detailed log of your commits with their branches"
     #...bash script files.................. #
 	"  ctemp - generates a default C source file template"
 	#...py script files....................... #
 	"  clear_commit command - clears unstaged and recent commits on your machine"
+	"  printmyEnv command - prints a list of your env paths"
+	"  show command - displays a list of all commits made to the repository"
+	"  verifyRepo command - checkes if the current dir is a repository or not"
 	#...bash script files.................. #
 	"  mycompile command - compile C source files (with options)"
 	"  pycompile command - compile python files"
@@ -260,8 +278,6 @@ dOptions=(
 	"  rot13 command - Rot13 Cipher"
 	"  rot47 command - Rot47 Cipher"
 	"  guessGame command- a Guessing Game(To unwind)"
-	
-	
 )
 
 category()
@@ -304,70 +320,131 @@ options()
 	elif [[ "$converted_selection" == 2 ]]; then
 		DFILENAME="pushfile"
 		category p "$converted_selection"
-	# ...bash script files................................... #
 	elif [[ "$converted_selection" == 3 ]]; then
+		DFILENAME="pushall"
+		category p "$converted_selection"
+	
+	# ...bash script files................................... #
+	elif [[ "$converted_selection" == 4 ]]; then
 		DFILENAME="createRepo"
 		category b "$converted_selection" "cr"
-	elif [[ "$converted_selection" == 4 ]]; then
+	elif [[ "$converted_selection" == 5 ]]; then
 		DFILENAME="deleteRepo"
 		category b "$converted_selection" "dr"
-	elif [[ "$converted_selection" == 5 ]]; then
+	elif [[ "$converted_selection" == 6 ]]; then
 		DFILENAME="cloneRepo"
 		category b "$converted_selection" "cl"
-	elif [[ "$converted_selection" == 6 ]]; then
+	elif [[ "$converted_selection" == 7 ]]; then
 		DFILENAME="viewRepos"
 		category b "$converted_selection" "vr"
-	elif [[ "$converted_selection" == 7 ]]; then
+	elif [[ "$converted_selection" == 8 ]]; then
 		DFILENAME="betty"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 8 ]]; then
+	elif [[ "$converted_selection" == 9 ]]; then
 		DFILENAME="pycode"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 9 ]]; then
+
+	# ...py script files..................................... #
+	elif [[ "$converted_selection" == 10 ]]; then
+		DFILENAME="branch"
+		category p "$converted_selection"
+	elif [[ "$converted_selection" == 11 ]]; then
+		DFILENAME="merge"
+		category p "$converted_selection"
+	elif [[ "$converted_selection" == 12 ]]; then
+		DFILENAME="status"
+		category p "$converted_selection"
+
+	# ...bash script files................................... #
+	elif [[ "$converted_selection" == 13 ]]; then
 		DFILENAME="curfol"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 10 ]]; then
+	elif [[ "$converted_selection" == 14 ]]; then
 		DFILENAME="pyxecute"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 11 ]]; then
+	elif [[ "$converted_selection" == 15 ]]; then
+		DFILENAME="shxecute"
+		category b "$converted_selection"
+	elif [[ "$converted_selection" == 16 ]]; then
 		DFILENAME="pycodemore"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 12 ]]; then
-		DFILENAME="cls"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 13 ]]; then
-		DFILENAME="authorID"
-		category b "$converted_selection"
-	# ...py script files..................................... #
-	elif [[ "$converted_selection" == 14 ]]; then
-		DFILENAME="wcount"
-		category p "$converted_selection"
-	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 15 ]]; then
-		DFILENAME="ctemp"
-		category b "$converted_selection" "ct"
-	# ...py script files..................................... #
-	elif [[ "$converted_selection" == 16 ]]; then
-		DFILENAME="clear_commit"
-		category p "$converted_selection"
-	# ...bash script files................................... #
 	elif [[ "$converted_selection" == 17 ]]; then
-		DFILENAME="mycompile"
+		DFILENAME="createPatch"
 		category b "$converted_selection"
 	elif [[ "$converted_selection" == 18 ]]; then
+		DFILENAME="rollback"
+		category b "$converted_selection"
+	elif [[ "$converted_selection" == 19 ]]; then
+		DFILENAME="cls"
+		category b "$converted_selection"
+	elif [[ "$converted_selection" == 20 ]]; then
+		DFILENAME="authorID"
+		category b "$converted_selection"
+	elif [[ "$converted_selection" == 21 ]]; then
+		DFILENAME="commitree"
+		category b "$converted_selection"
+	
+	# ...py script files..................................... #
+	elif [[ "$converted_selection" == 22 ]]; then
+		DFILENAME="compare"
+		category p "$converted_selection"
+	elif [[ "$converted_selection" == 23 ]]; then
+		DFILENAME="commitdir"
+		category p "$converted_selection"
+	elif [[ "$converted_selection" == 24 ]]; then
+		DFILENAME="commitall"
+		category p "$converted_selection"
+	elif [[ "$converted_selection" == 25 ]]; then
+		DFILENAME="wcount"
+		category p "$converted_selection"
+	elif [[ "$converted_selection" == 26 ]]; then
+		DFILENAME="stash"
+		category p "$converted_selection"
+	elif [[ "$converted_selection" == 27 ]]; then
+		DFILENAME="viewStash"
+		category p "$converted_selection"
+	elif [[ "$converted_selection" == 28 ]]; then
+		DFILENAME="logit"
+		category p "$converted_selection"
+	
+	# ...bash script files................................... #
+	elif [[ "$converted_selection" == 29 ]]; then
+		DFILENAME="ctemp"
+		category b "$converted_selection" "ct"
+	
+	# ...py script files..................................... #
+	elif [[ "$converted_selection" == 30 ]]; then
+		DFILENAME="clear_commit"
+		category p "$converted_selection"
+	elif [[ "$converted_selection" == 31 ]]; then
+		DFILENAME="printmyEnv"
+		category p "$converted_selection"
+	elif [[ "$converted_selection" == 32 ]]; then
+		DFILENAME="show"
+		category p "$converted_selection"
+	elif [[ "$converted_selection" == 33 ]]; then
+		DFILENAME="verifyRepo"
+		category p "$converted_selection"
+	
+	# ...bash script files................................... #
+	elif [[ "$converted_selection" == 34 ]]; then
+		DFILENAME="mycompile"
+		category b "$converted_selection"
+	elif [[ "$converted_selection" == 35 ]]; then
 		DFILENAME="pycompile"
 		category b "$converted_selection"
+	
 	# ...C files............................................. #
-	elif [[ "$converted_selection" == 19 ]]; then
+	elif [[ "$converted_selection" == 36 ]]; then
 		DFILENAME="myascii"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 20 ]]; then
+	elif [[ "$converted_selection" == 37 ]]; then
 		DFILENAME="rot13"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 21 ]]; then
+	elif [[ "$converted_selection" == 38 ]]; then
 		DFILENAME="rot47"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 22 ]]; then
+	elif [[ "$converted_selection" == 39 ]]; then
 		DFILENAME="guessGame"
 		category c "$converted_selection"
 	fi
@@ -388,7 +465,7 @@ opertn()
 {
 	#...dir.................. #
 
-	mkdir -p $SDIR
+	mkdir -p $XBIN
 
 	#... command assignment.................. #
 
@@ -409,7 +486,7 @@ opertn()
 
 		if ! grep -q "$DBIN" "$HOME/.bashrc"; then
 			echo -e "Setting up bshell variable..."
-			echo 'export PATH="$PATH:$HOME/'$(basename "$SDIR")'"' >> "$HOME/.bashrc"
+			echo 'export PATH="$PATH:$HOME/'$(basename "$XBIN")'"' >> "$HOME/.bashrc"
 		else
 			echo -e "Bshell variable good..."
 		sleep 0.1
@@ -427,7 +504,7 @@ opertn()
 
 		if ! grep -q "$DBIN" "$HOME/.zshrc"; then
 			echo -e "Setting up zshell variable..."
-			echo 'export PATH="$PATH:$HOME/'$(basename "$SDIR")'"' >> "$HOME/.zshrc"
+			echo 'export PATH="$PATH:$HOME/'$(basename "$XBIN")'"' >> "$HOME/.zshrc"
 		else
 			echo -e "Zshell variable good..."
 		sleep 0.1
@@ -458,8 +535,8 @@ opertn()
 		if [[ "$new_value" =~ ^(11111|22222|33333|55555)$ ]]; then
 			unametokenmaill
 		elif [[ "$new_value" == 44444 ]]; then
-			echo -e "custom commands" >  $SDIR/C_template.c
-			cp "$HODN/C_template.c" "$SDIR/C_template.c"
+			echo -e "custom commands" >  $XBIN/C_template.c
+			cp "$SCPTS/C_template.c" "$XBIN/C_template.c"
 			scptcpy
 		elif [[ "$new_value" =~ [1-9][0-9][0-9] ]]; then
 			scptcpy
@@ -468,13 +545,14 @@ opertn()
 	echo ""
 }
 
-pyfiles() {
-    mkdir -p "$SDIR/pyfiles"
+pyfiles()
+{
+    mkdir -p "$XBIN/pyfiles"
 
-    for file in "$HODN/pyfiles/"*; do
+    for file in "$SCPTS/pyfiles/"*; do
         if [[ -f "$file" ]]; then
             filename=$(basename "$file")
-            destination="$SDIR/pyfiles/$filename"
+            destination="$XBIN/pyfiles/$filename"
 
             if [[ -f "$destination" ]]; then
                 cp "$file" "$destination"
@@ -484,8 +562,25 @@ pyfiles() {
             fi
         fi
     done
+	update_changes
 }
 
+update_changes()
+{
+	# updates any command that has already been installed
+	affected_files="push pull pushfile pushall branch merge status compare commitdir commitall wcount stash viewStash logit clear_commit printmyEnv show verifyRepo"
+    for file in $affected_files; do
+		file="$XBIN/$file"
+		# echo "file: $file ############################"
+        if [[ -f "$file" ]]; then
+            filename=$(basename "$file")
+            source="$SCPTS/$filename"
+			destination="$XBIN/$filename"
+			cp "$source" "$destination"
+			# echo "copied: $file ************###############"
+        fi
+    done
+}
 
 #...5.................. #
 scptcpy()
@@ -535,9 +630,9 @@ scptcpy()
 	fi
 
 	#...creating custom_commands to view all commands.................. #
-	echo "custom commands" > "$SDIR/custom_commands"
-	cp "$HODN/custom_commands" "$SDIR/custom_commands"
-	chmod +x "$SDIR/custom_commands"
+	echo "custom commands" > "$XBIN/custom_commands"
+	cp "$SCPTS/custom_commands" "$XBIN/custom_commands"
+	chmod +x "$XBIN/custom_commands"
 }
 
 #...5a.................. #
@@ -605,7 +700,7 @@ instructn()
 	elif [[ $DFILENAME == "curfol" ]]; then
 		echo -e "$STRT open your current working directory $EFFT $ANYWHERE: $DFILENAME"
 	elif [[ $DFILENAME == "pyxecute" ]]; then
-		echo -e "$STRT turn your file(s) to executable file(s) $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
+		echo -e "$STRT adds shebang and turn your file(s) to executable file(s) $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
 	# ............................................................ #
 	elif [[ $DFILENAME == "guessGame" ]]; then
 		echo -e "$STRT play guessing game $EFFT $ANYWHERE: $DFILENAME"
@@ -622,7 +717,43 @@ instructn()
 		echo -e "$STRT unstage your files, clear commit messages on your local machine(provided, you are yet to push to remote). Revert to the same state as your remote $EFFT $ANYWHERE: $DFILENAME"
 	elif [[ $DFILENAME == "pushfile" ]]; then
 		echo -e "$STRT stage and commit individual files before pushing them all to remote $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
-	
+	# ............................................................ #
+	elif [[ $DFILENAME == "pushall" ]]; then
+		echo -e "$STRT stage and commit all files in the working tree before pushing them all to remote $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "branch" ]]; then
+		echo -e "$STRT create and switch branches $EFFT $ANYWHERE:"
+		echo -e "$DFILENAME <filename(s)> - to create an new branch"
+		echo -e "$DFILENAME - to switch branches"
+	elif [[ $DFILENAME == "merge" ]]; then
+		echo -e "$STRT easily merge changesin a branch to main/master branch $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "status" ]]; then
+		echo -e "$STRT view tracked and untracked file(s) in the working tree $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "shxecute" ]]; then
+		echo -e "$STRT adds shebang and turn your file(s) to executable file(s) $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
+	elif [[ $DFILENAME == "createPatch" ]]; then
+		echo -e "$STRT patch files $EFFT $ANYWHERE: $DFILENAME <main file> <updated file>"
+	elif [[ $DFILENAME == "rollback" ]]; then
+		echo -e "$STRT revert to a previous commit instance $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "commitree" ]]; then
+		echo -e "$STRT view a graphical commit history $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "compare" ]]; then
+		echo -e "$STRT view uncommitted changes in the working tree compared to the repository $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "commitdir" ]]; then
+		echo -e "$STRT commit changes in the current directory to the repository $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "commitall" ]]; then
+		echo -e "$STRT commit changes in the working directory to the repository $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "stash" ]]; then
+		echo -e "$STRT stash (save changes) in the current branch $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "viewStash" ]]; then
+		echo -e "$STRT view and apply stash to the current branch $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "logit" ]]; then
+		echo -e "$STRT view the detailed log history of your commits $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "printmyEnv" ]]; then
+		echo -e "$STRT view a list of your env paths $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "show" ]]; then
+		echo -e "$STRT view your commit history $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "verifyRepo" ]]; then
+		echo -e "$STRT verify that you are in a repository $EFFT $ANYWHERE: $DFILENAME"
 	sleep 0.1
 	fi
 }
@@ -667,7 +798,7 @@ count=0
 default_option='0'  
 while [[ "$UINPUT" != [nN] ]]; do
     page=1
-    items_per_page=8
+    items_per_page=10
 
     while true; do
         clear
