@@ -84,7 +84,7 @@ def print_stdout(stdout: str, index: int=0, serial_numbered: int=0):
 			f"Saved working directory and index state{sep}{BRIGHT_MAGENTA}{sep}n",
 			f"Your branch is up to date with{sep}{YELLOW}{sep}y",
 			f"No local changes to save{sep}{BRIGHT_GREEN}{sep}a",
-			f"set up to track remote branch{sep}{RESET}{sep}m", 
+			f"set up to track remote branch{sep}{RESET}{sep}m", # don't touch this line.
 			f"working tree clean{sep}{BRIGHT_GREEN}{sep}d",
 			f"Unmerged paths{sep}{BRIGHT_CYAN}{sep}a"
 			]
