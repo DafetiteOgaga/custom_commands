@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from pyfiles import git_codes as p
+import pyfiles.git_codes as p
 
 user_list = [(p.os.listdir())[i] for i in range(1, len(p.os.listdir()))]
 p.add_commit_all()
