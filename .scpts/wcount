@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-from pyfiles.git_codes import counter
+from pyfiles.counter_codes import counter
 
 files = sys.argv
 counter(files)
