@@ -24,25 +24,51 @@
 
    * #### custom_command (This command is installed automatically for you) - displays all the custom commands installed on your machine
    * push command - synchronse rather than just push
-   * pull command - updates your local machine from remote
-   * pushfile command - similar to "push" command but it updates the remote with individual file commit messages for good practice (Note: you can set and remove "Update README.md" as your default commit message for all README.md files)
+   * pull command - updates your local branch with changes from remote
+   * pushfile command - similar to "push" command but it stages and commits files individually then updates the remote. To skip a file from being staged and committed type "pass". 
+   (Note: you can set and remove "Update README.md" as your default commit message for all README.md files)
+   * pushall command - similar to "push" command but it stages and commits changes in the working tree
+
    * createRepo command - creates a github repository right from the command line
    * deleteRepo command - deletes a github repository right from the command line. NOTE: THIS COMMAND IS TO BE USED WITH CAUTION, any repository deleted CANNOT be reversed.
    * cloneRepo command - displays the list of repositories and clone them from any account right from the command line. Collaboration has never been more interesting!
    * viewRepos command - displays the list of repositories from any account right from the command line. Bringing the information to you on the go!
    * betty linter command
    * pycode command - a pycodestyle (PEP 8) linter
+
+   * branch command - creates, setup the branch on the remote and switch between local branches
+   * merge command - merges changes in the current branch to main/master branch. Note: keeps commit history linear, preventing 3way merge
+   * status command - displays information about tracked and untracked changes in the branch
+
    * curfol command - opens current working directory using file explorer
    * pyxecute - appends shebang and makes your python files executable
+   * shxecute - works just like pyxecute but for bash scripts
    * pycodemore command(pycode with details)
+   * createPatch command - creates a .patch file
+   * rollback command - reverts the current branch to an older commit instance
    * cls command - clear your screen
    * authorID - configures your Github Identity(Global and Local) on your local machine
+   * commitree command - displays a tree of your commit history
+
+   * compare command - displays the content of uncommited changes on the working tree
+	* commitdir command - commits all the changes in the current dir
+	* commitall command - just like commitdir but commits all the changes in the working tree instead
    * wcount command - counts the lines, words and chars in files
+   * stash command - saves uncommitted changes in the working tree for the cuurent branch
+	* viewStash command - displays a list of all stashed changes in all branches and can be applied to the current branch
+	* logit command - displays a detailed log of your commits with their branches
+
    * ctemp command - generates a default C source file template
+   
    * clear_commit command - clears the staging area and recent commits on your local machine
+   * printmyEnv command - prints a list of your env paths
+	* show command - displays a list of all commits made to the selected repository
+	* verifyRepo command - checkes if the current dir is a repository or not
+
    * mycompile command - compile C source files (with options)
    * pycompile command - compile python files
    * myascii command - prints a simple version of the ASCII table
+
    * rot13 command - Rot13 Cipher
    * rot47 command - Rot47 Cipher
    * guessGame command- a Guessing Game(To unwind)
@@ -61,6 +87,23 @@ This file contains the notable changes made to the Custom Commands project.
 <br>
 
 ## New
+   - verifyRepo to checkes if the current dir is a repository or not
+   - show - displays a list of all commits made to the current repository
+   - printmyEnv to prints a list of your env paths
+   - logit command - displays a detailed log of your commits with their branches
+   - viewStash command - displays a list of all stashed changes in all branches and can be applied to the current branch
+   - stash - saves uncommitted changes in the working tree for that branch
+   - commitall to commits all the changes in the working tree
+   - commitdir to commits all the changes in the current dir
+   - compare - displays the content of uncommited changes on the working tree
+   - commitree to see a tree of your commit history
+   - rollback command - reverts the current branch to an older commit instance
+   - createPatch command - creates a .patch file using the changes between the two files provided as arguments
+   - shxecute to appends shebang and makes your bash files executable
+   - status command to displays information about tracked and untracked files/changes in the branch
+   - merge command to merges changes in the current branch to main/master branch. prevents 3way merge by setting the history linear and then put the branch ahead of the master, allowing for a fast forward merge
+   - branch command to creates, sets up the branch on the remote and also switch between local branches
+   - pushall command to stage, commit and updates the local/remote repos with changes in the working tree
    - pushfile commands will now skip already staged and committed files during usage. making the use of "pushfile *" more robust
    - added viewRepos command - you can now view any github repositories right from you CLI
    - deleteRepo command - checks and deletes github repositories
@@ -93,6 +136,8 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Changes
+   - you can now skip files from being committed when using pushfile
+   - majority of the display/output now commes with text coloring
    - deleting your repo is now much flexible as all you have to is select the number corresponding to the repo from the display me listing all of your repos
    - error of "... divergent branches ... reconcile divergent branches" has been fixed for all pull processes
    - massive improvements made to cloneRepo command. All you now need to clone your repo is just to run the command. It displays all your private and public repositories, giving you the option of cloning any of them with the selection menu. To clone another person's public repo, you only need the username. Collaboration has never been more interesting, you can now do so easily using this command
