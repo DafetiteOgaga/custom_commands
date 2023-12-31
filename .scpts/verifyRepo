@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+
+from pyfiles.verify_repo_new import entry_point
+
+entry_point(verify_repo=1)
