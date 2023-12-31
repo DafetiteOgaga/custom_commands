@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+
+import os, time
+
+path_env = os.environ.get('PATH')
+
+print()
+print("Here is a list of your current environmental paths")
+print("..................................................")
+for i, directory in enumerate(path_env.split(":")):
+    time.sleep(.05)
+    print(f"{i+1}. {directory}")
+print()
