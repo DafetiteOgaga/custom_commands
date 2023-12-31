@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+
+from pyfiles.git_codes import merge_to_main_master
+
+merge_to_main_master()
