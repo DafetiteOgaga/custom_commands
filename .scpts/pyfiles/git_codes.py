@@ -1,171 +1,172 @@
 #!/usr/bin/env python3
 
-import subprocess, sys, os, time, shutil
+import subprocess, sys, time, os
+from datetime import datetime
+from .verify_repo_new import entry_point
 from .my_prompt import main as prompt_1ch
+from .colors import *
 
+# now = datetime.now()
+formatted_date_time = datetime.now().strftime("%H:%M:%S on %a %b %Y")
 
-def add_commit(file):
-	"""This function will:
-	1. Check if the input is a directory and dress it for processing
-	2. Check if the file/directory exists in the 
-		current working directory
-	3. Check and skip files/directories that have been staged
-	3. Loop through the files as provided via the command line. 
-		Then, add and commit to each files separately
+# [RED GREEN YELLOW MAGENTA BLUE CYAN]
+# [BRIGHT_BLACK BRIGHT_RED BRIGHT_GREEN BRIGHT_YELLOW
+# BRIGHT_BLUE BRIGHT_MAGENTA BRIGHT_CYAN BRIGHT_WHITE]
+# [RESET BOLD ITALIC UNDERLINE BLINK REVERSE STRIKETHROUGH]
+
+def print_stdout(stdout: str, index: int=0, serial_numbered: int=0):
+	"""This function nicely colors and prints out the output stream the
+		result of the argument passed to it
 	"""
+	print()
 
-	if "\\" == file[-1] or "/" == file[-1]:
-		re_file = (file.split(file[-1]))[0]
+	if stdout == None:
+		std_list = []
 	else:
-		re_file = file
-	file = re_file
-	if file not in os.listdir():
-		print()
-		print("::::: {} does not exist in the current directory".format(file))
-		print()
-		print("...................................................")
-		return 1
-	
-	set_default = success_mode = ""
-	if file == "README.md":
-		time.sleep(.05) # xnorm
-		while True:  # xnorm
-			commit_message = prompt_1ch('Would you prefer to use "Update README.md" as commit message for {}? [y/N] >>> '.format(file))  # xnorm
-			if commit_message.lower() == "y" or commit_message.lower() == "n":  # xnorm
-				break  # xnorm
-			print("Invalid response.") # xnorm
-			print()  # xnorm
-		time.sleep(.05) # xnorm
-		if commit_message.lower() == "y":  # xnorm
-			print()  # xnorm
-			print('"Update README.md" has been set to {}'.format(file))  # xnorm
-			print()  # xnorm
-			time.sleep(.05) # xnorm
-			while True:  # xnorm
-				print('Would you love to keep using "Update README.md" as commit message for all your {} files?'.format(file))  # xnorm
-				print("Note: you can change this setting anytime.")  # xnorm
-				set_default = prompt_1ch('[y/N] >>> ')  # xnorm
-				if set_default.lower() == "y":  # xnorm
-					success_mode = set_default_commit_msg(set_default)  # xnorm
-					break  # xnorm
-				elif set_default.lower() == "n":  # xnorm
-					print() # xnorm
-					print('"Update README.md" is not set as your default commit message for all {} files.'.format(file)) # xnorm
-					print()  # xnorm
-					break  # xnorm
-				print("Invalid response.") # xnorm
-				print()  # xnorm
-			commit_message = "Update README.md"  # xnorm
-		elif commit_message.lower() == "n":  # xnorm
-			pass  # xnorm
-#		commit_message = "Update README.md" # xmodification
-#		set_default = "auto" # xmodification
-	file_status = subprocess.run(["git", "status"], capture_output=True, text=True)
-	if file not in file_status.stdout:
-		time.sleep(.04)
-		print("::#:: {} has previously been staged and committed".format(file))
-		return 3
-	else:
-		print()
-	if not set_default:		
-		commit_message = input("Enter a commit message for {} [q] to abort >>> ".format(file))
-#		if commit_message.lower() == "unset commit" and file != "README.md": # xmodification
-#			success_mode = set_default_commit_msg("n") # xmodification
-#			print_set_commit("unset") # xmodification
-#			commit_message = input("Enter a commit message for {} [q] to abort >>> ".format(file)) # xmodification
-#		elif commit_message.lower() == "unset commit" and file == "README.md": # xmodification
-#			success_mode = set_default_commit_msg("n") # xmodification
-#			print_set_commit("unset") # xmodification
-	quit(commit_message)
-	if commit_message == "":
-		print("You must provide a commit message for {}. Try again".format(file))
-		return 2
+		std_list = (stdout.split("\n"))[:-1]
+	i = 0
+	for_untrack = 0
+	for i, line in enumerate(std_list):
+		time.sleep(.03)
+		if '(use "git add <file>..." to include in what will be committed)' in line:
+			print(f"::::: {line}{RESET}")
+			for_untrack += 1
+			continue
+		elif 'fatal' in line and 'did not match any files' in line:
+			continue
+		elif 'no changes added to commit (use "git add" and/or "git commit -a")' in line:
+			for_untrack = 0
+		elif for_untrack == 1:
+			line = f"{YELLOW}{line}{RESET}"
+		if serial_numbered == 1:
+			if not index:
+				if line.startswith("*"):
+					line = f"{i+1}. {BRIGHT_MAGENTA}{line}"
+				else:
+					line = f"{i+1}. {line}"
+		if line.startswith("["):
+			for j, char in enumerate(line):
+				if char == "]":
+					req_index = j+1
+			branch_id = line[:req_index]
+			color_branch_id = f"{BRIGHT_MAGENTA}{branch_id}{RESET}"
+			line = color_branch_id + line[req_index:]
+
+		# s - selected words
+		# y - any half of the line
+		# a - complete line
+		# c - further processing
+		# o - other
+		# n - specific selection
+		sep = "^¬^"
+		words_list = [
+			f"deleted by us:{sep}{BRIGHT_RED}{sep}s",
+			f"remote:{sep}{BRIGHT_CYAN}{sep}s",
+			f"deleted:{sep}{BRIGHT_RED}{sep}s",
+			f"delete {sep}{BRIGHT_RED}{sep}s",
+			f"create {sep}{BRIGHT_GREEN}{sep}s",
+			f"rewrite {sep}{CYAN}{sep}s",
+			f"rename {sep}{BRIGHT_YELLOW}{sep}s",
+			f"both modified{sep}{BRIGHT_GREEN}{sep}s",
+			f"modified:{sep}{BRIGHT_GREEN}{sep}s",
+			f"On branch{sep}{BRIGHT_MAGENTA}{sep}y",
+			f"Untracked files:{sep}{MAGENTA}{sep}a",
+			f"error{sep}{BRIGHT_RED}{sep}a",
+			f"Changes not staged for commit:{sep}{BLUE}{sep}a",
+			f"Your branch is ahead of{sep}{BRIGHT_YELLOW}{sep}y",
+			f"Changes to be committed:{sep}{YELLOW}{sep}a",
+			f"changed{sep}{RESET}{sep}c",
+			f"new file:{sep}{BRIGHT_CYAN}{sep}s",
+			f"diff --git{sep}{UNDERLINE}{BOLD}{BRIGHT_BLUE}{sep}a",
+			f"+{sep}{RESET}{sep}o",
+			f"-{sep}{RESET}{sep}o",
+			f"Switched to branch{sep}{BRIGHT_GREEN}{sep}y",
+			f"Saved working directory and index state{sep}{BRIGHT_MAGENTA}{sep}n",
+			f"Your branch is up to date with{sep}{YELLOW}{sep}y",
+			f"No local changes to save{sep}{BRIGHT_GREEN}{sep}a",
+			f"set up to track remote branch{sep}{RESET}{sep}m", 
+			f"working tree clean{sep}{BRIGHT_GREEN}{sep}d",
+			f"Unmerged paths{sep}{BRIGHT_CYAN}{sep}a"
+			]
 		
-	add = subprocess.run(["git", "add", file], capture_output=True, text=True)
-	if add.returncode != 0:
-		print("Oops! I got {}. When trying to stage {}".format(add.stderr, file))
-		sys.exit()
-	else:
-		print_stdout(add.stdout)
-		print("{} successfully staged.".format(file))
+		words_dict = {}
+		for word in words_list:
+			a_word, color, type = word.split(sep)
+			words_dict[word] = len(a_word)
+
+		for k, v in words_dict.items():
+			c_word, color, type = k.split(sep)
 		
-	commit = subprocess.run(["git", "commit", "-m", commit_message], capture_output=True, text=True)
-	if commit.returncode == 0:
-		print_stdout(commit.stdout)
-		print('"{}" successfully committed to {}.'.format(commit_message, file))
-	elif commit.returncode == 1:
-		if "nothing to commit, working tree clean" in commit.stdout.split("\n"): # and commit.stderr == None:
-			print("##### You have previously committed a message to {} ...##########".format(file))
-		elif "Your branch is up to date with 'origin/main'." in commit.stdout.split("\n"): # and commit.stderr == None:
-			print("##### {} already exists in the remote ...##########".format(file))
-		print("nothing to commit, working tree clean")
-	else:
-		print("Oops! I got: {}When trying to commit {} to {}".format(commit.stderr,commit_message, file))
-		sys.exit()
-	return success_mode
-
-
-def set_default_commit_msg(par: str):
-	"""
-	This function recreates the git_codes.py script to account for the
-	default use of "Update README.md" as commit message for README.md files.
-	Also, provides the means to revert the modification.
-	"""
-	source_file_name = "git_codes.py" # for bar or not
-	file_path = os.path.join(os.path.expanduser("~"), ".xbin", "pyfiles")
-	temp_file = os.path.join(file_path, "mod_git_codes.py")
-	source_file = os.path.join(file_path, source_file_name)
-	# test_file = os.path.join(file_path, "Test_git_codes.py")
-	# print("set_default_commit_msg: start *************************************")
+			if c_word in line:
+				if type == "a":
+					line = f"{color}{line}{RESET}"
+				elif type == "y":
+					line = line[:v] + f"{color}{line[v:]}{RESET}"
+				elif type == "m":
+					br_name1, br_name2 = line.split(c_word)
+					line = " ".join([(br_name1.split())[0], f"{BRIGHT_MAGENTA}{br_name1.split()[1]}{RESET}",
+		    				c_word, f"{BRIGHT_MAGENTA}{(br_name2.split())[0]}{RESET}", (br_name2.split())[1],
+							f"{BRIGHT_YELLOW}{(br_name2.split())[2]}{RESET}"])
+					# line = " ".join([(br_name1.split())[0], f"{BRIGHT_MAGENTA}{br_name1.split()[1]}{RESET}", c_word, f"{BRIGHT_MAGENTA}{(br_name2.split())[0]}{RESET}", (br_name2.split())[1], f"{BRIGHT_YELLOW}{(br_name2.split())[2]}{RESET}"])
+				elif type == "n":
+					index = next((i for i, char in enumerate(line) if char == ":"), v)
+					line = line[:v] + f"{color}{line[v:index]}{RESET}" + line[index:]
+				elif type == "d":
+					index = line.find(c_word)
+					v = index + v
+					line = line[:index] + f"{color}{line[index:v]}{RESET}" + line[v:]
+				elif type == "o":
+					if "--- a/" in line or "+++ b" in line or "@@" in line:
+						pass
+					elif line.startswith("+"):
+						line = f"{GREEN}{line}{RESET}"
+					elif line.startswith("-"):
+						line = f"{RED}{line}{RESET}"
+				elif type == "c":
+					if "insertion" in line or "deletion" in line:
+						if len(line.split(",")) == 3:
+							file_part, insertions, deletions = line.split(",")
+							num, str_file, change = file_part.split()
+							change = f"{BRIGHT_BLUE}{change}{RESET}"
+							file_part = " ".join([num, str_file, change])
+							insertions = f"{BRIGHT_GREEN}{insertions}{RESET}"
+							deletions = f"{BRIGHT_RED}{deletions}{RESET}"
+							line = ",".join([file_part, insertions, deletions])
+						elif len(line.split(",")) == 2:
+							if "insertion" in line:
+								file_part, insertions = line.split(",")
+								num, str_file, change = file_part.split()
+								change = f"{BRIGHT_BLUE}{change}{RESET}"
+								file_part = " ".join([num, str_file, change])
+								insertions = f"{BRIGHT_GREEN}{insertions}{RESET}"
+								line = ",".join([file_part, insertions])
+							elif "deletion" in line:
+								file_part, deletions = line.split(",")
+								num, str_file, change = file_part.split()
+								change = f"{BRIGHT_BLUE}{change}{RESET}"
+								file_part = " ".join([num, str_file, change])
+								deletions = f"{BRIGHT_RED}{deletions}{RESET}"
+								line = ",".join([file_part, deletions])
+					line = line[:v] + f"{color}{line[v:]}{RESET}"
+				elif type == "s":
+					word = line[:v]
+					color_word = f"{color}{word}{RESET}"
+					remaining_words = line[v:]
+					if "/" in line or "\\" in line: # and line[i] != line[-1]:
+						slash_index = 0
+						for i, char in enumerate(line):
+							if (char == "/" or char == "\\") and char != line[-1]:
+								slash_index = i+1
+							if slash_index:
+								file_name = f"{color}{line[slash_index:]}{RESET}"
+								remaining_words = line[v:slash_index] + file_name
+					else:
+						remaining_words = f"{color}{remaining_words}{RESET}"
+					line = color_word + remaining_words
+					break
+		print(f"::::: {line}{RESET}")
 	print()
-
-	res_list = ["xmodification", "xnorm"]
-	if par.lower() == "y":
-		set_def1, set_def2 = res_list
-		my_str = "Updating" # for bar
-		print('Setting up "Update README.md" to all README.md files ...')
-	elif par.lower() == "n":
-		set_def2, set_def1 = res_list
-		my_str = "Reverting" # for bar
-		print('Removing "Update README.md" as the default commit message to all README.md files ...')
-
-	cur_dir = os.getcwd() # for bar
-	os.chdir(file_path) # for bar
-	shell_return = subprocess.run(["wc", source_file_name], capture_output=True, text=True) # for bar
-	total_iterations = int((shell_return.stdout.strip().split())[0]) # for bar
-	os.chdir(cur_dir) # for bar
-
-	with open(source_file, "r") as main_code, open(temp_file, "w") as def_commit:
-		count = 1 # for bar
-		for line in main_code:
-			time.sleep(.05)
-			if line.strip().endswith(set_def1):
-				line = line.lstrip("#")
-				def_commit.write(line)
-				# print('::::**:::: {}'.format(line.strip()))
-			elif line.strip().endswith(set_def2):
-				line = "#" + line
-				def_commit.write(line)
-				# print('::::##:::: {}'.format(line.strip()))
-			else:
-				def_commit.write(line)
-				# print(':::::::::: {}'.format(line.strip()))
-
-			progress = count / total_iterations # for bar
-			print("\r{}. please wait... : %-40s %d%% done.".format(my_str) % ('>' * int(40 * progress), int(100 * progress)), end='') # for bar
-			count += 1 # for bar
-		print("") # for bar
-	shutil.copy(temp_file, source_file)
-	os.remove(temp_file)
-	print()
-	print("Done.")
-	if par.lower() == "y":
-		mode = "mod"
-	elif par.lower() == "n":
-		mode = "norm"
-	print()
-	# print("set_default_commit_msg: finished *************************************")
-	return mode
+	return i+1, std_list
 
 
 def print_set_commit(var: str):
@@ -182,7 +183,7 @@ def print_set_commit(var: str):
 
 
 def pull():
-	"""This function pulls updates from the remote
+	"""This function pulls and merge updates from the remote to the local branch
 	"""
 
 	print()
@@ -196,6 +197,12 @@ def pull():
 		pull = subprocess.run(["git", "pull"], capture_output=True, text=True)
 		if pull.returncode == 0:
 			print_stdout(pull.stdout)
+		elif pull.stdout:
+			print_stdout(pull.stdout)
+		elif pull.stderr:
+			print_stdout(pull.stderr)
+	elif pull.returncode > 0:
+		print_stdout(pull.stderr)
 	else:
 		print("Oops! I got {}".format(pull.stderr))
 		sys.exit()
@@ -213,46 +220,51 @@ def push(file_list: list):
 	if push.returncode == 0:
 		print()
 		print("The file(s)/folder(s): {} are in the working tree.".format([xfile for xfile in file_list]))
+	elif push.stdout:
+		print_stdout(push.stdout)
+	elif push.stderr:
+		print_stdout(push.stderr)
 	else:
 		print("Oops! I got {}".format(push.stderr))
 		sys.exit()
 
 
-def add_commit_all():
-	"""This function stages and commits a message to all the changes in
-		the working tree
+def add_commit_all(type: str="current", commit_message: str=""):
+	"""This function stages and commits all changes made on the working tree
+		with just a message.
 	"""
-
 	while True:
 		if len(sys.argv) > 1:
 			commit_message = (sys.argv)[1]
 			break
-		commit_message = input("Provide a commit message. [q] to quit >>> ")
+		if commit_message:
+			pass
+		else:
+			commit_message = input("Provide a commit message. [q] to quit >>> ")
 		quit(commit_message)
 		if commit_message != "":
 			break
 		print("You have to provide a commit message.")
 	print("#### staging and committing ...################################")
-	subprocess.run(["git", "add", "."])
+	if type == "current":
+		# stage changes in current directories ####
+		subprocess.run(["git", "add", "."])
+	elif type == "all":
+		# stage changes in all directories ########
+		subprocess.run(["git", "add", "-A"])
 	commit = subprocess.run(["git", "commit", "-m", commit_message], capture_output=True, text=True)
 	if commit.returncode == 0:
 		print_stdout(commit.stdout)
 		print('"{}" successfully committed to files.'.format(commit_message))
-
-
-def print_stdout(stdout: str):
-	"""This function nicely prints out the output stream the result of the returned
-		argument passed to it
-	"""
-
-	for i in stdout.split("\n"):
-		time.sleep(.03)
-		print(f"::::: {i}")
+	elif commit.stdout:
+		print_stdout(commit.stdout)
+	elif commit.stderr:
+		print_stdout(commit.stderr)
 
 
 def quit(val):
 	"""
-	This function stops and exit the execution process
+	This function stops and exit the program.
 	"""
 
 	if val.lower() == "q":
@@ -262,13 +274,12 @@ def quit(val):
 
 
 def clear_staged_and_commit():
-	"""This function will unstage and clears the recent changes on the
-		local machine and revert the machine to the same state as
-		the most recent on the working tree
+	"""This function will unstage and clears the recent changes made on the
+		local branch and revert it to the recent state of the remote
 	"""
 
 	print()
-	sure = prompt_1ch("""You will lose all the recent changes on your local machine
+	sure = prompt_1ch("""You will lose all the recent changes on your local branch
 Are you sure that you want to proceed? [y/N] >>> """)
 	print()
 	if sure.lower() == "y":
@@ -276,152 +287,316 @@ Are you sure that you want to proceed? [y/N] >>> """)
 		fetch = subprocess.run(["git", "fetch", "origin", current_branch.stdout.strip()], capture_output=True, text=True)
 		clear = subprocess.run(["git", "reset", "--hard", f"origin/{current_branch.stdout.strip()}"])
 		print("Revert successful...")
-		print("Recent changes on local machine cleaned.")
-		print("Most recent state of the working tree restored.")
+		print("Recent changes on this branch cleaned.")
+		print("Most recent state of the remote has been restored to the working tree of this branch.")
 	else:
 		print("Operation aborted.")
 	print()
 	sys.exit()
 
-
-def main_enrty():
-	"""The main execution of the program
-	"""
-
-	arg_len = len(sys.argv)
-	count = 0
-	print("...............................................................")
-#	print("Enter \"unset commit\" to unset default README.md commit message.") # xmodification
-#	print("...............................................................")	# xmodification
-	if arg_len > 0:
-		if arg_len > 1:
-			all_files = []
-			while count != (arg_len - 1):
-				file = (sys.argv)[count + 1]
-				res_add_commit = add_commit(file)
-				# moves to the next file
-				if res_add_commit in [1, 3]:
-					count += 1
-					continue
-				# stays on the current file
-				elif res_add_commit == 2:
-					continue
-				if res_add_commit == "mod":
-					print_set_commit("set")
-				all_files.append(file)
-				count += 1
-				print("...................................................")
-		
-		if arg_len == 1:
-			all_files = []
-			while True:
-				file = input("Enter file(s). Enter [q] after last file >>> ")
-				quit(file)
-				if file.lower() == "s":
-					print()
-					break
-				
-				if file:
-					res_add_commit = add_commit(file)
-					# moves to the next file
-					if res_add_commit in [1, 3]:
-						count += 1
-						continue
-					# stays on the current file
-					elif res_add_commit == 2:
-						continue
-					if res_add_commit == "mod":
-						print_set_commit("set")
-					all_files.append(file)
-				print("...................................................")
-
-
-		while True:
-			# print('[y] or "Enter" to push these changes to remote')
-			print('[y] (push) update your working tree with these changes')
-			print('[q] to abort')
-#			print('[u] to unset auto commit message for README.md files') # xmodification
-			print('[r] to clear your staging area and commits')
-			print()
-			ready = prompt_1ch('Select one >>> ')
-			
-			quit(ready)
-			if ready.lower() == "r":
-				clear_staged_and_commit()
-#			elif ready.lower() == "u": # xmodification
-#				set_default_commit_msg("n") # xmodification
-			elif ready == "" or ready.lower() == "y":
-				pull()
-				push(all_files)
-				break
+def git_status(action: int=0):
+	"""This function displays the current changes made to the working tree compared to the 
+		staging area, local and remote repositories"""
+	status = subprocess.run(["git", "status"], capture_output=True, text=True)
+	if status.stdout:
+		if action == 0:
+			print_stdout(status.stdout)
+		else:
+			if "working tree clean" in status.stdout:
+				print("Working tree is the same as last commit. No changes to save.")
+				return 1
 			else:
-				print("Invalid response.")
-				print()
-				print("...............................................")
-	else:
-		print("No command found.")
-		sys.exit()
-	print("Done.")
-	print()
+				return 0
+	elif status.stderr:
+		print_stdout(status.stderr)
 
 
-def check_arg(files):
-	"""This function checks that atleast a file(argument) is passed from the CL
+def collect_input(num: int, string: str):
+	"""This function processes the choice from branch or stash selection and
+		returnes an integer value of the choice
 	"""
-
-	length = len(files)
-	if length == 1:
-		print("No argument(s) provided.")
-		sys.exit(1)
-	return length
-	
-
-def counter(files):
-	"""This function loops through the files(arguments) passed from the CL and prints their
-	1. number of lines
-	2. number of words
-	3. number of characters
-	4. filenames
-	"""
-
-	length = check_arg(files)
-	print()
-	for file in range(1, length):
-		try:
-			check = os.path.join((files[0].split(os.path.sep))[0], files[file])
-			if os.path.isdir(check):
-				continue
-			time.sleep(.8)
-			shell_return = subprocess.run(["wc", files[file]], capture_output=True)
-			lines, words, chars, name = shell_return.stdout.decode().strip().split()
-			print("============= {} =============".format(name))
-			print("lines: {}, words: {}, characters: {}".format(lines, words, chars))
-		except ValueError:
-			print('Error: "{}" is not a valid filename.'.format(files[file]))
-		except Exception as e:
-			print(f"An unexpected error occurred: {e}")
+	while True:
+		# single input function needed here
+		if string == "branch_list":
+			item = prompt_1ch('Select a branch to switch to. [q] to quit >>> ')
+			quit(item)
+		elif string == "stash":
+			print(F"{RED}NOTE: IF YOU QUIT. YOUR STASH WILL NOT BE APPLIED TO THIS BRANCH.{RESET}")
+			item = prompt_1ch('Select the stash you wish to apply. [q] to quit >>> ')
+			quit(item)
+		if item.isdecimal() and int(item) > 0 and int(item) <= num:
+			item = int(item)
+			break
 		print()
+		if string == "branch_list":
+			print("You should enter the number corresponding to the branch name.")
+		elif string == "stash":
+			print("You should enter the number corresponding to the stash you want to apply.")
+	return item
 
 
-def lines_words_chars_file(files):
-	"""This function loops through the files(arguments) passed from the CL and returns their
-	1. number of lines
-	2. number of words
-	3. number of characters
-	4. filenames
+def view_branch(action: int=0, new_branch=""):
+	"""This function:
+		1. displays a list of available branches in the repository
+		2. extracts the main or master branch depending on what the repository uses
+		3. prevents you from creating already existing branch
+		4. prevents you from recreating the branch you are in
+		5. extraccts the current branch
+		6. checkes whether you are not in the main or master branch before proceeding to stash your changes
 	"""
+	# view branch
+	branch_list = subprocess.run(["git", "branch"], capture_output=True, text=True)
+	selection = ""
+	if action == 0:
+		# list branches
+		num, returned_list = print_stdout(branch_list.stdout, serial_numbered=1)
+		item = collect_input(num, "branch_list")
+		item = item - 1
+		selection = (returned_list[item]).strip()
+		return  selection
+	elif new_branch == "main":
+		# get main branch
+		for line in (branch_list.stdout).split("\n"):
+			if "main" in line or "master" in line:
+				if line.startswith("*"):
+					main = (line.strip("*")).strip()
+				else:
+					main = line.strip()
+		return main
+	elif new_branch:
+		for line in (branch_list.stdout).split("\n"):
+			if line.strip() == new_branch.strip():
+				print(f"The branch {new_branch} already exist.")
+				quit("q")
+			if line.startswith("*"):
+				if (line.strip("*").strip()) == new_branch.strip():
+					print(f"You are currently on this branch({new_branch}).")
+					quit("q")
+	elif action == 100:
+		for line in (branch_list.stdout).split("\n"):
+			if line.startswith("*"):
+				current_branch = (line.strip("*")).strip()
+				return  current_branch
+	elif action > 0:
+		for line in (branch_list.stdout).split("\n"):
+			if line.startswith("*") and (("master" not in line) or ("main" not in line)):
+				stash(action)
+				break
+current_branch_name = view_branch(action=100)
 
-	length = check_arg(files)
-	for file in range(1, length):
-		check = os.path.join((files[0].split(os.path.sep))[0], files[file])
-		if os.path.isdir(check):
-			continue
-		shell_return = subprocess.run(["wc", files[file]], capture_output=True, text=True)
-		lines, words, chars, name = shell_return.stdout.strip().split()
-		print("lines: {}, words: {}, characters: {}".format(lines, words, chars))
+
+def create_or_switch_branch(branch_name: str=None, new_branch_name: str=None):
+	"""This function:
+		1. creates a local branch
+		2. sets up the local branch remotely i.e providing access to remotely
+			synchronize between the local branch and its remote branch
+		3. switches to the newly created branch
+	"""
+	if new_branch_name:
+		# creates new branch
+		create = subprocess.run(["git", "branch", new_branch_name], capture_output=True, text=True)
+		if create.stdout:
+			print_stdout(create.stdout)
+		elif create.stderr:
+			print_stdout(create.stderr)
+		setup_branch = subprocess.run(["git", "push", "-u", "origin", new_branch_name], capture_output=True, text=True)
+		print_stdout(setup_branch.stdout)
+		print_stdout(setup_branch.stderr)
+		branch_name = new_branch_name
+	# commit the recent changes
 	
-	return lines, words, chars, name
+	# print(f"commit before switching from {CYAN}{current_branch_name}{RESET} to {BRIGHT_MAGENTA}{branch_name}{RESET} at {formatted_date_time}")
+	# commit_message = f"committed before switching from {current_branch_name} to {branch_name} at {formatted_date_time}"
+	# print()
+	# add_commit_all(type="all", commit_message=commit_message)
+	
+	# switch to next/new branch
+	switch_branch = subprocess.run(["git", "checkout", branch_name], capture_output=True, text=True)
+	if switch_branch.stderr:
+		print_stdout(switch_branch.stderr)
+	else:
+		print_stdout(switch_branch.stdout)
+
+def auto_apply_stash():
+	"""This function automatically apply the most recent stash to the current
+		branch
+	"""
+	# auto apply stashed updates
+	auto_stash = subprocess.run(["git", "stash", "apply"], capture_output=True, text=True)
+	if auto_stash.stdout:
+		print_stdout(auto_stash.stdout)
+	elif auto_stash.stderr:
+		print_stdout(auto_stash.stderr)
 
 
-if __name__ == "__main__":
-	main_enrty()
+def stash(action: int=0):
+	"""This function commits or stashes(according to users wish) the changes made in the working tree that has not
+		been commited with either:
+		1. an auto generated message containing the branch name and time or
+		2. specified commit or stash message provided by the user
+	"""
+	# now = datetime.now()
+	# formatted_date_time = now.strftime("%H:%M:%S on %a %b %Y")
+
+	# stash changes
+	# current_branch_name = view_branch(action=100)
+	default_commit_message = f"commit for {BRIGHT_MAGENTA}{current_branch_name}{RESET} at {formatted_date_time}"
+	default_stash_message = f"stashed at {formatted_date_time}"
+	resp = ""
+	message = ""
+	changes = git_status(action=1)
+	while True:
+		# single letter response needed
+		print()
+		if action == 0:
+			if not changes:
+				print(f"How do you want to handle changes in {current_branch_name}?")
+				print("[v] to see change(s) - [d] to see content of change(s) - [q] to quit ")
+				resp = prompt_1ch("commit[c] or stash[s]? [c/s] >>> ")
+				quit(resp)
+				if resp.lower() == "c":
+					response = prompt_1ch("Use default commit message? [y/N] [q] to quit >>> ")
+					quit(response)
+					if response.lower() == "y" or response == "":
+						message = default_commit_message
+					elif response.lower() == "n":
+						message = input("Enter your commit message. [q] to quit >>> ")
+						quit(message)
+					print("Invalid response.")
+				elif resp.lower() == "s":
+					response = prompt_1ch("Use default stash message? [y/N] [q] to quit >>> ")
+					quit(response)
+					if response.lower() == "y" or response == "":
+						message = default_stash_message
+					elif response.lower() == "n":
+						message = input("Enter your stash message. [q] to quit >>> ")
+						quit(message)
+					print("Invalid response.")
+				elif resp.lower() == "v":
+					git_status()
+					print()
+				elif resp.lower() == "d":
+					diff()
+					print()
+				if message:
+					break
+			else:
+				break
+		else:
+			message = default_stash_message
+			break
+	print()
+	if not changes:
+		print("::::: Checking for local changes in the branch ...")
+		if resp.lower() == "c" and message:
+			add_commit_all("all", message)
+		elif resp.lower() == "s":
+			to_stash = subprocess.run(["git", "stash", "save", message], capture_output=True, text=True)
+			if to_stash.stdout:
+				print_stdout(to_stash.stdout, index=1)
+				print_stdout(to_stash.stderr)
+			elif to_stash.stderr:
+				print_stdout(to_stash.stderr)
+
+
+def list_stashes():
+	"""This function displays a list of saved stashes and applies the
+		selected stash to the current branch"""
+	# displays list of stashes
+	stash = subprocess.run(["git", "stash", "list"], capture_output=True, text=True)
+	if stash.stdout:
+		num, returned_list = print_stdout(stash.stdout, serial_numbered=1)
+		item = collect_input(num, "stash")
+		item = item - 1
+		selection = (((returned_list[item]).split(":"))[0]).strip()
+		paths_list = entry_point(action="extraction")
+		for item in paths_list:
+			untrack = subprocess.run(["git", "rm", "-rf", item], capture_output=True, text=True)
+			print_stdout(untrack.stdout)
+			print_stdout(untrack.stderr)
+		# apply stash
+		stashed = subprocess.run(["git", "stash", "apply", selection], capture_output=True, text=True)
+		if stashed.stdout:
+			num, returned_list = print_stdout(stashed.stdout, index=1)
+			print_stdout(stashed.stderr)
+		elif stashed.stderr:
+			print_stdout(stashed.stderr)
+	elif stash.stderr:
+		print_stdout(stash.stderr)
+
+
+# branch entry point
+def create_or_view_branches():
+	args = sys.argv
+	len_args = len(args)
+	if len_args == 1:
+		selection = view_branch()
+		stash()
+		create_or_switch_branch(selection)
+		list_stashes()
+		print()
+	elif len_args == 2:
+		# single input function needed here
+		new_branch = (sys.argv)[1]
+		view_branch(new_branch=new_branch, action=1)
+		while True:
+			print()
+			create_branch = prompt_1ch(f'Create a branch "{new_branch}"? [y/N] [q] to quit >>> ')
+			quit(create_branch)
+			if create_branch.lower() == "y":
+				break
+			elif create_branch.lower() == "n":
+				quit("q")
+		view_branch(action=1)
+		create_or_switch_branch("branch", new_branch)
+
+
+# entry point for merge command
+def merge_to_main_master():
+	# current_branch_name = view_branch(action=100)
+	if current_branch_name == "main" or current_branch_name == "master":
+		print(f"You are in {current_branch_name} branch.")
+		print(f"Switch to the desired branch you want to merge to {current_branch_name}.")
+		quit("q")
+	while True:
+		print()
+		check = prompt_1ch("Are you sure that you want to merge this branch to main/master? [y/N] >>> ")
+		if check.lower() == "y":
+			break
+		elif check.lower() == "n":
+			quit("q")
+		print()
+		print("You must decide.")
+	main = view_branch(new_branch="main", action=3)
+	create_or_switch_branch(main)
+	pull()
+	create_or_switch_branch(current_branch_name)
+	rebase = subprocess.run(["git", "rebase", main], capture_output=True, text=True)
+	if rebase.stdout:
+		print_stdout(rebase.stdout)
+	elif rebase.stderr:
+		print_stdout(rebase.stderr)
+	create_or_switch_branch(main)
+	merge = subprocess.run(["git", "merge", current_branch_name], capture_output=True, text=True)
+	if merge.stdout:
+		print_stdout(merge.stdout)
+	elif merge.stderr:
+		print_stdout(merge.stderr)
+	push(file_list=[])
+	# print(f"switching back to other branch")
+	# create_or_switch_branch(current_branch_name)
+
+
+def diff(action: int=0):
+	diff_res = subprocess.run(["git", "diff"], capture_output=True, text=True)
+	if diff_res.returncode == 0 and diff_res.stdout:
+		print_stdout(diff_res.stdout)
+	elif diff_res.stderr:
+		print_stdout(diff_res.stderr)
+	elif diff_res.stderr == "" and diff_res.stderr == "" and diff_res.returncode == 0:
+		print()
+		print("Nothing to show.")
+		print("Your working directory is in the same state as your last commit.")
+	elif diff_res.returncode > 0:
+		print("Oops! I got:")
+		print("{}".format(print_stdout(diff_res.stderr)))
