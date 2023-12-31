@@ -1,0 +1,46 @@
+#!/bin/bash
+
+if [ "$#" = "0" ]; then
+    echo "No arguments passed."
+    exit 1
+fi
+
+make_exe()
+{
+	echo -e "\n========== $argument =========="
+	shcount=$((count + 1))
+	if [[ $(head -n 1 "$argument" | grep -c "#!/bin/bash") -eq 0 ]]; then
+		tmpfile=$(mktemp)
+		echo -e "#!/bin/bash\n" > "$tmpfile"
+		cat "$argument" >> "$tmpfile"
+
+		mv "$tmpfile" "$argument"
+	fi
+	sleep 1
+	chmod +x "$argument"
+	echo -e "Shebang line prepended to $argument and given the execute permission"
+}
+
+count=1
+for argument in "$@" ; do
+    if [[ $argument == *".sh" ]]; then
+		make_exe
+	else
+		echo -n "Is $argument a bash script? [y/N] >>> "
+		read -n 1 -s -r RES
+		echo -e "$RES"
+		if [[ $RES =~ [yY] ]]; then
+			make_exe
+		else
+			noshcount=$((count + 1))
+		fi
+    fi
+	count=$((count + 1))
+done
+
+if [[ $noshcount == $count ]]; then
+echo -e ""
+	echo -e "No bash script found."
+fi
+
+echo -e ""
