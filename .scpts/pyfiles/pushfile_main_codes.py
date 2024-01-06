@@ -144,26 +144,29 @@ def set_default_commit_msg(par: str):
 	total_iterations = int((shell_return.stdout.strip().split())[0]) # for bar
 	os.chdir(cur_dir) # for bar
 
-	with open(source_file, "r") as main_code, open(temp_file, "w") as def_commit:
+	new_file = []
+	with open(source_file, "r") as main_code:
 		count = 1 # for bar
-		for line in main_code:
-			time.sleep(.05)
-			if line.strip().endswith(set_def1):
+		content = main_code.readlines()
+		for line in content:
+			time.sleep(.005)
+			if line.rstrip().endswith(set_def1):
 				line = line.lstrip("#")
-				def_commit.write(line)
-				# print('::::**:::: {}'.format(line.strip()))
-			elif line.strip().endswith(set_def2):
+			elif line.rstrip().endswith(set_def2):
 				line = "#" + line
-				def_commit.write(line)
-				# print('::::##:::: {}'.format(line.strip()))
-			else:
-				def_commit.write(line)
-				# print(':::::::::: {}'.format(line.strip()))
+			new_file.append(line)
+			# print('::::##:::: {}'.format(line.strip()))
 
 			progress = count / total_iterations # for bar
 			print("\r{}. please wait... : %-40s %d%% done.".format(my_str) % ('>' * int(40 * progress), int(100 * progress)), end='') # for bar
 			count += 1 # for bar
+
 		print("") # for bar
+		# print(new_file)
+
+	with open(temp_file, "w") as def_commit:
+		def_commit.writelines(new_file)
+			
 	shutil.copy(temp_file, source_file)
 	os.remove(temp_file)
 	print()
@@ -210,6 +213,13 @@ def main_enrty():
 			all_files = []
 			while True:
 				file = input("Enter file(s). Enter [q] after last file >>> ")
+				if file.lower() == "unset commit" and file != "README.md": # xmodification
+					success_mode = set_default_commit_msg("n") # xmodification
+					print_set_commit("unset") # xmodification
+					file = input("Enter file(s). Enter [q] after last file >>> ") # xmodification
+				elif file.lower() == "unset commit" and file == "README.md": # xmodification
+					success_mode = set_default_commit_msg("n") # xmodification
+					print_set_commit("unset") # xmodification
 				quit(file)
 				if file.lower() == "s":
 					print()
