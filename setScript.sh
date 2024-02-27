@@ -263,7 +263,24 @@ dOptions=(
 	"  stash command - saves uncommitted changes in the working tree"
 	"  viewStash command - displays a list of stashed changes that can be applied to the current branch"
 	"  logit command - displays a detailed log of your commits with their branches"
-    #...bash script files.................. #
+	#...bash script files.................. #
+	"  py3venv command - creates a python3 virtual environment"
+	"  startproject command - creates a new django project"
+	"  startapp command - creates django apps for projects"
+	#...py script files....................... #
+	"  runserver command - spin up the django development server from any directory"
+	#...bash script files.................. #
+	"  makemigrations command - performs the makemigrations process"
+	#...py script files....................... #
+	"  migrate command - creates the model tables in the database"
+	#...bash script files.................. #
+	"  django command - displays the django version you are using"
+	"  djshell command - launches the django shell"
+	"  mkandmigrate command - a combination of the makemigrations and migrate commands"
+	#...py script files....................... #
+	"  showmigrations command - displays the history of migrations in an app/project"
+	"  sqlmigrate command - presents the sql query of any migration"
+	#...bash script files.................. #
 	"  ctemp - generates a default C source file template"
 	#...py script files....................... #
 	"  clear_commit command - clears unstaged and recent commits on your machine"
@@ -286,8 +303,10 @@ category()
 	local value="$2"
 	local btype="$3"
 	if [[ "$type" == "p" ]]; then
+		# python scripts
 		new_value="$(( ($value) + 700 ))"
 	elif [[ "$type" == "b" ]]; then
+		# bash scripts
 		new_value="$(( ($value) + 400 ))"
 		if [[ "$btype" == "cr" ]]; then
 			new_value=11111
@@ -301,6 +320,7 @@ category()
 			new_value=44444
 		fi
 	elif [[ "$type" == "c" ]]; then
+		# c scripts
 		new_value="$(( ($value) + 100 ))"
 	fi
 }
@@ -409,42 +429,87 @@ options()
 	
 	# ...bash script files................................... #
 	elif [[ "$converted_selection" == 29 ]]; then
+		DFILENAME="py3venv"
+		category b "$converted_selection"
+	elif [[ "$converted_selection" == 30 ]]; then
+		DFILENAME="startproject"
+		category b "$converted_selection"
+	elif [[ "$converted_selection" == 31 ]]; then
+		DFILENAME="startapp"
+		category b "$converted_selection"
+	
+	# ...py script files..................................... #
+	elif [[ "$converted_selection" == 32 ]]; then
+		DFILENAME="runserver"
+		category p "$converted_selection"
+
+	# ...bash script files................................... #
+	elif [[ "$converted_selection" == 33 ]]; then
+		DFILENAME="makemigrations"
+		category b "$converted_selection"
+	
+	# ...py script files..................................... #
+	elif [[ "$converted_selection" == 34 ]]; then
+		DFILENAME="migrate"
+		category p "$converted_selection"
+	
+	# ...bash script files................................... #
+	elif [[ "$converted_selection" == 35 ]]; then
+		DFILENAME="django"
+		category b "$converted_selection"
+	elif [[ "$converted_selection" == 36 ]]; then
+		DFILENAME="djshell"
+		category b "$converted_selection"
+	elif [[ "$converted_selection" == 37 ]]; then
+		DFILENAME="mkandmigrate"
+		category b "$converted_selection"
+
+	#...py script files..................................... #
+	elif [[ "$converted_selection" == 38 ]]; then
+		DFILENAME="showmigrations"
+		category p "$converted_selection"
+	elif [[ "$converted_selection" == 39 ]]; then
+		DFILENAME="sqlmigrate"
+		category p "$converted_selection"
+
+	# ...bash script files................................... #
+	elif [[ "$converted_selection" == 40 ]]; then
 		DFILENAME="ctemp"
 		category b "$converted_selection" "ct"
 	
 	# ...py script files..................................... #
-	elif [[ "$converted_selection" == 30 ]]; then
+	elif [[ "$converted_selection" == 41 ]]; then
 		DFILENAME="clear_commit"
 		category p "$converted_selection"
-	elif [[ "$converted_selection" == 31 ]]; then
+	elif [[ "$converted_selection" == 42 ]]; then
 		DFILENAME="printmyEnv"
 		category p "$converted_selection"
-	elif [[ "$converted_selection" == 32 ]]; then
+	elif [[ "$converted_selection" == 43 ]]; then
 		DFILENAME="show"
 		category p "$converted_selection"
-	elif [[ "$converted_selection" == 33 ]]; then
+	elif [[ "$converted_selection" == 44 ]]; then
 		DFILENAME="verifyRepo"
 		category p "$converted_selection"
 	
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 34 ]]; then
+	elif [[ "$converted_selection" == 45 ]]; then
 		DFILENAME="mycompile"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 35 ]]; then
+	elif [[ "$converted_selection" == 46 ]]; then
 		DFILENAME="pycompile"
 		category b "$converted_selection"
 	
 	# ...C files............................................. #
-	elif [[ "$converted_selection" == 36 ]]; then
+	elif [[ "$converted_selection" == 47 ]]; then
 		DFILENAME="myascii"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 37 ]]; then
+	elif [[ "$converted_selection" == 48 ]]; then
 		DFILENAME="rot13"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 38 ]]; then
+	elif [[ "$converted_selection" == 49 ]]; then
 		DFILENAME="rot47"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 39 ]]; then
+	elif [[ "$converted_selection" == 50 ]]; then
 		DFILENAME="guessGame"
 		category c "$converted_selection"
 	fi
@@ -475,62 +540,62 @@ opertn()
 
 		#...creating variable and profile.................. #
 		#...creating bshell variable.................. #
-		echo ""
 		if [ ! -f "$HOME/.bashrc" ]; then
 			touch "$HOME/.bashrc"
+			echo ""
 			echo "Creating bshell variable..."
-		else
-			echo "Variable bshell exists..."
+		# else
+		# 	echo "Variable bshell exists..."
 		sleep 0.1
 		fi
 
 		if ! grep -q "$DBIN" "$HOME/.bashrc"; then
 			echo -e "Setting up bshell variable..."
 			echo 'export PATH="$PATH:$HOME/'$(basename "$XBIN")'"' >> "$HOME/.bashrc"
-		else
-			echo -e "Bshell variable good..."
+		# else
+		# 	echo -e "Bshell variable good..."
 		sleep 0.1
 		fi
 
 		#...creating zshell variable.................. #
-		echo ""
 		if [ ! -f "$HOME/.zshrc" ]; then
 			touch "$HOME/.zshrc"
+			echo ""
 			echo "Creating zshell variable..."
-		else
-			echo "Zshell variable exists..."
+		# else
+		# 	echo "Zshell variable exists..."
 		sleep 0.1
 		fi
 
 		if ! grep -q "$DBIN" "$HOME/.zshrc"; then
 			echo -e "Setting up zshell variable..."
 			echo 'export PATH="$PATH:$HOME/'$(basename "$XBIN")'"' >> "$HOME/.zshrc"
-		else
-			echo -e "Zshell variable good..."
+		# else
+		# 	echo -e "Zshell variable good..."
 		sleep 0.1
 		fi
 
 		#...creating Profile.................. #
-		echo ""
 		if [ ! -f "$HOME/.bash_profile" ]; then
 			touch "$HOME/.bash_profile"
+			echo ""
 			echo "Creating profile..."
-		else
-			echo "Profile exists..."
+		# else
+		# 	echo "Profile exists..."
 		sleep 0.1
 		fi
 
 		if ! grep -q  bashrc "$HOME/.bash_profile"; then
 			echo -e "Setting up profile..."
 			echo '[ -r ~/.bashrc ] && . ~/.bashrc ' >> "$HOME/.bash_profile"
-		else
-			echo -e "Profile good..."
+		# else
+		# 	echo -e "Profile good..."
 		sleep 0.1
 		fi
 
-		echo -e ""
+		echo ""
 		echo -e "Creating $DFILENAME as a command..."
-		echo -e ""
+		# echo -e ""
 		
 		if [[ "$new_value" =~ ^(11111|22222|33333|55555)$ ]]; then
 			unametokenmaill
@@ -560,6 +625,7 @@ pyfiles()
                 echo "custom commands" > "$destination"
 				cp "$file" "$destination"
             fi
+			chmod +x $destination
         fi
     done
 	update_changes
@@ -568,16 +634,19 @@ pyfiles()
 update_changes()
 {
 	# updates any command that has already been installed
-	affected_files="push pull pushfile pushall branch merge status compare commitdir commitall wcount stash viewStash logit clear_commit printmyEnv show verifyRepo"
+	affected_files="$(ls $PWD/$SCPTS)"
+	# echo "affected_files: $affected_files ########***********######"
     for file in $affected_files; do
 		file="$XBIN/$file"
-		# echo "file: $file ############################"
+		# echo "############################"
+		# echo "file: $file"
         if [[ -f "$file" ]]; then
             filename=$(basename "$file")
             source="$SCPTS/$filename"
 			destination="$XBIN/$filename"
 			cp "$source" "$destination"
-			# echo "copied: $file ************###############"
+			# echo "************###############"
+			# echo "copied: $file"
         fi
     done
 }
@@ -585,6 +654,9 @@ update_changes()
 #...5.................. #
 scptcpy()
 {
+	if [[ ! -f "$XBIN/pymanage" ]]; then
+		cp "$SCPTS/pymanage" "$XBIN/pymanage"
+	fi
 	sleep 0.1
 	# for betty command installation
 	if [[ $DFILENAME =~ "betty" ]]; then
@@ -754,6 +826,38 @@ instructn()
 		echo -e "$STRT view your commit history $EFFT $ANYWHERE: $DFILENAME"
 	elif [[ $DFILENAME == "verifyRepo" ]]; then
 		echo -e "$STRT verify that you are in a repository $EFFT $ANYWHERE: $DFILENAME"
+
+	elif [[ $DFILENAME == "startproject" ]]; then
+		echo -e "$STRT start/create a django project $EFFT $ANYWHERE: $DFILENAME <project name>"
+		echo -e "Note: You must either have django installed on your machine or in a virtual environment"
+	elif [[ $DFILENAME == "startapp" ]]; then
+		echo -e "$STRT create django app(s) $EFFT $ANYWHERE: $DFILENAME <app name(s)"
+	elif [[ $DFILENAME == "runserver" ]]; then
+		echo -e "$STRT spin up your django server $EFFT $ANYWHERE: $DFILENAME"
+		echo -e "Note: You can also pass a port number argument to the command, if you wish to spin it with a different port number"
+		echo -e "I.e $DFILENAME <port number>"
+	elif [[ $DFILENAME == "makemigrations" ]]; then
+		echo -e "$STRT make/create django migration scripts that will be used to create tables in your database $EFFT $ANYWHERE: $DFILENAME"
+		echo -e "Note: You can also pass specific app name(s) as argument for streamlined operations"
+		echo -e "I.e $DFILENAME <app name(s)>"
+	elif [[ $DFILENAME == "migrate" ]]; then
+		echo -e "$STRT migrate your model setups to create tables in your database $EFFT $ANYWHERE: $DFILENAME"
+		echo -e "Note: You can equally pass any string as argument to select options to migrate to"
+		echo -e "I.e $DFILENAME <string>"
+	elif [[ $DFILENAME == "django" ]]; then
+		echo -e "$STRT can verify that you have django installed via its version $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "djshell" ]]; then
+		echo -e "$STRT enter into the django shell for further processing. $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "mkandmigrate" ]]; then
+		echo -e "$STRT can perform the makemigrations and migrate operations with just a command. $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "showmigrations" ]]; then
+		echo -e "$STRT display and observe the history of your migration operations $EFFT $ANYWHERE: $DFILENAME"
+		echo -e "Note: You can also pass any string as argument for streamlined operation"
+		echo -e "I.e $DFILENAME <string>"
+	elif [[ $DFILENAME == "sqlmigrate" ]]; then
+		echo -e "$STRT check the sql query of your model table $EFFT $ANYWHERE: $DFILENAME <app name> <migration filename>"
+	elif [[ $DFILENAME == "py3venv" ]]; then
+		echo -e "$STRT create python3 venvs $EFFT $ANYWHERE: $DFILENAME"
 	sleep 0.1
 	fi
 }

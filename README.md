@@ -58,6 +58,19 @@
 	* viewStash command - displays a list of all stashed changes in all branches and can be applied to the current branch
 	* logit command - displays a detailed log of your commits with their branches
 
+   * py3venv command - creates a python3 virtual environment in the cwd"
+	* startproject command - creates a new django project"
+	* startapp command - creates django apps for projects within any django project"
+	* runserver command - spins up the django development server from any directory"
+   Note: Provided, there is atleast one django project in the current working directory, it will find it and spin it.
+	* makemigrations command - performs the makemigrations process"
+	* migrate command - creates the model tables in the database"
+	* django command - displays the django version you are using"
+	* djshell command - launches the django shell"
+	* mkandmigrate command - a combination of the makemigrations and migrate commands"
+	* showmigrations command - displays the history of migrations within an app or all the apps in a project"
+	* sqlmigrate command - presents the sql query of any migration"
+
    * ctemp command - generates a default C source file template
    
    * clear_commit command - clears the staging area and recent commits on your local machine
@@ -87,6 +100,17 @@ This file contains the notable changes made to the Custom Commands project.
 <br>
 
 ## New
+   - startproject creates a new django project
+   - startapp creates a new django app within a django project
+   - runserver will spin up the development server right from any directory
+   - makemigrations creates migrations
+   - migrate will map the created tables to the database
+   - django displays the django version currently in use(within a venv or without), validating the presence of django
+   - djshell launches the django interactive shell
+   - mkandmigrate combines the makemigrations and migrate commands to save time during development
+   - showmigrations displays the migrations in all or any of the selected app
+   - sqlmigrate presents the sql query of the migration you select
+   - py3venv creates a venv without worrying about all the arguments
    - verifyRepo to checkes if the current dir is a repository or not
    - show - displays a list of all commits made to the current repository
    - printmyEnv to prints a list of your env paths
@@ -136,6 +160,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Changes
+   - curfol now works on ubuntu and wsl-ubuntu
    - you can now skip files from being committed when using pushfile
    - majority of the display/output now commes with text coloring
    - deleting your repo is now much flexible as all you have to is select the number corresponding to the repo from the display me listing all of your repos

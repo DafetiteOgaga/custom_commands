@@ -1,0 +1,32 @@
+#!/bin/bash
+
+command_arg="python3 -m venv"
+if [[ "$#" == "0" || "$#" -gt 1 ]]; then
+        read -p "Enter name of virtual environment >>> " name
+        command_arg+=" $name"
+else
+        name="$1"
+        command_arg+=" $name"
+fi
+
+check=$(2>&1 $command_arg)
+echo ""
+if [[ "$check" == *"virtual environment was not created successfully"* ]]; then
+        echo "Install the python3-venv package"
+        echo "On Debian/Ubuntu systems, use:"
+        echo "sudo apt install python3-venv"
+        echo ""
+elif [[ -z "$check" ]]; then
+        echo "check empty"
+        if [[ -n "$name" ]]; then
+                echo "name availabe"
+                if [[ -f "$name/bin/activate" ]]; then
+                        echo "Successfully created $name"
+                        echo "Activate it with: source $name/bin/activate"
+                        echo "To deactivate, use: deactivate"
+                        echo ""
+                fi
+        fi
+else
+        echo "OOps! Did you pass a venv name?"
+fi

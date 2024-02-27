@@ -6,7 +6,7 @@ from .verify_repo_new import entry_point
 from .my_prompt import main as prompt_1ch
 from .colors import *
 
-# now = datetime.now()
+# now = datetime.now() 
 formatted_date_time = datetime.now().strftime("%H:%M:%S on %a %b %Y")
 
 # [RED GREEN YELLOW MAGENTA BLUE CYAN]

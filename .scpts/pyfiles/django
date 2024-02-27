@@ -1,0 +1,26 @@
+#!/bin/bash
+
+output=$(2>&1 python3 -m django --version)
+items=$(ls)
+
+# echo "output: $output"
+if [[ "$output" == *"No module named django"* ]]; then
+	echo ""
+	echo "You don't have django installed or check your virtual environment"
+	echo "pip install django"
+	echo ""
+elif [[ "$1" == "project" ]]; then
+	# echo "fixed"
+	echo ""
+elif [[ "$items" != *"manage.py"* && -n "$1" ]]; then
+	echo ""
+	echo "change to the directory containing \"manage.py\""
+	exit 1
+else
+	if [[ -z "$1" ]]; then
+		echo ""
+		echo "Django version: $output"
+	else
+		echo ""
+	fi
+fi

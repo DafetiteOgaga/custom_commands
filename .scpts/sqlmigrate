@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+
+import subprocess, sys
+from pyfiles.django_codes import output_func, error_check, error_response
+
+error_check()
+code, response = error_check()
+stop = error_response(code, response)
+if stop:
+	sys.exit(stop)
+
+if len(sys.argv) > 1:
+	args = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+	sys.argv = args
+sys.argv = sys.argv + ['show']
+command = output_func()
+print()
+subprocess.run(command.split())
