@@ -3,12 +3,27 @@
 import os, sys, subprocess
 
 def exit(option: str):
+	"""Exits the program
+
+	Args:
+		option (str): 
+	"""
 	if option == 'q'.lower():
 		print()
 		print('Cheers.')
 		sys.exit()
 
-def locator1(disp_list: list, manage_py_list: list, migration_list: list):
+def locator(disp_list: list, manage_py_list: list, migration_list: list):
+	"""Forward seraches the current directory and its sub-directory(ies)
+
+	Args:
+		disp_list (list): []
+		manage_py_list (list): []
+		migration_list (list): []
+
+	Returns:
+		_type_: tuple of all the list parameters passed as arguments
+	"""
 	migration_dict = {}
 	cur_dir = os.getcwd()
 	for i in os.listdir():
@@ -27,18 +42,28 @@ def locator1(disp_list: list, manage_py_list: list, migration_list: list):
 							migration_list.append(migration_dict)
 			disp_list.append(new_path)
 			os.chdir(new_path)
-			locator1(disp_list, manage_py_list, migration_list)
+			locator(disp_list, manage_py_list, migration_list)
 			os.chdir(cur_dir)
 	return disp_list, manage_py_list, migration_list
 
 
 def main(runserver: str=None, migrate: str=None, show: str=None):
-	dirs, manage, migration = locator1([], [], [])
+	"""perse the lists and return the option selected by the user
+
+	Args:
+		runserver (str, optional):  Defaults to None.
+		migrate (str, optional):  Defaults to None.
+		show (str, optional):  Defaults to None.
+
+	Returns:
+		_type_: returns the option selected by the user
+	"""
+	dirs, manage, migration = locator([], [], [])
 	cur_path = os.getcwd()
 	if runserver:
 		if len(manage) == 0:
-			print('No django project found in this directory or its subdirectories.')
-			print('Change to a directory that has a django project or has it in its subdirectory(ies).')
+			print('No django project found in this directory or its sub-directories.')
+			print('Change to a directory that has a django project or has it in its sub-directory(ies).')
 			print()
 			sys.exit(1)
 		elif len(manage) == 1:
@@ -75,29 +100,35 @@ def main(runserver: str=None, migrate: str=None, show: str=None):
 				print(f'{index + 1}. {i}')
 			print()
 			try:
-				selection = input('Select the file you want to use. [q] - exit >>> ')
+				selection = input('Make a selection. [q] - exit >>> ')
 			except KeyboardInterrupt:
 				print()
 				sys.exit()
 			exit(selection)
 			selection = int(selection) - 1
-			return f'{dict_app_name} {app_list[selection]}', dict_app_name
 		else:
 			for index, i in enumerate(app_name_list):
 				print(f'{index + 1}. {i}')
 			print()
 			try:
-				selection = input('Select the file you want to use. [q] - exit >>> ')
+				selection = input('Select an option. [q] - exit >>> ')
 			except KeyboardInterrupt:
 				print()
 				sys.exit()
 			exit(selection)
 			selection = int(selection) - 1
-			return f'{dict_app_name} {app_name_list[selection]}', dict_app_name
+		return dict_app_name, app_list[selection]
 	
 	
-
 def output_func(text_path: str=None):
+	"""displays the output of the process to the user
+
+	Args:
+		text_path (str, optional): Defaults to None.
+
+	Returns:
+		_type_: returns the django command and args to be executed by the shell
+	"""
 	manage_obj = open(os.path.join(os.environ['HOME'], '.xbin', 'pymanage'))
 	content = manage_obj.readlines()[0]
 	migrate = content + 'migrate'
@@ -109,16 +140,16 @@ def output_func(text_path: str=None):
 
 	if number_of_args == 2 and (sys.argv[1] == 'migration' or sys.argv[1] == 'show') or '/sqlmigrate' in sys.argv[0]:
 		if sys.argv[1] == 'show':
-			output, app_name = main(migrate='yes', show='yes')
+			app_name, selection = main(migrate='yes', show='yes')
 			if '/showmigrations' in sys.argv[0]:
 				manage_text = showmigrations
 				ret = f'{manage_text} {app_name}'
 			else:
 				manage_text = sqlmigrate
-				ret = f'{manage_text} {output}'
+				ret = f'{manage_text} {app_name} {selection}'
 		else:
-			output, app_name = main(migrate='yes')
-			ret = f'{manage_text} {output}'
+			app_name, selection = main(migrate='yes')
+			ret = f'{manage_text} {app_name} {selection}'
 	elif '/migrate' in sys.argv[0]:
 		ret = f'{migrate}'
 	elif '/showmigrations' in sys.argv[0]:
@@ -136,6 +167,12 @@ def output_func(text_path: str=None):
 
 
 def error_check():
+	"""Uses the django version command to determine whether there is
+	error in the input and process the result accordingly.
+
+	Returns:
+		_type_: integers and strings in the order of errors encountered
+	"""
 	django = ['python3', '-m', 'django', '--version']
 	check1 = subprocess.run(django, capture_output=True,text=True)
 	ls = ['ls']
@@ -149,6 +186,15 @@ def error_check():
 	
 
 def error_response(code, response):
+	"""present the error response
+
+	Args:
+		code (_type_): int
+		response (_type_): str
+
+	Returns:
+		_type_: return 1 for error response
+	"""
 	if code:
 		if response == 'django_not_installed':
 			print()
