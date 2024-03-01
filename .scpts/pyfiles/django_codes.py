@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os, sys, subprocess
+from pyfiles.my_prompt import main as prompt
 
 def exit(option: str):
 	"""Exits the program
@@ -173,11 +174,12 @@ def error_check():
 	Returns:
 		_type_: integers and strings in the order of errors encountered
 	"""
+
 	django = ['python3', '-m', 'django', '--version']
 	check1 = subprocess.run(django, capture_output=True,text=True)
 	ls = ['ls']
 	check2 = subprocess.run(ls, capture_output=True, text=True)
-	if check1.stderr == '/usr/bin/python3: No module named django\n':
+	if 'No module named django' in check1.stderr:
 		return check1.returncode, 'django_not_installed'
 	if "manage.py" not in check2.stdout and "runserver" not in sys.argv[0]:
 		return 1, 'wrong_dir'
@@ -208,3 +210,30 @@ def error_response(code, response):
 		return 1
 	return 0
 		
+def requirement_txt(found: bool=False):
+	"""presents the options to what operation to peform(if applicable)
+	the sends the command and args as a return value
+
+	Args:
+		found (bool, optional): Defaults to False.
+	"""
+	if found:
+		options = """
+a. Update the requirements.txt file
+b. Install the dependencies in the requirements.txt
+"""
+		print(options)
+		response = prompt(f'Make a choice. [q] - quit >>> ')
+		exit(response)
+	else:
+		print('Creating requirements.txt file ...')
+		response = 'a'
+
+	if response.lower() == 'a':
+		return "pip freeze"
+	elif response.lower() == 'b':
+		return "pip install -r"
+	else:
+		print()
+		print('Invalid entry!')
+		sys.exit(1)
