@@ -97,6 +97,12 @@ def main(runserver: str=None, migrate: str=None, show: str=None):
 			if dict_app_name in os.listdir(cur_dir):
 				app_list += i[dict_app_name]
 		if not show or 'sqlmigrate' in sys.argv[0]:
+			if len(app_list) == 0:
+				print()
+				print('No migration found')
+				print('Use "makemigrations" or "mkandmigrate"')
+				print()
+				sys.exit(1)
 			for index, i in enumerate(app_list):
 				print(f'{index + 1}. {i}')
 			print()
@@ -108,6 +114,12 @@ def main(runserver: str=None, migrate: str=None, show: str=None):
 			exit(selection)
 			selection = int(selection) - 1
 		else:
+			if len(app_name_list) == 0:
+				print()
+				print('No app/history found')
+				print('Use "makemigrations" or "mkandmigrate"')
+				print()
+				sys.exit(1)
 			for index, i in enumerate(app_name_list):
 				print(f'{index + 1}. {i}')
 			print()
