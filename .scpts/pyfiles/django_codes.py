@@ -100,7 +100,7 @@ def main(runserver: str=None, migrate: str=None, show: str=None):
 			if len(app_list) == 0:
 				print()
 				print('No migration found')
-				print('Use "makemigrations" or "mkandmigrate"')
+				print('Use "makemigrations", "migrate" or "mkandmigrate"')
 				print()
 				sys.exit(1)
 			for index, i in enumerate(app_list):
@@ -117,7 +117,7 @@ def main(runserver: str=None, migrate: str=None, show: str=None):
 			if len(app_name_list) == 0:
 				print()
 				print('No app/history found')
-				print('Use "makemigrations" or "mkandmigrate"')
+				print('Use "makemigrations", "migrate" or "mkandmigrate"')
 				print()
 				sys.exit(1)
 			for index, i in enumerate(app_name_list):
