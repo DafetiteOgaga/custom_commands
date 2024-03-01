@@ -58,18 +58,19 @@
 	* viewStash command - displays a list of all stashed changes in all branches and can be applied to the current branch
 	* logit command - displays a detailed log of your commits with their branches
 
-   * py3venv command - creates a python3 virtual environment in the cwd"
-	* startproject command - creates a new django project"
-	* startapp command - creates django apps for projects within any django project"
+   * py3venv command - creates a python3 virtual environment in the cwd
+	* startproject command - creates a new django project
+	* startapp command - creates django apps for projects within any django project
 	* runserver command - spins up the django development server from any directory"
    Note: Provided, there is atleast one django project in the current working directory, it will find it and spin it.
-	* makemigrations command - performs the makemigrations process"
-	* migrate command - creates the model tables in the database"
-	* django command - displays the django version you are using"
-	* djshell command - launches the django shell"
-	* mkandmigrate command - a combination of the makemigrations and migrate commands"
-	* showmigrations command - displays the history of migrations within an app or all the apps in a project"
-	* sqlmigrate command - presents the sql query of any migration"
+	* makemigrations command - performs the makemigrations process
+	* migrate command - creates the model tables in the database
+	* django command - displays the django version you are using
+	* djshell command - launches the django shell
+	* mkandmigrate command - a combination of the makemigrations and migrate commands
+	* showmigrations command - displays the history of migrations within an app or all the apps in a project
+	* sqlmigrate command - presents the sql query of any migration
+   * requirement_txt command - creates, updates and install the dependencies in the requirement.txt file
 
    * ctemp command - generates a default C source file template
    
@@ -100,6 +101,7 @@ This file contains the notable changes made to the Custom Commands project.
 <br>
 
 ## New
+   - requirement_txt command - to create, update and install the dependencies in the requirement.txt file 
    - startproject creates a new django project
    - startapp creates a new django app within a django project
    - runserver will spin up the development server right from any directory
