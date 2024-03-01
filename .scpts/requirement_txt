@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+
+import subprocess, sys
+from pyfiles.django_codes import *
+
+code, response = error_check()
+stop = error_response(code, response)
+if stop:
+	sys.exit(stop)
+
+if len(sys.argv) > 1:
+	args = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+	sys.argv = args
+	output_func()
+
+requirement = 'requirements.txt'
+text_path = os.getcwd()
+check_req = subprocess.run(['ls'], capture_output=True, text=True)
+found = False
+for i in check_req.stdout.split():
+    if i == requirement:
+        found = True
+        
+command = requirement_txt(found=found)
+print()
+command = command.split()
+
+if len(command) == 2:
+	with open(requirement, 'w') as requirements_file:
+		create = subprocess.run(command, stdout=requirements_file)
+	if create.returncode == 0:
+		print('Success.')
+else:
+	command = command + [requirement]
+	subprocess.run(command)
