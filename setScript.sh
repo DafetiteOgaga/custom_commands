@@ -280,6 +280,7 @@ dOptions=(
 	#...py script files....................... #
 	"  showmigrations command - displays the history of migrations in an app/project"
 	"  sqlmigrate command - presents the sql query of any migration"
+	"  requirement_txt command - creates, updates and install the dependencies in the requirement.txt file"
 	#...bash script files.................. #
 	"  ctemp - generates a default C source file template"
 	#...py script files....................... #
@@ -471,45 +472,48 @@ options()
 	elif [[ "$converted_selection" == 39 ]]; then
 		DFILENAME="sqlmigrate"
 		category p "$converted_selection"
+	elif [[ "$converted_selection" == 40 ]]; then
+		DFILENAME="requirement_txt"
+		category p "$converted_selection"
 
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 40 ]]; then
+	elif [[ "$converted_selection" == 41 ]]; then
 		DFILENAME="ctemp"
 		category b "$converted_selection" "ct"
 	
 	# ...py script files..................................... #
-	elif [[ "$converted_selection" == 41 ]]; then
+	elif [[ "$converted_selection" == 42 ]]; then
 		DFILENAME="clear_commit"
 		category p "$converted_selection"
-	elif [[ "$converted_selection" == 42 ]]; then
+	elif [[ "$converted_selection" == 43 ]]; then
 		DFILENAME="printmyEnv"
 		category p "$converted_selection"
-	elif [[ "$converted_selection" == 43 ]]; then
+	elif [[ "$converted_selection" == 44 ]]; then
 		DFILENAME="show"
 		category p "$converted_selection"
-	elif [[ "$converted_selection" == 44 ]]; then
+	elif [[ "$converted_selection" == 45 ]]; then
 		DFILENAME="verifyRepo"
 		category p "$converted_selection"
 	
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 45 ]]; then
+	elif [[ "$converted_selection" == 46 ]]; then
 		DFILENAME="mycompile"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 46 ]]; then
+	elif [[ "$converted_selection" == 47 ]]; then
 		DFILENAME="pycompile"
 		category b "$converted_selection"
 	
 	# ...C files............................................. #
-	elif [[ "$converted_selection" == 47 ]]; then
+	elif [[ "$converted_selection" == 48 ]]; then
 		DFILENAME="myascii"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 48 ]]; then
+	elif [[ "$converted_selection" == 49 ]]; then
 		DFILENAME="rot13"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 49 ]]; then
+	elif [[ "$converted_selection" == 50 ]]; then
 		DFILENAME="rot47"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 50 ]]; then
+	elif [[ "$converted_selection" == 51 ]]; then
 		DFILENAME="guessGame"
 		category c "$converted_selection"
 	fi
@@ -858,6 +862,8 @@ instructn()
 		echo -e "$STRT check the sql query of your model table $EFFT $ANYWHERE: $DFILENAME <app name> <migration filename>"
 	elif [[ $DFILENAME == "py3venv" ]]; then
 		echo -e "$STRT create python3 venvs $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "requirement_txt" ]]; then
+		echo -e "$STRT create, update or install the dependencies in the requirements.txt file $EFFT $ANYWHERE: $DFILENAME"
 	sleep 0.1
 	fi
 }
