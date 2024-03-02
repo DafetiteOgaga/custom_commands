@@ -600,3 +600,101 @@ def diff(action: int=0):
 	elif diff_res.returncode > 0:
 		print("Oops! I got:")
 		print("{}".format(print_stdout(diff_res.stderr)))
+
+
+def write_to_file(ignore_list):
+	# set the file name to .gitignore
+	filename = '.gitignore'
+	try:
+		file_list = []
+		with open(filename) as g:
+			for l in g:
+				file_list.append(l.strip())
+	except FileNotFoundError:
+		open(filename, 'w').close()
+	with open(filename, 'a') as f:
+		for k in ignore_list:
+			if k not in file_list:
+				f.write(k + '\n')
+
+
+def backward_serach():
+	init_path = os.getcwd()
+	if ".git" in os.listdir():
+		root_repo = init_path
+		return root_repo
+	else:
+		if init_path == '/':
+			print()
+			print("You don't seem to be in a git repository")
+			print('Change into a repository and try again')
+			print()
+			sys.exit(1)
+		os.chdir(os.pardir)
+		return backward_serach()
+
+
+def search_repo(repo_dir: list, dir_path: str=None, repeat: int=0, child_dir: int=0):
+	subprocess.run(['clear'])
+	dir = (os.sep).join((repo_dir[0]).split(os.sep)[:-1])
+	if repeat and dir_path:
+		dir = (os.sep).join(dir_path.split(os.sep)[:-1])
+	if child_dir:
+		dir = repo_dir[0]
+		repo_dir = os.listdir(repo_dir[0])
+	# print('dir:', dir)
+	print()
+	print(f'You are in: {os.path.basename(dir)}')
+	print('.'*(len(os.path.basename(dir)) + 13))
+	ignore_list = []
+	count = 0
+	dir_list = []
+	for i in repo_dir:
+		i = i.split(os.sep).pop()
+		if i == '.git':
+			continue
+		print(f'{count + 1}. {i}')
+		dir_list.append(i)
+		count += 1
+	print()
+	selection = input('Make a selecion [q] - quit >>> ')
+	if selection == '':
+		return ignore_list
+	quit(selection)
+	cur_dir = ""
+	try:
+		selection = int(selection)
+		item = dir_list[selection - 1]
+	except ValueError:
+		print("Invalid selection. Please enter a valid integer.")
+		sys.exit(1)
+	except IndexError:
+		print("Selection is out of range. Please enter a valid number.")
+		sys.exit(1)
+	cur_dir = f'{dir}{os.sep}{item}'
+	print()
+	if os.path.isdir(cur_dir):
+		print('[n] - to add the dir to .gitignore file')
+		open_dir = prompt_1ch(f'You want to explore {item}? [y/N] [q] - quit >>> ')
+		quit(open_dir)
+		if open_dir.lower() == 'y':
+			search_repo([cur_dir], child_dir=1)
+		elif open_dir.lower() == 'n':
+			if cur_dir not in ignore_list:
+				ignore_list.append(cur_dir)
+				del dir_list[selection - 1]
+				if not dir_list:
+					write_to_file(ignore_list)
+					return ignore_list
+				search_repo(dir_list, dir_path=cur_dir, repeat=1)
+		else:
+			print()
+			print("Invalid entry.")
+			sys.exit(1)
+	else:
+		ignore_list.append(cur_dir)
+		del dir_list[selection - 1]
+		search_repo(dir_list, dir_path=cur_dir, repeat=1)
+	if ignore_list:
+		write_to_file(ignore_list)
+	return ignore_list
