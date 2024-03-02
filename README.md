@@ -36,6 +36,8 @@
    * betty linter command
    * pycode command - a pycodestyle (PEP 8) linter
 
+   * gitignore command - creates/updates your .gitignore file by navigating to any file/directory to select and/or update them to your .gitignore file
+
    * branch command - creates, setup the branch on the remote and switch between local branches
    * merge command - merges changes in the current branch to main/master branch. Note: keeps commit history linear, preventing 3way merge
    * status command - displays information about tracked and untracked changes in the branch
@@ -101,6 +103,7 @@ This file contains the notable changes made to the Custom Commands project.
 <br>
 
 ## New
+   - gitignore lets your browse through your repository. Allowing you to either create and add or update your .gitignore file with the selected list of file(ys) and directory(ies)
    - requirement_txt command - to create, update and install the dependencies in the requirement.txt file 
    - startproject creates a new django project
    - startapp creates a new django app within a django project
