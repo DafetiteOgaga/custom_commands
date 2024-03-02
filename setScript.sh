@@ -242,7 +242,7 @@ dOptions=(
 	"  betty linter command"
 	"  pycode command a \"pycodestyle (PEP 8)\" linter"
 	#...py script files....................... #
-	"  gitignore command - creates/updates your .gitignore file by navigates to any file/directory"
+	"  gitignore command - creates/updates your .gitignore file by navigating to any file/directory"
 	"  branch command - creates and also switch between branches"
 	"  merge command - merges changes in the current branch to main/master branch"
 	"  status command - displays information about tracked and untracked changes in the branch"
