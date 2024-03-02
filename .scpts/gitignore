@@ -3,10 +3,11 @@
 from pyfiles.git_codes import *
 
 root_repo = backward_serach()
+delimiter = root_repo + os.sep
 root_list = []
 for i in os.listdir(root_repo):
 	root_list.append(f'{root_repo}{os.sep}{i}')
-search_repo(root_list)
+search_repo(root_list, delimiter=delimiter)
 print()
 print('Successful.')
 print('Check the root of your repository for the newly created/updated .gitignore file')
