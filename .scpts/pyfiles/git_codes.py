@@ -105,7 +105,7 @@ def print_stdout(stdout: str, index: int=0, serial_numbered: int=0):
 				elif type == "m":
 					br_name1, br_name2 = line.split(c_word)
 					line = " ".join([(br_name1.split())[0], f"{BRIGHT_MAGENTA}{br_name1.split()[1]}{RESET}",
-		    				c_word, f"{BRIGHT_MAGENTA}{(br_name2.split())[0]}{RESET}", (br_name2.split())[1],
+							c_word, f"{BRIGHT_MAGENTA}{(br_name2.split())[0]}{RESET}", (br_name2.split())[1],
 							f"{BRIGHT_YELLOW}{(br_name2.split())[2]}{RESET}"])
 					# line = " ".join([(br_name1.split())[0], f"{BRIGHT_MAGENTA}{br_name1.split()[1]}{RESET}", c_word, f"{BRIGHT_MAGENTA}{(br_name2.split())[0]}{RESET}", (br_name2.split())[1], f"{BRIGHT_YELLOW}{(br_name2.split())[2]}{RESET}"])
 				elif type == "n":
@@ -602,9 +602,10 @@ def diff(action: int=0):
 		print("{}".format(print_stdout(diff_res.stderr)))
 
 
-def write_to_file(ignore_list):
+def write_to_file(ignore_list, delimiter: str):
 	# set the file name to .gitignore
 	filename = '.gitignore'
+	ignore_file = 1
 	try:
 		file_list = []
 		with open(filename) as g:
@@ -612,10 +613,15 @@ def write_to_file(ignore_list):
 				file_list.append(l.strip())
 	except FileNotFoundError:
 		open(filename, 'w').close()
+	if filename not in file_list:
+		ignore_file = 0
 	with open(filename, 'a') as f:
 		for k in ignore_list:
+			k = k.split(delimiter)[1]
 			if k not in file_list:
 				f.write(k + '\n')
+		if not ignore_file:
+			f.write(filename + '\n')
 
 
 def backward_serach():
@@ -634,7 +640,7 @@ def backward_serach():
 		return backward_serach()
 
 
-def search_repo(repo_dir: list, dir_path: str=None, repeat: int=0, child_dir: int=0):
+def search_repo(repo_dir: list, delimiter: str, dir_path: str=None, repeat: int=0, child_dir: int=0):
 	subprocess.run(['clear'])
 	dir = (os.sep).join((repo_dir[0]).split(os.sep)[:-1])
 	if repeat and dir_path:
@@ -643,7 +649,7 @@ def search_repo(repo_dir: list, dir_path: str=None, repeat: int=0, child_dir: in
 		dir = repo_dir[0]
 		repo_dir = os.listdir(repo_dir[0])
 	# print('dir:', dir)
-	print()
+	# print()
 	print(f'You are in: {os.path.basename(dir)}')
 	print('.'*(len(os.path.basename(dir)) + 13))
 	ignore_list = []
@@ -678,15 +684,15 @@ def search_repo(repo_dir: list, dir_path: str=None, repeat: int=0, child_dir: in
 		open_dir = prompt_1ch(f'You want to explore {item}? [y/N] [q] - quit >>> ')
 		quit(open_dir)
 		if open_dir.lower() == 'y':
-			search_repo([cur_dir], child_dir=1)
+			search_repo([cur_dir], delimiter=delimiter, child_dir=1)
 		elif open_dir.lower() == 'n':
 			if cur_dir not in ignore_list:
 				ignore_list.append(cur_dir)
 				del dir_list[selection - 1]
 				if not dir_list:
-					write_to_file(ignore_list)
+					write_to_file(ignore_list, delimiter)
 					return ignore_list
-				search_repo(dir_list, dir_path=cur_dir, repeat=1)
+				search_repo(dir_list, delimiter=delimiter, dir_path=cur_dir, repeat=1)
 		else:
 			print()
 			print("Invalid entry.")
@@ -694,7 +700,7 @@ def search_repo(repo_dir: list, dir_path: str=None, repeat: int=0, child_dir: in
 	else:
 		ignore_list.append(cur_dir)
 		del dir_list[selection - 1]
-		search_repo(dir_list, dir_path=cur_dir, repeat=1)
+		search_repo(dir_list, delimiter=delimiter, dir_path=cur_dir, repeat=1)
 	if ignore_list:
-		write_to_file(ignore_list)
+		write_to_file(ignore_list, delimiter)
 	return ignore_list
