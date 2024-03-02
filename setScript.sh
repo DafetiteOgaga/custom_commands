@@ -242,6 +242,7 @@ dOptions=(
 	"  betty linter command"
 	"  pycode command a \"pycodestyle (PEP 8)\" linter"
 	#...py script files....................... #
+	"  gitignore command - creates/updates your .gitignore file by navigates to any file/directory"
 	"  branch command - creates and also switch between branches"
 	"  merge command - merges changes in the current branch to main/master branch"
 	"  status command - displays information about tracked and untracked changes in the branch"
@@ -367,153 +368,156 @@ options()
 
 	# ...py script files..................................... #
 	elif [[ "$converted_selection" == 10 ]]; then
-		DFILENAME="branch"
+		DFILENAME="gitignore"
 		category p "$converted_selection"
 	elif [[ "$converted_selection" == 11 ]]; then
-		DFILENAME="merge"
+		DFILENAME="branch"
 		category p "$converted_selection"
 	elif [[ "$converted_selection" == 12 ]]; then
+		DFILENAME="merge"
+		category p "$converted_selection"
+	elif [[ "$converted_selection" == 13 ]]; then
 		DFILENAME="status"
 		category p "$converted_selection"
 
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 13 ]]; then
+	elif [[ "$converted_selection" == 14 ]]; then
 		DFILENAME="curfol"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 14 ]]; then
+	elif [[ "$converted_selection" == 15 ]]; then
 		DFILENAME="pyxecute"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 15 ]]; then
+	elif [[ "$converted_selection" == 16 ]]; then
 		DFILENAME="shxecute"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 16 ]]; then
+	elif [[ "$converted_selection" == 17 ]]; then
 		DFILENAME="pycodemore"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 17 ]]; then
+	elif [[ "$converted_selection" == 18 ]]; then
 		DFILENAME="createPatch"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 18 ]]; then
+	elif [[ "$converted_selection" == 19 ]]; then
 		DFILENAME="rollback"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 19 ]]; then
+	elif [[ "$converted_selection" == 20 ]]; then
 		DFILENAME="cls"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 20 ]]; then
+	elif [[ "$converted_selection" == 21 ]]; then
 		DFILENAME="authorID"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 21 ]]; then
+	elif [[ "$converted_selection" == 22 ]]; then
 		DFILENAME="commitree"
 		category b "$converted_selection"
 	
 	# ...py script files..................................... #
-	elif [[ "$converted_selection" == 22 ]]; then
+	elif [[ "$converted_selection" == 23 ]]; then
 		DFILENAME="compare"
 		category p "$converted_selection"
-	elif [[ "$converted_selection" == 23 ]]; then
+	elif [[ "$converted_selection" == 24 ]]; then
 		DFILENAME="commitdir"
 		category p "$converted_selection"
-	elif [[ "$converted_selection" == 24 ]]; then
+	elif [[ "$converted_selection" == 25 ]]; then
 		DFILENAME="commitall"
 		category p "$converted_selection"
-	elif [[ "$converted_selection" == 25 ]]; then
+	elif [[ "$converted_selection" == 26 ]]; then
 		DFILENAME="wcount"
 		category p "$converted_selection"
-	elif [[ "$converted_selection" == 26 ]]; then
+	elif [[ "$converted_selection" == 27 ]]; then
 		DFILENAME="stash"
 		category p "$converted_selection"
-	elif [[ "$converted_selection" == 27 ]]; then
+	elif [[ "$converted_selection" == 28 ]]; then
 		DFILENAME="viewStash"
 		category p "$converted_selection"
-	elif [[ "$converted_selection" == 28 ]]; then
+	elif [[ "$converted_selection" == 29 ]]; then
 		DFILENAME="logit"
 		category p "$converted_selection"
 	
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 29 ]]; then
+	elif [[ "$converted_selection" == 30 ]]; then
 		DFILENAME="py3venv"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 30 ]]; then
+	elif [[ "$converted_selection" == 31 ]]; then
 		DFILENAME="startproject"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 31 ]]; then
+	elif [[ "$converted_selection" == 32 ]]; then
 		DFILENAME="startapp"
 		category b "$converted_selection"
 	
 	# ...py script files..................................... #
-	elif [[ "$converted_selection" == 32 ]]; then
+	elif [[ "$converted_selection" == 33 ]]; then
 		DFILENAME="runserver"
 		category p "$converted_selection"
 
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 33 ]]; then
+	elif [[ "$converted_selection" == 34 ]]; then
 		DFILENAME="makemigrations"
 		category b "$converted_selection"
 	
 	# ...py script files..................................... #
-	elif [[ "$converted_selection" == 34 ]]; then
+	elif [[ "$converted_selection" == 35 ]]; then
 		DFILENAME="migrate"
 		category p "$converted_selection"
 	
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 35 ]]; then
+	elif [[ "$converted_selection" == 36 ]]; then
 		DFILENAME="django"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 36 ]]; then
+	elif [[ "$converted_selection" == 37 ]]; then
 		DFILENAME="djshell"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 37 ]]; then
+	elif [[ "$converted_selection" == 38 ]]; then
 		DFILENAME="mkandmigrate"
 		category b "$converted_selection"
 
 	#...py script files..................................... #
-	elif [[ "$converted_selection" == 38 ]]; then
+	elif [[ "$converted_selection" == 39 ]]; then
 		DFILENAME="showmigrations"
 		category p "$converted_selection"
-	elif [[ "$converted_selection" == 39 ]]; then
+	elif [[ "$converted_selection" == 40 ]]; then
 		DFILENAME="sqlmigrate"
 		category p "$converted_selection"
-	elif [[ "$converted_selection" == 40 ]]; then
+	elif [[ "$converted_selection" == 41 ]]; then
 		DFILENAME="requirement_txt"
 		category p "$converted_selection"
 
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 41 ]]; then
+	elif [[ "$converted_selection" == 42 ]]; then
 		DFILENAME="ctemp"
 		category b "$converted_selection" "ct"
 	
 	# ...py script files..................................... #
-	elif [[ "$converted_selection" == 42 ]]; then
+	elif [[ "$converted_selection" == 43 ]]; then
 		DFILENAME="clear_commit"
 		category p "$converted_selection"
-	elif [[ "$converted_selection" == 43 ]]; then
+	elif [[ "$converted_selection" == 44 ]]; then
 		DFILENAME="printmyEnv"
 		category p "$converted_selection"
-	elif [[ "$converted_selection" == 44 ]]; then
+	elif [[ "$converted_selection" == 45 ]]; then
 		DFILENAME="show"
 		category p "$converted_selection"
-	elif [[ "$converted_selection" == 45 ]]; then
+	elif [[ "$converted_selection" == 46 ]]; then
 		DFILENAME="verifyRepo"
 		category p "$converted_selection"
 	
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 46 ]]; then
+	elif [[ "$converted_selection" == 47 ]]; then
 		DFILENAME="mycompile"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 47 ]]; then
+	elif [[ "$converted_selection" == 48 ]]; then
 		DFILENAME="pycompile"
 		category b "$converted_selection"
 	
 	# ...C files............................................. #
-	elif [[ "$converted_selection" == 48 ]]; then
+	elif [[ "$converted_selection" == 49 ]]; then
 		DFILENAME="myascii"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 49 ]]; then
+	elif [[ "$converted_selection" == 50 ]]; then
 		DFILENAME="rot13"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 50 ]]; then
+	elif [[ "$converted_selection" == 51 ]]; then
 		DFILENAME="rot47"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 51 ]]; then
+	elif [[ "$converted_selection" == 52 ]]; then
 		DFILENAME="guessGame"
 		category c "$converted_selection"
 	fi
@@ -864,6 +868,8 @@ instructn()
 		echo -e "$STRT create python3 venvs $EFFT $ANYWHERE: $DFILENAME"
 	elif [[ $DFILENAME == "requirement_txt" ]]; then
 		echo -e "$STRT create, update or install the dependencies in the requirements.txt file $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "gitignore" ]]; then
+		echo -e "$STRT create or update the .gitignore file by navigating through your repository $EFFT $ANYWHERE: $DFILENAME"
 	sleep 0.1
 	fi
 }
