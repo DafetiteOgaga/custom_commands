@@ -165,6 +165,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Changes
+   - gitignore now adds itself as a file to the .gitigore file to prevent commiting and pushing it to your repository
    - curfol now works on ubuntu and wsl-ubuntu
    - you can now skip files from being committed when using pushfile
    - majority of the display/output now commes with text coloring
@@ -194,6 +195,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Fixes
+   - gitignore - the command now create/update with the root paths starting with root repository
    - minor bug fixes made to setScript, cloneRepo and createRepo commands
    - every prompt that require single character as response are now auto executing soon as the character is provided
    - you don't have to enter your information twice anymore when running createRepo and/or cloneRepo anymore in the same session
