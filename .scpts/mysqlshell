@@ -1,0 +1,30 @@
+#!/bin/bash
+
+path1="$HOME/.xbin"
+# path1="$HOME/alx/raw/cfiles"
+check=$($path1/pyfiles/mysql arg 2>&1)
+if [ -n "$check" ]; then
+	echo "$check"
+	echo ""
+	exit 1
+fi
+
+# ./mysqlstartserver
+mysqlstartserver
+
+echo "To setup password if not prompted during installation:"
+echo "sudo mysql_secure_installation"
+echo "For other MySQL tools: sudo apt install mysql-client"
+echo ""
+read -p "Enter MySQL username (Defaults to 'root' if no username is specified) >>> " selection
+echo -e "$selection"
+if [[ -n "$selection" ]]; then
+	username="$selection"
+else
+	username="root"
+fi
+command="sudo mysql -u $username -p"
+$command
+
+# sudo mysql_secure_installation
+# sudo apt install mysql-client
