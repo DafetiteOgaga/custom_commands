@@ -74,6 +74,13 @@
 	* sqlmigrate command - presents the sql query of any migration
    * requirement_txt command - creates, updates and install the dependencies in the requirement.txt file
 
+   * mysqlversion - checks if MySQL is installed and also prints its version
+	* mysqlstartserver - starts MySQL server
+	* mysqlstopserver - stops MySQL server
+	* mysqlrestartserver - restarts MySQL server
+	* mysqlstatus_server - displays the status of MySQL server
+	* mysqlshell - launches MySQL shell
+
    * ctemp command - generates a default C source file template
    
    * clear_commit command - clears the staging area and recent commits on your local machine
@@ -103,6 +110,12 @@ This file contains the notable changes made to the Custom Commands project.
 <br>
 
 ## New
+   - mysqlversion checks if MySQL is installed and prints its version
+   - mysqlstartserver spins up MySQL server
+   - mysqlstopserver stops MySQL server
+   - mysqlrestartserver restarts MySQL server
+   - mysqlstatus_server displays the status of MySQL server
+   - mysqlshell launches MySQL shell, you can pass your userame as argument(default is 'root')
    - gitignore lets your browse through your repository. Allowing you to either create and add or update your .gitignore file with the selected list of file(ys) and directory(ies)
    - requirement_txt command - to create, update and install the dependencies in the requirement.txt file 
    - startproject creates a new django project
