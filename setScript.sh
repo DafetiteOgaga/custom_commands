@@ -283,6 +283,12 @@ dOptions=(
 	"  sqlmigrate command - presents the sql query of any migration"
 	"  requirement_txt command - creates, updates and install the dependencies in the requirement.txt file"
 	#...bash script files.................. #
+	"  mysqlversion - checks if MySQL is installed and also prints its version"
+	"  mysqlstartserver - starts MySQL server"
+	"  mysqlstopserver - stops MySQL server"
+	"  mysqlrestartserver - restarts MySQL server"
+	"  mysqlstatus_server - displays the status of MySQL server"
+	"  mysqlshell - launches MySQL shell"
 	"  ctemp - generates a default C source file template"
 	#...py script files....................... #
 	"  clear_commit command - clears unstaged and recent commits on your machine"
@@ -482,42 +488,60 @@ options()
 
 	# ...bash script files................................... #
 	elif [[ "$converted_selection" == 42 ]]; then
+		DFILENAME="mysqlversion"
+		category b "$converted_selection"
+	elif [[ "$converted_selection" == 43 ]]; then
+		DFILENAME="mysqlstartserver"
+		category b "$converted_selection"
+	elif [[ "$converted_selection" == 44 ]]; then
+		DFILENAME="mysqlstopserver"
+		category b "$converted_selection"
+	elif [[ "$converted_selection" == 45 ]]; then
+		DFILENAME="mysqlrestartserver"
+		category b "$converted_selection"
+	elif [[ "$converted_selection" == 46 ]]; then
+		DFILENAME="mysqlstatus_server"
+		category b "$converted_selection"
+	elif [[ "$converted_selection" == 47 ]]; then
+		DFILENAME="mysqlshell"
+		category b "$converted_selection"
+	elif [[ "$converted_selection" == 48 ]]; then
 		DFILENAME="ctemp"
 		category b "$converted_selection" "ct"
 	
 	# ...py script files..................................... #
-	elif [[ "$converted_selection" == 43 ]]; then
+	elif [[ "$converted_selection" == 49 ]]; then
 		DFILENAME="clear_commit"
 		category p "$converted_selection"
-	elif [[ "$converted_selection" == 44 ]]; then
+	elif [[ "$converted_selection" == 50 ]]; then
 		DFILENAME="printmyEnv"
 		category p "$converted_selection"
-	elif [[ "$converted_selection" == 45 ]]; then
+	elif [[ "$converted_selection" == 51 ]]; then
 		DFILENAME="show"
 		category p "$converted_selection"
-	elif [[ "$converted_selection" == 46 ]]; then
+	elif [[ "$converted_selection" == 52 ]]; then
 		DFILENAME="verifyRepo"
 		category p "$converted_selection"
 	
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 47 ]]; then
+	elif [[ "$converted_selection" == 53 ]]; then
 		DFILENAME="mycompile"
 		category b "$converted_selection"
-	elif [[ "$converted_selection" == 48 ]]; then
+	elif [[ "$converted_selection" == 54 ]]; then
 		DFILENAME="pycompile"
 		category b "$converted_selection"
 	
 	# ...C files............................................. #
-	elif [[ "$converted_selection" == 49 ]]; then
+	elif [[ "$converted_selection" == 55 ]]; then
 		DFILENAME="myascii"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 50 ]]; then
+	elif [[ "$converted_selection" == 56 ]]; then
 		DFILENAME="rot13"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 51 ]]; then
+	elif [[ "$converted_selection" == 57 ]]; then
 		DFILENAME="rot47"
 		category c "$converted_selection"
-	elif [[ "$converted_selection" == 52 ]]; then
+	elif [[ "$converted_selection" == 58 ]]; then
 		DFILENAME="guessGame"
 		category c "$converted_selection"
 	fi
@@ -665,6 +689,7 @@ scptcpy()
 	if [[ ! -f "$XBIN/pymanage" ]]; then
 		cp "$SCPTS/pymanage" "$XBIN/pymanage"
 	fi
+	pyfiles
 	sleep 0.1
 	# for betty command installation
 	if [[ $DFILENAME =~ "betty" ]]; then
@@ -672,7 +697,6 @@ scptcpy()
 
 	# for pycodemore command installation
 	elif [[ $DFILENAME =~ "pycode" || $DFILENAME =~ "pycodemore" || $FILETYPE =~ "pyscript" ]]; then
-		pyfiles
 		cpfunc
 		# Check if Python3 is installed
 		if command -v python3 &> /dev/null; then
@@ -870,6 +894,19 @@ instructn()
 		echo -e "$STRT create, update or install the dependencies in the requirements.txt file $EFFT $ANYWHERE: $DFILENAME"
 	elif [[ $DFILENAME == "gitignore" ]]; then
 		echo -e "$STRT create or update the .gitignore file by navigating through your repository $EFFT $ANYWHERE: $DFILENAME"
+	
+	elif [[ $DFILENAME == "mysqlversion" ]]; then
+		echo -e "$STRT check if you have MySQL installed on your machine and prints its version $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "mysqlstartserver" ]]; then
+		echo -e "$STRT spin up MySQL server $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "mysqlstopserver" ]]; then
+		echo -e "$STRT stop MySQL server $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "mysqlrestartserver" ]]; then
+		echo -e "$STRT restart MySQL server $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "mysqlstatus_server" ]]; then
+		echo -e "$STRT check the status of MySQL server $EFFT $ANYWHERE: $DFILENAME"
+	elif [[ $DFILENAME == "mysqlshell" ]]; then
+		echo -e "$STRT launch MySQL shell $EFFT $ANYWHERE: $DFILENAME"
 	sleep 0.1
 	fi
 }
