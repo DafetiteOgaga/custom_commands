@@ -1,0 +1,16 @@
+#!/bin/bash
+
+path1="$HOME/.xbin"
+# path1="$HOME/alx/raw/cfiles"
+check=$(2>&1 $path1/pyfiles/mysql arg)
+if [ -n "$check" ]; then
+	echo "$check"
+	echo ""
+	exit 1
+fi
+
+command="sudo service mysql status"
+$command
+
+# sudo mysql_secure_installation
+# sudo apt install mysql-client
