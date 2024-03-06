@@ -1,0 +1,16 @@
+#!/bin/bash
+
+output=$(mysql --version 2>&1)
+echo ""
+if [[ "$output" == *"'mysql' not found"* ]] || [[ "$output" == *"command not found"* ]] || [[ "$output" =~ *"mysql.service could not be found"* ]]; then
+	echo "You don't have mysql server installed"
+	echo "sudo apt update"
+	echo "sudo apt install mysql-server"
+	echo ""
+else
+	if [[ -n "$1" ]]; then
+		echo ""
+	else
+		echo "$output"
+	fi
+fi
