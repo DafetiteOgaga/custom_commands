@@ -208,6 +208,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Fixes
+   - changed the help text from using apt package manager to using pip to install mysqlclient
    - gitignore - the command now create/update with the root paths starting with root repository
    - minor bug fixes made to setScript, cloneRepo and createRepo commands
    - every prompt that require single character as response are now auto executing soon as the character is provided
