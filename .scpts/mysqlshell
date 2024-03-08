@@ -12,12 +12,11 @@ fi
 # ./mysqlstartserver
 mysqlstartserver
 
-echo "To setup password if not prompted during installation:"
-echo "sudo mysql_secure_installation"
-echo "For other MySQL tools: sudo apt install mysql-client"
+echo "To setup password as root, if not prompted during installation: sudo mysql_secure_installation"
+echo "To set up MySQLClient as a database connector: pip install mysqlclient"
 echo ""
 read -p "Enter MySQL username (Defaults to 'root' if no username is specified) >>> " selection
-echo -e "$selection"
+# echo -e "$selection"
 if [[ -n "$selection" ]]; then
 	username="$selection"
 else
@@ -27,4 +26,24 @@ command="sudo mysql -u $username -p"
 $command
 
 # sudo mysql_secure_installation
-# sudo apt install mysql-client
+
+
+# for MySQL to django connector, install:
+# pip install mysqlclient
+# if any issue:
+# sudo apt-get install pkg-config
+# sudo apt-get install libmysqlclient-dev
+# pip install mysqlclient
+
+
+# If you want to use a new MySQL user, then create a new user for the database by running the following command:
+# CREATE USER 'admindjango'@'localhost' IDENTIFIED BY 'employee@123!' ;
+# syntax:
+# Username: admindjango
+# Host/IP_address: localhost (meaning the user can only connect from the localhost)
+# Password: thepassword
+
+# Run the following command to grant all permissions to the user you have created:
+# GRANT ALL ON *.* TO 'admindjango'@'localhost';
+
+# flush privileges;
