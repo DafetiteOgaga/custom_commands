@@ -52,7 +52,7 @@
    * authorID - configures your Github Identity(Global and Local) on your local machine
    * commitree command - displays a tree of your commit history
 
-   * compare command - displays the content of uncommited changes on the working tree
+   * compareChanges command - displays the content of uncommited changes on the working tree
 	* commitdir command - commits all the changes in the current dir
 	* commitall command - just like commitdir but commits all the changes in the working tree instead
    * wcount command - counts the lines, words and chars in files
@@ -178,6 +178,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Changes
+   - changed compare command to compareChanges command
    - gitignore now adds itself as a file to the .gitigore file to prevent commiting and pushing it to your repository
    - curfol now works on ubuntu and wsl-ubuntu
    - you can now skip files from being committed when using pushfile
