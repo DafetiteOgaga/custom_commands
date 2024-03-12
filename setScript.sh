@@ -22,6 +22,7 @@ UINPUT="$6"
 
 quit()
 {
+	# exit
 	local var="$1"
 	if [[ "$var" == "q" || "$var" == "Q" ]]; then
 	echo ""
@@ -32,6 +33,7 @@ quit()
 
 auth()
 {
+	# initiates sudo authentication
 	local var="$WHICH"
 
 	if [[ ${#var} == 1 ]]; then
@@ -47,6 +49,7 @@ auth()
 
 invalid_selection()
 {
+	# wrong selection
 	if [[ "$OPTION" =~ [zZ] ]]; then
 		echo -e "Wrong selection. You can only select from the options above."
 		echo -e "Try again."
@@ -57,6 +60,7 @@ invalid_selection()
 
 streamedit()
 {
+	# replaces user details fields with user details
 	local var1="$1"
 	local var2="$2"
 
@@ -65,6 +69,7 @@ streamedit()
 
 details()
 {
+	# display the user details for confirmation
 	echo -e ".................................."
 	echo -e "Username: $NUSERNAME"
 	echo -e "Token: ghp_$NTOKEN"
@@ -74,6 +79,7 @@ details()
 
 unametokenmaill2()
 {
+	# collects user details to createRepo, cloneRepo, deleteRepo and viewRepo commands
 	while [[ -z "$NUSERNAME" ]]; do
 		echo -n "Kindly Enter your Github Username >>> "
 		read NUSERNAME
@@ -128,6 +134,7 @@ unametokenmaill2()
 
 unametokenmaill()
 {
+	# populates the user details to createRepo, cloneRepo, deleteRepo and viewRepo commands
 	if [[ "$NUSERNAME" && "$NTOKEN" && "$NEMAIL" ]]; then
 		echo -e "Hey! I still have your details"
 		while [[ "$VALS" != [yYnN] ]]; do
@@ -183,24 +190,30 @@ unametokenmaill()
 
 cpfunc()
 {
+	# identifies device type and cpoies appropriate code for command creation
 	echo "custom commands" > "$XBIN/$DFILENAME"
-	if [[ "$FILETYPE" =~ "bashscript" || "$FILETYPE" =~ "pyscript" ]]; then
-		# copies the content
-		cp "$SCPTS/$DFILENAME" "$XBIN/$DFILENAME"
-	elif [[ "$FILETYPE" =~ "cfile" ]]; then
-		# copies the content
-		if [[ "$WHICH" =~ 'p' ]]; then
-			cp "$SCPTS/phone/$DFILENAME" "$XBIN/$DFILENAME"
-		elif [[ "$WHICH" =~ 'c' ]]; then
-			cp "$SCPTS/pc/$DFILENAME" "$XBIN/$DFILENAME"
-		fi
-	fi
+	case "$FILETYPE" in
+		"bashscript"|"pyscript")
+			# copies the content
+			cp "$SCPTS/$DFILENAME" "$XBIN/$DFILENAME"
+			;;
+		"cfile")
+			# copies the content
+			if [[ "$WHICH" =~ 'p' ]]; then
+				cp "$SCPTS/phone/$DFILENAME" "$XBIN/$DFILENAME"
+			elif [[ "$WHICH" =~ 'c' ]]; then
+				cp "$SCPTS/pc/$DFILENAME" "$XBIN/$DFILENAME"
+			fi
+		;;
+	# fi
+	esac
 	# make the script executable
 	chmod +x $XBIN/$DFILENAME
 }
 
 intro()
 {
+	# detects device type
 	local whch="$1"
 
 	CHECKER_PC_PH=$(echo "$XBIN" | cut -d '/' -f 2)
@@ -229,6 +242,7 @@ intro()
 #...2.................. #
 
 dOptions=(
+	# options display
 	#...py script files....................... #
 	"  push command - stage, commit and updates the local/remote repos with changes in the current dir"
 	"  pull command - updates your local branch with changes from the remote"
@@ -257,7 +271,7 @@ dOptions=(
 	"  authorID - configures your Github Identity(Global and Local) on your machine"
 	"  commitree command - displays a tree of your commit history"
 	#...py script files....................... #
-	"  compare command - displays the content of uncommited changes on the working tree"
+	"  compareChanges command - displays the content of uncommited changes on the working tree"
 	"  commitdir command - commits all the changes in the current dir"
 	"  commitall command - commits all the changes in the working tree"
 	"  wcount command - counts the lines, words and chars in files"
@@ -307,6 +321,7 @@ dOptions=(
 
 category()
 {
+	# reassigns the selection to a different number
 	local type="$1"
 	local value="$2"
 	local btype="$3"
@@ -339,222 +354,287 @@ category()
 options()
 {
 	# ...py script files.................................... #
-	if [[ "$converted_selection" == 0 ]]; then
-		DFILENAME="push"
-		category p "$converted_selection"
-	elif [[ "$converted_selection" == 1 ]]; then
-		DFILENAME="pull"
-		category p "$converted_selection"
-	elif [[ "$converted_selection" == 2 ]]; then
-		DFILENAME="pushfile"
-		category p "$converted_selection"
-	elif [[ "$converted_selection" == 3 ]]; then
-		DFILENAME="pushall"
-		category p "$converted_selection"
+	# assign file names
+	case "$converted_selection" in
+		0)
+			DFILENAME="push"
+			category p "$converted_selection"
+			;;
+		1)
+			DFILENAME="pull"
+			category p "$converted_selection"
+			;;
+		2)
+			DFILENAME="pushfile"
+			category p "$converted_selection"
+			;;
+		3)
+			DFILENAME="pushall"
+			category p "$converted_selection"
+			;;
 	
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 4 ]]; then
-		DFILENAME="createRepo"
-		category b "$converted_selection" "cr"
-	elif [[ "$converted_selection" == 5 ]]; then
-		DFILENAME="deleteRepo"
-		category b "$converted_selection" "dr"
-	elif [[ "$converted_selection" == 6 ]]; then
-		DFILENAME="cloneRepo"
-		category b "$converted_selection" "cl"
-	elif [[ "$converted_selection" == 7 ]]; then
-		DFILENAME="viewRepos"
-		category b "$converted_selection" "vr"
-	elif [[ "$converted_selection" == 8 ]]; then
-		DFILENAME="betty"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 9 ]]; then
-		DFILENAME="pycode"
-		category b "$converted_selection"
+		4)
+			DFILENAME="createRepo"
+			category b "$converted_selection" "cr"
+			;;
+		5)
+			DFILENAME="deleteRepo"
+			category b "$converted_selection" "dr"
+			;;
+		6)
+			DFILENAME="cloneRepo"
+			category b "$converted_selection" "cl"
+			;;
+		7)
+			DFILENAME="viewRepos"
+			category b "$converted_selection" "vr"
+			;;
+		8)
+			DFILENAME="betty"
+			category b "$converted_selection"
+			;;
+		9)
+			DFILENAME="pycode"
+			category b "$converted_selection"
+			;;
 
 	# ...py script files..................................... #
-	elif [[ "$converted_selection" == 10 ]]; then
-		DFILENAME="gitignore"
-		category p "$converted_selection"
-	elif [[ "$converted_selection" == 11 ]]; then
-		DFILENAME="branch"
-		category p "$converted_selection"
-	elif [[ "$converted_selection" == 12 ]]; then
-		DFILENAME="merge"
-		category p "$converted_selection"
-	elif [[ "$converted_selection" == 13 ]]; then
-		DFILENAME="status"
-		category p "$converted_selection"
+		10)
+			DFILENAME="gitignore"
+			category p "$converted_selection"
+			;;
+		11)
+			DFILENAME="branch"
+			category p "$converted_selection"
+			;;
+		12)
+			DFILENAME="merge"
+			category p "$converted_selection"
+			;;
+		13)
+			DFILENAME="status"
+			category p "$converted_selection"
+			;;
 
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 14 ]]; then
-		DFILENAME="curfol"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 15 ]]; then
-		DFILENAME="pyxecute"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 16 ]]; then
-		DFILENAME="shxecute"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 17 ]]; then
-		DFILENAME="pycodemore"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 18 ]]; then
-		DFILENAME="createPatch"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 19 ]]; then
-		DFILENAME="rollback"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 20 ]]; then
-		DFILENAME="cls"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 21 ]]; then
-		DFILENAME="authorID"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 22 ]]; then
-		DFILENAME="commitree"
-		category b "$converted_selection"
+		14)
+			DFILENAME="curfol"
+			category b "$converted_selection"
+			;;
+		15)
+			DFILENAME="pyxecute"
+			category b "$converted_selection"
+			;;
+		16)
+			DFILENAME="shxecute"
+			category b "$converted_selection"
+			;;
+		17)
+			DFILENAME="pycodemore"
+			category b "$converted_selection"
+			;;
+		18)
+			DFILENAME="createPatch"
+			category b "$converted_selection"
+			;;
+		19)
+			DFILENAME="rollback"
+			category b "$converted_selection"
+			;;
+		20)
+			DFILENAME="cls"
+			category b "$converted_selection"
+			;;
+		21)
+			DFILENAME="authorID"
+			category b "$converted_selection"
+			;;
+		22)
+			DFILENAME="commitree"
+			category b "$converted_selection"
+			;;
 	
 	# ...py script files..................................... #
-	elif [[ "$converted_selection" == 23 ]]; then
-		DFILENAME="compare"
-		category p "$converted_selection"
-	elif [[ "$converted_selection" == 24 ]]; then
-		DFILENAME="commitdir"
-		category p "$converted_selection"
-	elif [[ "$converted_selection" == 25 ]]; then
-		DFILENAME="commitall"
-		category p "$converted_selection"
-	elif [[ "$converted_selection" == 26 ]]; then
-		DFILENAME="wcount"
-		category p "$converted_selection"
-	elif [[ "$converted_selection" == 27 ]]; then
-		DFILENAME="stash"
-		category p "$converted_selection"
-	elif [[ "$converted_selection" == 28 ]]; then
-		DFILENAME="viewStash"
-		category p "$converted_selection"
-	elif [[ "$converted_selection" == 29 ]]; then
-		DFILENAME="logit"
-		category p "$converted_selection"
+		23)
+			DFILENAME="compareChanges"
+			category p "$converted_selection"
+			;;
+		24)
+			DFILENAME="commitdir"
+			category p "$converted_selection"
+			;;
+		25)
+			DFILENAME="commitall"
+			category p "$converted_selection"
+			;;
+		26)
+			DFILENAME="wcount"
+			category p "$converted_selection"
+			;;
+		27)
+			DFILENAME="stash"
+			category p "$converted_selection"
+			;;
+		28)
+			DFILENAME="viewStash"
+			category p "$converted_selection"
+			;;
+		29)
+			DFILENAME="logit"
+			category p "$converted_selection"
+			;;
 	
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 30 ]]; then
-		DFILENAME="py3venv"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 31 ]]; then
-		DFILENAME="startproject"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 32 ]]; then
-		DFILENAME="startapp"
-		category b "$converted_selection"
+		30)
+			DFILENAME="py3venv"
+			category b "$converted_selection"
+			;;
+		31)
+			DFILENAME="startproject"
+			category b "$converted_selection"
+			;;
+		32)
+			DFILENAME="startapp"
+			category b "$converted_selection"
+			;;
 	
 	# ...py script files..................................... #
-	elif [[ "$converted_selection" == 33 ]]; then
-		DFILENAME="runserver"
-		category p "$converted_selection"
+		33)
+			DFILENAME="runserver"
+			category p "$converted_selection"
+			;;
 
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 34 ]]; then
-		DFILENAME="makemigrations"
-		category b "$converted_selection"
+		34)
+			DFILENAME="makemigrations"
+			category b "$converted_selection"
+			;;
 	
 	# ...py script files..................................... #
-	elif [[ "$converted_selection" == 35 ]]; then
-		DFILENAME="migrate"
-		category p "$converted_selection"
+		35)
+			DFILENAME="migrate"
+			category p "$converted_selection"
+			;;
 	
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 36 ]]; then
-		DFILENAME="django"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 37 ]]; then
-		DFILENAME="djshell"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 38 ]]; then
-		DFILENAME="mkandmigrate"
-		category b "$converted_selection"
+		36)
+			DFILENAME="django"
+			category b "$converted_selection"
+			;;
+		37)
+			DFILENAME="djshell"
+			category b "$converted_selection"
+			;;
+		38)
+			DFILENAME="mkandmigrate"
+			category b "$converted_selection"
+			;;
 
 	#...py script files..................................... #
-	elif [[ "$converted_selection" == 39 ]]; then
-		DFILENAME="showmigrations"
-		category p "$converted_selection"
-	elif [[ "$converted_selection" == 40 ]]; then
-		DFILENAME="sqlmigrate"
-		category p "$converted_selection"
-	elif [[ "$converted_selection" == 41 ]]; then
-		DFILENAME="requirement_txt"
-		category p "$converted_selection"
+		39)
+			DFILENAME="showmigrations"
+			category p "$converted_selection"
+			;;
+		40)
+			DFILENAME="sqlmigrate"
+			category p "$converted_selection"
+			;;
+		41)
+			DFILENAME="requirement_txt"
+			category p "$converted_selection"
+			;;
 
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 42 ]]; then
-		DFILENAME="mysqlversion"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 43 ]]; then
-		DFILENAME="mysqlstartserver"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 44 ]]; then
-		DFILENAME="mysqlstopserver"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 45 ]]; then
-		DFILENAME="mysqlrestartserver"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 46 ]]; then
-		DFILENAME="mysqlstatus_server"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 47 ]]; then
-		DFILENAME="mysqlshell"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 48 ]]; then
-		DFILENAME="ctemp"
-		category b "$converted_selection" "ct"
+		42)
+			DFILENAME="mysqlversion"
+			category b "$converted_selection"
+			;;
+		43)
+			DFILENAME="mysqlstartserver"
+			category b "$converted_selection"
+			;;
+		44)
+			DFILENAME="mysqlstopserver"
+			category b "$converted_selection"
+			;;
+		45)
+			DFILENAME="mysqlrestartserver"
+			category b "$converted_selection"
+			;;
+		46)
+			DFILENAME="mysqlstatus_server"
+			category b "$converted_selection"
+			;;
+		47)
+			DFILENAME="mysqlshell"
+			category b "$converted_selection"
+			;;
+		48)
+			DFILENAME="ctemp"
+			category b "$converted_selection" "ct"
+			;;
 	
 	# ...py script files..................................... #
-	elif [[ "$converted_selection" == 49 ]]; then
-		DFILENAME="clear_commit"
-		category p "$converted_selection"
-	elif [[ "$converted_selection" == 50 ]]; then
-		DFILENAME="printmyEnv"
-		category p "$converted_selection"
-	elif [[ "$converted_selection" == 51 ]]; then
-		DFILENAME="show"
-		category p "$converted_selection"
-	elif [[ "$converted_selection" == 52 ]]; then
-		DFILENAME="verifyRepo"
-		category p "$converted_selection"
+		49)
+			DFILENAME="clear_commit"
+			category p "$converted_selection"
+			;;
+		50)
+			DFILENAME="printmyEnv"
+			category p "$converted_selection"
+			;;
+		51)
+			DFILENAME="show"
+			category p "$converted_selection"
+			;;
+		52)
+			DFILENAME="verifyRepo"
+			category p "$converted_selection"
+			;;
 	
 	# ...bash script files................................... #
-	elif [[ "$converted_selection" == 53 ]]; then
-		DFILENAME="mycompile"
-		category b "$converted_selection"
-	elif [[ "$converted_selection" == 54 ]]; then
-		DFILENAME="pycompile"
-		category b "$converted_selection"
+		53)
+			DFILENAME="mycompile"
+			category b "$converted_selection"
+			;;
+		54)
+			DFILENAME="pycompile"
+			category b "$converted_selection"
+			;;
 	
 	# ...C files............................................. #
-	elif [[ "$converted_selection" == 55 ]]; then
-		DFILENAME="myascii"
-		category c "$converted_selection"
-	elif [[ "$converted_selection" == 56 ]]; then
-		DFILENAME="rot13"
-		category c "$converted_selection"
-	elif [[ "$converted_selection" == 57 ]]; then
-		DFILENAME="rot47"
-		category c "$converted_selection"
-	elif [[ "$converted_selection" == 58 ]]; then
-		DFILENAME="guessGame"
-		category c "$converted_selection"
-	fi
+		55)
+			DFILENAME="myascii"
+			category c "$converted_selection"
+			;;
+		56)
+			DFILENAME="rot13"
+			category c "$converted_selection"
+			;;
+		57)
+			DFILENAME="rot47"
+			category c "$converted_selection"
+			;;
+		58)
+			DFILENAME="guessGame"
+			category c "$converted_selection"
+			;;
+	esac
 
 	#....tags............................. #
-	
-	if [[ "$new_value" =~ [4-6][0-9][0-9]|11111|22222|33333|44444|55555 ]]; then
-		FILETYPE="bashscript"
-	elif [[ "$new_value" =~ [1-3][0-9][0-9] ]]; then
-		FILETYPE="cfile"
-	elif [[ "$new_value" =~ [7-9][0-9][0-9] ]]; then
-		FILETYPE="pyscript"
-	fi
+	# checks the type of file in process
+	case "$new_value" in
+		[4-6][0-9][0-9]|11111|22222|33333|44444|55555)
+			FILETYPE="bashscript"
+			;;
+		[1-3][0-9][0-9])
+			FILETYPE="cfile"
+			;;
+		[7-9][0-9][0-9])
+			FILETYPE="pyscript"
+			;;
+	esac
 }
 
 #...4.................. #
@@ -576,16 +656,12 @@ opertn()
 			touch "$HOME/.bashrc"
 			echo ""
 			echo "Creating bshell variable..."
-		# else
-		# 	echo "Variable bshell exists..."
 		sleep 0.1
 		fi
 
 		if ! grep -q "$DBIN" "$HOME/.bashrc"; then
 			echo -e "Setting up bshell variable..."
 			echo 'export PATH="$PATH:$HOME/'$(basename "$XBIN")'"' >> "$HOME/.bashrc"
-		# else
-		# 	echo -e "Bshell variable good..."
 		sleep 0.1
 		fi
 
@@ -594,16 +670,12 @@ opertn()
 			touch "$HOME/.zshrc"
 			echo ""
 			echo "Creating zshell variable..."
-		# else
-		# 	echo "Zshell variable exists..."
 		sleep 0.1
 		fi
 
 		if ! grep -q "$DBIN" "$HOME/.zshrc"; then
 			echo -e "Setting up zshell variable..."
 			echo 'export PATH="$PATH:$HOME/'$(basename "$XBIN")'"' >> "$HOME/.zshrc"
-		# else
-		# 	echo -e "Zshell variable good..."
 		sleep 0.1
 		fi
 
@@ -612,38 +684,38 @@ opertn()
 			touch "$HOME/.bash_profile"
 			echo ""
 			echo "Creating profile..."
-		# else
-		# 	echo "Profile exists..."
 		sleep 0.1
 		fi
 
 		if ! grep -q  bashrc "$HOME/.bash_profile"; then
 			echo -e "Setting up profile..."
 			echo '[ -r ~/.bashrc ] && . ~/.bashrc ' >> "$HOME/.bash_profile"
-		# else
-		# 	echo -e "Profile good..."
 		sleep 0.1
 		fi
 
 		echo ""
 		echo -e "Creating $DFILENAME as a command..."
-		# echo -e ""
-		
-		if [[ "$new_value" =~ ^(11111|22222|33333|55555)$ ]]; then
-			unametokenmaill
-		elif [[ "$new_value" == 44444 ]]; then
-			echo -e "custom commands" >  $XBIN/C_template.c
-			cp "$SCPTS/C_template.c" "$XBIN/C_template.c"
-			scptcpy
-		elif [[ "$new_value" =~ [1-9][0-9][0-9] ]]; then
-			scptcpy
-		fi
+		# copies the command code into .xbin/
+		case "$new_value" in
+			11111|22222|33333|55555)
+				unametokenmaill
+				;;
+			44444)
+				echo -e "custom commands" >  $XBIN/C_template.c
+				cp "$SCPTS/C_template.c" "$XBIN/C_template.c"
+				scptcpy
+				;;
+			[1-9][0-9][0-9])
+				scptcpy
+				;;
+		esac
 	fi
 	echo ""
 }
 
 pyfiles()
 {
+	# updates only installed files in pyfiles/
     mkdir -p "$XBIN/pyfiles"
 
     for file in "$SCPTS/pyfiles/"*; do
@@ -667,18 +739,13 @@ update_changes()
 {
 	# updates any command that has already been installed
 	affected_files="$(ls $PWD/$SCPTS)"
-	# echo "affected_files: $affected_files ########***********######"
     for file in $affected_files; do
 		file="$XBIN/$file"
-		# echo "############################"
-		# echo "file: $file"
         if [[ -f "$file" ]]; then
             filename=$(basename "$file")
             source="$SCPTS/$filename"
 			destination="$XBIN/$filename"
 			cp "$source" "$destination"
-			# echo "************###############"
-			# echo "copied: $file"
         fi
     done
 }
@@ -695,12 +762,12 @@ scptcpy()
 	if [[ $DFILENAME =~ "betty" ]]; then
 		bLinter
 
-	# for pycodemore command installation
+	# for pyscripts/pycodemore/pycode command installation
 	elif [[ $DFILENAME =~ "pycode" || $DFILENAME =~ "pycodemore" || $FILETYPE =~ "pyscript" ]]; then
 		cpfunc
 		# Check if Python3 is installed
 		if command -v python3 &> /dev/null; then
-			echo "Python 3 is already installed."
+			echo "..."
 			sleep 0.1
 		else
 			# Attempt to install Python3
@@ -742,6 +809,7 @@ scptcpy()
 #...5a.................. #
 bLinter()
 {
+	# creates/install betty linter
 	echo -e ""
 	mkdir -p tempo
 	cd tempo
@@ -770,145 +838,206 @@ bLinter()
 #...6.................. #
 instructn()
 {
+	# instructions
 	echo -e "Now, RESTART YOUR TERMINAL or START A NEW SESSION."
 	sleep 0.1
+	case "$DFILENAME" in
+		"betty")
+			echo -e "$STRT check your source files. $ANYWHERE: $DFILENAME <filename(s)>"
+			;;
+		"pycode")
+			echo -e "$STRT check your python files. $ANYWHERE: $DFILENAME <filename(s)>"
+			;;
+		"push")
+			echo -e "$STRT push(sync) to github. $ANYWHERE: $DFILENAME"
+			;;
+		"pull")
+			echo -e "$STRT pull from github. $ANYWHERE: $DFILENAME"
+			;;
+		"createRepo")
+			echo -e "$STRT create a github repo right from your terminal. $ANYWHERE: $DFILENAME"
+			;;
+		"deleteRepo")
+			echo -e "$STRT delete a github repo right from your terminal. $ANYWHERE: $DFILENAME"
+			;;
+		"cloneRepo")
+			echo -e "$STRT clone repos from github. $ANYWHERE: $DFILENAME"
+			;;
+		"viewRepos")
+			echo -e "$STRT view the public repos of any github account. $ANYWHERE: $DFILENAME"
+			;;
+		"mycompile")
+			echo -e "$STRT compile your files $EFFT $ANYWHERE: $DFILENAME <filename>"
+			;;
+		"ctemp")
+			echo -e "$STRT create default C source file templates $EFFT $ANYWHERE: $DFILENAME <filename>"
+			;;
+		"cls")
+			echo -e "$STRT clear your screen $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"authorID")
+			echo -e "$STRT configure your GitHub identity both globally and locally within your environment $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"pycodemore")
+			echo -e "$STRT check your python file with line details $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
+			;;
+		"pycompile")
+			echo -e "$STRT compile your python scripts to a .pyc $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
+			;;
+		"curfol")
+			echo -e "$STRT open your current working directory $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"pyxecute")
+			echo -e "$STRT adds shebang and turn your file(s) to executable file(s) $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
+			;;
+	# ............................................................ #
+		"guessGane")
+			echo -e "$STRT play guessing game $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"rot13")
+			echo -e "$STRT encode and decode your texts with Rot13 $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"rot47")
+			echo -e "$STRT encode and decode your texts with Rot47 $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"myascii")
+			echo -e "$STRT check the ASCII table $EFFT $ANYWHERE: $DFILENAME"
+			;;
+	# ............................................................ #
+		"wcount")
+			echo -e "$STRT check the number of lines, words and characters in your file $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
+			;;
+		"clear_commit")
+			echo -e "$STRT unstage your files, clear commit messages on your local machine(provided, you are yet to push to remote). Revert to the same state as your remote $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"pushfile")
+			echo -e "$STRT stage and commit individual files before pushing them all to remote $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
+			;;
+	# ............................................................ #
+		"pushall")
+			echo -e "$STRT stage and commit all files in the working tree before pushing them all to remote $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"branch")
+			echo -e "$STRT create and switch branches $EFFT $ANYWHERE:"
+			echo -e "$DFILENAME <filename(s)> - to create an new branch"
+			echo -e "$DFILENAME - to switch branches"
+			;;
+		"merge")
+			echo -e "$STRT easily merge changesin a branch to main/master branch $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"status")
+			echo -e "$STRT view tracked and untracked file(s) in the working tree $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"shxecute")
+			echo -e "$STRT adds shebang and turn your file(s) to executable file(s) $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
+			;;
+		"createPatch")
+			echo -e "$STRT patch files $EFFT $ANYWHERE: $DFILENAME <main file> <updated file>"
+			;;
+		"rollback")
+			echo -e "$STRT revert to a previous commit instance $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"commitree")
+			echo -e "$STRT view a graphical commit history $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"compareChanges")
+			echo -e "$STRT view uncommitted changes in the working tree compared to the repository $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"commitdir")
+			echo -e "$STRT commit changes in the current directory to the repository $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"commitall")
+			echo -e "$STRT commit changes in the working directory to the repository $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"stash")
+			echo -e "$STRT stash (save changes) in the current branch $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"viewStash")
+			echo -e "$STRT view and apply stash to the current branch $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"logit")
+			echo -e "$STRT view the detailed log history of your commits $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"printmyEnv")
+			echo -e "$STRT view a list of your env paths $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"show")
+			echo -e "$STRT view your commit history $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"verifyRepo")
+			echo -e "$STRT verify that you are in a repository $EFFT $ANYWHERE: $DFILENAME"
+			;;
 
-	if [[ $DFILENAME == "betty" ]]; then
-		echo -e "$STRT check your source files. $ANYWHERE: $DFILENAME <filename(s)>"
-	elif [[ $DFILENAME == "pycode" ]]; then
-		echo -e "$STRT check your python files. $ANYWHERE: $DFILENAME <filename(s)>"
-	elif [[ $DFILENAME == "push" ]]; then
-		echo -e "$STRT push(sync) to github. $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "pull" ]]; then
-		echo -e "$STRT pull from github. $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "createRepo" ]]; then
-		echo -e "$STRT create a github repo right from your terminal. $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "deleteRepo" ]]; then
-		echo -e "$STRT delete a github repo right from your terminal. $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "cloneRepo" ]]; then
-		echo -e "$STRT clone repos from github. $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "viewRepos" ]]; then
-		echo -e "$STRT view the public repos of any github account. $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "mycompile" ]]; then
-		echo -e "$STRT compile your files $EFFT $ANYWHERE: $DFILENAME <filename>"
-	elif [[ $DFILENAME == "ctemp" ]]; then
-		echo -e "$STRT create default C source file templates $EFFT $ANYWHERE: $DFILENAME <filename>"
-	elif [[ $DFILENAME == "cls" ]]; then
-		echo -e "$STRT clear your screen $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "authorID" ]]; then
-		echo -e "$STRT configure your GitHub identity both globally and locally within your environment $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "pycodemore" ]]; then
-		echo -e "$STRT check your python file with line details $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
-	elif [[ $DFILENAME == "pycompile" ]]; then
-		echo -e "$STRT compile your python scripts to a .pyc $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
-	elif [[ $DFILENAME == "curfol" ]]; then
-		echo -e "$STRT open your current working directory $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "pyxecute" ]]; then
-		echo -e "$STRT adds shebang and turn your file(s) to executable file(s) $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
-	# ............................................................ #
-	elif [[ $DFILENAME == "guessGame" ]]; then
-		echo -e "$STRT play guessing game $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "rot13" ]]; then
-		echo -e "$STRT encode and decode your texts with Rot13 $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "rot47" ]]; then
-		echo -e "$STRT encode and decode your texts with Rot47 $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "myascii" ]]; then
-		echo -e "$STRT check the ASCII table $EFFT $ANYWHERE: $DFILENAME"
-	# ............................................................ #
-	elif [[ $DFILENAME == "wcount" ]]; then
-		echo -e "$STRT check the number of lines, words and characters in your file $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
-	elif [[ $DFILENAME == "clear_commit" ]]; then
-		echo -e "$STRT unstage your files, clear commit messages on your local machine(provided, you are yet to push to remote). Revert to the same state as your remote $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "pushfile" ]]; then
-		echo -e "$STRT stage and commit individual files before pushing them all to remote $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
-	# ............................................................ #
-	elif [[ $DFILENAME == "pushall" ]]; then
-		echo -e "$STRT stage and commit all files in the working tree before pushing them all to remote $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "branch" ]]; then
-		echo -e "$STRT create and switch branches $EFFT $ANYWHERE:"
-		echo -e "$DFILENAME <filename(s)> - to create an new branch"
-		echo -e "$DFILENAME - to switch branches"
-	elif [[ $DFILENAME == "merge" ]]; then
-		echo -e "$STRT easily merge changesin a branch to main/master branch $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "status" ]]; then
-		echo -e "$STRT view tracked and untracked file(s) in the working tree $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "shxecute" ]]; then
-		echo -e "$STRT adds shebang and turn your file(s) to executable file(s) $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
-	elif [[ $DFILENAME == "createPatch" ]]; then
-		echo -e "$STRT patch files $EFFT $ANYWHERE: $DFILENAME <main file> <updated file>"
-	elif [[ $DFILENAME == "rollback" ]]; then
-		echo -e "$STRT revert to a previous commit instance $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "commitree" ]]; then
-		echo -e "$STRT view a graphical commit history $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "compare" ]]; then
-		echo -e "$STRT view uncommitted changes in the working tree compared to the repository $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "commitdir" ]]; then
-		echo -e "$STRT commit changes in the current directory to the repository $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "commitall" ]]; then
-		echo -e "$STRT commit changes in the working directory to the repository $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "stash" ]]; then
-		echo -e "$STRT stash (save changes) in the current branch $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "viewStash" ]]; then
-		echo -e "$STRT view and apply stash to the current branch $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "logit" ]]; then
-		echo -e "$STRT view the detailed log history of your commits $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "printmyEnv" ]]; then
-		echo -e "$STRT view a list of your env paths $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "show" ]]; then
-		echo -e "$STRT view your commit history $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "verifyRepo" ]]; then
-		echo -e "$STRT verify that you are in a repository $EFFT $ANYWHERE: $DFILENAME"
-
-	elif [[ $DFILENAME == "startproject" ]]; then
-		echo -e "$STRT start/create a django project $EFFT $ANYWHERE: $DFILENAME <project name>"
-		echo -e "Note: You must either have django installed on your machine or in a virtual environment"
-	elif [[ $DFILENAME == "startapp" ]]; then
-		echo -e "$STRT create django app(s) $EFFT $ANYWHERE: $DFILENAME <app name(s)"
-	elif [[ $DFILENAME == "runserver" ]]; then
-		echo -e "$STRT spin up your django server $EFFT $ANYWHERE: $DFILENAME"
-		echo -e "Note: You can also pass a port number argument to the command, if you wish to spin it with a different port number"
-		echo -e "I.e $DFILENAME <port number>"
-	elif [[ $DFILENAME == "makemigrations" ]]; then
-		echo -e "$STRT make/create django migration scripts that will be used to create tables in your database $EFFT $ANYWHERE: $DFILENAME"
-		echo -e "Note: You can also pass specific app name(s) as argument for streamlined operations"
-		echo -e "I.e $DFILENAME <app name(s)>"
-	elif [[ $DFILENAME == "migrate" ]]; then
-		echo -e "$STRT migrate your model setups to create tables in your database $EFFT $ANYWHERE: $DFILENAME"
-		echo -e "Note: You can equally pass any string as argument to select options to migrate to"
-		echo -e "I.e $DFILENAME <string>"
-	elif [[ $DFILENAME == "django" ]]; then
-		echo -e "$STRT can verify that you have django installed via its version $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "djshell" ]]; then
-		echo -e "$STRT enter into the django shell for further processing. $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "mkandmigrate" ]]; then
-		echo -e "$STRT can perform the makemigrations and migrate operations with just a command. $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "showmigrations" ]]; then
-		echo -e "$STRT display and observe the history of your migration operations $EFFT $ANYWHERE: $DFILENAME"
-		echo -e "Note: You can also pass any string as argument for streamlined operation"
-		echo -e "I.e $DFILENAME <string>"
-	elif [[ $DFILENAME == "sqlmigrate" ]]; then
-		echo -e "$STRT check the sql query of your model table $EFFT $ANYWHERE: $DFILENAME <app name> <migration filename>"
-	elif [[ $DFILENAME == "py3venv" ]]; then
-		echo -e "$STRT create python3 venvs $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "requirement_txt" ]]; then
-		echo -e "$STRT create, update or install the dependencies in the requirements.txt file $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "gitignore" ]]; then
-		echo -e "$STRT create or update the .gitignore file by navigating through your repository $EFFT $ANYWHERE: $DFILENAME"
+		"startproject")
+			echo -e "$STRT start/create a django project $EFFT $ANYWHERE: $DFILENAME <project name>"
+			echo -e "Note: You must either have django installed on your machine or in a virtual environment"
+			;;
+		"startapp")
+			echo -e "$STRT create django app(s) $EFFT $ANYWHERE: $DFILENAME <app name(s)"
+			;;
+		"runserver")
+			echo -e "$STRT spin up your django server $EFFT $ANYWHERE: $DFILENAME"
+			echo -e "Note: You can also pass a port number argument to the command, if you wish to spin it with a different port number"
+			echo -e "I.e $DFILENAME <port number>"
+			;;
+		"makemigrations")
+			echo -e "$STRT make/create django migration scripts that will be used to create tables in your database $EFFT $ANYWHERE: $DFILENAME"
+			echo -e "Note: You can also pass specific app name(s) as argument for streamlined operations"
+			echo -e "I.e $DFILENAME <app name(s)>"
+			;;
+		"migrate")
+			echo -e "$STRT migrate your model setups to create tables in your database $EFFT $ANYWHERE: $DFILENAME"
+			echo -e "Note: You can equally pass any string as argument to select options to migrate to"
+			echo -e "I.e $DFILENAME <string>"
+			;;
+		"django")
+			echo -e "$STRT can verify that you have django installed via its version $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"djshell")
+			echo -e "$STRT enter into the django shell for further processing. $ANYWHERE: $DFILENAME"
+			;;
+		"mkandmigrate")
+			echo -e "$STRT can perform the makemigrations and migrate operations with just a command. $ANYWHERE: $DFILENAME"
+			;;
+		"showmigrations")
+			echo -e "$STRT display and observe the history of your migration operations $EFFT $ANYWHERE: $DFILENAME"
+			echo -e "Note: You can also pass any string as argument for streamlined operation"
+			echo -e "I.e $DFILENAME <string>"
+			;;
+		"sqlmigrate")
+			echo -e "$STRT check the sql query of your model table $EFFT $ANYWHERE: $DFILENAME <app name> <migration filename>"
+			;;
+		"py3venv")
+			echo -e "$STRT create python3 venvs $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"requirement_txt")
+			echo -e "$STRT create, update or install the dependencies in the requirements.txt file $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"gitignore")
+			echo -e "$STRT create or update the .gitignore file by navigating through your repository $EFFT $ANYWHERE: $DFILENAME"
+			;;
 	
-	elif [[ $DFILENAME == "mysqlversion" ]]; then
-		echo -e "$STRT check if you have MySQL installed on your machine and prints its version $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "mysqlstartserver" ]]; then
-		echo -e "$STRT spin up MySQL server $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "mysqlstopserver" ]]; then
-		echo -e "$STRT stop MySQL server $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "mysqlrestartserver" ]]; then
-		echo -e "$STRT restart MySQL server $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "mysqlstatus_server" ]]; then
-		echo -e "$STRT check the status of MySQL server $EFFT $ANYWHERE: $DFILENAME"
-	elif [[ $DFILENAME == "mysqlshell" ]]; then
-		echo -e "$STRT launch MySQL shell $EFFT $ANYWHERE: $DFILENAME"
+		"mysqlversion")
+			echo -e "$STRT check if you have MySQL installed on your machine and prints its version $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"mysqlstartserver")
+			echo -e "$STRT spin up MySQL server $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"mysqlstopserver")
+			echo -e "$STRT stop MySQL server $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"mysqlrestartserver")
+			echo -e "$STRT restart MySQL server $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"mysqlstatus_server")
+			echo -e "$STRT check the status of MySQL server $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"mysqlshell")
+			echo -e "$STRT launch MySQL shell $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		esac
 	sleep 0.1
-	fi
+	# fi
 }
 
 
