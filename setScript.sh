@@ -284,7 +284,8 @@ dOptions=(
 	#...py script files....................... #
 	"  requirement_txt command - creates, updates and install the dependencies in the requirement.txt file"
 	#...bash script files.................. #
-	"  drf command - install and configures Django RESTframework"
+	"  drf command - install and configures Django RESTframework and its authentication token functionality"
+	"  djoser command - install and configures djoser for use with drf authentication token functionality"
 
 	"  startproject command - installs a new django project"
 	"  startapp command - installs and configures apps for django projects"
@@ -506,130 +507,134 @@ options()
 			DFILENAME="drf"
 			category b "$converted_selection"
 			;;
-
 		33)
+			DFILENAME="djoser"
+			category b "$converted_selection"
+			;;
+
+		34)
 			DFILENAME="startproject"
 			category b "$converted_selection"
 			;;
-		34)
+		35)
 			DFILENAME="startapp"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		35)
+		36)
 			DFILENAME="runserver"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		36)
+		37)
 			DFILENAME="makemigrations"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		37)
+		38)
 			DFILENAME="migrate"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		38)
+		39)
 			DFILENAME="django"
 			category b "$converted_selection"
 			;;
-		39)
+		40)
 			DFILENAME="djshell"
 			category b "$converted_selection"
 			;;
-		40)
+		41)
 			DFILENAME="mkandmigrate"
 			category b "$converted_selection"
 			;;
 
 	#...py script files..................................... #
-		41)
+		42)
 			DFILENAME="showmigrations"
 			category p "$converted_selection"
 			;;
-		42)
+		43)
 			DFILENAME="sqlmigrate"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		43)
+		44)
 			DFILENAME="mysqlversion"
 			category b "$converted_selection"
 			;;
-		44)
+		45)
 			DFILENAME="mysqlstartserver"
 			category b "$converted_selection"
 			;;
-		45)
+		46)
 			DFILENAME="mysqlstopserver"
 			category b "$converted_selection"
 			;;
-		46)
+		47)
 			DFILENAME="mysqlrestartserver"
 			category b "$converted_selection"
 			;;
-		47)
+		48)
 			DFILENAME="mysqlstatus_server"
 			category b "$converted_selection"
 			;;
-		48)
+		49)
 			DFILENAME="mysqlshell"
 			category b "$converted_selection"
 			;;
-		49)
+		50)
 			DFILENAME="ctemp"
 			category b "$converted_selection" "ct"
 			;;
 	
 	# ...py script files..................................... #
-		50)
+		51)
 			DFILENAME="clear_commit"
 			category p "$converted_selection"
 			;;
-		51)
+		52)
 			DFILENAME="printmyEnv"
 			category p "$converted_selection"
 			;;
-		52)
+		53)
 			DFILENAME="show"
 			category p "$converted_selection"
 			;;
-		53)
+		54)
 			DFILENAME="verifyRepo"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		54)
+		55)
 			DFILENAME="mycompile"
 			category b "$converted_selection"
 			;;
-		55)
+		56)
 			DFILENAME="pycompile"
 			category b "$converted_selection"
 			;;
 	
 	# ...C files............................................. #
-		56)
+		57)
 			DFILENAME="myascii"
 			category c "$converted_selection"
 			;;
-		57)
+		58)
 			DFILENAME="rot13"
 			category c "$converted_selection"
 			;;
-		58)
+		59)
 			DFILENAME="rot47"
 			category c "$converted_selection"
 			;;
-		59)
+		60)
 			DFILENAME="guessGame"
 			category c "$converted_selection"
 			;;
@@ -1051,7 +1056,10 @@ instructn()
 			echo -e "$STRT launch MySQL shell $EFFT $ANYWHERE: $DFILENAME"
 			;;
 		"drf")
-			echo -e "$STRT install and configure django RESTframework $EFFT $ANYWHERE: $DFILENAME"
+			echo -e "$STRT install and configure django RESTframework and its authentication token functionality $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"djoser")
+			echo -e "$STRT install and configure djoser and use it with drf authentication token $EFFT $ANYWHERE: $DFILENAME"
 			;;
 		esac
 	sleep 0.1

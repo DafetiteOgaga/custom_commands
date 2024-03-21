@@ -14,9 +14,12 @@ if [ "$#" -gt 0 ]; then
 	echo ""
 	echo "This command takes no arguments"
 elif [ "$#" -eq 0 ]; then
+	path1="$path1/pyfiles/configure_settings_py.py"
 	$command
 	echo ""
-	$(echo "rest_framework" | python3 $path1/pyfiles/configure_settings_py.py)
-	echo "django RESTframework installed successfully and configured under INSTALLED_APPS in settings.py"
+	$(echo "rest_framework" | python3 $path1)
+	$(echo "rest_framework.authtoken" | python3 $path1)
+	echo "django RESTframework and its authentication token functionality installed successfully and configured under INSTALLED_APPS in settings.py"
+	echo "consider using: djoser command. For easy authentcation implementation."
 	echo "Note: if you are using a virtual environment, you need to specify the path to your interpreter."
 fi

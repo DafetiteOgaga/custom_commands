@@ -61,7 +61,9 @@
 	* logit command - displays a detailed log of your commits with their branches
 
    * py3venv command - creates a python3 virtual environment in the cwd
-   * drf command - install and configures Django RESTframework
+   * drf command - install and configures Django RESTframework and its authentication token functionality
+   * djoser command - install and configures djoser for use with drf authentication token functionality
+
 	* startproject command - creates a new django project
 	* startapp command - creates django apps for projects within any django project
 	* runserver command - spins up the django development server from any directory"
@@ -111,6 +113,7 @@ This file contains the notable changes made to the Custom Commands project.
 <br>
 
 ## New
+   - djoser installs and configures djoser in settings.py
    - drf installs and configures django Restframework in settings.py
    - mysqlversion checks if MySQL is installed and prints its version
    - mysqlstartserver spins up MySQL server
@@ -180,6 +183,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Changes
+   - drf command now configures its authentication token functionality along with its installation
    - startapp command will now install the app name under INSTALLED_APPS in settings.py automatically
    - changed compare command to compareChanges command
    - gitignore now adds itself as a file to the .gitigore file to prevent commiting and pushing it to your repository
