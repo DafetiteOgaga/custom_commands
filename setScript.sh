@@ -278,10 +278,16 @@ dOptions=(
 	"  stash command - saves uncommitted changes in the working tree"
 	"  viewStash command - displays a list of stashed changes that can be applied to the current branch"
 	"  logit command - displays a detailed log of your commits with their branches"
+	
 	#...bash script files.................. #
 	"  py3venv command - creates a python3 virtual environment"
-	"  startproject command - creates a new django project"
-	"  startapp command - creates django apps for projects"
+	#...py script files....................... #
+	"  requirement_txt command - creates, updates and install the dependencies in the requirement.txt file"
+	#...bash script files.................. #
+	"  drf command - install and configures Django RESTframework"
+
+	"  startproject command - installs a new django project"
+	"  startapp command - installs and configures apps for django projects"
 	#...py script files....................... #
 	"  runserver command - spin up the django development server from any directory"
 	#...bash script files.................. #
@@ -295,7 +301,6 @@ dOptions=(
 	#...py script files....................... #
 	"  showmigrations command - displays the history of migrations in an app/project"
 	"  sqlmigrate command - presents the sql query of any migration"
-	"  requirement_txt command - creates, updates and install the dependencies in the requirement.txt file"
 	#...bash script files.................. #
 	"  mysqlversion - checks if MySQL is installed and also prints its version"
 	"  mysqlstartserver - starts MySQL server"
@@ -490,133 +495,141 @@ options()
 			DFILENAME="py3venv"
 			category b "$converted_selection"
 			;;
+
 		31)
+			DFILENAME="requirement_txt"
+			category p "$converted_selection"
+			;;
+		
+		# ...bash script files................................... #
+		32)
+			DFILENAME="drf"
+			category b "$converted_selection"
+			;;
+
+		33)
 			DFILENAME="startproject"
 			category b "$converted_selection"
 			;;
-		32)
+		34)
 			DFILENAME="startapp"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		33)
+		35)
 			DFILENAME="runserver"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		34)
+		36)
 			DFILENAME="makemigrations"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		35)
+		37)
 			DFILENAME="migrate"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		36)
+		38)
 			DFILENAME="django"
 			category b "$converted_selection"
 			;;
-		37)
+		39)
 			DFILENAME="djshell"
 			category b "$converted_selection"
 			;;
-		38)
+		40)
 			DFILENAME="mkandmigrate"
 			category b "$converted_selection"
 			;;
 
 	#...py script files..................................... #
-		39)
+		41)
 			DFILENAME="showmigrations"
 			category p "$converted_selection"
 			;;
-		40)
+		42)
 			DFILENAME="sqlmigrate"
-			category p "$converted_selection"
-			;;
-		41)
-			DFILENAME="requirement_txt"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		42)
+		43)
 			DFILENAME="mysqlversion"
 			category b "$converted_selection"
 			;;
-		43)
+		44)
 			DFILENAME="mysqlstartserver"
 			category b "$converted_selection"
 			;;
-		44)
+		45)
 			DFILENAME="mysqlstopserver"
 			category b "$converted_selection"
 			;;
-		45)
+		46)
 			DFILENAME="mysqlrestartserver"
 			category b "$converted_selection"
 			;;
-		46)
+		47)
 			DFILENAME="mysqlstatus_server"
 			category b "$converted_selection"
 			;;
-		47)
+		48)
 			DFILENAME="mysqlshell"
 			category b "$converted_selection"
 			;;
-		48)
+		49)
 			DFILENAME="ctemp"
 			category b "$converted_selection" "ct"
 			;;
 	
 	# ...py script files..................................... #
-		49)
+		50)
 			DFILENAME="clear_commit"
 			category p "$converted_selection"
 			;;
-		50)
+		51)
 			DFILENAME="printmyEnv"
 			category p "$converted_selection"
 			;;
-		51)
+		52)
 			DFILENAME="show"
 			category p "$converted_selection"
 			;;
-		52)
+		53)
 			DFILENAME="verifyRepo"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		53)
+		54)
 			DFILENAME="mycompile"
 			category b "$converted_selection"
 			;;
-		54)
+		55)
 			DFILENAME="pycompile"
 			category b "$converted_selection"
 			;;
 	
 	# ...C files............................................. #
-		55)
+		56)
 			DFILENAME="myascii"
 			category c "$converted_selection"
 			;;
-		56)
+		57)
 			DFILENAME="rot13"
 			category c "$converted_selection"
 			;;
-		57)
+		58)
 			DFILENAME="rot47"
 			category c "$converted_selection"
 			;;
-		58)
+		59)
 			DFILENAME="guessGame"
 			category c "$converted_selection"
 			;;
@@ -753,8 +766,10 @@ update_changes()
 #...5.................. #
 scptcpy()
 {
-	if [[ ! -f "$XBIN/pymanage" ]]; then
+	# copies pymanage and configure_settings_py to .xbin
+	if [[ ! -f "$XBIN/pymanage" || ! -f "$XBIN/configure_settings_py.py" ]]; then
 		cp "$SCPTS/pymanage" "$XBIN/pymanage"
+		cp "$SCPTS/pyfiles/configure_settings_py.py" "$XBIN/pyfiles/configure_settings_py.py"
 	fi
 	pyfiles
 	sleep 0.1
@@ -1034,6 +1049,9 @@ instructn()
 			;;
 		"mysqlshell")
 			echo -e "$STRT launch MySQL shell $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"drf")
+			echo -e "$STRT install and configure django RESTframework $EFFT $ANYWHERE: $DFILENAME"
 			;;
 		esac
 	sleep 0.1
