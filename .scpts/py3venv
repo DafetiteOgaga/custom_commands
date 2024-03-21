@@ -17,9 +17,9 @@ if [[ "$check" == *"virtual environment was not created successfully"* ]]; then
         echo "sudo apt install python3-venv"
         echo ""
 elif [[ -z "$check" ]]; then
-        echo "check empty"
+        # echo "check empty"
         if [[ -n "$name" ]]; then
-                echo "name availabe"
+                # echo "name availabe"
                 if [[ -f "$name/bin/activate" ]]; then
                         echo "Successfully created $name"
                         echo "Activate it with: source $name/bin/activate"
