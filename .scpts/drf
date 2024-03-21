@@ -1,0 +1,21 @@
+#!/bin/bash
+
+path1="$HOME/.xbin"
+check=$(2>&1 $path1/pyfiles/django arg)
+if [ -n "$check" ]; then
+	echo "$check"
+	echo ""
+	exit 1
+fi
+
+command="pip3 install djangorestframework"
+
+if [ "$#" -gt 0 ]; then
+	echo ""
+	echo "This command takes no arguments"
+elif [ "$#" -eq 0 ]; then
+	$command
+	echo ""
+	$(echo "rest_framework" | python3 $path1/pyfiles/configure_settings_py.py)
+	echo "django RESTframework installed successfully and configured under INSTALLED_APPS in settings.py"
+fi

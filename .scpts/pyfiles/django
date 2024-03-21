@@ -10,7 +10,6 @@ if [[ "$output" == *"No module named django"* ]]; then
 	echo "pip install django"
 	echo ""
 elif [[ "$1" == "project" ]]; then
-	# echo "fixed"
 	echo ""
 elif [[ "$items" != *"manage.py"* && -n "$1" ]]; then
 	echo ""
