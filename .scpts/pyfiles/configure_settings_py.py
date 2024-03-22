@@ -32,23 +32,31 @@ def install_entity(entity: str, file_path: str, djoser: bool=False):
 	check = check_existence(entity=entity, data=data)
 	if not check:
 		for index, line in enumerate(data):
-			if "'django.contrib.staticfiles'," in line:
-				if djoser:
-					installed_apps = True
-					continue
-				data.insert(index + 1, line_content)
-				break
-			if installed_apps and "]" in line:
-				data.insert(index, line_content)
-				break
-		with open(file_path, 'w') as g:
-			g.writelines(data)
-		if djoser:
+			if entity != "static":
+				if "'django.contrib.staticfiles'," in line:
+					if djoser:
+						entity = "djoser"
+						installed_apps = True
+						continue
+					else:
+						data.insert(index + 1, line_content)
+						break
+				if installed_apps and "]" in line:
+					data.insert(index, line_content)
+					break
+			with open(file_path, 'w') as g:
+				g.writelines(data)
+		variable = False
+		match entity:
+			case "djoser":
+				variable = djoser_variable
+			case "rest_framework.authtoken":
+				variable = restframework_variable
+			case "static":
+				variable = "\n" + "STATICFILES_DIRS = [" + "\n" + "    BASE_DIR / 'static'," + "\n" + f"    BASE_DIR / 'static/{file_path.split('/')[-2]}'," + "\n" + "]" + "\n"
+		if variable:
 			with open(file_path, 'a') as k:
-				k.writelines(djoser_variable)
-		if entity == "rest_framework.authtoken":
-			with open(file_path, 'a') as h:
-				h.writelines(restframework_variable)
+				k.writelines(variable)
 
 
 def check_existence(entity: str, data: list):
