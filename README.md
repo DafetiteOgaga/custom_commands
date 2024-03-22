@@ -20,7 +20,7 @@
    ```bash
    ./setScript.sh
    ```
-   ### **to access various commands that you can install on your computer/phone such as:**
+   ### **After installation you can access various commands on your computer/phone such as:**
 
    * #### custom_command (This command is installed automatically for you) - displays all the custom commands installed on your machine
    * push command - synchronse rather than just push
@@ -103,91 +103,34 @@
 
 ### Usage
 
-Depending on the command, the usage instruction for that command is provided after its successful installation.
+#### Depending on the command, the usage instruction for that command is provided after its successful installation.
 
 <br>
 
 ### Contributing
-I welcome contributions from the community! If you'd like to contribute to Custom commands, please follow these steps:
+#### I welcome contributions from the community! If you'd like to contribute to Custom commands, please follow these steps:
 
-Fork this repository.
-Create a new branch for your feature or bug fix.
-Commit your changes and push to your fork.
-Submit a pull request to this repository.
+- Fork this repository.
+- Create a new branch for your feature or bug fix.
+- Commit your changes and push to your fork.
+- Submit a pull request to this repository.
+
+<br>
 
 # Changelog
 This file contains the notable changes made to the Custom Commands project.
 
-<br>
 
 ## New
-   - djoser installs and configures djoser in settings.py
-   - drf installs and configures django Restframework in settings.py
-   - mysqlversion checks if MySQL is installed and prints its version
-   - mysqlstartserver spins up MySQL server
-   - mysqlstopserver stops MySQL server
-   - mysqlrestartserver restarts MySQL server
-   - mysqlstatus_server displays the status of MySQL server
-   - mysqlshell launches MySQL shell, you can pass your userame as argument(default is 'root')
-   - gitignore lets your browse through your repository. Allowing you to either create and add or update your .gitignore file with the selected list of file(ys) and directory(ies)
-   - requirement_txt command - to create, update and install the dependencies in the requirement.txt file 
-   - startproject creates a new django project
-   - startapp creates a new django app within a django project
-   - runserver will spin up the development server right from any directory
-   - makemigrations creates migrations
-   - migrate will map the created tables to the database
-   - django displays the django version currently in use(within a venv or without), validating the presence of django
-   - djshell launches the django interactive shell
-   - mkandmigrate combines the makemigrations and migrate commands to save time during development
-   - showmigrations displays the migrations in all or any of the selected app
-   - sqlmigrate presents the sql query of the migration you select
-   - py3venv creates a venv without worrying about all the arguments
-   - verifyRepo to checkes if the current dir is a repository or not
-   - show - displays a list of all commits made to the current repository
-   - printmyEnv to prints a list of your env paths
-   - logit command - displays a detailed log of your commits with their branches
-   - viewStash command - displays a list of all stashed changes in all branches and can be applied to the current branch
-   - stash - saves uncommitted changes in the working tree for that branch
-   - commitall to commits all the changes in the working tree
-   - commitdir to commits all the changes in the current dir
-   - compare - displays the content of uncommited changes on the working tree
-   - commitree to see a tree of your commit history
-   - rollback command - reverts the current branch to an older commit instance
-   - createPatch command - creates a .patch file using the changes between the two files provided as arguments
-   - shxecute to appends shebang and makes your bash files executable
-   - status command to displays information about tracked and untracked files/changes in the branch
-   - merge command to merges changes in the current branch to main/master branch. prevents 3way merge by setting the history linear and then put the branch ahead of the master, allowing for a fast forward merge
-   - branch command to creates, sets up the branch on the remote and also switch between local branches
-   - pushall command to stage, commit and updates the local/remote repos with changes in the working tree
-   - pushfile commands will now skip already staged and committed files during usage. making the use of "pushfile *" more robust
-   - added viewRepos command - you can now view any github repositories right from you CLI
-   - deleteRepo command - checks and deletes github repositories
-   - clear_commit command clears the local staging area and commits
-   - pushfile command updates the remote with individual commits to each files
-   - pyxecute can now make python scripts that has no .py extension into executables and still filter out non python files
-   - Added the last choice of command and the command it created to the display
-   - Added wcount command. calculates and output the number of lines, words and characters in your file
-   - Added pyxecute command. Easily turns py scripts into executables
-   - Added custom_commands as a command that displays all of the commands created so far
-   - Added curfol command. This automatically opens the current working directory in file explorer
-   - Added support for multiple arguments for pycode, pycodemore and pycompile commands
-   - pycompile command that compiles python codes to .pyc executables
-   - pycodemore command a detailed version of pycode (according to EP 8 conventions)
-   - pycode command(a short for pycodestyle) for python code compliance according to PEP 8 conventions
-   - Added betty linter command for source files
-   - Added installations of betty linter and pycodestyle(PEP 8)
-   - Added Support for 64-bit operating system computers
-   - Added Support for AARCH64/ARM64 operating system for phones
-   - Added Support for PC and Phone and device detection
-   - Added Support for root user password request for PC
-   - Added command to configure Github Author Identity Globally and/or Locally
-   - Added sample screenshot of the menu when the script is executed
-   - Added the git username and email feature locally to the create and clone repository commands (specific to the current working repository)
-   - Added reminder to users not to create a repository within an existing repository
-   - Added reminder to users not to clone into an existing repository
-   - Added cls command to the list
-   - Added quit option to push command
-   - Moved the project to remote repository
+   - djoser
+   - drf
+   - mysqlversion
+   - mysqlstartserver
+   - mysqlstopserver
+   - mysqlrestartserver
+   - mysqlstatus_server
+   - mysqlshell
+   - gitignore
 
 
 ## Changes
@@ -215,12 +158,25 @@ This file contains the notable changes made to the Custom Commands project.
    - Minor changes made to guessing game, rot13, rot47 and my ascii codes to enhance performance
    - clone and create repo commands now collect users information during installation
    - Changed the process of users having to open the clone and create repo scripts to manually input their details
+   - Added the last choice of command and the command it created to the display
    - Changed the simple ASCII table display
    - Changed default C template description
    - Removed emoji from Guessing game
    - Removed emoji from Rot47
    - Removed emoji from Rot13
    - Removed emoji from simple ASCII table
+   - Added support for multiple arguments for pycode, pycodemore and pycompile commands
+   - Added installations of betty linter and pycodestyle(PEP 8)
+   - Added Support for 64-bit operating system computers
+   - Added Support for AARCH64/ARM64 operating system for phones
+   - Added Support for PC and Phone and device detection
+   - Added Support for root user password request for PC
+   - Added sample screenshot of the menu when the script is executed
+   - Added Support to configure git username and email locally to the create and clone repository commands (specific to the current working repository)
+   - Added reminder to users not to create a repository within an existing repository
+   - Added reminder to users not to clone into an existing repository
+   - Added quit option to push command
+   - Moved the project to remote repository
 
 
 ## Fixes
@@ -254,4 +210,4 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 
-###### We Rise by Lifting Others.
+###### *We Rise by Lifting Others.*
