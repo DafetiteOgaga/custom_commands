@@ -63,6 +63,7 @@
    * py3venv command - creates a python3 virtual environment in the cwd
    * drf command - install and configures Django RESTframework and its authentication token functionality
    * djoser command - install and configures djoser for use with drf authentication token functionality
+   * static4django command - configures the STATIC_DIRS in settings.py for non-app dirs
 
 	* startproject command - creates a new django project
 	* startapp command - creates django apps for projects within any django project
@@ -122,6 +123,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## New
+   - static4django
    - djoser
    - drf
    - mysqlversion
@@ -130,7 +132,6 @@ This file contains the notable changes made to the Custom Commands project.
    - mysqlrestartserver
    - mysqlstatus_server
    - mysqlshell
-   - gitignore
 
 
 ## Changes
