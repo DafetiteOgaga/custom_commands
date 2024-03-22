@@ -49,7 +49,7 @@ curl_check()
 		git config user.name "$GUSERNAME"
 		git config user.email "$GEMAIL"
 
-		echo -e "### $REPONAME and README were auto created\n\n\n\n\n###### We Rise by Lifting Others." > README.md
+		echo -e "### $REPONAME and README were auto created\n\n\n\n\n###### *We Rise by Lifting Others.*" > README.md
 		git add .
 		git commit -m "$REPONAME auto created"
 		git push
