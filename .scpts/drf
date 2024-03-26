@@ -2,10 +2,14 @@
 
 path1="$HOME/.xbin"
 check=$(2>&1 $path1/pyfiles/django arg)
-if [ -n "$check" ]; then
-	echo "$check"
+if [[ -n "$check" ]]; then
 	echo ""
-	exit 1
+	echo "$check"
+	if [[ "$check" == *"SQLite"* || "$check" == *"MySQL"* || "$check" == *"PostgreSQL"* ]]; then
+		if [[ "$check" == *"You don't have mysqlclient(django connector) installed."* ]]; then
+			exit 1
+		fi
+	fi
 fi
 
 command="pip3 install djangorestframework"
@@ -17,8 +21,10 @@ elif [ "$#" -eq 0 ]; then
 	path1="$path1/pyfiles/configure_settings_py.py"
 	$command
 	echo ""
-	$(echo "rest_framework" | python3 $path1)
-	$(echo "rest_framework.authtoken" | python3 $path1)
+	output1="$(echo "rest_framework" | python3 $path1 2>&1)"
+	echo "$output1"
+	output2="$(echo "rest_framework.authtoken" | python3 $path1 2>&1)"
+	echo "$output2"
 	echo "django RESTframework and its authentication token functionality installed successfully and configured under INSTALLED_APPS in settings.py"
 	echo "consider using: djoser command. For easy authentcation implementation."
 	echo "Note: if you are using a virtual environment, you need to specify the path to your interpreter."

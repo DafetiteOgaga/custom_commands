@@ -286,6 +286,7 @@ dOptions=(
 	#...bash script files.................. #
 	"  drf command - install and configures Django RESTframework and its authentication token functionality"
 	"  djoser command - install and configures djoser for use with drf authentication token functionality"
+	"  static4django command - configures the STATIC_DIRS in settings.py for non-app dirs"
 
 	"  startproject command - installs a new django project"
 	"  startapp command - installs and configures apps for django projects"
@@ -511,130 +512,134 @@ options()
 			DFILENAME="djoser"
 			category b "$converted_selection"
 			;;
-
 		34)
+			DFILENAME="static4django"
+			category b "$converted_selection"
+			;;
+
+		35)
 			DFILENAME="startproject"
 			category b "$converted_selection"
 			;;
-		35)
+		36)
 			DFILENAME="startapp"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		36)
+		37)
 			DFILENAME="runserver"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		37)
+		38)
 			DFILENAME="makemigrations"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		38)
+		39)
 			DFILENAME="migrate"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		39)
+		40)
 			DFILENAME="django"
 			category b "$converted_selection"
 			;;
-		40)
+		41)
 			DFILENAME="djshell"
 			category b "$converted_selection"
 			;;
-		41)
+		42)
 			DFILENAME="mkandmigrate"
 			category b "$converted_selection"
 			;;
 
 	#...py script files..................................... #
-		42)
+		43)
 			DFILENAME="showmigrations"
 			category p "$converted_selection"
 			;;
-		43)
+		44)
 			DFILENAME="sqlmigrate"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		44)
+		45)
 			DFILENAME="mysqlversion"
 			category b "$converted_selection"
 			;;
-		45)
+		46)
 			DFILENAME="mysqlstartserver"
 			category b "$converted_selection"
 			;;
-		46)
+		47)
 			DFILENAME="mysqlstopserver"
 			category b "$converted_selection"
 			;;
-		47)
+		48)
 			DFILENAME="mysqlrestartserver"
 			category b "$converted_selection"
 			;;
-		48)
+		49)
 			DFILENAME="mysqlstatus_server"
 			category b "$converted_selection"
 			;;
-		49)
+		50)
 			DFILENAME="mysqlshell"
 			category b "$converted_selection"
 			;;
-		50)
+		51)
 			DFILENAME="ctemp"
 			category b "$converted_selection" "ct"
 			;;
 	
 	# ...py script files..................................... #
-		51)
+		52)
 			DFILENAME="clear_commit"
 			category p "$converted_selection"
 			;;
-		52)
+		53)
 			DFILENAME="printmyEnv"
 			category p "$converted_selection"
 			;;
-		53)
+		54)
 			DFILENAME="show"
 			category p "$converted_selection"
 			;;
-		54)
+		55)
 			DFILENAME="verifyRepo"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		55)
+		56)
 			DFILENAME="mycompile"
 			category b "$converted_selection"
 			;;
-		56)
+		57)
 			DFILENAME="pycompile"
 			category b "$converted_selection"
 			;;
 	
 	# ...C files............................................. #
-		57)
+		58)
 			DFILENAME="myascii"
 			category c "$converted_selection"
 			;;
-		58)
+		59)
 			DFILENAME="rot13"
 			category c "$converted_selection"
 			;;
-		59)
+		60)
 			DFILENAME="rot47"
 			category c "$converted_selection"
 			;;
-		60)
+		61)
 			DFILENAME="guessGame"
 			category c "$converted_selection"
 			;;
@@ -775,6 +780,8 @@ scptcpy()
 	if [[ ! -f "$XBIN/pymanage" || ! -f "$XBIN/configure_settings_py.py" ]]; then
 		cp "$SCPTS/pymanage" "$XBIN/pymanage"
 		cp "$SCPTS/pyfiles/configure_settings_py.py" "$XBIN/pyfiles/configure_settings_py.py"
+		cp "$SCPTS/pyfiles/check_db.py" "$XBIN/pyfiles/check_db.py"
+		# check_db.py
 	fi
 	pyfiles
 	sleep 0.1
@@ -1060,6 +1067,9 @@ instructn()
 			;;
 		"djoser")
 			echo -e "$STRT install and configure djoser and use it with drf authentication token $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"static4django")
+			echo -e "$STRT configure the STATIC_DIRS in the setting.py $EFFT $ANYWHERE: $DFILENAME"
 			;;
 		esac
 	sleep 0.1

@@ -21,7 +21,7 @@ command1 = main(runserver='yes')
 os.chdir(command1)
 
 command2 = output_func(text_path=text_path)
-
+check_database_type()
 try:
     ctrl_c = subprocess.run(command2.split())
 except KeyboardInterrupt:
