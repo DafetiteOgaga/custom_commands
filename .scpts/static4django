@@ -2,10 +2,14 @@
 
 path1="$HOME/.xbin"
 check=$(2>&1 $path1/pyfiles/django arg)
-if [ -n "$check" ]; then
-	echo "$check"
+if [[ -n "$check" ]]; then
 	echo ""
-	exit 1
+	echo "$check"
+	if [[ "$check" == *"SQLite"* || "$check" == *"MySQL"* || "$check" == *"PostgreSQL"* ]]; then
+		if [[ "$check" == *"You don't have mysqlclient(django connector) installed."* ]]; then
+			exit 1
+		fi
+	fi
 fi
 
 if [ "$#" -gt 0 ]; then
@@ -14,6 +18,8 @@ if [ "$#" -gt 0 ]; then
 elif [ "$#" -eq 0 ]; then
 	path1="$path1/pyfiles/configure_settings_py.py"
 	echo ""
-	$(echo "static" | python3 $path1)
+	# $(echo "static" | python3 $path1)
+	output="$(echo "static" | python3 $path1 2>&1)"
+	echo "$output"
 	echo "STATIC DIRS has been configured in settings.py"
 fi
