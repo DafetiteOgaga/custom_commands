@@ -780,6 +780,8 @@ scptcpy()
 	if [[ ! -f "$XBIN/pymanage" || ! -f "$XBIN/configure_settings_py.py" ]]; then
 		cp "$SCPTS/pymanage" "$XBIN/pymanage"
 		cp "$SCPTS/pyfiles/configure_settings_py.py" "$XBIN/pyfiles/configure_settings_py.py"
+		cp "$SCPTS/pyfiles/check_db.py" "$XBIN/pyfiles/check_db.py"
+		# check_db.py
 	fi
 	pyfiles
 	sleep 0.1
