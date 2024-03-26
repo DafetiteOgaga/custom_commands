@@ -8,7 +8,7 @@ code, response = error_check()
 # print('error code 12abcd: ', code, 'response 12abcd: ', response)
 stop = error_response(code, response)
 if stop:
-    sys.exit(stop)
+	sys.exit(stop)
 
 if len(sys.argv) > 2:
 	args = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
@@ -17,4 +17,8 @@ if len(sys.argv) == 2:
 	sys.argv[1] = 'show'
 command = output_func()
 print()
-subprocess.run(command.split())
+output = subprocess.run(command.split(), capture_output=True, text=True)
+if output.stderr:
+	moduleNotFound_in_settings(output.stderr)
+if output.stdout:
+	print('output.stdout:', output.stdout)
