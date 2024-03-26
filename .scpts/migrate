@@ -6,7 +6,7 @@ from pyfiles.django_codes import *
 code, response = error_check()
 stop = error_response(code, response)
 if stop:
-    sys.exit(stop)
+	sys.exit(stop)
 
 if len(sys.argv) > 2:
 	args = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
@@ -15,4 +15,6 @@ if len(sys.argv) == 2:
 	sys.argv[1] = 'migration'
 command = output_func()
 print()
-subprocess.run(command.split())
+check_database_type()
+output = subprocess.run(command.split())
+# if "import MySQLdb as Database" and "No module named 'MySQLdb'" in output.stderr:
