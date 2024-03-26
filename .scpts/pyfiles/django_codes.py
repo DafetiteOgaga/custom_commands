@@ -2,6 +2,8 @@
 
 import os, sys, subprocess
 from pyfiles.my_prompt import main as prompt
+from pyfiles.check_db import check_database
+from pyfiles.configure_settings_py import find_settings_py as settings
 
 def exit(option: str):
 	"""Exits the program
@@ -249,3 +251,43 @@ b. Install the dependencies in the requirements.txt
 		print()
 		print('Invalid entry!')
 		sys.exit(1)
+
+
+def check_database_type():
+	db_check = check_database(py=True)
+	print(db_check)
+	if 'MySQL' in db_check:
+		try:
+			import MySQLdb
+		except ModuleNotFoundError:
+			print()
+			print("You don't have mysqlclient(django connector) installed.")
+			print("pip install mysqlclient")
+			print("if any issue:")
+			print("    sudo apt-get install pkg-config")
+			print("    sudo apt-get install libmysqlclient-dev")
+			print("    pip install mysqlclient")
+			print()
+			sys.exit(1)
+
+def moduleNotFound_in_settings(err_output):
+	# print('output.stderr:s', err_output)
+	if "ModuleNotFoundError: No module named" in err_output:
+		check_database_type()
+		_, module1 = err_output.split("ModuleNotFoundError: No module named")
+		module1 = module1.strip()
+		module1 = module1.strip("'")
+		cur_dir = os.getcwd()
+		settings_path = settings()
+		setting_dir = "/".join(settings_path[0].split('/')[:-1])
+		os.chdir(setting_dir)
+		with open(f'{setting_dir}/settings.py') as f:
+			data = f.readlines()
+		os.chdir(cur_dir)
+		data = " ".join(data)
+		if f'"{module1}"' in data or f"'{module1}'" in data:
+			print(f"Error: ModuleNotFoundError: No module named '{module1}'")
+			print(f"If you installed '{module1}' and later deleted the app:")
+			print(f"	Remove '{module1}' from the list of INSTALLED_APPS in settings.py")
+		else:
+			print('output.stderr:', err_output)
