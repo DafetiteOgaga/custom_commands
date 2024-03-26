@@ -15,4 +15,5 @@ if len(sys.argv) > 1:
 sys.argv = sys.argv + ['show']
 command = output_func()
 print()
+check_database_type()
 subprocess.run(command.split())
