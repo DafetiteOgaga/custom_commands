@@ -1,8 +1,15 @@
 #!/bin/bash
 
-check=$(2>&1 $HOME/.xbin/pyfiles/django)
-if [ -n "$check" ]; then
-	echo "$check"
+path1="$HOME/.xbin"
+check=$(2>&1 $path1/pyfiles/django)
+if [[ -n "$check" ]]; then
 	echo ""
-	exit 1
+	echo "$check"
+	if [[ "$check" == *"SQLite"* || "$check" == *"MySQL"* || "$check" == *"PostgreSQL"* ]]; then
+		if [[ "$check" == *"You don't have mysqlclient(django connector) installed."* ]]; then
+			exit 1
+		fi
+	else
+		exit 1
+	fi
 fi
