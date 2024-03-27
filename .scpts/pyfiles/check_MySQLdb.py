@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 
-def check_mysqldb():
+def check_mysqldb(py: bool=False):
 	try:
 		import MySQLdb
-		print('installed')
+		if not py:
+			print('installed')
 		return 'installed'
 	except ModuleNotFoundError:
-		print('not installed')
+		if not py:
+			print('not installed')
 		return 'not installed'
 
 if __name__ == '__main__':

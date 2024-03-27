@@ -56,22 +56,23 @@ def install_entity(entity: str, file_path: str, djoser: bool=False):
 			case "static":
 				# base_dir = file_path.split('/')[-3]
 				project_dir = file_path.split('/')[-2]
-				base_dir_path = os.path.join(os.getcwd(), 'static')
-				project_dir_path = os.path.join(os.getcwd(), project_dir, 'static')
-				if not os.path.exists(base_dir_path):
-					os.mkdir(base_dir_path)
-				if not os.path.exists(project_dir_path):
-					os.mkdir(project_dir_path)
-				variable = "\n" + "STATICFILES_DIRS = [" + "\n" + "    BASE_DIR / 'static'," + description + " BASE_DIR" + "\n" + f"    BASE_DIR / 'static/{file_path.split('/')[-2]}'," + description + " project dir" + "\n" + "]" + "\n"
+				base_dir_path = os.path.join(os.getcwd(), 'static', project_dir)
+				project_dir_path = os.path.join(os.getcwd(), project_dir, 'static', project_dir)
+				# print('project_dir:', project_dir)
+				# print('project_dir_path:', project_dir_path)
+				# print('base_dir_path:', base_dir_path)
+				os.makedirs(base_dir_path, exist_ok=True)
+				os.makedirs(project_dir_path, exist_ok=True)
+				variable = "\n" + "STATICFILES_DIRS = [" + "\n" + "    BASE_DIR / 'static'," + description + " BASE_DIR" + "\n" + f"    BASE_DIR / 'static/{project_dir}'," + description + " project dir" + "\n" + "]" + "\n"
 		if variable:
 			with open(file_path, 'a') as k:
 				k.writelines(variable)
 
 
 def check_existence(entity: str, data: list):
-    for i in data:
-        if f"'{entity}'," in i or f'"{entity}",' in i:
-            return True
+	for i in data:
+		if f"'{entity}'," in i or f'"{entity}",' in i:
+			return True
 
 def entry_point():
 	entity = input()
@@ -89,4 +90,4 @@ def entry_point():
 
 
 if __name__ == "__main__":
-    entry_point()
+	entry_point()

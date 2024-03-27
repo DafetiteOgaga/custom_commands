@@ -9,7 +9,7 @@ if [[ -n "$check" ]]; then
 		if [[ "$check" == *"You don't have mysqlclient(django connector) installed."* ]]; then
 			exit 1
 		fi
-	else
+	elif [[ "$check" == *"change to the directory containing"* || "$check" == *"You don't have django installed or"* ]]; then
 		exit 1
 	fi
 fi

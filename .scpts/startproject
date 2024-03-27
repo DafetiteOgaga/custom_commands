@@ -2,10 +2,16 @@
 
 path1="$HOME/.xbin"
 check=$(2>&1 $path1/pyfiles/django project)
-if [[ -n "$check" && "$check" != "fixed" ]]; then
-	echo "$check"
+if [[ -n "$check" ]]; then
 	echo ""
-	exit 1
+	echo "$check"
+	if [[ "$check" == *"SQLite"* || "$check" == *"MySQL"* || "$check" == *"PostgreSQL"* ]]; then
+		if [[ "$check" == *"You don't have mysqlclient(django connector) installed."* ]]; then
+			exit 1
+		fi
+	elif [[ "$check" == *"change to the directory containing"* || "$check" == *"You don't have django installed or"* ]]; then
+		exit 1
+	fi
 fi
 
 command="django-admin"

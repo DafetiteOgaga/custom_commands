@@ -16,7 +16,6 @@ def check_database(py: bool=False):
 	with open(f'{setting_dir}/settings.py') as f:
 		data = f.readlines()
 	os.chdir(cur_dir)
-	# data = " ".join(data)
 
 	try:
 		sqlite = '.sqlite'
