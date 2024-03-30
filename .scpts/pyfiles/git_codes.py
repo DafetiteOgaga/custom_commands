@@ -602,17 +602,19 @@ def diff(action: int=0):
 		print("{}".format(print_stdout(diff_res.stderr)))
 
 
-def write_to_file(ignore_list, delimiter: str):
+def write_to_file(ignore_list, delimiter: str, read: bool=False):
 	# set the file name to .gitignore
 	filename = '.gitignore'
 	ignore_file = 1
 	try:
 		file_list = []
 		with open(filename) as g:
-			for l in g:
-				file_list.append(l.strip())
+			for line in g:
+				file_list.append(line.strip())
 	except FileNotFoundError:
 		open(filename, 'w').close()
+	if read:
+		return file_list
 	if filename not in file_list:
 		ignore_file = 0
 	with open(filename, 'a') as f:
@@ -624,7 +626,7 @@ def write_to_file(ignore_list, delimiter: str):
 			f.write(filename + '\n')
 
 
-def backward_serach():
+def backward_search():
 	init_path = os.getcwd()
 	if ".git" in os.listdir():
 		root_repo = init_path
@@ -637,7 +639,7 @@ def backward_serach():
 			print()
 			sys.exit(1)
 		os.chdir(os.pardir)
-		return backward_serach()
+		return backward_search()
 
 
 def search_repo(repo_dir: list, delimiter: str, dir_path: str=None, repeat: int=0, child_dir: int=0):
@@ -648,8 +650,12 @@ def search_repo(repo_dir: list, delimiter: str, dir_path: str=None, repeat: int=
 	if child_dir:
 		dir = repo_dir[0]
 		repo_dir = os.listdir(repo_dir[0])
-	# print('dir:', dir)
-	# print()
+	gitignore_content = write_to_file([], '', read=True)
+	gitignore_content = [file.split(delimiter)[-1] for file in gitignore_content]
+	repo_dir = [dir+f'{os.sep}'+file.split(delimiter)[-1] for file in repo_dir]
+	repo_dir = [file for file in repo_dir if file.split(delimiter)[-1] not in gitignore_content]
+	print(f'Browse through your file/dirs...')
+	print()
 	print(f'You are in: {os.path.basename(dir)}')
 	print('.'*(len(os.path.basename(dir)) + 13))
 	ignore_list = []
