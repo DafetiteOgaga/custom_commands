@@ -1,24 +1,6 @@
 #!/usr/bin/env python3
 
 import subprocess, sys
-from pyfiles.django_codes import *
+from pyfiles.django_codes import django_migrate
 
-code, response = error_check()
-stop = error_response(code, response)
-if stop:
-	sys.exit(stop)
-
-if len(sys.argv) > 2:
-	args = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
-	sys.argv = args
-if len(sys.argv) == 2:
-	sys.argv[1] = 'migration'
-command = output_func()
-print()
-# check_database_type()
-output = subprocess.run(command.split(), capture_output=True, text=True)
-if output.stderr:
-	moduleNotFound_in_settings(output.stderr)
-if output.stdout:
-	print('output.stdout:', output.stdout)
-# if "import MySQLdb as Database" and "No module named 'MySQLdb'" in output.stderr:
+django_migrate()

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-from pyfiles.git_codes import *
+from pyfiles.git_codes import backward_search, write_to_file, search_repo
 from pyfiles.configure_settings_py import compile_dir_list
 from pyfiles.my_prompt import main as prompt
-import time
+import time, os, sys
 
 root_repo = backward_search()
 pycache, venv = compile_dir_list(root_repo, venv=True)
@@ -12,6 +12,7 @@ delimiter = root_repo + os.sep
 gitignore_content = write_to_file([], '', read=True)
 pycache = [file for file in pycache if file.split(delimiter)[-1] not in gitignore_content]
 venv = [dir for dir in venv if dir.split(delimiter)[-1] not in gitignore_content]
+
 def gitignore():
 	auto_set_pycache1 = setup_gitignore()
 	gitignore_resp(auto_set_pycache1, pycache)

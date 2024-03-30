@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
 
-import pyfiles.git_codes as p
+from pyfiles.git_codes import clear_staged_and_commit
 
-p.clear_staged_and_commit()
+clear_staged_and_commit()
