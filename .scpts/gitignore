@@ -32,7 +32,7 @@ def setup_gitignore(pycache: list=pycache, envFile: bool=False):
 	if pycache == []:
 		print(f'==> .gitignore file is upto date with "{var}"')
 		time.sleep(.5)
-		cont = input('Press any key to continue...')
+		cont = input('Press Enter to continue...')
 		return 'n'
 	print()
 	print(f'{mainVar} {var})')
