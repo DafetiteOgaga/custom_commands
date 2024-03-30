@@ -19,8 +19,13 @@ elif [[ "$1" != "project" ]]; then
 		database="$(python3 $path1/check_db.py 2>&1)"
 		echo "$database"
 		mysqlclient="$(python3 $path1/check_MySQLdb.py 2>&1)"
-		echo "mysqlclient: $mysqlclient"
-		if [[ "$database" == *"MySQL"* && "$mysqlclient" == "not installed" ]]; then
+		# echo "$mysqlclient"
+		if [[ "$mysqlclient" == *"DRF not installed"* ]]; then
+			echo ""
+			echo "You seem to have djangorestframework installed."
+			echo "But You don't have djangorestframework installed properly."
+			echo "Run: drf command"
+		elif [[ "$database" == *"MySQL"* && "$mysqlclient" == *"MySQLdb not installed"* ]]; then
 			echo ""
 			echo "You don't have mysqlclient(django connector) installed."
 			echo "pip install mysqlclient"
