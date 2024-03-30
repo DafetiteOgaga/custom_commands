@@ -11,6 +11,8 @@ def check_database(py: bool=False):
 
 	cur_dir = os.getcwd()
 	settings_path = settings()
+	settings_path = [setting for setting in settings_path if setting.endswith('settings.py')]
+	# print("Settings path: %s" % settings_path)
 	setting_dir = "/".join(settings_path[0].split('/')[:-1])
 	os.chdir(setting_dir)
 	with open(f'{setting_dir}/settings.py') as f:
