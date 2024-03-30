@@ -2,19 +2,93 @@
 
 import os, sys, subprocess
 
+def skip_venv_dir():
+	current_dir_files = os.listdir()
+	venv = ['bin', 'include', 'lib']
+	resp = []
+	for dir in venv:
+		if dir in current_dir_files:
+			resp.append(True)
+	filter_resp = set(resp)
+	return list(filter_resp)
+
+def dir_checker(venv: bool=False):
+	final_list = []
+	venv_check = skip_venv_dir()
+	if venv_check:
+		# print('parent::::')
+		final_list.append(os.getcwd())
+	for item in os.listdir():
+		if not os.path.isfile(item):
+			current_dir = os.getcwd()
+			os.chdir(os.path.join(current_dir, item))
+			venv_check2 = skip_venv_dir()
+			if venv_check2:
+				# print('child::::')
+				# print('venv dir: %s' % os.getcwd())
+				final_list.append(os.getcwd())
+			else:
+				if venv:
+					final_list.extend(dir_checker(venv=True))
+				else:
+					final_list.extend(dir_checker())
+			os.chdir(current_dir)
+	if venv:
+		return final_list
+	else:
+		final_list = [i.split('/')[-1] for i in final_list] + ['.git']
+		return list(set(final_list))
+
+
+# FILE_COUNT_THRESHOLD = 1000  # Adjust this threshold as needed
+def should_skip_directory(dir_path):
+	# if len(os.listdir(dir_path)) > FILE_COUNT_THRESHOLD:
+	#     return True
+	if dir_path.split('/')[-1] in dir_checker():
+		return True
+	return False
+
+
+def compile_dir_list(directory, venv: bool=False):
+	final_list = []
+	for item in os.listdir(directory):
+		item_path = os.path.join(directory, item)
+		final_list.append(item_path)
+		if os.path.isdir(item_path):
+			if not should_skip_directory(item_path):
+				final_list.extend(compile_dir_list(item_path))
+	if venv:
+		return final_list, list(set(dir_checker(venv=True)))
+	else:
+		return final_list
+
+
 def find_settings_py():
-	settings = compile_dir_list(os.getcwd())
+	settings = compile_dir_list('/home/dafetite/alx/globalVenv/dummyProject')
+	# settings = compile_dir_list(os.getcwd())
 	settings = [file for file in settings if file.endswith('settings.py') or file.endswith('views.py')]
 	ret = set(settings)
 	return list(ret)
 
+# print(os.getcwd())
+# os.chdir('/home/dafetite/alx/globalVenv')
+# print(os.getcwd())
+# lines = '................................'
+settings_path = find_settings_py()
+# print(lines)
+# for d, s in enumerate(settings_path):
+# 	print(f'{d+1}. {s}')
+# print(lines)
+# print('settings_path:', settings_path)
+file_path = [k for k in settings_path if k.endswith('settings.py')][0]
+# print('file_path global: {}'.format(file_path))
 
-def install_entity(entity: str, file_path: str, djoser: bool=False):
+
+def install_entity(entity: str, djoser: bool=False):
 	description = "\t\t" + "# <- added " + entity
 	line_content = "    " + "'" + entity + "'"  + "," + description + " here" + "\n"
 
-	app = find_settings_py()
-	app = ([k for k in app if k.endswith('views.py')][0]).split('/')[-2]
+	app = ([k for k in settings_path if k.endswith('views.py')][0]).split('/')[-2]
 	djoser_variable = \
 			"\n" + f"# Added {entity} variable to the settings.py file" + \
 			"\n" + "# Configure Djoser to use JWT tokens" + \
@@ -58,19 +132,19 @@ def install_entity(entity: str, file_path: str, djoser: bool=False):
 			"\n" + "    'AUTH_HEADER_TYPES': ('Bearer',)," + \
 			"\n" + "}" + "\n"
 
-	check = check_existence(entity=entity, file_path=file_path)
+	check = check_existence(entity=entity)
 	if not check:
-		mod_data = insert_lines(file_path=file_path, entity=entity, line_content=line_content, djoser=djoser)
+		mod_data = insert_lines(entity=entity, line_content=line_content, djoser=djoser)
 		variable = False
 		match entity:
 			case "djoser":
-				urls_data = insert_lines(file_path=file_path, entity=entity, line_content=line_content, urls=True, djoser=True)
+				urls_data = insert_lines(entity=entity, line_content=line_content, urls=True, djoser=True)
 				variable = djoser_variable
 			case "rest_framework.authtoken":
 				variable = restframework_variable
 			case "rest_framework_simplejwt":
 				variable = jwt_variable
-				urls_data = insert_lines(file_path=file_path, entity=entity, line_content=line_content, urls=True, djoser=False)
+				urls_data = insert_lines(entity=entity, line_content=line_content, urls=True, djoser=False)
 			case "static":
 				project_dir = file_path.split('/')[-2]
 				base_dir_path = os.path.join(os.getcwd(), 'static', project_dir)
@@ -90,7 +164,7 @@ def install_entity(entity: str, file_path: str, djoser: bool=False):
 				k.writelines(variable)
 
 
-def insert_lines(file_path: str, entity: str, line_content: str, urls: bool=False, djoser: bool=False):
+def insert_lines(entity: str, line_content: str, urls: bool=False, djoser: bool=False):
 	if urls:
 		file_path = f"{os.sep}".join(file_path.split('/')[:-1])
 		file_path = os.path.join(file_path, "urls.py")
@@ -140,7 +214,7 @@ def insert_lines(file_path: str, entity: str, line_content: str, urls: bool=Fals
 	return data
 
 
-def check_existence(entity: str, file_path: str):
+def check_existence(entity: str):
 	with open(file_path) as f:
 		data = f.readlines()
 	for i in data:
@@ -149,81 +223,14 @@ def check_existence(entity: str, file_path: str):
 
 ################################
 
-# FILE_COUNT_THRESHOLD = 1000  # Adjust this threshold as needed
-def should_skip_directory(dir_path):
-	# if len(os.listdir(dir_path)) > FILE_COUNT_THRESHOLD:
-	#     return True
-	if dir_path.split('/')[-1] in dir_checker():
-		return True
-	return False
-
-
-def compile_dir_list(directory, venv: bool=False):
-	final_list = []
-	for item in os.listdir(directory):
-		item_path = os.path.join(directory, item)
-		final_list.append(item_path)
-		if os.path.isdir(item_path):
-			if not should_skip_directory(item_path):
-				final_list.extend(compile_dir_list(item_path))
-	if venv:
-		return final_list, list(set(dir_checker(venv=True)))
-	else:
-		return final_list
-
-
-def skip_venv_dir():
-	current_dir_files = os.listdir()
-	venv = ['bin', 'include', 'lib']
-	resp = []
-	for dir in venv:
-		if dir in current_dir_files:
-			resp.append(True)
-	filter_resp = set(resp)
-	return list(filter_resp)
-
-def dir_checker(venv: bool=False):
-	final_list = []
-	venv_check = skip_venv_dir()
-	if venv_check:
-		# print('parent::::')
-		final_list.append(os.getcwd())
-	for item in os.listdir():
-		if not os.path.isfile(item):
-			current_dir = os.getcwd()
-			os.chdir(os.path.join(current_dir, item))
-			venv_check2 = skip_venv_dir()
-			if venv_check2:
-				# print('child::::')
-				# print('venv dir: %s' % os.getcwd())
-				final_list.append(os.getcwd())
-			else:
-				if venv:
-					final_list.extend(dir_checker(venv=True))
-				else:
-					final_list.extend(dir_checker())
-			os.chdir(current_dir)
-	if venv:
-		# print('venv dir: %s' % final_list)
-		return final_list
-	else:
-		final_list = [i.split('/')[-1] for i in final_list] + ['.git']
-		# print('final list %s' % list(set(final_list)))
-		# sys.exit(0)
-		return list(set(final_list))
-
 
 def entry_point():
 	# print('AAAAA enter something ...')
-	entity = input()
+	# entity = input()
+	entity = 'djoser'
 	djoser = False
 	print()
-	# print('................................')
-	settings_path = find_settings_py()
-	# for d, s in enumerate(settings_path):
-	# 	print(f'{d+1}. {s}')
-	# print('................................')
-	# print('settings_path:', settings_path)
+	
 
 	# sys.exit(0)
 	if len(settings_path) > 2:
@@ -232,10 +239,9 @@ def entry_point():
 			print(f'{i+1}. {j}')
 		sys.exit(0)
 
-	settings = [k for k in settings_path if k.endswith('settings.py')][0]
 	if entity == "djoser":
 		djoser = True
-	install_entity(entity, settings, djoser=djoser)
+	install_entity(entity, djoser=djoser)
 
 
 if __name__ == "__main__":
