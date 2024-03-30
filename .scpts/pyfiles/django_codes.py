@@ -4,6 +4,7 @@ import os, sys, subprocess
 from pyfiles.my_prompt import main as prompt
 from pyfiles.check_db import check_database
 from pyfiles.check_MySQLdb import check_mysqldb
+from pyfiles import check_MySQLdb
 from pyfiles.configure_settings_py import find_settings_py as settings
 
 def exit(option: str):
@@ -298,3 +299,110 @@ def moduleNotFound_in_settings(err_output):
 			print(f"	and/or Re-install '{module1}'")
 		else:
 			print('output.stderr:', err_output)
+
+
+def django_migrate():
+	code, response = error_check()
+	stop = error_response(code, response)
+	if stop:
+		sys.exit(stop)
+
+	if len(sys.argv) > 2:
+		args = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+		sys.argv = args
+	if len(sys.argv) == 2:
+		sys.argv[1] = 'migration'
+	command = output_func()
+	print()
+	# check_database_type()
+	output = subprocess.run(command.split(), capture_output=True, text=True)
+	if output.stderr:
+		moduleNotFound_in_settings(output.stderr)
+	if output.stdout:
+		print('output.stdout:', output.stdout)
+	# if "import MySQLdb as Database" and "No module named 'MySQLdb'" in output.stderr:
+
+
+def runserver_func():
+    code, response = error_check()
+    stop = error_response(code, response)
+    if stop:
+        sys.exit(stop)
+
+    if len(sys.argv) == 2 and type(sys.argv[1]) != int and len(sys.argv[1]) != 4:
+        print()
+        print('port number must be an integer of 4 numbers')
+        print()
+        sys.exit(1)
+
+    text_path = os.getcwd()
+    print()
+    command1 = main(runserver='yes')
+
+    os.chdir(command1)
+
+    command2 = output_func(text_path=text_path)
+    drf = check_MySQLdb.check_drf(py=True)
+    if drf == "DRF not installed":
+        check_database_type(drf=True)
+    check_database_type()
+    try:
+        ctrl_c = subprocess.run(command2.split())
+    except KeyboardInterrupt:
+        print()
+        print('Development Server exited.')
+        print()
+        
+
+def sqlmigrate_func():
+	error_check()
+	code, response = error_check()
+	stop = error_response(code, response)
+	if stop:
+		sys.exit(stop)
+
+	if len(sys.argv) > 1:
+		args = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+		sys.argv = args
+	sys.argv = sys.argv + ['show']
+	command = output_func()
+	print()
+	check_database_type()
+	output = subprocess.run(command.split(), capture_output=True, text=True)
+	if output.stderr:
+		moduleNotFound_in_settings(output.stderr)
+	if output.stdout:
+		print('output.stdout:', output.stdout)
+
+
+def requirements_func():
+	code, response = error_check()
+	stop = error_response(code, response)
+	if stop:
+		sys.exit(stop)
+
+	if len(sys.argv) > 1:
+		args = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+		sys.argv = args
+		output_func()
+
+	requirement = 'requirements.txt'
+	text_path = os.getcwd()
+	check_req = subprocess.run(['ls'], capture_output=True, text=True)
+	found = False
+	for i in check_req.stdout.split():
+		if i == requirement:
+			found = True
+			
+	command = requirement_txt(found=found)
+	print()
+	command = command.split()
+
+	if len(command) == 2:
+		with open(requirement, 'w') as requirements_file:
+			create = subprocess.run(command, stdout=requirements_file)
+		if create.returncode == 0:
+			print('Success.')
+	else:
+		command = command + [requirement]
+		subprocess.run(command)
