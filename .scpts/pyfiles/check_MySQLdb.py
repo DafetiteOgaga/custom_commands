@@ -4,12 +4,26 @@ def check_mysqldb(py: bool=False):
 	try:
 		import MySQLdb
 		if not py:
-			print('installed')
-		return 'installed'
+			print('MySQLdb installed')
+		return 'MySQLdb installed'
 	except ModuleNotFoundError:
 		if not py:
-			print('not installed')
-		return 'not installed'
+			print('MySQLdb not installed')
+		return 'MySQLdb not installed'
+
+
+def check_drf(py: bool=False):
+	try:
+		from rest_framework import serializers
+		if not py:
+			print('DRF installed')
+		return 'DRF installed'
+	except ImportError:
+		if not py:
+			print('DRF not installed')
+		return 'DRF not installed'
+
 
 if __name__ == '__main__':
     check_mysqldb()
+    check_drf()
