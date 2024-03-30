@@ -63,6 +63,7 @@
    * py3venv command - creates a python3 virtual environment in the cwd
    * drf command - install and configures Django RESTframework and its authentication token functionality
    * djoser command - install and configures djoser for use with drf authentication token functionality
+   * jwtDjango command - install and configures json web token for use in your django project
    * static4django command - configures the STATIC_DIRS in settings.py for non-app dirs
 
 	* startproject command - creates a new django project
@@ -123,18 +124,14 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## New
+   - jwtDjango
    - static4django
    - djoser
    - drf
-   - mysqlversion
-   - mysqlstartserver
-   - mysqlstopserver
-   - mysqlrestartserver
-   - mysqlstatus_server
-   - mysqlshell
-
 
 ## Changes
+   - gitignore now auto add all \_\_pychache\_\_ files and venv dirs if you choose to
+   - djoser command now configures its default routes in project's urls file along with the settings.py file
    - drf command now configures its authentication token functionality along with its installation
    - startapp command will now install the app name under INSTALLED_APPS in settings.py automatically
    - changed compare command to compareChanges command
@@ -181,6 +178,9 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## Fixes
+   - fixed the DRF module error for runserver, sqlmigrate commanda
+   - handled moduleNotFound error in migrate command
+   - minor bug fixes to: djshell, makemigrations, mkandmigrate, static4django
    - removed unnecessary display from py3venv command
    - changed the help text from using apt package manager to using pip to install mysqlclient
    - gitignore - the command now create/update with the root paths starting with root repository
