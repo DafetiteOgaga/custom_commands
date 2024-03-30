@@ -254,9 +254,15 @@ b. Install the dependencies in the requirements.txt
 		sys.exit(1)
 
 
-def check_database_type():
+def check_database_type(drf: bool=False):
 	db_check = check_database(py=True)
 	print(db_check)
+	if drf:
+		print()
+		print("You don't have django rest framework installed properly.")
+		print("Run: drf command")
+		print()
+		sys.exit(1)
 	if 'MySQL' in db_check:
 		mysqlclient = check_mysqldb(py=True)
 		if mysqlclient == 'not installed':
@@ -288,6 +294,7 @@ def moduleNotFound_in_settings(err_output):
 		if f'"{module1}"' in data or f"'{module1}'" in data:
 			print(f"Error: ModuleNotFoundError: No module named '{module1}'")
 			print(f"If you installed '{module1}' and later deleted the app:")
-			print(f"	Remove '{module1}' from the list of INSTALLED_APPS in settings.py")
+			print(f"	either Remove '{module1}' from the list of INSTALLED_APPS in settings.py")
+			print(f"	and/or Re-install '{module1}'")
 		else:
 			print('output.stderr:', err_output)
