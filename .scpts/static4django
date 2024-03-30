@@ -23,5 +23,5 @@ elif [ "$#" -eq 0 ]; then
 	# $(echo "static" | python3 $path1)
 	output="$(echo "static" | python3 $path1 2>&1)"
 	echo "$output"
-	echo "STATIC DIRS has been configured in settings.py"
+	echo "STATIC DIRS has been installed and configured in project and settings.py"
 fi
