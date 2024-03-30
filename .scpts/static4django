@@ -9,6 +9,8 @@ if [[ -n "$check" ]]; then
 		if [[ "$check" == *"You don't have mysqlclient(django connector) installed."* ]]; then
 			exit 1
 		fi
+	elif [[ "$check" == *"change to the directory containing"* || "$check" == *"You don't have django installed or"* ]]; then
+		exit 1
 	fi
 fi
 
@@ -21,5 +23,5 @@ elif [ "$#" -eq 0 ]; then
 	# $(echo "static" | python3 $path1)
 	output="$(echo "static" | python3 $path1 2>&1)"
 	echo "$output"
-	echo "STATIC DIRS has been configured in settings.py"
+	echo "STATIC DIRS has been installed and configured in project and settings.py"
 fi

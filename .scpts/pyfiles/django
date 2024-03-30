@@ -1,42 +1,31 @@
 #!/bin/bash
 
 path1="$HOME/.xbin/pyfiles"
-echo "11111"
 output=$(2>&1 python3 -m django --version)
-echo "22222"
 items=$(ls)
-echo "33333"
 
-if [[ "$1" != "project" ]]; then
-	echo "44444"
-
-	if [[ "$output" == *"No module named django"* ]]; then
-		echo ""
-		echo "You don't have django installed or check your virtual environment"
-		echo "pip install django"
-		echo ""
-
-		echo "66666"
-	elif [[ -z "$1" ]]; then
+if [[ "$output" == *"No module named django"* ]]; then
+	echo ""
+	echo "You don't have django installed or check your virtual environment"
+	echo "pip install django"
+	echo ""
+elif [[ "$1" != "project" ]]; then
+	if [[ -z "$1" ]]; then
 		echo ""
 		echo "Django version: $output"
-
-		echo "77777"
 	elif [[ "$items" != *"manage.py"* && -n "$1" ]]; then
-		echo ""
 		echo "change to the directory containing \"manage.py\""
-
-		echo "77777"
-		exit 1
 	elif [[ "$1" == "pass" ]]; then
 		database="$(python3 $path1/check_db.py 2>&1)"
 		echo "$database"
 		mysqlclient="$(python3 $path1/check_MySQLdb.py 2>&1)"
-		echo "mysqlclient: $mysqlclient"
-		echo "88888"
-		if [[ "$database" == *"MySQL"* && "$mysqlclient" == "not installed" ]]; then
-			echo "99999" 
-			echo "1X1X1X1X1X1X" 
+		# echo "$mysqlclient"
+		if [[ "$mysqlclient" == *"DRF not installed"* ]]; then
+			echo ""
+			echo "You seem to have djangorestframework installed."
+			echo "But You don't have djangorestframework installed properly."
+			echo "Run: drf command"
+		elif [[ "$database" == *"MySQL"* && "$mysqlclient" == *"MySQLdb not installed"* ]]; then
 			echo ""
 			echo "You don't have mysqlclient(django connector) installed."
 			echo "pip install mysqlclient"
@@ -44,15 +33,6 @@ if [[ "$1" != "project" ]]; then
 			echo "    sudo apt-get install pkg-config"
 			echo "    sudo apt-get install libmysqlclient-dev"
 			echo "    pip install mysqlclient"
-			exit 1
-		else
-			echo "Nothing to show"
 		fi
-	else
-		echo "2B2B2B2B2B2B2" 
-		echo ""
 	fi
-else
-	echo "3C3C3C3C3C"s
-	echo ""
 fi

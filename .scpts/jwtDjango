@@ -14,7 +14,7 @@ if [[ -n "$check" ]]; then
 	fi
 fi
 
-command="pip install djoser"
+command="pip install djangorestframework_simplejwt"
 
 if [ "$#" -gt 0 ]; then
 	echo ""
@@ -22,7 +22,8 @@ if [ "$#" -gt 0 ]; then
 elif [ "$#" -eq 0 ]; then
 	$command
 	echo ""
-	output="$(echo "djoser" | python3 $path1/pyfiles/configure_settings_py.py 2>&1)"
+	output="$(echo "rest_framework_simplejwt" | python3 $path1/pyfiles/configure_settings_py.py 2>&1)"
 	echo "$output"
-	echo "djoser is installed successfully and configured under INSTALLED_APPS in settings.py and in urls.py"
+	echo "JWT(json web token) is installed successfully and configured under INSTALLED_APPS in settings.py and in urls.py"
+	echo "Goto settings.py and uncomment some settings under DJOSER and REST_FRAMEWORK variables"
 fi

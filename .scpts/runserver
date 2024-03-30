@@ -2,6 +2,7 @@
 
 import subprocess, sys, os
 from pyfiles.django_codes import *
+from pyfiles import check_MySQLdb
 
 code, response = error_check()
 stop = error_response(code, response)
@@ -21,6 +22,9 @@ command1 = main(runserver='yes')
 os.chdir(command1)
 
 command2 = output_func(text_path=text_path)
+drf = check_MySQLdb.check_drf(py=True)
+if drf == "DRF not installed":
+    check_database_type(drf=True)
 check_database_type()
 try:
     ctrl_c = subprocess.run(command2.split())

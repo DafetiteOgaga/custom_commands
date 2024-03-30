@@ -16,4 +16,8 @@ sys.argv = sys.argv + ['show']
 command = output_func()
 print()
 check_database_type()
-subprocess.run(command.split())
+output = subprocess.run(command.split(), capture_output=True, text=True)
+if output.stderr:
+	moduleNotFound_in_settings(output.stderr)
+if output.stdout:
+	print('output.stdout:', output.stdout)
