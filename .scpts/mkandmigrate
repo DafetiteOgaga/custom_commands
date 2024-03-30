@@ -6,7 +6,7 @@ if [[ -n "$check" ]]; then
 	echo ""
 	echo "$check"
 	if [[ "$check" == *"SQLite"* || "$check" == *"MySQL"* || "$check" == *"PostgreSQL"* ]]; then
-		if [[ "$check" == *"You don't have mysqlclient(django connector) installed."* ]]; then
+		if [[ "$check" == *"You don't have mysqlclient"* || "$check" == *"You don't have djangorestframework"* ]]; then
 			exit 1
 		fi
 	elif [[ "$check" == *"change to the directory containing"* || "$check" == *"You don't have django installed or"* ]]; then
