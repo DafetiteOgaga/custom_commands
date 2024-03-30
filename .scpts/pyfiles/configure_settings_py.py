@@ -4,19 +4,25 @@ import os, sys, subprocess
 
 def skip_venv_dir():
 	current_dir_files = os.listdir()
-	venv = ['bin', 'include', 'lib']
+	venv = ['pyvenv.cfg', 'include', 'lib']
 	resp = []
+	resp_dict = {}
 	for dir in venv:
 		if dir in current_dir_files:
+			resp_dict[dir] = True
 			resp.append(True)
-	filter_resp = set(resp)
-	return list(filter_resp)
+	if len(resp_dict) == 3:
+		if resp_dict['pyvenv.cfg'] and resp_dict['include'] and resp_dict['lib']:
+			if resp_dict['pyvenv.cfg'] == resp_dict['include'] == resp_dict['lib'] == True:
+				# print('resp_dict: %s' % resp_dict)
+				# filter_resp = set(resp)
+				return True
+	return False
 
 def dir_checker(venv: bool=False):
 	final_list = []
 	venv_check = skip_venv_dir()
 	if venv_check:
-		# print('parent::::')
 		final_list.append(os.getcwd())
 	for item in os.listdir():
 		if not os.path.isfile(item):
@@ -24,8 +30,6 @@ def dir_checker(venv: bool=False):
 			os.chdir(os.path.join(current_dir, item))
 			venv_check2 = skip_venv_dir()
 			if venv_check2:
-				# print('child::::')
-				# print('venv dir: %s' % os.getcwd())
 				final_list.append(os.getcwd())
 			else:
 				if venv:
@@ -64,24 +68,22 @@ def compile_dir_list(directory, venv: bool=False):
 
 
 def find_settings_py():
-	settings = compile_dir_list('/home/dafetite/alx/globalVenv/dummyProject')
-	# settings = compile_dir_list(os.getcwd())
+	settings = compile_dir_list(os.getcwd())
 	settings = [file for file in settings if file.endswith('settings.py') or file.endswith('views.py')]
 	ret = set(settings)
 	return list(ret)
 
-# print(os.getcwd())
-# os.chdir('/home/dafetite/alx/globalVenv')
-# print(os.getcwd())
-# lines = '................................'
-settings_path = find_settings_py()
-# print(lines)
-# for d, s in enumerate(settings_path):
-# 	print(f'{d+1}. {s}')
-# print(lines)
-# print('settings_path:', settings_path)
-file_path = [k for k in settings_path if k.endswith('settings.py')][0]
-# print('file_path global: {}'.format(file_path))
+try:
+	# lines = '................................'
+	settings_path = find_settings_py()
+	# print(lines)
+	# for d, s in enumerate(settings_path):
+	# 	print(f'{d+1}. {s}')
+	# print(lines)
+	file_path = [k for k in settings_path if k.endswith('settings.py')][0]
+	# print('file_path global: {}'.format(file_path))
+except IndexError:
+    print('...')
 
 
 def install_entity(entity: str, djoser: bool=False):
@@ -226,8 +228,8 @@ def check_existence(entity: str):
 
 def entry_point():
 	# print('AAAAA enter something ...')
-	# entity = input()
-	entity = 'djoser'
+	entity = input()
+	# entity = 'djoser'
 	djoser = False
 	print()
 	

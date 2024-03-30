@@ -5,6 +5,7 @@ from datetime import datetime
 from .verify_repo_new import entry_point
 from .my_prompt import main as prompt_1ch
 from .colors import *
+from pyfiles.configure_settings_py import compile_dir_list
 
 # now = datetime.now() 
 formatted_date_time = datetime.now().strftime("%H:%M:%S on %a %b %Y")
@@ -13,6 +14,116 @@ formatted_date_time = datetime.now().strftime("%H:%M:%S on %a %b %Y")
 # [BRIGHT_BLACK BRIGHT_RED BRIGHT_GREEN BRIGHT_YELLOW
 # BRIGHT_BLUE BRIGHT_MAGENTA BRIGHT_CYAN BRIGHT_WHITE]
 # [RESET BOLD ITALIC UNDERLINE BLINK REVERSE STRIKETHROUGH]
+
+
+def backward_search():
+	init_path = os.getcwd()
+	if ".git" in os.listdir():
+		root_repo = init_path
+		return root_repo
+	else:
+		if init_path == '/':
+			print()
+			print("You don't seem to be in a git repository")
+			print('Change into a repository and try again')
+			print()
+			sys.exit(1)
+		os.chdir(os.pardir)
+		return backward_search()
+
+
+def write_to_file(ignore_list, delimiter: str, read: bool=False):
+	# set the file name to .gitignore
+	filename = '.gitignore'
+	ignore_file = 1
+	try:
+		file_list = []
+		with open(filename) as g:
+			for line in g:
+				file_list.append(line.strip())
+	except FileNotFoundError:
+		open(filename, 'w').close()
+	if read:
+		return file_list
+	if filename not in file_list:
+		ignore_file = 0
+	with open(filename, 'a') as f:
+		for k in ignore_list:
+			k = k.split(delimiter)[1]
+			if k not in file_list:
+				f.write(k + '\n')
+		if not ignore_file:
+			f.write(filename + '\n')
+
+
+try:
+	root_repo = backward_search()
+	pycache, venv = compile_dir_list(root_repo, venv=True)
+	pycache = [i for i in pycache if not os.path.isfile(i) and i.split('/')[-1] == '__pycache__']
+	delimiter = root_repo + os.sep
+	gitignore_content = write_to_file([], '', read=True)
+	pycache = [file for file in pycache if file.split(delimiter)[-1] not in gitignore_content]
+	venv = [dir for dir in venv if dir.split(delimiter)[-1] not in gitignore_content]
+except:
+    print('...')
+
+
+def gitignore():
+	auto_set_pycache1 = setup_gitignore()
+	gitignore_resp(auto_set_pycache1, pycache)
+	auto_set_pycache2 = setup_gitignore(pycache=venv, envFile=True)
+	ret = gitignore_resp(auto_set_pycache2, venv)
+	if ret == 'n':
+		browse_files()
+	print()
+	print('Successful.')
+	print('Check the root of your repository for the newly created/updated .gitignore file')
+
+
+def setup_gitignore(pycache: list=pycache, envFile: bool=False):
+	mainVar = 'Setting up and/or Updating .gitignore file (For'
+	var = '__pycache__ directories'
+	if envFile:
+		var = 'venv directories'
+	if pycache == []:
+		print(f'==> .gitignore file is upto date with "{var}"')
+		time.sleep(.5)
+		cont = input('Press Enter to continue...')
+		return 'n'
+	print()
+	print(f'{mainVar} {var})')
+	print('.'.rjust(len(mainVar)+len(var)+3, '.'))
+	for index, filepath in enumerate(pycache):
+		filepath = filepath.split(delimiter)[-1]
+		print(f'{index+1}. {filepath}')
+	print()
+	print('[y] - To add this list to .gitignore file')
+	print('Press any key to browse through this dir (and subdirs) and select files/dirs to ignore')
+	print('[q] - To quit')
+	print()
+	auto_set_pycache = prompt_1ch('Make a choice >>> ')
+	print()
+	return auto_set_pycache
+
+def gitignore_resp(auto_set_pycache: str, pycache: list):
+	root_list = []
+	if auto_set_pycache.lower() == 'q':
+		print('Cheers...')
+		sys.exit(0)
+	elif auto_set_pycache.lower() == 'y' or auto_set_pycache == '\n':
+		for file in pycache:
+			root_list.append(file)
+		write_to_file(root_list, delimiter=delimiter)
+	else:
+		return 'n'
+
+def browse_files():
+	root_list = []
+	for file in os.listdir(root_repo):
+		root_list.append(f'{root_repo}{os.sep}{file}')
+	search_repo(root_list, delimiter=delimiter)
+
+
 
 def print_stdout(stdout: str, index: int=0, serial_numbered: int=0):
 	"""This function nicely colors and prints out the output stream the
@@ -382,7 +493,10 @@ def view_branch(action: int=0, new_branch=""):
 			if line.startswith("*") and (("master" not in line) or ("main" not in line)):
 				stash(action)
 				break
-current_branch_name = view_branch(action=100)
+try:
+	current_branch_name = view_branch(action=100)
+except:
+    print('...')
 
 
 def create_or_switch_branch(branch_name: str=None, new_branch_name: str=None):
@@ -600,46 +714,6 @@ def diff(action: int=0):
 	elif diff_res.returncode > 0:
 		print("Oops! I got:")
 		print("{}".format(print_stdout(diff_res.stderr)))
-
-
-def write_to_file(ignore_list, delimiter: str, read: bool=False):
-	# set the file name to .gitignore
-	filename = '.gitignore'
-	ignore_file = 1
-	try:
-		file_list = []
-		with open(filename) as g:
-			for line in g:
-				file_list.append(line.strip())
-	except FileNotFoundError:
-		open(filename, 'w').close()
-	if read:
-		return file_list
-	if filename not in file_list:
-		ignore_file = 0
-	with open(filename, 'a') as f:
-		for k in ignore_list:
-			k = k.split(delimiter)[1]
-			if k not in file_list:
-				f.write(k + '\n')
-		if not ignore_file:
-			f.write(filename + '\n')
-
-
-def backward_search():
-	init_path = os.getcwd()
-	if ".git" in os.listdir():
-		root_repo = init_path
-		return root_repo
-	else:
-		if init_path == '/':
-			print()
-			print("You don't seem to be in a git repository")
-			print('Change into a repository and try again')
-			print()
-			sys.exit(1)
-		os.chdir(os.pardir)
-		return backward_search()
 
 
 def search_repo(repo_dir: list, delimiter: str, dir_path: str=None, repeat: int=0, child_dir: int=0):
