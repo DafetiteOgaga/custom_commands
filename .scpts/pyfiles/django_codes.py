@@ -11,7 +11,7 @@ def exit(option: str):
 	"""Exits the program
 
 	Args:
-		option (str): 
+		option (str): argument to check
 	"""
 	if option == 'q'.lower():
 		print()
@@ -27,7 +27,7 @@ def locator(disp_list: list, manage_py_list: list, migration_list: list):
 		migration_list (list): []
 
 	Returns:
-		_type_: tuple of all the list parameters passed as arguments
+		tuple: tuple of all the list parameters passed as arguments
 	"""
 	migration_dict = {}
 	cur_dir = os.getcwd()
@@ -53,7 +53,7 @@ def locator(disp_list: list, manage_py_list: list, migration_list: list):
 
 
 def main(runserver: str=None, migrate: str=None, show: str=None):
-	"""perse the lists and return the option selected by the user
+	"""parse the lists and return the option selected by the user
 
 	Args:
 		runserver (str, optional):  Defaults to None.
@@ -61,10 +61,10 @@ def main(runserver: str=None, migrate: str=None, show: str=None):
 		show (str, optional):  Defaults to None.
 
 	Returns:
-		_type_: returns the option selected by the user
+		tuple: the option selected by the user
 	"""
-	dirs, manage, migration = locator([], [], [])
-	cur_path = os.getcwd()
+	_, manage, migration = locator([], [], [])
+	# cur_path = os.getcwd()
 	if runserver:
 		if len(manage) == 0:
 			print('No django project found in this directory or its sub-directories.')
@@ -137,14 +137,11 @@ def main(runserver: str=None, migrate: str=None, show: str=None):
 		return dict_app_name, app_list[selection]
 	
 	
-def output_func(text_path: str=None):
+def output_func():
 	"""displays the output of the process to the user
 
-	Args:
-		text_path (str, optional): Defaults to None.
-
 	Returns:
-		_type_: returns the django command and args to be executed by the shell
+		str: the django command and args to be executed by the shell
 	"""
 	manage_obj = open(os.path.join(os.environ['HOME'], '.xbin', 'pymanage'))
 	content = manage_obj.readlines()[0]
@@ -188,7 +185,7 @@ def error_check():
 	error in the input and process the result accordingly.
 
 	Returns:
-		_type_: integers and strings in the order of errors encountered
+		str: integers and strings in the order of errors encountered
 	"""
 
 	django = ['python3', '-m', 'django', '--version']
@@ -207,11 +204,11 @@ def error_response(code, response):
 	"""present the error response
 
 	Args:
-		code (_type_): int
-		response (_type_): str
+		code (int): int
+		response (str): str
 
 	Returns:
-		_type_: return 1 for error response
+		int: 1 for error response
 	"""
 	if code:
 		if response == 'django_not_installed':
@@ -232,6 +229,9 @@ def requirement_txt(found: bool=False):
 
 	Args:
 		found (bool, optional): Defaults to False.
+
+	Returns:
+		str: first part of the command
 	"""
 	if found:
 		options = """
@@ -256,6 +256,12 @@ b. Install the dependencies in the requirements.txt
 
 
 def check_database_type(drf: bool=False):
+	"""Checks the database type installed or if DRF is installed.
+
+	Args:
+		drf (bool, optional): indicates if the process is checking for
+		DRF or database. Defaults to False.
+	"""
 	db_check = check_database(py=True)
 	print(db_check)
 	if drf:
@@ -278,6 +284,11 @@ def check_database_type(drf: bool=False):
 			sys.exit(1)
 
 def moduleNotFound_in_settings(err_output):
+	"""Handles the ModuleNotFoundError.
+
+	Args:
+		err_output (str): the error content
+	"""
 	# print('output.stderr:s', err_output)
 	if "ModuleNotFoundError: No module named" in err_output:
 		check_database_type()
@@ -302,6 +313,8 @@ def moduleNotFound_in_settings(err_output):
 
 
 def django_migrate():
+	"""Initiates the migrate operation
+	"""
 	code, response = error_check()
 	stop = error_response(code, response)
 	if stop:
@@ -324,37 +337,41 @@ def django_migrate():
 
 
 def runserver_func():
-    code, response = error_check()
-    stop = error_response(code, response)
-    if stop:
-        sys.exit(stop)
+	"""Initiates the runserver operation
+	"""
+	code, response = error_check()
+	stop = error_response(code, response)
+	if stop:
+		sys.exit(stop)
 
-    if len(sys.argv) == 2 and type(sys.argv[1]) != int and len(sys.argv[1]) != 4:
-        print()
-        print('port number must be an integer of 4 numbers')
-        print()
-        sys.exit(1)
+	if len(sys.argv) == 2 and type(sys.argv[1]) != int and len(sys.argv[1]) != 4:
+		print()
+		print('port number must be an integer of 4 numbers')
+		print()
+		sys.exit(1)
 
-    text_path = os.getcwd()
-    print()
-    command1 = main(runserver='yes')
+	text_path = os.getcwd()
+	print()
+	command1 = main(runserver='yes')
 
-    os.chdir(command1)
+	os.chdir(command1)
 
-    command2 = output_func(text_path=text_path)
-    drf = check_MySQLdb.check_drf(py=True)
-    if drf == "DRF not installed":
-        check_database_type(drf=True)
-    check_database_type()
-    try:
-        ctrl_c = subprocess.run(command2.split())
-    except KeyboardInterrupt:
-        print()
-        print('Development Server exited.')
-        print()
-        
+	command2 = output_func(text_path=text_path)
+	drf = check_MySQLdb.check_drf(py=True)
+	if drf == "DRF not installed":
+		check_database_type(drf=True)
+	check_database_type()
+	try:
+		ctrl_c = subprocess.run(command2.split())
+	except KeyboardInterrupt:
+		print()
+		print('Development Server exited.')
+		print()
+		
 
 def sqlmigrate_func():
+	"""Initiates the sqlmigrate operation
+	"""
 	error_check()
 	code, response = error_check()
 	stop = error_response(code, response)
@@ -376,6 +393,8 @@ def sqlmigrate_func():
 
 
 def requirements_func():
+	"""Initiates the requirement_txt operation
+	"""
 	code, response = error_check()
 	stop = error_response(code, response)
 	if stop:

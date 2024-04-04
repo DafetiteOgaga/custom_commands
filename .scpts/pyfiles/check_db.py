@@ -2,6 +2,16 @@
 
 # CheckDatabase.py
 def check_database(py: bool=False):
+	"""Checks, print and return the type of database installed
+        in django's settings.py
+
+	Args:
+		py (bool, optional): indicates that the function was called
+		from a .py script. Defaults to False.
+
+	Returns:
+		str: database type detected
+	"""
 
 	import os, sys
 	try:
@@ -25,6 +35,7 @@ def check_database(py: bool=False):
 		mysql = '.mysql'
 		found1 = found2 = found3 = False
 		unknown_db = "Unknown database detected:"
+		multiple_dbs = "Multiple databases detected:"
 		for line in data:
 			if postgresql in line:
 				if not py:
@@ -43,22 +54,24 @@ def check_database(py: bool=False):
 				ret = 'MySQL database detected.'
 			if found1 == found2 == found3 == True:
 				if not py:
-					print(unknown_db)
-				ret = unknown_db
+					print(multiple_dbs)
+				ret = multiple_dbs
 			elif found1 == found2 == True:
 				if not py:
-					print(unknown_db)
-				ret = unknown_db
+					print(multiple_dbs)
+				ret = multiple_dbs
 			elif found1 == found3 == True:
 				if not py:
-					print(unknown_db)
-				ret = unknown_db
+					print(multiple_dbs)
+				ret = multiple_dbs
 			elif found2 == found3 == True:
+				if not py:
+					print(multiple_dbs)
+				ret = multiple_dbs
+			else:
 				if not py:
 					print(unknown_db)
 				ret = unknown_db
-			# else:
-			# 	ret = unknown_db
 		return ret
 	except Exception as e:
 		print("Error:", e)

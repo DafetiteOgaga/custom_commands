@@ -3,6 +3,12 @@
 import time
 
 def progress_bar(duration: int, resp: str):
+    """displays bars in progress of operation
+
+    Args:
+        duration (int): length of process
+        resp (str): user response
+    """
     total_iterations = 100
     per_loop = duration/100
     if resp.lower() == "y":

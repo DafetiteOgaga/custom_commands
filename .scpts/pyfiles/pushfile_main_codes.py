@@ -12,6 +12,12 @@ def add_commit(file):
 	3. Check and skip files/directories that have been staged and committed
 	4. Loop through the files as provided via the command line. 
 		Then, add and commit to each files separately
+
+	Args:
+		file (str): filename to be processed
+
+	Returns:
+		int:
 	"""
 
 	if "\\" == file[-1] or "/" == file[-1]:
@@ -116,6 +122,12 @@ def set_default_commit_msg(par: str):
 	This function recreates the git_codes.py script to account for the
 	default use of "Update README.md" as commit message for README.md files.
 	Also, provides the means to revert the modification.
+
+	Args:
+		par (str): user response
+
+	Returns:
+		str: mode of configuration
 	"""
 	source_file_name = "pushfile_main_codes.py" # for bar or not
 	file_path = os.path.join(os.path.expanduser("~"), ".xbin", "pyfiles")

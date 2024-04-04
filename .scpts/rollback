@@ -9,7 +9,7 @@ disp()
     page=1
     while true; do
         clear
-        echo "Available commit history in working directory: $repo_name"
+        echo "Available commit history in: $repo_name"
         echo "Page $page:"
         
         serial_number=0

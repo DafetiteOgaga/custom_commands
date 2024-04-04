@@ -17,6 +17,11 @@ formatted_date_time = datetime.now().strftime("%H:%M:%S on %a %b %Y")
 
 
 def backward_search():
+	"""Generates the path to the repository in the child directory.
+
+	Returns:
+		str: path to root repository
+	"""
 	init_path = os.getcwd()
 	if ".git" in os.listdir():
 		root_repo = init_path
@@ -33,6 +38,17 @@ def backward_search():
 
 
 def write_to_file(ignore_list, delimiter: str, read: bool=False):
+	"""Inserts the given lines into the provided directory.
+
+	Args:
+		ignore_list (list): list of path to append to file
+		delimiter (str): delimiter
+		read (bool, optional): indicats that the current process is
+		extract the content of .gitignore file. Defaults to False.
+
+	Returns:
+		list: content of .gitignore file
+	"""
 	# set the file name to .gitignore
 	filename = '.gitignore'
 	ignore_file = 1
@@ -69,6 +85,8 @@ except:
 
 
 def gitignore():
+	"""Initiates the gitignore operation
+	"""
 	auto_set_pycache1 = setup_gitignore()
 	gitignore_resp(auto_set_pycache1, pycache)
 	auto_set_pycache2 = setup_gitignore(pycache=venv, envFile=True)
@@ -81,6 +99,15 @@ def gitignore():
 
 
 def setup_gitignore(pycache: list=pycache, envFile: bool=False):
+	"""display the list of files/directories paths to append to the .gitignore file.
+
+	Args:
+		pycache (list, optional): list of __pycache__ in the project. Defaults to pycache.
+		envFile (bool, optional): list of venv directories in the project. Defaults to False.
+
+	Returns:
+		str: user's selection
+	"""
 	mainVar = 'Setting up and/or Updating .gitignore file (For'
 	var = '__pycache__ directories'
 	if envFile:
@@ -106,6 +133,15 @@ def setup_gitignore(pycache: list=pycache, envFile: bool=False):
 	return auto_set_pycache
 
 def gitignore_resp(auto_set_pycache: str, pycache: list):
+	"""operates on the user response
+
+	Args:
+		auto_set_pycache (str): user's response
+		pycache (list): list of __pycache__ directories in the project
+
+	Returns:
+		str: .
+	"""
 	root_list = []
 	if auto_set_pycache.lower() == 'q':
 		print('Cheers...')
@@ -118,6 +154,9 @@ def gitignore_resp(auto_set_pycache: str, pycache: list):
 		return 'n'
 
 def browse_files():
+	"""calls the function that allows the user browse through the
+        current directory.
+	"""
 	root_list = []
 	for file in os.listdir(root_repo):
 		root_list.append(f'{root_repo}{os.sep}{file}')
@@ -128,6 +167,14 @@ def browse_files():
 def print_stdout(stdout: str, index: int=0, serial_numbered: int=0):
 	"""This function nicely colors and prints out the output stream the
 		result of the argument passed to it
+
+	Args:
+		stdout (str): the string to print
+		index (int, optional): Defaults to 0.
+		serial_numbered (int, optional): Defaults to 0.
+
+	Returns:
+		int, list: index of the line and list of line substrings.
 	"""
 	print()
 
@@ -282,6 +329,9 @@ def print_stdout(stdout: str, index: int=0, serial_numbered: int=0):
 
 def print_set_commit(var: str):
 	"""This function prints information regarding the state of "Update README.md" setting.
+
+	Args:
+		var (str): string
 	"""
 
 	print("........................................................................................")
@@ -323,7 +373,10 @@ def pull():
 
 def push(file_list: list):
 	"""This function takes a list as argument and Updates the
-		remote with the changes on the local machine
+		remote with the changes on the local machine.
+
+	Args:
+		file_list (list): list of files in the current working directory
 	"""
 
 	print("#### pushing ...################################################")
@@ -343,6 +396,10 @@ def push(file_list: list):
 def add_commit_all(type: str="current", commit_message: str=""):
 	"""This function stages and commits all changes made on the working tree
 		with just a message.
+
+	Args:
+		type (str, optional): Defaults to "current".
+		commit_message (str, optional): Defaults to "".
 	"""
 	while True:
 		if len(sys.argv) > 1:
@@ -407,7 +464,14 @@ Are you sure that you want to proceed? [y/N] >>> """)
 
 def git_status(action: int=0):
 	"""This function displays the current changes made to the working tree compared to the 
-		staging area, local and remote repositories"""
+		staging area, local and remote repositories
+
+	Args:
+		action (int, optional): Defaults to 0.
+
+	Returns:
+		int: 1 for success, 0 for failure
+	"""
 	status = subprocess.run(["git", "status"], capture_output=True, text=True)
 	if status.stdout:
 		if action == 0:
@@ -425,6 +489,13 @@ def git_status(action: int=0):
 def collect_input(num: int, string: str):
 	"""This function processes the choice from branch or stash selection and
 		returnes an integer value of the choice
+
+	Args:
+		num (int): integer
+		string (str): string
+
+	Returns:
+		int: choice number
 	"""
 	while True:
 		# single input function needed here
@@ -454,6 +525,13 @@ def view_branch(action: int=0, new_branch=""):
 		4. prevents you from recreating the branch you are in
 		5. extraccts the current branch
 		6. checkes whether you are not in the main or master branch before proceeding to stash your changes
+
+	Args:
+		action (int, optional): Defaults to 0.
+		new_branch (str, optional): Defaults to "".
+
+	Returns:
+		str: branch name
 	"""
 	# view branch
 	branch_list = subprocess.run(["git", "branch"], capture_output=True, text=True)
@@ -493,6 +571,7 @@ def view_branch(action: int=0, new_branch=""):
 			if line.startswith("*") and (("master" not in line) or ("main" not in line)):
 				stash(action)
 				break
+
 try:
 	current_branch_name = view_branch(action=100)
 except:
@@ -505,6 +584,10 @@ def create_or_switch_branch(branch_name: str=None, new_branch_name: str=None):
 		2. sets up the local branch remotely i.e providing access to remotely
 			synchronize between the local branch and its remote branch
 		3. switches to the newly created branch
+
+	Args:
+		branch_name (str, optional): branch name. Defaults to None.
+		new_branch_name (str, optional): new_branch_name. Defaults to None.
 	"""
 	if new_branch_name:
 		# creates new branch
@@ -548,6 +631,9 @@ def stash(action: int=0):
 		been commited with either:
 		1. an auto generated message containing the branch name and time or
 		2. specified commit or stash message provided by the user
+
+	Args:
+		action (int, optional): Defaults to 0.
 	"""
 	# now = datetime.now()
 	# formatted_date_time = now.strftime("%H:%M:%S on %a %b %Y")
@@ -615,7 +701,8 @@ def stash(action: int=0):
 
 def list_stashes():
 	"""This function displays a list of saved stashes and applies the
-		selected stash to the current branch"""
+		selected stash to the current branch
+	"""
 	# displays list of stashes
 	stash = subprocess.run(["git", "stash", "list"], capture_output=True, text=True)
 	if stash.stdout:
@@ -641,6 +728,8 @@ def list_stashes():
 
 # branch entry point
 def create_or_view_branches():
+	"""display branches and creates a new on upon argument passed.
+	"""
 	args = sys.argv
 	len_args = len(args)
 	if len_args == 1:
@@ -667,6 +756,8 @@ def create_or_view_branches():
 
 # entry point for merge command
 def merge_to_main_master():
+	"""merge the current branch to the main or master branch
+	"""
 	# current_branch_name = view_branch(action=100)
 	if current_branch_name == "main" or current_branch_name == "master":
 		print(f"You are in {current_branch_name} branch.")
@@ -702,6 +793,12 @@ def merge_to_main_master():
 
 
 def diff(action: int=0):
+	"""display detailed changes on the current branch compared to
+        that in the repository
+
+	Args:
+		action (int, optional): Defaults to 0.
+	"""
 	diff_res = subprocess.run(["git", "diff"], capture_output=True, text=True)
 	if diff_res.returncode == 0 and diff_res.stdout:
 		print_stdout(diff_res.stdout)
@@ -717,6 +814,20 @@ def diff(action: int=0):
 
 
 def search_repo(repo_dir: list, delimiter: str, dir_path: str=None, repeat: int=0, child_dir: int=0):
+	"""provides the mechanism to search and browse the current
+        working directory
+
+	Args:
+		repo_dir (list): current working directory. begins with the
+		root of the repository
+		delimiter (str): delimiter
+		dir_path (str, optional): Defaults to None.
+		repeat (int, optional): Defaults to 0.
+		child_dir (int, optional): Defaults to 0.
+
+	Returns:
+		list: list of selected paths
+	"""
 	subprocess.run(['clear'])
 	dir = (os.sep).join((repo_dir[0]).split(os.sep)[:-1])
 	if repeat and dir_path:

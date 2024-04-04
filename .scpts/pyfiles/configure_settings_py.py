@@ -3,6 +3,12 @@
 import os, sys, subprocess
 
 def skip_venv_dir():
+	"""Checks if the current working directory is a venv directory
+        and returns True if it is, otherwise false.
+
+	Returns:
+		bool: boolean
+	"""
 	current_dir_files = os.listdir()
 	venv = ['pyvenv.cfg', 'include', 'lib']
 	resp = []
@@ -20,6 +26,17 @@ def skip_venv_dir():
 	return False
 
 def dir_checker(venv: bool=False):
+	"""Generates a list of subdirectories that ascertain the current working
+        directory is a virtual environment
+
+	Args:
+		venv (bool, optional): indicates that the function is expected
+        to return a list of subdirectories with their complete paths. 
+        Defaults to False.
+
+	Returns:
+		list: list of venv subdirectories
+	"""
 	final_list = []
 	venv_check = skip_venv_dir()
 	if venv_check:
@@ -37,6 +54,8 @@ def dir_checker(venv: bool=False):
 				else:
 					final_list.extend(dir_checker())
 			os.chdir(current_dir)
+	
+	# make this return the venv dir instead of its subdirs
 	if venv:
 		return final_list
 	else:
@@ -46,6 +65,14 @@ def dir_checker(venv: bool=False):
 
 # FILE_COUNT_THRESHOLD = 1000  # Adjust this threshold as needed
 def should_skip_directory(dir_path):
+	"""Ascertain if the given directory path is a virtual environment.
+
+	Args:
+		dir_path (str): the directory to check
+
+	Returns:
+		bool: boolean
+	"""
 	# if len(os.listdir(dir_path)) > FILE_COUNT_THRESHOLD:
 	#     return True
 	if dir_path.split('/')[-1] in dir_checker():
@@ -54,6 +81,20 @@ def should_skip_directory(dir_path):
 
 
 def compile_dir_list(directory, venv: bool=False):
+	"""Generates a list of subdirectories in the current working
+		directory and returns a list with complete paths of just
+        the directories names, depending on the the boolean value
+        of venv
+
+	Args:
+		directory (str): parent directory
+		venv (bool, optional): indicates that the function is expected
+        to return a list of subdirectories with their complete paths. 
+        Defaults to False.
+
+	Returns:
+		list: list of subdirectories
+	"""
 	final_list = []
 	for item in os.listdir(directory):
 		item_path = os.path.join(directory, item)
@@ -68,6 +109,11 @@ def compile_dir_list(directory, venv: bool=False):
 
 
 def find_settings_py():
+	"""Generates a paths to settings.py and views.py files
+
+	Returns:
+		list: list of settings.py and views.py files
+	"""
 	settings = compile_dir_list(os.getcwd())
 	settings = [file for file in settings if file.endswith('settings.py') or file.endswith('views.py')]
 	ret = set(settings)
@@ -87,6 +133,15 @@ except IndexError:
 
 
 def install_entity(entity: str, djoser: bool=False):
+	"""Configures the settings.py and project's urls.py files for
+        DRF, djoser, jwt and static files
+
+	Args:
+		entity (str): the string that will be installed under
+        INSTALLED_APPS in settings.py
+		djoser (bool, optional): indicates that the function is called
+        with a djoser command. Defaults to False.
+	"""
 	description = "\t\t" + "# <- added " + entity
 	line_content = "    " + "'" + entity + "'"  + "," + description + " here" + "\n"
 
@@ -167,6 +222,22 @@ def install_entity(entity: str, djoser: bool=False):
 
 
 def insert_lines(entity: str, line_content: str, urls: bool=False, djoser: bool=False):
+	"""Afix the necessary configuration lines into settings.py
+        and project's urls.py.
+
+	Args:
+		entity (str): the string that will be installed under
+        INSTALLED_APPS in settings.py
+		line_content (str): description to be appended to the
+        inserted line.
+		urls (bool, optional): indicates that the function is called
+        with a djoser command. Defaults to False.
+		djoser (bool, optional): indicates that urls.py file is to be
+		configured. Defaults to False.
+
+	Returns:
+		list: list of file content
+	"""
 	if urls:
 		file_path = f"{os.sep}".join(file_path.split('/')[:-1])
 		file_path = os.path.join(file_path, "urls.py")
@@ -217,6 +288,15 @@ def insert_lines(entity: str, line_content: str, urls: bool=False, djoser: bool=
 
 
 def check_existence(entity: str):
+	"""Checks is the configuration of settings.py and urls.py
+    already exists in the project.
+
+	Args:
+		entity (str): string to check in the given file
+
+	Returns:
+		bool: boolean
+	"""
 	with open(file_path) as f:
 		data = f.readlines()
 	for i in data:
@@ -227,6 +307,8 @@ def check_existence(entity: str):
 
 
 def entry_point():
+	"""Point of entry if the script is executed from the command line.
+	"""
 	# print('AAAAA enter something ...')
 	entity = input()
 	# entity = 'djoser'
