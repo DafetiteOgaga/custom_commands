@@ -4,10 +4,15 @@ import time, subprocess, os, sys
 from .colors import *
 
 def check_arg(files):
-	"""This function checks that atleast a file(argument) is
+	"""checks that atleast a file(argument) is
 		passed from the CL
-	"""
 
+	Args:
+		files (str): arguments
+
+	Returns:
+		int: length of arguments
+	"""
 	length = len(files)
 	if length == 1:
 		print("No argument(s) provided.")
@@ -22,8 +27,10 @@ def counter(files):
 	2. number of words
 	3. number of characters
 	4. filenames
-	"""
 
+	Args:
+		files (str): arguments
+	"""
 	length = check_arg(files)
 	print()
 	for file in range(1, length):
@@ -51,8 +58,13 @@ def lines_words_chars_file(files):
 	2. number of words
 	3. number of characters
 	4. filenames
-	"""
 
+	Args:
+		files (str): arguments
+
+	Returns:
+		str: lines, words, chars, name of the file
+	"""
 	length = check_arg(files)
 	for file in range(1, length):
 		check = os.path.join((files[0].split(os.path.sep))[0], files[file])

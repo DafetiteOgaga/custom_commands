@@ -3,6 +3,11 @@
 import sys, os
 
 def get_char():
+    """One character input mechanism
+
+    Returns:
+        str: the input character
+    """
     try:
         # Windows
         if os.name == 'nt':

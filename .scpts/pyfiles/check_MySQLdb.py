@@ -1,6 +1,15 @@
 #!/usr/bin/env python3
 
 def check_mysqldb(py: bool=False):
+	"""Checks if MySQL is installed
+
+	Args:
+		py (bool, optional): indicates that the function was called
+							from a .py script. Defaults to False.
+
+	Returns:
+		str: if MySQL is installed
+	"""
 	try:
 		import MySQLdb
 		if not py:
@@ -13,6 +22,15 @@ def check_mysqldb(py: bool=False):
 
 
 def check_drf(py: bool=False):
+	"""if DRF is installed
+
+	Args:
+		py (bool, optional): indicates that the function was called
+							from a .py script. Defaults to False.
+
+	Returns:
+		str: if DRF is installed
+	"""
 	try:
 		from rest_framework import serializers
 		if not py:

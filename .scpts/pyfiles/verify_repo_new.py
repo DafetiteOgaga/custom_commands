@@ -4,6 +4,16 @@ import subprocess, os, time, sys
 from .colors import *
 
 def create_gitignore(list_dict: dict, current_directory, action: str=None):
+	"""_summary_
+
+	Args:
+		list_dict (dict): _description_
+		current_directory (_type_): _description_
+		action (str, optional): _description_. Defaults to None.
+
+	Returns:
+		_type_: _description_
+	"""
 	if action:
 		file_dir = ".gitignore"
 	else:
@@ -40,6 +50,14 @@ def create_gitignore(list_dict: dict, current_directory, action: str=None):
 
 
 def ignore__pycache(dir_list: list):
+	"""_summary_
+
+	Args:
+		dir_list (list): _description_
+
+	Returns:
+		_type_: _description_
+	"""
 	repo_dir = [ len(i) for i in dir_list ]
 	separator = ((dir_list[-1]).split(os.sep))[-1]
 	# print(f"separator: {separator}")
@@ -57,6 +75,17 @@ def ignore__pycache(dir_list: list):
 
 
 def scan_dir(dir, num_items: int, repo, verify_repo: int=0):
+	"""_summary_
+
+	Args:
+		dir (_type_): _description_
+		num_items (int): _description_
+		repo (_type_): _description_
+		verify_repo (int, optional): _description_. Defaults to 0.
+
+	Returns:
+		_type_: _description_
+	"""
 	time.sleep(.03)
 	git = False
 	for num in range(num_items):
@@ -81,7 +110,15 @@ def scan_dir(dir, num_items: int, repo, verify_repo: int=0):
 	return num, git
 
 def entry_point(action: str=None, verify_repo: int=0):
-	"""verify repo"""
+	"""_summary_
+
+	Args:
+		action (str, optional): _description_. Defaults to None.
+		verify_repo (int, optional): _description_. Defaults to 0.
+
+	Returns:
+		_type_: _description_
+	"""
 	current_directory = os.getcwd()
 	repository = ".git"
 	directory = os.listdir()
