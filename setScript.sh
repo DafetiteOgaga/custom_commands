@@ -284,6 +284,7 @@ dOptions=(
 	#...py script files....................... #
 	"  requirement_txt command - creates, updates and install the dependencies in the requirement.txt file"
 	#...bash script files.................. #
+	"  djangoToolbar command - install and configures Django debug toolbar"
 	"  drf command - install and configures Django RESTframework and its authentication token functionality"
 	"  djoser command - install and configures djoser for use with drf authentication token functionality"
 	"  jwtDjango command - install and configures json web token for use in your django project"
@@ -506,145 +507,149 @@ options()
 		
 		# ...bash script files................................... #
 		32)
-			DFILENAME="drf"
+			DFILENAME="djangoToolbar"
 			category b "$converted_selection"
 			;;
 		33)
-			DFILENAME="djoser"
+			DFILENAME="drf"
 			category b "$converted_selection"
 			;;
 		34)
-			DFILENAME="jwtDjango"
+			DFILENAME="djoser"
 			category b "$converted_selection"
 			;;
 		35)
+			DFILENAME="jwtDjango"
+			category b "$converted_selection"
+			;;
+		36)
 			DFILENAME="static4django"
 			category b "$converted_selection"
 			;;
 
-		36)
+		37)
 			DFILENAME="startproject"
 			category b "$converted_selection"
 			;;
-		37)
+		38)
 			DFILENAME="startapp"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		38)
+		39)
 			DFILENAME="runserver"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		39)
+		40)
 			DFILENAME="makemigrations"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		40)
+		41)
 			DFILENAME="migrate"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		41)
+		42)
 			DFILENAME="django"
 			category b "$converted_selection"
 			;;
-		42)
+		43)
 			DFILENAME="djshell"
 			category b "$converted_selection"
 			;;
-		43)
+		44)
 			DFILENAME="mkandmigrate"
 			category b "$converted_selection"
 			;;
 
 	#...py script files..................................... #
-		44)
+		45)
 			DFILENAME="showmigrations"
 			category p "$converted_selection"
 			;;
-		45)
+		46)
 			DFILENAME="sqlmigrate"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		46)
+		47)
 			DFILENAME="mysqlversion"
 			category b "$converted_selection"
 			;;
-		47)
+		48)
 			DFILENAME="mysqlstartserver"
 			category b "$converted_selection"
 			;;
-		48)
+		49)
 			DFILENAME="mysqlstopserver"
 			category b "$converted_selection"
 			;;
-		49)
+		50)
 			DFILENAME="mysqlrestartserver"
 			category b "$converted_selection"
 			;;
-		50)
+		51)
 			DFILENAME="mysqlstatus_server"
 			category b "$converted_selection"
 			;;
-		51)
+		52)
 			DFILENAME="mysqlshell"
 			category b "$converted_selection"
 			;;
-		52)
+		53)
 			DFILENAME="ctemp"
 			category b "$converted_selection" "ct"
 			;;
 	
 	# ...py script files..................................... #
-		53)
+		54)
 			DFILENAME="clear_commit"
 			category p "$converted_selection"
 			;;
-		54)
+		55)
 			DFILENAME="printmyEnv"
 			category p "$converted_selection"
 			;;
-		55)
+		56)
 			DFILENAME="show"
 			category p "$converted_selection"
 			;;
-		56)
+		57)
 			DFILENAME="verifyRepo"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		57)
+		58)
 			DFILENAME="mycompile"
 			category b "$converted_selection"
 			;;
-		58)
+		59)
 			DFILENAME="pycompile"
 			category b "$converted_selection"
 			;;
 	
 	# ...C files............................................. #
-		59)
+		60)
 			DFILENAME="myascii"
 			category c "$converted_selection"
 			;;
-		60)
+		61)
 			DFILENAME="rot13"
 			category c "$converted_selection"
 			;;
-		61)
+		62)
 			DFILENAME="rot47"
 			category c "$converted_selection"
 			;;
-		62)
+		63)
 			DFILENAME="guessGame"
 			category c "$converted_selection"
 			;;
@@ -1078,6 +1083,9 @@ instructn()
 			;;
 		"static4django")
 			echo -e "$STRT configure the STATIC_DIRS in the setting.py $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"djangoToolbar")
+			echo -e "$STRT install and configure django debug toolbars in setting.py urls.py $EFFT $ANYWHERE: $DFILENAME"
 			;;
 		esac
 	sleep 0.1
