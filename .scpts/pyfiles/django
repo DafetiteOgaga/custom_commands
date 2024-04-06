@@ -17,7 +17,18 @@ elif [[ "$1" != "project" ]]; then
 		echo "change to the directory containing \"manage.py\""
 	elif [[ "$1" == "pass" ]]; then
 		database="$(python3 $path1/check_db.py 2>&1)"
-		echo "$database"
+		if [[ "$database" == *"SQLite database detected"* ]]; then
+			echo "SQLite database detected."
+		elif [[ "$database" == *"MySQL database detected"* ]]; then
+			echo "MySQL database detected."
+		elif [[ "$database" == *"PostgreSQL database detected"* ]]; then
+			echo "PostgreSQL database detected."
+		elif [[ "$database" == *"Multiple databases detected"* ]]; then
+			echo "Multiple databases detected."
+		elif [[ "$database" == *"Unknown database detected."* ]]; then
+			echo "Unknown database detected."
+		fi
+		# echo "$database"
 		mysqlclient="$(python3 $path1/check_MySQLdb.py 2>&1)"
 		# echo "$mysqlclient"
 		if [[ "$mysqlclient" == *"DRF not installed"* ]]; then
