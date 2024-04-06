@@ -345,7 +345,7 @@ def print_set_commit(var: str):
 
 
 def pull():
-	"""This function pulls and merge updates from the remote to the local branch
+	"""This function pulls and merges updates from the remote to the local branch
 	"""
 
 	print()
@@ -384,7 +384,8 @@ def push(file_list: list):
 	push = subprocess.run(["git", "push"])
 	if push.returncode == 0:
 		print()
-		print("The file(s)/folder(s): {} are in the working tree.".format([xfile for xfile in file_list]))
+		print('Changes has been pushed to remote.')
+		# print("The file(s)/folder(s): {} are in the working tree.".format([xfile for xfile in file_list]))
 	elif push.stdout:
 		print_stdout(push.stdout)
 	elif push.stderr:
@@ -464,8 +465,8 @@ Are you sure that you want to proceed? [y/N] >>> """)
 	sys.exit()
 
 def git_status(action: int=0):
-	"""This function displays the current changes made to the working tree compared to the 
-		staging area, local and remote repositories
+	"""This function displays the current changes made to the working tree compared to that in the 
+		repositories
 
 	Args:
 		action (int, optional): Defaults to 0.
@@ -757,7 +758,7 @@ def create_or_view_branches():
 
 # entry point for merge command
 def merge_to_main_master():
-	"""merge the current branch to the main or master branch
+	"""merge the current branch to the main/master branch
 	"""
 	# current_branch_name = view_branch(action=100)
 	if current_branch_name == "main" or current_branch_name == "master":
