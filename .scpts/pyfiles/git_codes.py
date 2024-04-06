@@ -38,7 +38,7 @@ def backward_search():
 
 
 def write_to_file(ignore_list, delimiter: str, read: bool=False):
-	"""Inserts the given lines into the provided directory.
+	"""Inserts the given lines into the .gitignore file.
 
 	Args:
 		ignore_list (list): list of path to append to file
@@ -50,7 +50,7 @@ def write_to_file(ignore_list, delimiter: str, read: bool=False):
 		list: content of .gitignore file
 	"""
 	# set the file name to .gitignore
-	filename = '.gitignore'
+	filename = delimiter + '.gitignore'
 	ignore_file = 1
 	try:
 		file_list = []
@@ -73,6 +73,7 @@ def write_to_file(ignore_list, delimiter: str, read: bool=False):
 
 
 try:
+	current_dir_var = os.getcwd()
 	root_repo = backward_search()
 	pycache, venv = compile_dir_list(root_repo, venv=True)
 	pycache = [i for i in pycache if not os.path.isfile(i) and i.split('/')[-1] == '__pycache__']
@@ -81,7 +82,7 @@ try:
 	pycache = [file for file in pycache if file.split(delimiter)[-1] not in gitignore_content]
 	venv = [dir for dir in venv if dir.split(delimiter)[-1] not in gitignore_content]
 except:
-    print('...')
+	print('...')
 
 
 def gitignore():
@@ -155,7 +156,7 @@ def gitignore_resp(auto_set_pycache: str, pycache: list):
 
 def browse_files():
 	"""calls the function that allows the user browse through the
-        current directory.
+		current directory.
 	"""
 	root_list = []
 	for file in os.listdir(root_repo):
@@ -344,7 +345,7 @@ def print_set_commit(var: str):
 
 
 def pull():
-	"""This function pulls and merge updates from the remote to the local branch
+	"""This function pulls and merges updates from the remote to the local branch
 	"""
 
 	print()
@@ -383,7 +384,8 @@ def push(file_list: list):
 	push = subprocess.run(["git", "push"])
 	if push.returncode == 0:
 		print()
-		print("The file(s)/folder(s): {} are in the working tree.".format([xfile for xfile in file_list]))
+		print('Changes has been pushed to remote.')
+		# print("The file(s)/folder(s): {} are in the working tree.".format([xfile for xfile in file_list]))
 	elif push.stdout:
 		print_stdout(push.stdout)
 	elif push.stderr:
@@ -463,8 +465,8 @@ Are you sure that you want to proceed? [y/N] >>> """)
 	sys.exit()
 
 def git_status(action: int=0):
-	"""This function displays the current changes made to the working tree compared to the 
-		staging area, local and remote repositories
+	"""This function displays the current changes made to the working tree compared to that in the 
+		repositories
 
 	Args:
 		action (int, optional): Defaults to 0.
@@ -575,7 +577,7 @@ def view_branch(action: int=0, new_branch=""):
 try:
 	current_branch_name = view_branch(action=100)
 except:
-    print('...')
+	print('...')
 
 
 def create_or_switch_branch(branch_name: str=None, new_branch_name: str=None):
@@ -756,7 +758,7 @@ def create_or_view_branches():
 
 # entry point for merge command
 def merge_to_main_master():
-	"""merge the current branch to the main or master branch
+	"""merge the current branch to the main/master branch
 	"""
 	# current_branch_name = view_branch(action=100)
 	if current_branch_name == "main" or current_branch_name == "master":
@@ -794,7 +796,7 @@ def merge_to_main_master():
 
 def diff(action: int=0):
 	"""display detailed changes on the current branch compared to
-        that in the repository
+		that in the repository
 
 	Args:
 		action (int, optional): Defaults to 0.
@@ -815,7 +817,7 @@ def diff(action: int=0):
 
 def search_repo(repo_dir: list, delimiter: str, dir_path: str=None, repeat: int=0, child_dir: int=0):
 	"""provides the mechanism to search and browse the current
-        working directory
+		working directory
 
 	Args:
 		repo_dir (list): current working directory. begins with the
@@ -895,3 +897,7 @@ def search_repo(repo_dir: list, delimiter: str, dir_path: str=None, repeat: int=
 	if ignore_list:
 		write_to_file(ignore_list, delimiter)
 	return ignore_list
+
+if current_dir_var:
+    os.chdir(current_dir_var)
+    

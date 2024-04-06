@@ -134,7 +134,7 @@ except IndexError:
 
 def install_entity(entity: str, djoser: bool=False):
 	"""Configures the settings.py and project's urls.py files for
-        DRF, djoser, jwt and static files
+        DRF, djoser, jwt, django toolbar and static files
 
 	Args:
 		entity (str): the string that will be installed under
@@ -189,19 +189,30 @@ def install_entity(entity: str, djoser: bool=False):
 			"\n" + "    'AUTH_HEADER_TYPES': ('Bearer',)," + \
 			"\n" + "}" + "\n"
 
+	django_toolbar_variable = \
+			"\n" + "INTERNAL_IPS = [" + \
+    		"\n" + "    '127.0.0.1'" + \
+			"\n" + "]" + "\n"
+
 	check = check_existence(entity=entity)
 	if not check:
-		mod_data = insert_lines(entity=entity, line_content=line_content, djoser=djoser)
+		mod_data = insert_lines(entity=entity, line_content=line_content, djoser=djoser, file_path=file_path)
 		variable = False
 		match entity:
 			case "djoser":
-				urls_data = insert_lines(entity=entity, line_content=line_content, urls=True, djoser=True)
+				urls_data = insert_lines(entity=entity, line_content=line_content, urls=True, djoser=True, file_path=file_path)
 				variable = djoser_variable
+			case "debug_toolbar":
+				line_content = "    'debug_toolbar.middleware.DebugToolbarMiddleware'," + "\n"
+				urls_data1 = insert_lines(entity=entity, line_content=line_content, djoser=True, toolbar=True, file_path=file_path)
+				line_content = ''
+				urls_data2 = insert_lines(entity=entity, line_content=line_content, urls=True, djoser=True, toolbar=True, file_path=file_path)
+				variable = django_toolbar_variable
 			case "rest_framework.authtoken":
 				variable = restframework_variable
 			case "rest_framework_simplejwt":
 				variable = jwt_variable
-				urls_data = insert_lines(entity=entity, line_content=line_content, urls=True, djoser=False)
+				urls_data = insert_lines(entity=entity, line_content=line_content, urls=True, djoser=False, file_path=file_path)
 			case "static":
 				project_dir = file_path.split('/')[-2]
 				base_dir_path = os.path.join(os.getcwd(), 'static', project_dir)
@@ -221,7 +232,8 @@ def install_entity(entity: str, djoser: bool=False):
 				k.writelines(variable)
 
 
-def insert_lines(entity: str, line_content: str, urls: bool=False, djoser: bool=False):
+def insert_lines(entity: str, line_content: str, file_path: str=None,
+                urls: bool=False, djoser: bool=False, toolbar: bool=False):
 	"""Afix the necessary configuration lines into settings.py
         and project's urls.py.
 
@@ -253,25 +265,35 @@ def insert_lines(entity: str, line_content: str, urls: bool=False, djoser: bool=
 	for i in data:
 		if "include('djoser.urls'))" in i:
 			checker = True
+		if "include('djoser.urls'))" in i:
+			checker = True
 	for index, line in enumerate(data):
 		if urls:
 			if "urlpatterns =" in line:
-				if not checker:
-					content_insert += "    path('api/', include('djoser.urls'))," + \
-		 							"\n"
-				if djoser:
-					content_insert += "    path('api/', include('djoser.urls.authtoken'))," + \
-								"\n"
+				if not toolbar:
+					if not checker:
+						content_insert += "    path('api/', include('djoser.urls'))," + \
+										"\n"
+					if djoser:
+						content_insert += "    path('api/', include('djoser.urls.authtoken'))," + \
+										"\n"
+					else:
+						content_insert += "    path('api/', include('djoser.urls.jwt')),  # For JWT authentication" + \
+										"\n"
 				else:
-					content_insert += "    path('api/', include('djoser.urls.jwt')),  # For JWT authentication" + \
-									"\n"
+					if not checker:
+						content_insert += "    path('__debug__/', include('debug_toolbar.urls'))," + \
+										"\n"
 				continue
 			if content_insert and "]" in line:
 				data.insert(index, content_insert)
 				break
 		else:
+			key_line = "'django.contrib.staticfiles',"
+			if toolbar:
+				key_line = "'django.contrib.sessions.middleware.SessionMiddleware',"
 			if entity != "static":
-				if "'django.contrib.staticfiles'," in line:
+				if key_line in line:
 					if djoser:
 						entity = "djoser"
 						installed_apps = True

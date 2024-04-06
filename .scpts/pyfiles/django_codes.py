@@ -356,7 +356,7 @@ def runserver_func():
 
 	os.chdir(command1)
 
-	command2 = output_func(text_path=text_path)
+	command2 = output_func()
 	drf = check_MySQLdb.check_drf(py=True)
 	if drf == "DRF not installed":
 		check_database_type(drf=True)
@@ -406,7 +406,6 @@ def requirements_func():
 		output_func()
 
 	requirement = 'requirements.txt'
-	text_path = os.getcwd()
 	check_req = subprocess.run(['ls'], capture_output=True, text=True)
 	found = False
 	for i in check_req.stdout.split():

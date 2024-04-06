@@ -61,6 +61,7 @@
 	* logit command - displays a detailed log of your commits with their branches
 
    * py3venv command - creates a python3 virtual environment in the cwd
+   * djangoToolbar command - install and configures Django debug toolbar
    * drf command - install and configures Django RESTframework and its authentication token functionality
    * djoser command - install and configures djoser for use with drf authentication token functionality
    * jwtDjango command - install and configures json web token for use in your django project
@@ -124,6 +125,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## New
+   - djangoToolbar
    - jwtDjango
    - static4django
    - djoser
