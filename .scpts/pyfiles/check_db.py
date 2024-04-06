@@ -34,8 +34,8 @@ def check_database(py: bool=False):
 		postgresql = '.postgresql'
 		mysql = '.mysql'
 		found1 = found2 = found3 = False
-		unknown_db = "Unknown database detected:"
-		multiple_dbs = "Multiple databases detected:"
+		unknown_db = "Unknown database detected"
+		multiple_dbs = "Multiple databases detected"
 		for line in data:
 			if postgresql in line:
 				if not py:
@@ -68,6 +68,10 @@ def check_database(py: bool=False):
 				if not py:
 					print(multiple_dbs)
 				ret = multiple_dbs
+			elif found1 or found2 or found3:
+				if not py:
+					print(ret)
+				ret = ret
 			else:
 				if not py:
 					print(unknown_db)
