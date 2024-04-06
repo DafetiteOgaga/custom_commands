@@ -1,0 +1,31 @@
+#!/bin/bash
+
+path1="$HOME/.xbin"
+check=$(2>&1 $path1/pyfiles/django arg)
+if [[ -n "$check" ]]; then
+	echo ""
+	echo "$check"
+	if [[ "$check" == *"SQLite"* || "$check" == *"MySQL"* || "$check" == *"PostgreSQL"*
+		|| "$check" == *"Multiple databases"* || "$check" == *"Unknown database"* ]]; then
+		if [[ "$check" == *"You don't have mysqlclient"* ||
+			"$check" == *"You don't have djangorestframework"* ]]; then
+			exit 1
+		fi
+	elif [[ "$check" == *"change to the directory containing"* || "$check" == *"You don't have django installed or"* ]]; then
+		exit 1
+	fi
+fi
+
+command="pip3 install django-debug-toolbar"
+
+if [ "$#" -gt 0 ]; then
+	echo ""
+	echo "This command takes no arguments"
+elif [ "$#" -eq 0 ]; then
+	path1="$path1/pyfiles/configure_settings_py.py"
+	$command
+	echo ""
+	output="$(echo "debug_toolbar" | python3 $path1 2>&1)"
+	echo "$output"
+	echo "django debug toolbar installed and configured under INSTALLED_APPS and MIDDLEWARE in settings.py and urls.py"
+fi
