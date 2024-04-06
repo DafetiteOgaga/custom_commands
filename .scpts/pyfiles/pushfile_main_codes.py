@@ -4,7 +4,6 @@ import subprocess, sys, os, time, shutil
 from .my_prompt import main as prompt_1ch
 from .git_codes import *
 
-
 def add_commit(file):
 	"""This function will:
 	1. Check if the input is a directory and dress it for processing
@@ -199,7 +198,7 @@ def main_enrty():
 	arg_len = len(sys.argv)
 	count = 0
 	print("...............................................................")
-	print("Enter \"unset commit\" to unset default README.md commit message.") # xmodification
+	print("Enter \"unset commit\" to undo the default README.md commit message.") # xmodification
 	print("Enter \"pass\" to skip the current file.")
 	print("...............................................................")
 	if arg_len > 0:
