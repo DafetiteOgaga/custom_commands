@@ -3,7 +3,6 @@
 path1="$HOME/.xbin"
 check=$(2>&1 $path1/pyfiles/django arg)
 if [[ -n "$check" ]]; then
-	echo ""
 	echo "$check"
 	if [[ "$check" == *"SQLite"* || "$check" == *"MySQL"* || "$check" == *"PostgreSQL"*
 		|| "$check" == *"Multiple databases"* || "$check" == *"Unknown database"* ]]; then
@@ -16,6 +15,34 @@ if [[ -n "$check" ]]; then
 	fi
 fi
 
+additonals()
+	{
+		local number="$1"
+		if [[ "$number" == "1" ]]; then
+			install="xml renderer"
+			commandx="pip3 install djangorestframework-xml"
+			argument="rest_framework_xml.renderers.XMLRenderer"
+		elif [[ "$number" == "2" ]]; then
+			install="rest_framework.authtoken"
+			commandx=""
+			argument="$install"
+		fi
+		echo -e "\n"
+		read -n 1 -s -r -p "Install $install? [y/N]. [q] - quit >>> " xml
+		echo "$xml"
+		if [[ "$xml" != [yY] ]]; then
+			echo "\n"
+			echo "Cheers."
+			exit 0
+		else
+			echo ""
+			$commandx
+			output2="$(echo "$argument" | python3 $path1 2>&1)"
+			echo "$output2"
+			echo "django $install has been installed and configured successfully in settings.py"
+		fi
+	}
+
 command="pip3 install djangorestframework"
 
 if [ "$#" -gt 0 ]; then
@@ -24,12 +51,14 @@ if [ "$#" -gt 0 ]; then
 elif [ "$#" -eq 0 ]; then
 	path1="$path1/pyfiles/configure_settings_py.py"
 	$command
-	echo ""
 	output1="$(echo "rest_framework" | python3 $path1 2>&1)"
 	echo "$output1"
-	output2="$(echo "rest_framework.authtoken" | python3 $path1 2>&1)"
-	echo "$output2"
-	echo "django RESTframework and its authentication token functionality installed successfully and configured under INSTALLED_APPS in settings.py"
-	echo "consider using: djoser command. For easy authentcation implementation."
-	echo "Note: if you are using a virtual environment, you need to specify the path to your interpreter."
+
+	for number in {1..2} ; do
+		additonals "$number"
+	done
+	echo "django RESTframework has also been installed and configured under INSTALLED_APPS in settings.py"
+	echo ""
+	echo "check out others: djoser, jwtDjango, djangoToolbar and static4django commands."
+	echo "Note: if you are using a virtual environment, you need to specify the path to your interpreter in vscode to enable it recorgnise it."
 fi
