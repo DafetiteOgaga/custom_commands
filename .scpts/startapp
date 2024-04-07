@@ -26,7 +26,7 @@ elif [ "$#" -eq 1 ]; then
 	# echo "App name: $1"
 	command+=" $1"
 	$command
-	output="$(echo "$1" | python3 $path1/pyfiles/configure_settings_py.py 2>&1)"
+	output="$(echo "$1 $0" | python3 $path1/pyfiles/configure_settings_py.py 2>&1)"
 	echo "$output"
-	echo "$1 app created successfully and configured under INSTALLED_APPS in settings.py"
+	echo "$1 app created successfully and configured in urls.py and under INSTALLED_APPS in settings.py"
 fi
