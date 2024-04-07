@@ -132,6 +132,8 @@ This file contains the notable changes made to the Custom Commands project.
    - drf
 
 ## Changes
+   - added support for DRF-xml rednderer configuration, separated DRF-auth configuration from DRF config in DRF command
+   - implemented app-level urls.py auto creation and urls configuration were added in startapp command
    - gitignore now auto add all \_\_pychache\_\_ files and venv dirs if you choose to
    - djoser command now configures its default routes in project's urls file along with the settings.py file
    - drf command now configures its authentication token functionality along with its installation
