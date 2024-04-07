@@ -244,51 +244,51 @@ intro()
 dOptions=(
 	# options display
 	#...py script files....................... #
-	"  push command - stage, commit and updates the local/remote repos with changes in the current dir"
+	"  push command - stage, commit/updates local/remote repo"
 	"  pull command - updates your local branch with changes from the remote"
-	"  pushfile command - stage, commit individual files then updates the local/remote repos the changes"
-	"  pushall command - stage, commit and updates the local/remote repos with changes in the working tree"
+	"  pushfile command - stage, commit individual files to the local/remote repo"
+	"  pushall command - stage, commit and updates the local/remote repos"
 	#...bash script files.................. #
 	"  createRepo command - creates a github repository right from CLI"
 	"  deleteRepo command - deletes a github repository right from CLI"
 	"  cloneRepo command - clone a repository with less commands"
-	"  viewRepos command - displays the list of repos from any account right from CLI"
+	"  viewRepos command - displays the list of repos from any account on CLI"
 	"  betty linter command"
 	"  pycode command a \"pycodestyle (PEP 8)\" linter"
 	#...py script files....................... #
-	"  gitignore command - creates/updates your .gitignore file by navigating to any file/directory"
+	"  gitignore command - creates/updates your .gitignore file"
 	"  branch command - creates and also switch between branches"
-	"  merge command - merges changes in the current branch to main/master branch"
-	"  status command - displays information about tracked and untracked changes in the branch"
+	"  merge command - merge branches to main/master branch"
+	"  status command - displays updates in the branch"
 	#...bash script files.................. #
 	"  curfol command - opens cwd using file explorer"
 	"  pyxecute - appends shebang and makes your python files executable"
 	"  shxecute - appends shebang and makes your bash files executable"
 	"  pycodemore command(pycode with details)"
-	"  createPatch command - creates a .patch file (changes) between two files"
+	"  createPatch command - creates a .patch file from two files"
 	"  rollback command - reverts the current branch to an earlier commit"
 	"  cls command - clear your screen"
-	"  authorID - configures your Github Identity(Global and Local) on your machine"
+	"  authorID - configures your Github Identity(Global and Local)"
 	"  commitree command - displays a tree of your commit history"
 	#...py script files....................... #
-	"  compareChanges command - displays the content of uncommited changes on the working tree"
+	"  compareChanges command - displays detailed content of updates"
 	"  commitdir command - commits all the changes in the current dir"
 	"  commitall command - commits all the changes in the working tree"
 	"  wcount command - counts the lines, words and chars in files"
 	"  stash command - saves uncommitted changes in the working tree"
-	"  viewStash command - displays a list of stashed changes that can be applied to the current branch"
-	"  logit command - displays a detailed log of your commits with their branches"
+	"  viewStash command - displays a list of applyable stashes"
+	"  logit command - displays a detailed commit logs"
 	
 	#...bash script files.................. #
 	"  py3venv command - creates a python3 virtual environment"
 	#...py script files....................... #
-	"  requirement_txt command - creates, updates and install the dependencies in the requirement.txt file"
+	"  requirement_txt command - creates/updates/installs dependencies in requirement.txt"
 	#...bash script files.................. #
 	"  djangoToolbar command - install and configures Django debug toolbar"
-	"  drf command - install and configures Django RESTframework and its authentication token functionality"
-	"  djoser command - install and configures djoser for use with drf authentication token functionality"
-	"  jwtDjango command - install and configures json web token for use in your django project"
-	"  static4django command - configures the STATIC_DIRS in settings.py for non-app dirs"
+	"  drf command - install and configures Django RESTframework, auth, xml renderer"
+	"  djoser command - install and configures djoser (3rd party library)"
+	"  jwtDjango command - install and configures json web token in your django project"
+	"  static4django command - configures the STATIC_DIRS in settings.py"
 
 	"  startproject command - installs a new django project"
 	"  startapp command - installs and configures apps for django projects"
@@ -301,9 +301,9 @@ dOptions=(
 	#...bash script files.................. #
 	"  django command - displays the django version you are using"
 	"  djshell command - launches the django shell"
-	"  mkandmigrate command - a combination of the makemigrations and migrate commands"
+	"  mkandmigrate command - a combines the makemigrations and migrate commands"
 	#...py script files....................... #
-	"  showmigrations command - displays the history of migrations in an app/project"
+	"  showmigrations command - displays the history of django migrations"
 	"  sqlmigrate command - presents the sql query of any migration"
 	#...bash script files.................. #
 	"  mysqlversion - checks if MySQL is installed and also prints its version"
@@ -314,7 +314,7 @@ dOptions=(
 	"  mysqlshell - launches MySQL shell"
 	"  ctemp - generates a default C source file template"
 	#...py script files....................... #
-	"  clear_commit command - clears unstaged and recent commits on your machine"
+	"  clear_commit command - restores local repo to the same state as the remote"
 	"  printmyEnv command - prints a list of your env paths"
 	"  show command - displays a list of all commits made to the repository"
 	"  verifyRepo command - checkes if the current dir is a repository or not"

@@ -4,7 +4,7 @@ import os, sys, subprocess
 
 def skip_venv_dir():
 	"""Checks if the current working directory is a venv directory
-        and returns True if it is, otherwise false.
+		and returns True if it is, otherwise false.
 
 	Returns:
 		bool: boolean
@@ -20,19 +20,17 @@ def skip_venv_dir():
 	if len(resp_dict) == 3:
 		if resp_dict['pyvenv.cfg'] and resp_dict['include'] and resp_dict['lib']:
 			if resp_dict['pyvenv.cfg'] == resp_dict['include'] == resp_dict['lib'] == True:
-				# print('resp_dict: %s' % resp_dict)
-				# filter_resp = set(resp)
 				return True
 	return False
 
 def dir_checker(venv: bool=False):
 	"""Generates a list of subdirectories that ascertain the current working
-        directory is a virtual environment
+		directory is a virtual environment
 
 	Args:
 		venv (bool, optional): indicates that the function is expected
-        to return a list of subdirectories with their complete paths. 
-        Defaults to False.
+		to return a list of subdirectories with their complete paths. 
+		Defaults to False.
 
 	Returns:
 		list: list of venv subdirectories
@@ -83,14 +81,14 @@ def should_skip_directory(dir_path):
 def compile_dir_list(directory, venv: bool=False):
 	"""Generates a list of subdirectories in the current working
 		directory and returns a list with complete paths of just
-        the directories names, depending on the the boolean value
-        of venv
+		the directories names, depending on the the boolean value
+		of venv
 
 	Args:
 		directory (str): parent directory
 		venv (bool, optional): indicates that the function is expected
-        to return a list of subdirectories with their complete paths. 
-        Defaults to False.
+		to return a list of subdirectories with their complete paths. 
+		Defaults to False.
 
 	Returns:
 		list: list of subdirectories
@@ -127,27 +125,39 @@ try:
 	# 	print(f'{d+1}. {s}')
 	# print(lines)
 	file_path = [k for k in settings_path if k.endswith('settings.py')][0]
-	# print('file_path global: {}'.format(file_path))
+	print('file_path global: {}'.format(file_path))
 except IndexError:
-    print('...')
+	file_path = ''
+	print('...')
 
 
-def install_entity(entity: str, djoser: bool=False):
-	"""Configures the settings.py and project's urls.py files for
-        DRF, djoser, jwt, django toolbar and static files
+def install_entity(entity: str, file_path: str=file_path, djoser: bool=False):
+	"""Configures the settings.py and project's urls.py files for django apps,
+		DRF, DRF auth token, djoser, jwt, django toolbar, xml renderer and static files
 
 	Args:
 		entity (str): the string that will be installed under
-        INSTALLED_APPS in settings.py
+		INSTALLED_APPS in settings.py
+		file_path (strl): path to settings.py file
 		djoser (bool, optional): indicates that the function is called
-        with a djoser command. Defaults to False.
+		with a djoser command. Defaults to False.
 	"""
+	command = None
+	try:
+		entity, filename = entity.split()
+		command = filename.split(os.sep).pop()
+	except:
+		pass
+
 	description = "\t\t" + "# <- added " + entity
 	line_content = "    " + "'" + entity + "'"  + "," + description + " here" + "\n"
 
-	app = ([k for k in settings_path if k.endswith('views.py')][0]).split('/')[-2]
+	if command:
+		app = entity
+	else:
+		app = ([k for k in settings_path if k.endswith('views.py')][0]).split('/')[-2]
 	djoser_variable = \
-			"\n" + f"# Added {entity} variable to the settings.py file" + \
+			"\n" + f"# Added {entity} variable to the here" + \
 			"\n" + "# Configure Djoser to use JWT tokens" + \
 			"\n" + "#DJOSER = {" + \
 			"\n" + "#    'USER_ID_FIELD': 'username'," + \
@@ -163,18 +173,18 @@ def install_entity(entity: str, djoser: bool=False):
 			"\n" + "#}" + "\n"
 
 	restframework_variable = \
-			"\n" + f"# Added {entity} variable to the settings.py file" + \
+			"\n" + f"# Added {entity} variable to here" + \
 			"\n" + "REST_FRAMEWORK = {" + \
+			"\n" + "    'DEFAULT_RENDERER_CLASSES': [" + \
+			"\n" + "        'rest_framework.renderers.JSONRenderer'," + \
+			"\n" + "        'rest_framework.renderers.BrowsableAPIRenderer'," + \
+			"\n" + "    ]," + \
 			"\n" + "    'DEFAULT_FILTER_BACKENDS': [" + \
 			"\n" + "        'rest_framework.filters.OrderingFilter'," + \
 			"\n" + "        'rest_framework.filters.SearchFilter'," + \
 			"\n" + "    ]," + \
-			"\n" + "    'DEFAULT_AUTHENTICATION_CLASSES': (" + \
-			"\n" + "        'rest_framework.authentication.TokenAuthentication'," + \
-			"\n" + "        'rest_framework.authentication.SessionAuthentication'," + \
-			"\n" + "    )," + \
 			"\n" + "    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination'," + \
-			"\n" + "    'PAGE_SIZE': 2" + \
+			"\n" + "    'PAGE_SIZE': 5" + \
 			"\n" + \
 			"\n" + "#    # Configure Django REST Framework to use Simple JWT authentication" + \
 			"\n" + "#    'DEFAULT_AUTHENTICATION_CLASSES': (" + \
@@ -191,28 +201,48 @@ def install_entity(entity: str, djoser: bool=False):
 
 	django_toolbar_variable = \
 			"\n" + "INTERNAL_IPS = [" + \
-    		"\n" + "    '127.0.0.1'" + \
+			"\n" + "    '127.0.0.1'" + \
+			"\n" + "]" + "\n"
+
+	urls_datails = \
+			"from django.urls import path" + \
+			"\n" + "from . import views" + \
+			"\n\n" "urlpatterns = [" + \
+			"\n\t" + "# Create your urlpatterns here." + \
 			"\n" + "]" + "\n"
 
 	check = check_existence(entity=entity)
 	if not check:
 		mod_data = insert_lines(entity=entity, line_content=line_content, djoser=djoser, file_path=file_path)
 		variable = False
+		if command == 'startapp':
+			temp = entity
+			entity = command
 		match entity:
 			case "djoser":
 				urls_data = insert_lines(entity=entity, line_content=line_content, urls=True, djoser=True, file_path=file_path)
 				variable = djoser_variable
 			case "debug_toolbar":
-				line_content = "    'debug_toolbar.middleware.DebugToolbarMiddleware'," + "\n"
-				urls_data1 = insert_lines(entity=entity, line_content=line_content, djoser=True, toolbar=True, file_path=file_path)
+				line_content = "    'debug_toolbar.middleware.DebugToolbarMiddleware'," + "\t" + "# <- added debug_toolbar here" + "\n"
+				urls_data1 = insert_lines(entity=entity, line_content=line_content, djoser=True, djangotoolbar=True, file_path=file_path)
 				line_content = ''
-				urls_data2 = insert_lines(entity=entity, line_content=line_content, urls=True, djoser=True, toolbar=True, file_path=file_path)
+				urls_data2 = insert_lines(entity=entity, line_content=line_content, urls=True, djoser=True, djangotoolbar=True, file_path=file_path)
 				variable = django_toolbar_variable
-			case "rest_framework.authtoken":
+			case "startapp":
+				entity = temp
+				urls_path = os.path.join((os.sep.join(file_path.split(os.sep)[:-2])), entity)
+				os.makedirs(urls_path, exist_ok=True)
+				with open(urls_path + os.sep + 'urls.py', 'w') as script:
+					script.write(urls_datails)
+				urls_data = insert_lines(entity=entity, line_content=entity, urls=True, d_app=True, file_path=file_path)
+			case "rest_framework":
 				variable = restframework_variable
+			case "rest_framework.authtoken":
+				urls_data = insert_lines(entity=entity, line_content=line_content, urls=True, drf_auth=True, file_path=file_path)
+				urls_data = insert_lines(entity=entity, line_content=line_content, drf_auth=True, file_path=file_path)
 			case "rest_framework_simplejwt":
 				variable = jwt_variable
-				urls_data = insert_lines(entity=entity, line_content=line_content, urls=True, djoser=False, file_path=file_path)
+				urls_data = insert_lines(entity=entity, line_content="", urls=True, drf_jwt=True, file_path=file_path)
 			case "static":
 				project_dir = file_path.split('/')[-2]
 				base_dir_path = os.path.join(os.getcwd(), 'static', project_dir)
@@ -221,7 +251,7 @@ def install_entity(entity: str, djoser: bool=False):
 				os.makedirs(project_dir_path, exist_ok=True)
 
 				variable = \
-					"\n" + f"# Added {entity} variable to the settings.py file" + \
+					"\n" + f"# Added {entity} variable to the here" + \
 					"\n" + "STATICFILES_DIRS = [" + \
 					"\n" + "    BASE_DIR / 'static'," + description + " to BASE_DIR" + \
 					"\n" + f"    BASE_DIR / 'static/{project_dir}'," + description + " to project dir" + \
@@ -233,17 +263,18 @@ def install_entity(entity: str, djoser: bool=False):
 
 
 def insert_lines(entity: str, line_content: str, file_path: str=None,
-                urls: bool=False, djoser: bool=False, toolbar: bool=False):
+				urls: bool=False, djoser: bool=False, djangotoolbar: bool=False,
+				drf_auth: bool=False, drf_jwt: bool=False, d_app: bool=False):
 	"""Afix the necessary configuration lines into settings.py
-        and project's urls.py.
+		and project's urls.py.
 
 	Args:
 		entity (str): the string that will be installed under
-        INSTALLED_APPS in settings.py
+		INSTALLED_APPS in settings.py
 		line_content (str): description to be appended to the
-        inserted line.
+		inserted line.
 		urls (bool, optional): indicates that the function is called
-        with a djoser command. Defaults to False.
+		with a djoser command. Defaults to False.
 		djoser (bool, optional): indicates that urls.py file is to be
 		configured. Defaults to False.
 
@@ -260,29 +291,54 @@ def insert_lines(entity: str, line_content: str, file_path: str=None,
 	with open(file_path) as f:
 		data = f.readlines()
 	installed_apps = False
+	xml_renderer = False
+	checker =False
+	include = False
+	auth12 = False
+	debug_tb = False
+	app = False
 	content_insert = ''
-	checker = False
 	for i in data:
 		if "include('djoser.urls'))" in i:
 			checker = True
-		if "include('djoser.urls'))" in i:
-			checker = True
+		if f"include('{line_content}.urls'))" in i:
+			app = True
+		if "debug_toolbar.urls" in i:
+			debug_tb = True
+		if "django.urls import path, include" in i:
+			include = True
+		if "api-token-auth" in i:
+			auth12 = True
 	for index, line in enumerate(data):
 		if urls:
+			if "django.urls import path" in line:
+				if not include:
+					line = line.strip('\n') + ", include" + "\n"
+					data.insert(index, line)
+					data.pop(index+1)
+				if drf_auth:
+					data.insert(index+1, "from rest_framework.authtoken.views import obtain_auth_token" + "\n")
 			if "urlpatterns =" in line:
-				if not toolbar:
+				if not djangotoolbar:
+					if not app and d_app:
+						content_insert += f"    path('', include('{line_content}.urls')),     # For {line_content} configuration" + \
+										"\n"
+						continue
+					if not auth12 and not drf_jwt and not djoser:
+						content_insert += "    path('api-token-auth/', obtain_auth_token),    # For DRF auth_token" + \
+										"\n"
 					if not checker:
-						content_insert += "    path('api/', include('djoser.urls'))," + \
+						content_insert += "    path('api/', include('djoser.urls')),     # For basic djoser authentication" + \
 										"\n"
 					if djoser:
-						content_insert += "    path('api/', include('djoser.urls.authtoken'))," + \
+						content_insert += "    path('api/', include('djoser.urls.authtoken')),     # For more djoser authentication" + \
 										"\n"
-					else:
+					if drf_jwt:
 						content_insert += "    path('api/', include('djoser.urls.jwt')),  # For JWT authentication" + \
 										"\n"
 				else:
-					if not checker:
-						content_insert += "    path('__debug__/', include('debug_toolbar.urls'))," + \
+					if not debug_tb:
+						content_insert += "    path('__debug__/', include('debug_toolbar.urls')),      # For debug toolbar authentication" + \
 										"\n"
 				continue
 			if content_insert and "]" in line:
@@ -290,12 +346,25 @@ def insert_lines(entity: str, line_content: str, file_path: str=None,
 				break
 		else:
 			key_line = "'django.contrib.staticfiles',"
-			if toolbar:
+			if drf_auth:
+				key_line = 'REST_FRAMEWORK ='
+				description1 = "# <- Added rest_framework.authtoken configuration here"
+				line_content = \
+								"    'DEFAULT_AUTHENTICATION_CLASSES': (" + description1 + \
+								"\n" + "        'rest_framework.authentication.TokenAuthentication'," + description1 + \
+								"\n" + "        'rest_framework.authentication.SessionAuthentication'," + description1 + \
+								"\n" + "    )," + "\n"
+			if djangotoolbar:
 				key_line = "'django.contrib.sessions.middleware.SessionMiddleware',"
+			if "XMLRenderer" in entity:
+				line_content = "\t\t" + line_content.lstrip()
+				xml_renderer = True
+				key_line = "DEFAULT_RENDERER_CLASSES"
 			if entity != "static":
 				if key_line in line:
-					if djoser:
-						entity = "djoser"
+					if djoser or xml_renderer:
+						if djoser:
+							entity = "djoser"
 						installed_apps = True
 						continue
 					else:
@@ -311,7 +380,7 @@ def insert_lines(entity: str, line_content: str, file_path: str=None,
 
 def check_existence(entity: str):
 	"""Checks is the configuration of settings.py and urls.py
-    already exists in the project.
+	already exists in the project.
 
 	Args:
 		entity (str): string to check in the given file
@@ -324,6 +393,7 @@ def check_existence(entity: str):
 	for i in data:
 		if f"'{entity}'," in i or f'"{entity}",' in i:
 			return True
+	return False
 
 ################################
 
@@ -339,8 +409,9 @@ def entry_point():
 	
 
 	# sys.exit(0)
+	settings_path = [file_path]
 	if len(settings_path) > 2:
-		print('You have multiple settings.py files')
+		print('You have multiple files')
 		for i, j in enumerate(settings_path):
 			print(f'{i+1}. {j}')
 		sys.exit(0)
