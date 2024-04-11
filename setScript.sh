@@ -252,9 +252,10 @@ dOptions=(
 	"  createRepo command - creates a github repository right from CLI"
 	"  deleteRepo command - deletes a github repository right from CLI"
 	"  cloneRepo command - clone a repository with less commands"
+
+	"  restoreFile command - restores file(s) to previous states"
+
 	"  viewRepos command - displays the list of repos from any account on CLI"
-	"  betty linter command"
-	"  pycode command a \"pycodestyle (PEP 8)\" linter"
 	#...py script files....................... #
 	"  gitignore command - creates/updates your .gitignore file"
 	"  branch command - creates and also switch between branches"
@@ -271,7 +272,7 @@ dOptions=(
 	"  authorID - configures your Github Identity(Global and Local)"
 	"  commitree command - displays a tree of your commit history"
 	#...py script files....................... #
-	"  compareChanges command - displays detailed content of updates"
+	"  compareChange command - displays detailed content of updates"
 	"  commitdir command - commits all the changes in the current dir"
 	"  commitall command - commits all the changes in the working tree"
 	"  wcount command - counts the lines, words and chars in files"
@@ -313,8 +314,11 @@ dOptions=(
 	"  mysqlstatus_server - displays the status of MySQL server"
 	"  mysqlshell - launches MySQL shell"
 	"  ctemp - generates a default C source file template"
-	#...py script files....................... #
+	
 	"  clear_commit command - restores local repo to the same state as the remote"
+	"  betty linter command"
+	"  pycode command a \"pycodestyle (PEP 8)\" linter"
+	#...py script files....................... #
 	"  printmyEnv command - prints a list of your env paths"
 	"  show command - displays a list of all commits made to the repository"
 	"  verifyRepo command - checkes if the current dir is a repository or not"
@@ -396,260 +400,265 @@ options()
 			category b "$converted_selection" "cl"
 			;;
 		7)
+			DFILENAME="restoreFile"
+			category b "$converted_selection"
+			;;
+		8)
 			DFILENAME="viewRepos"
 			category b "$converted_selection" "vr"
 			;;
-		8)
-			DFILENAME="betty"
-			category b "$converted_selection"
-			;;
-		9)
-			DFILENAME="pycode"
-			category b "$converted_selection"
-			;;
-
+		
 	# ...py script files..................................... #
-		10)
+		9)
 			DFILENAME="gitignore"
 			category p "$converted_selection"
 			;;
-		11)
+		10)
 			DFILENAME="branch"
 			category p "$converted_selection"
 			;;
-		12)
+		11)
 			DFILENAME="merge"
 			category p "$converted_selection"
 			;;
-		13)
+		12)
 			DFILENAME="status"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		14)
+		13)
 			DFILENAME="curfol"
 			category b "$converted_selection"
 			;;
-		15)
+		14)
 			DFILENAME="pyxecute"
 			category b "$converted_selection"
 			;;
-		16)
+		15)
 			DFILENAME="shxecute"
 			category b "$converted_selection"
 			;;
-		17)
+		16)
 			DFILENAME="pycodemore"
 			category b "$converted_selection"
 			;;
-		18)
+		17)
 			DFILENAME="createPatch"
 			category b "$converted_selection"
 			;;
-		19)
+		18)
 			DFILENAME="rollback"
 			category b "$converted_selection"
 			;;
-		20)
+		19)
 			DFILENAME="cls"
 			category b "$converted_selection"
 			;;
-		21)
+		20)
 			DFILENAME="authorID"
 			category b "$converted_selection"
 			;;
-		22)
+		21)
 			DFILENAME="commitree"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		23)
-			DFILENAME="compareChanges"
+		22)
+			DFILENAME="compareChange"
 			category p "$converted_selection"
 			;;
-		24)
+		23)
 			DFILENAME="commitdir"
 			category p "$converted_selection"
 			;;
-		25)
+		24)
 			DFILENAME="commitall"
 			category p "$converted_selection"
 			;;
-		26)
+		25)
 			DFILENAME="wcount"
 			category p "$converted_selection"
 			;;
-		27)
+		26)
 			DFILENAME="stash"
 			category p "$converted_selection"
 			;;
-		28)
+		27)
 			DFILENAME="viewStash"
 			category p "$converted_selection"
 			;;
-		29)
+		28)
 			DFILENAME="logit"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		30)
+		29)
 			DFILENAME="py3venv"
 			category b "$converted_selection"
 			;;
 
-		31)
+		30)
 			DFILENAME="requirement_txt"
 			category p "$converted_selection"
 			;;
 		
 		# ...bash script files................................... #
-		32)
+		31)
 			DFILENAME="djangoToolbar"
 			category b "$converted_selection"
 			;;
-		33)
+		32)
 			DFILENAME="drf"
 			category b "$converted_selection"
 			;;
-		34)
+		33)
 			DFILENAME="djoser"
 			category b "$converted_selection"
 			;;
-		35)
+		34)
 			DFILENAME="jwtDjango"
 			category b "$converted_selection"
 			;;
-		36)
+		35)
 			DFILENAME="static4django"
 			category b "$converted_selection"
 			;;
 
-		37)
+		36)
 			DFILENAME="startproject"
 			category b "$converted_selection"
 			;;
-		38)
+		37)
 			DFILENAME="startapp"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		39)
+		38)
 			DFILENAME="runserver"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		40)
+		39)
 			DFILENAME="makemigrations"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		41)
+		40)
 			DFILENAME="migrate"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		42)
+		41)
 			DFILENAME="django"
 			category b "$converted_selection"
 			;;
-		43)
+		42)
 			DFILENAME="djshell"
 			category b "$converted_selection"
 			;;
-		44)
+		43)
 			DFILENAME="mkandmigrate"
 			category b "$converted_selection"
 			;;
 
 	#...py script files..................................... #
-		45)
+		44)
 			DFILENAME="showmigrations"
 			category p "$converted_selection"
 			;;
-		46)
+		45)
 			DFILENAME="sqlmigrate"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		47)
+		46)
 			DFILENAME="mysqlversion"
 			category b "$converted_selection"
 			;;
-		48)
+		47)
 			DFILENAME="mysqlstartserver"
 			category b "$converted_selection"
 			;;
-		49)
+		48)
 			DFILENAME="mysqlstopserver"
 			category b "$converted_selection"
 			;;
-		50)
+		49)
 			DFILENAME="mysqlrestartserver"
 			category b "$converted_selection"
 			;;
-		51)
+		50)
 			DFILENAME="mysqlstatus_server"
 			category b "$converted_selection"
 			;;
-		52)
+		51)
 			DFILENAME="mysqlshell"
 			category b "$converted_selection"
 			;;
-		53)
+		52)
 			DFILENAME="ctemp"
 			category b "$converted_selection" "ct"
 			;;
 	
 	# ...py script files..................................... #
-		54)
+		53)
 			DFILENAME="clear_commit"
 			category p "$converted_selection"
 			;;
+		54)
+			DFILENAME="betty"
+			category b "$converted_selection"
+			;;
 		55)
+			DFILENAME="pycode"
+			category b "$converted_selection"
+			;;
+
+		56)
 			DFILENAME="printmyEnv"
 			category p "$converted_selection"
 			;;
-		56)
+		57)
 			DFILENAME="show"
 			category p "$converted_selection"
 			;;
-		57)
+		58)
 			DFILENAME="verifyRepo"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		58)
+		59)
 			DFILENAME="mycompile"
 			category b "$converted_selection"
 			;;
-		59)
+		60)
 			DFILENAME="pycompile"
 			category b "$converted_selection"
 			;;
 	
 	# ...C files............................................. #
-		60)
+		61)
 			DFILENAME="myascii"
 			category c "$converted_selection"
 			;;
-		61)
+		62)
 			DFILENAME="rot13"
 			category c "$converted_selection"
 			;;
-		62)
+		63)
 			DFILENAME="rot47"
 			category c "$converted_selection"
 			;;
-		63)
+		64)
 			DFILENAME="guessGame"
 			category c "$converted_selection"
 			;;
@@ -977,7 +986,7 @@ instructn()
 		"commitree")
 			echo -e "$STRT view a graphical commit history $EFFT $ANYWHERE: $DFILENAME"
 			;;
-		"compareChanges")
+		"compareChange")
 			echo -e "$STRT view uncommitted changes in the working tree compared to the repository $EFFT $ANYWHERE: $DFILENAME"
 			;;
 		"commitdir")
@@ -1086,6 +1095,9 @@ instructn()
 			;;
 		"djangoToolbar")
 			echo -e "$STRT install and configure django debug toolbars in setting.py urls.py $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"restoreFile")
+			echo -e "$STRT restore your file(s) to previous states $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
 			;;
 		esac
 	sleep 0.1

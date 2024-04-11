@@ -61,7 +61,7 @@ def write_to_file(ignore_list, delimiter: str, read: bool=False):
 		open(filename, 'w').close()
 	if read:
 		return file_list
-	if filename not in file_list:
+	if filename.split(delimiter)[-1] not in file_list:
 		ignore_file = 0
 	with open(filename, 'a') as f:
 		for k in ignore_list:
@@ -69,6 +69,7 @@ def write_to_file(ignore_list, delimiter: str, read: bool=False):
 			if k not in file_list:
 				f.write(k + '\n')
 		if not ignore_file:
+			filename = filename.split(delimiter)[-1]
 			f.write(filename + '\n')
 
 

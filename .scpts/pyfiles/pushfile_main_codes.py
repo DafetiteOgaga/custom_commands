@@ -252,6 +252,7 @@ def main_enrty():
 
 
 		while True:
+			print('\n')
 			# print('[y] or "Enter" to push these changes to remote')
 			print('[y] (push) update your remote repository with these changes')
 			print('[q] to abort')

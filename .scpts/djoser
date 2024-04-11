@@ -26,5 +26,7 @@ elif [ "$#" -eq 0 ]; then
 	echo ""
 	output="$(echo "djoser" | python3 $path1/configure_settings_py.py 2>&1)"
 	echo "$output"
+	echo ""
+	echo "..............................................."
 	echo "djoser is installed successfully and configured under INSTALLED_APPS in settings.py and in urls.py"
 fi
