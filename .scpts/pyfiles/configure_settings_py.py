@@ -105,14 +105,45 @@ def compile_dir_list(directory, venv: bool=False):
 	else:
 		return final_list
 
-def append_variable(file_path: str, variable: str, no_append: bool=False, index: int=-1):
+def create_files(file_path: str, filename: str, variable_body: str, variable_head: str=None, pattern: bool=False):
+	os.makedirs(file_path, exist_ok=True)
+	file_path = file_path + os.sep + filename
+	append_variable(file_path=file_path, variable=variable_body, variable_head=variable_head, pattern=pattern)
+
+def append_variable(file_path: str, variable: str, no_append: bool=False, index: int=-1, variable_head: str=None, pattern: bool=False):
+	line = '............................................................'
+	print(line)
+	var = False
+	ln = 0
+	if pattern:
+		variable_head = variable
+		variable = ''
+	filename = file_path.split(os.sep).pop()
+	line_no = ''
+	if index > -1:
+		line_no = f' on line: {index}'
+	if variable_head:
+		print(f'Added to {filename}{line_no} :::::')
+		print(f'{".".rjust(len(filename) + len(line_no) + 15, ".")}')
+		print(f'{variable_head}')
+		try:
+			with open(file_path) as a:
+				data = a.readlines()
+		except FileNotFoundError:
+			c = open(file_path, 'w').close()
+			data = []
+		if pattern:
+			if data:
+				for i, line in enumerate(data):
+					if 'urlpatterns = [' in line:
+						var = True
+						continue
+					if ']' in line and var:
+						ln = i
+		data.insert(ln, variable_head)
+		with open(file_path, 'w') as b:
+			b.writelines(data)
 	if variable:
-		line = '............................................................'
-		filename = file_path.split(os.sep).pop()
-		print(line)
-		line_no = ''
-		if index > -1:
-			line_no = f' on line: {index}'
 		print(f'Added to {filename}{line_no} :::::')
 		print(f'{".".rjust(len(filename) + len(line_no) + 15, ".")}')
 		print(f'{variable}')
@@ -145,7 +176,7 @@ except IndexError:
 	file_path = ''
 	print('...')
 
-def install_entity(entity: str, file_path: str=file_path, djoser: bool=False,):# variable: str=None):
+def install_entity(entity: str, settings_path: list=settings_path, djoser: bool=False,):# variable: str=None):
 	"""Configures the settings.py and project's urls.py files for django apps,
 		DRF, DRF auth token, djoser, jwt, django toolbar, xml renderer and static files
 
@@ -156,6 +187,11 @@ def install_entity(entity: str, file_path: str=file_path, djoser: bool=False,):#
 		djoser (bool, optional): indicates that the function is called
 		with a djoser command. Defaults to False.
 	"""
+	
+	file_path = [k for k in settings_path if k.endswith('settings.py')][0]
+	app_path = os.sep.join([k for k in settings_path if k.endswith('views.py')][0].split(os.sep)[:-1])
+	# print('app_path: {}'.format(app_path))
+	# sys.exit(0)
 	command = None
 	variable = ''
 	rm_FW = False
@@ -194,11 +230,11 @@ def install_entity(entity: str, file_path: str=file_path, djoser: bool=False,):#
 
 	if frameW:
 		add_jwt_line = \
-						"\n" + "    'DEFAULT_AUTHENTICATION_CLASSES': (" + "# <- TokenAuthentication configuration here" + \
-						"\n" + "        'rest_framework.authentication.TokenAuthentication'," +  "# <- TokenAuthentication configuration here" + \
-						"\n" + "        'rest_framework.authentication.SessionAuthentication'," +  "# <- TokenAuthentication configuration here" + \
-						"\n" + "        'rest_framework_simplejwt.authentication.JWTAuthentication'," + "\t" + "# <- rest_framework_simplejwt.authentication configuration here" + \
-						"\n" + "    ),"
+			"\n" + "    'DEFAULT_AUTHENTICATION_CLASSES': (" + "# <- TokenAuthentication configuration here" + \
+			"\n" + "        'rest_framework.authentication.TokenAuthentication'," +  "# <- TokenAuthentication configuration here" + \
+			"\n" + "        'rest_framework.authentication.SessionAuthentication'," +  "# <- TokenAuthentication configuration here" + \
+			"\n" + "        'rest_framework_simplejwt.authentication.JWTAuthentication'," + "\t" + "# <- rest_framework_simplejwt.authentication configuration here" + \
+			"\n" + "    ),"
 		rm_FW = True
 	else:
 		add_jwt_line = ''
@@ -237,6 +273,97 @@ def install_entity(entity: str, file_path: str=file_path, djoser: bool=False,):#
 			"\n\n" "urlpatterns = [" + \
 			"\n\t" + "# Create your urlpatterns here." + \
 			"\n" + "]" + "\n"
+	
+	model_body = \
+			"\n" + "class Category(models.Model):" + \
+			"\n" + "	slug = models.SlugField()" + \
+			"\n" + "	title = models.CharField(max_length=255)" + \
+			"\n" + \
+			"\n" + "	def __str__(self) -> str:" + \
+			"\n" + "		return f'{self.title}'" + \
+			"\n" + \
+			"\n" + "class Book(models.Model):" + \
+			"\n" + "	title = models.CharField(max_length=255)" + \
+			"\n" + "	author = models.CharField(max_length=255)" + \
+			"\n" + "	price = models.DecimalField(max_digits=5, decimal_places=2)" + \
+			"\n" + "	category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.PROTECT, default=1)" + "\n"
+
+	serializer_head = \
+			"\n" + "from .models import Book, Category" + \
+			"\n" + "from rest_framework import serializers" + \
+			"\n" + "from decimal import Decimal" + "\n"
+	serializer_body = \
+			"\n" + "class CategorySerializer (serializers.ModelSerializer):" + \
+			"\n" + "	class Meta:" + \
+			"\n" + "		model = Category" + \
+			"\n" + "		fields = ['id', 'slug', 'title']" + \
+			"\n" + \
+			"\n" + "class BookSerializer(serializers.ModelSerializer):" + \
+			"\n" + "	tax = serializers.SerializerMethodField(method_name='calculate_tax_rate')" + \
+			"\n" + "	category = CategorySerializer(read_only=True)" + \
+			"\n" + "	category_id = serializers.IntegerField(write_only=True)" + \
+			"\n" + \
+			"\n" + "	class Meta:" + \
+			"\n" + "		model = Book" + \
+			"\n" + "		fields = ['id', 'title', 'author', 'price', 'tax', 'category', 'category_id']" + \
+			"\n" + \
+			"\n" + "	def calculate_tax_rate(self, instance):" + \
+			"\n" + "		return instance.price * Decimal(1.1)" + "\n"
+
+	urls_djoser_head = \
+			"\n" + "from . import views" + "\n"
+	urls_djoser_body = \
+			"\n" + "	path('books', views.BookView.as_view())," + \
+			"\n" + "	path('books/<int:pk>', views.SingleBookView.as_view())," + \
+			"\n" + "	path('category', views.CategoryView.as_view())," + \
+			"\n" + "	path('category/<int:pk>', views.SingleCategoryView.as_view())," + "\n"
+
+	views_head = \
+			"\n" + "from .models import Book, Category" + \
+			"\n" + "from .serializers import BookSerializer, CategorySerializer" + \
+			"\n" + "from rest_framework import generics" + \
+			"\n" + "from rest_framework import status" + \
+			"\n" + "from rest_framework.response import Response" + \
+			"\n" + "from django.core.paginator import Paginator, EmptyPage" + \
+			"\n" + "from rest_framework.permissions import IsAuthenticated" + "\n"
+	views_body = \
+			"\n" + "class BookView(generics.ListCreateAPIView):" + \
+			"\n" + "	queryset = Book.objects.all()" + \
+			"\n" + "	serializer_class = BookSerializer" + \
+			"\n" + \
+			"\n" + "	def get(self, request, *args, **kwargs):" + \
+			"\n" + "		items = self.get_queryset()" + \
+			"\n" + "		perpage = request.query_params.get('perpage', default=5)" + \
+			"\n" + "		page = request.query_params.get('page', default=1)" + \
+			"\n" + "		paginator = Paginator(items, per_page=perpage)" + \
+			"\n" + "		try:" + \
+			"\n" + "			# call each page with: ?perpage=<number>&page=<number>" + \
+			"\n" + "			items = paginator.page(number=page)" + \
+			"\n" + "		except EmptyPage:" + \
+			"\n" + "			items = []" + \
+			"\n" + "		serialized_item = self.get_serializer(items, many=True)" + \
+			"\n" + "		return Response(serialized_item.data, status=status.HTTP_200_OK)" + \
+			"\n" + \
+			"\n" + "	def post(self, request, *args, **kwargs):" + \
+			"\n" + "		serialized_item = self.get_serializer(data=request.data)" + \
+			"\n" + "		serialized_item.is_valid(raise_exception=True)" + \
+			"\n" + "		valid_data = serialized_item.validated_data # access the validated data" + \
+			"\n" + "		serialized_item.save()" + \
+			"\n" + "		saved_data = serialized_item.data # access the saved data" + \
+			"\n" + "		return Response(serialized_item.data, status=status.HTTP_201_CREATED)" + \
+			"\n" + \
+			"\n" + "class SingleBookView(generics.RetrieveUpdateAPIView):" + \
+			"\n" + "	queryset = Book.objects.all()" + \
+			"\n" + "	serializer_class = BookSerializer" + \
+			"\n" + "	# permission_classes = [IsAuthenticated]" + \
+			"\n" + \
+			"\n" + "class CategoryView(generics.ListCreateAPIView):" + \
+			"\n" + "	queryset = Category.objects.all()" + \
+			"\n" + "	serializer_class = CategorySerializer" + \
+			"\n" + \
+			"\n" + "class SingleCategoryView(generics.RetrieveUpdateAPIView):" + \
+			"\n" + "	queryset = Category.objects.all()" + \
+			"\n" + "	serializer_class = CategorySerializer" + "\n"
 
 	if not check:
 		mod_data = insert_lines(entity=entity, line_content=line_content, djoser=djoser, file_path=file_path, rm_FW=rm_FW)
@@ -255,22 +382,22 @@ def install_entity(entity: str, file_path: str=file_path, djoser: bool=False,):#
 				variable = django_toolbar_variable
 			case "startapp":
 				entity = temp
-				urls_path = os.path.join((os.sep.join(file_path.split(os.sep)[:-2])), entity)
-				os.makedirs(urls_path, exist_ok=True)
-				append_variable(file_path=urls_path + os.sep + 'urls.py', variable=urls_datails)
-				# with open(urls_path + os.sep + 'urls.py', 'w') as script:
-				# 	script.write(urls_datails)
+				create_files(file_path=app_path, filename='urls.py', variable_body=urls_datails)
 				urls_data = insert_lines(entity=entity, line_content=entity, urls=True, d_app=True, file_path=file_path)
 			case "rest_framework":
+				create_files(file_path=app_path, filename='models.py', variable_body=model_body)
+				create_files(file_path=app_path, filename='serializers.py', variable_body=serializer_body, variable_head=serializer_head)
+				create_files(file_path=app_path, filename='urls.py', variable_body=urls_djoser_body, variable_head=urls_djoser_head, pattern=True)
+				create_files(file_path=app_path, filename='views.py', variable_body=views_body, variable_head=views_head)
 				variable = restframework_variable
 			case "rest_framework.authtoken":
-				urls_data = insert_lines(entity=entity, line_content=line_content, urls=True, drf_auth=True, file_path=file_path)
+				urls_data = insert_lines(entity=entity, line_content=line_content, urls=True, drf_auth=True, uauth=True, file_path=file_path)
 				urls_data = insert_lines(entity=entity, line_content=line_content, drf_auth=True, sett=True, file_path=file_path)
 			case "rest_framework_simplejwt":
 				variable = jwt_variable
 				line_content = "'rest_framework_simplejwt.authentication.JWTAuthentication'"
 				urls_data = insert_lines(entity='SECOND CALL', line_content=line_content, just_auth=True, drf_jwt=True, file_path=file_path)
-				urls_data = insert_lines(entity='THIRD CALL', line_content="", urls=True, drf_jwt=True, file_path=file_path)
+				urls_data = insert_lines(entity='THIRD CALL', line_content="", urls=True, uauthjwt=True, drf_jwt=True, file_path=file_path)
 			case "static":
 				project_dir = file_path.split('/')[-2]
 				base_dir_path = os.path.join(os.getcwd(), 'static', project_dir)
@@ -291,7 +418,8 @@ def install_entity(entity: str, file_path: str=file_path, djoser: bool=False,):#
 def insert_lines(entity: str, line_content: str, file_path: str=None,
 				urls: bool=False, djoser: bool=False, djangotoolbar: bool=False,
 				drf_auth: bool=False, drf_jwt: bool=False, d_app: bool=False,
-				rm_FW: bool=False, just_auth: bool=False, sett: bool=False):
+				rm_FW: bool=False, just_auth: bool=False, sett: bool=False,
+    			uauth:bool=False, uauthjwt: bool=False,):
 	"""Afix the necessary configuration lines into settings.py
 		and project's urls.py.
 
@@ -371,7 +499,10 @@ def insert_lines(entity: str, line_content: str, file_path: str=None,
 					data.insert(index, line)
 					data.pop(index+1)
 				if drf_auth:
-					string_to_insert1 = "from rest_framework.authtoken.views import obtain_auth_token" + "\n"
+					if uauthjwt:
+						string_to_insert1 = "from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView" + "\n"
+					else:
+						string_to_insert1 = "from rest_framework.authtoken.views import obtain_auth_token" + "\n"
 					append_variable(file_path=file_path, variable=string_to_insert1.strip(), no_append=True, index=index+2)
 					data.insert(index+1, string_to_insert1)
 			if "urlpatterns =" in line:
@@ -383,14 +514,16 @@ def insert_lines(entity: str, line_content: str, file_path: str=None,
 					if not auth12 and not drf_jwt and not djoser:
 						content_insert += "    path('api-token-auth/', obtain_auth_token),    # For DRF auth_token" + \
 										"\n"
-					if not checker:
+					if not checker and not uauth and not uauthjwt:
 						content_insert += "    path('api/', include('djoser.urls')),     # For basic djoser authentication" + \
 										"\n"
 					if djoser:
 						content_insert += "    path('api/', include('djoser.urls.authtoken')),     # For more djoser authentication" + \
 										"\n"
 					if drf_jwt:
-						content_insert += "    path('api/', include('djoser.urls.jwt')),  # For JWT authentication" + \
+						content_insert += \
+										"    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # For JWT authentication" + \
+										"\n" + "    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # For JWT authentication" + \
 										"\n"
 				else:
 					if not debug_tb:
