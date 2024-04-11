@@ -1,0 +1,25 @@
+#!/bin/bash
+
+operation_entries()
+{
+    local ARGS=$1
+    echo ""
+    for argument in $ARGS ; do
+		git restore "$argument"
+        echo "$argument restored the same state as last commit ... "
+	done
+}
+
+RESP="$1"
+if [[ -n "$RESP" ]]; then
+    ARGS=$@
+    operation_entries "$ARGS"
+else
+    read -p "Enter the path to file/directory name(s). [q] - quit >>> " ARGS
+    if [[ "$ARGS" =~ [qQ] ]]; then
+        echo ""
+        echo "Cheers."
+        exit 0
+    fi
+    operation_entries "$ARGS"
+fi
