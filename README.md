@@ -32,6 +32,9 @@
    * createRepo command - creates a github repository right from the command line
    * deleteRepo command - deletes a github repository right from the command line. NOTE: THIS COMMAND IS TO BE USED WITH CAUTION, any repository deleted CANNOT be reversed.
    * cloneRepo command - displays the list of repositories and clone them from any account right from the command line. Collaboration has never been more interesting!
+
+   * restoreFile command - restores file(s) to previous states
+
    * viewRepos command - displays the list of repositories from any account right from the command line. Bringing the information to you on the go!
    * betty linter command
    * pycode command - a pycodestyle (PEP 8) linter
@@ -56,7 +59,7 @@
 	* commitdir command - commits all the changes in the current dir
 	* commitall command - just like commitdir but commits all the changes in the working tree instead
    * wcount command - counts the lines, words and chars in files
-   * stash command - saves uncommitted changes in the working tree for the cuurent branch
+   * stash command - saves uncommitted changes in the working tree for the curent branch
 	* viewStash command - displays a list of all stashed changes in all branches and can be applied to the current branch
 	* logit command - displays a detailed log of your commits with their branches
 
@@ -125,6 +128,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## New
+   - restoreFile
    - djangoToolbar
    - jwtDjango
    - static4django
@@ -132,6 +136,8 @@ This file contains the notable changes made to the Custom Commands project.
    - drf
 
 ## Changes
+   - changed compareChanges command to compareChange command
+   - django config commands now display the specific changes made to the settings and urls files
    - added support for DRF-xml rednderer configuration, separated DRF-auth configuration from DRF config in DRF command
    - implemented app-level urls.py auto creation and urls configuration were added in startapp command
    - gitignore now auto add all \_\_pychache\_\_ files and venv dirs if you choose to
