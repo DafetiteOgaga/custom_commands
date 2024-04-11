@@ -263,8 +263,11 @@ dOptions=(
 	"  status command - displays updates in the branch"
 	#...bash script files.................. #
 	"  curfol command - opens cwd using file explorer"
-	"  pyxecute - appends shebang and makes your python files executable"
-	"  shxecute - appends shebang and makes your bash files executable"
+	"  pyxecute - appends shebang and makes your python scripts executable"
+	"  shxecute - appends shebang and makes your bash scripts executable"
+
+	"  jsxecute - appends shebang and makes your js scripts executable"
+
 	"  pycodemore command(pycode with details)"
 	"  createPatch command - creates a .patch file from two files"
 	"  rollback command - reverts the current branch to an earlier commit"
@@ -440,225 +443,229 @@ options()
 			category b "$converted_selection"
 			;;
 		16)
-			DFILENAME="pycodemore"
+			DFILENAME="jsxecute"
 			category b "$converted_selection"
 			;;
 		17)
-			DFILENAME="createPatch"
+			DFILENAME="pycodemore"
 			category b "$converted_selection"
 			;;
 		18)
-			DFILENAME="rollback"
+			DFILENAME="createPatch"
 			category b "$converted_selection"
 			;;
 		19)
-			DFILENAME="cls"
+			DFILENAME="rollback"
 			category b "$converted_selection"
 			;;
 		20)
-			DFILENAME="authorID"
+			DFILENAME="cls"
 			category b "$converted_selection"
 			;;
 		21)
+			DFILENAME="authorID"
+			category b "$converted_selection"
+			;;
+		22)
 			DFILENAME="commitree"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		22)
+		23)
 			DFILENAME="compareChange"
 			category p "$converted_selection"
 			;;
-		23)
+		24)
 			DFILENAME="commitdir"
 			category p "$converted_selection"
 			;;
-		24)
+		25)
 			DFILENAME="commitall"
 			category p "$converted_selection"
 			;;
-		25)
+		26)
 			DFILENAME="wcount"
 			category p "$converted_selection"
 			;;
-		26)
+		27)
 			DFILENAME="stash"
 			category p "$converted_selection"
 			;;
-		27)
+		28)
 			DFILENAME="viewStash"
 			category p "$converted_selection"
 			;;
-		28)
+		29)
 			DFILENAME="logit"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		29)
+		30)
 			DFILENAME="py3venv"
 			category b "$converted_selection"
 			;;
 
-		30)
+		31)
 			DFILENAME="requirement_txt"
 			category p "$converted_selection"
 			;;
 		
 		# ...bash script files................................... #
-		31)
+		32)
 			DFILENAME="djangoToolbar"
 			category b "$converted_selection"
 			;;
-		32)
+		33)
 			DFILENAME="drf"
 			category b "$converted_selection"
 			;;
-		33)
+		34)
 			DFILENAME="djoser"
 			category b "$converted_selection"
 			;;
-		34)
+		35)
 			DFILENAME="jwtDjango"
 			category b "$converted_selection"
 			;;
-		35)
+		36)
 			DFILENAME="static4django"
 			category b "$converted_selection"
 			;;
 
-		36)
+		37)
 			DFILENAME="startproject"
 			category b "$converted_selection"
 			;;
-		37)
+		38)
 			DFILENAME="startapp"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		38)
+		39)
 			DFILENAME="runserver"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		39)
+		40)
 			DFILENAME="makemigrations"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		40)
+		41)
 			DFILENAME="migrate"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		41)
+		42)
 			DFILENAME="django"
 			category b "$converted_selection"
 			;;
-		42)
+		43)
 			DFILENAME="djshell"
 			category b "$converted_selection"
 			;;
-		43)
+		44)
 			DFILENAME="mkandmigrate"
 			category b "$converted_selection"
 			;;
 
 	#...py script files..................................... #
-		44)
+		45)
 			DFILENAME="showmigrations"
 			category p "$converted_selection"
 			;;
-		45)
+		46)
 			DFILENAME="sqlmigrate"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		46)
+		47)
 			DFILENAME="mysqlversion"
 			category b "$converted_selection"
 			;;
-		47)
+		48)
 			DFILENAME="mysqlstartserver"
 			category b "$converted_selection"
 			;;
-		48)
+		49)
 			DFILENAME="mysqlstopserver"
 			category b "$converted_selection"
 			;;
-		49)
+		50)
 			DFILENAME="mysqlrestartserver"
 			category b "$converted_selection"
 			;;
-		50)
+		51)
 			DFILENAME="mysqlstatus_server"
 			category b "$converted_selection"
 			;;
-		51)
+		52)
 			DFILENAME="mysqlshell"
 			category b "$converted_selection"
 			;;
-		52)
+		53)
 			DFILENAME="ctemp"
 			category b "$converted_selection" "ct"
 			;;
 	
 	# ...py script files..................................... #
-		53)
+		54)
 			DFILENAME="clear_commit"
 			category p "$converted_selection"
 			;;
-		54)
+		55)
 			DFILENAME="betty"
 			category b "$converted_selection"
 			;;
-		55)
+		56)
 			DFILENAME="pycode"
 			category b "$converted_selection"
 			;;
 
-		56)
+		57)
 			DFILENAME="printmyEnv"
 			category p "$converted_selection"
 			;;
-		57)
+		58)
 			DFILENAME="show"
 			category p "$converted_selection"
 			;;
-		58)
+		59)
 			DFILENAME="verifyRepo"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		59)
+		60)
 			DFILENAME="mycompile"
 			category b "$converted_selection"
 			;;
-		60)
+		61)
 			DFILENAME="pycompile"
 			category b "$converted_selection"
 			;;
 	
 	# ...C files............................................. #
-		61)
+		62)
 			DFILENAME="myascii"
 			category c "$converted_selection"
 			;;
-		62)
+		63)
 			DFILENAME="rot13"
 			category c "$converted_selection"
 			;;
-		63)
+		64)
 			DFILENAME="rot47"
 			category c "$converted_selection"
 			;;
-		64)
+		65)
 			DFILENAME="guessGame"
 			category c "$converted_selection"
 			;;
@@ -933,9 +940,6 @@ instructn()
 		"curfol")
 			echo -e "$STRT open your current working directory $EFFT $ANYWHERE: $DFILENAME"
 			;;
-		"pyxecute")
-			echo -e "$STRT adds shebang and turn your file(s) to executable file(s) $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
-			;;
 	# ............................................................ #
 		"guessGane")
 			echo -e "$STRT play guessing game $EFFT $ANYWHERE: $DFILENAME"
@@ -974,9 +978,15 @@ instructn()
 		"status")
 			echo -e "$STRT view tracked and untracked file(s) in the working tree $EFFT $ANYWHERE: $DFILENAME"
 			;;
-		"shxecute")
+		"pyxecute"|"shxecute"|"jsxecute")
 			echo -e "$STRT adds shebang and turn your file(s) to executable file(s) $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
 			;;
+		# "shxecute")
+		# 	echo -e "$STRT adds shebang and turn your file(s) to executable file(s) $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
+		# 	;;
+		# "jsxecute")
+		# 	echo -e "$STRT adds shebang and turn your file(s) to executable file(s) $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
+		# 	;;
 		"createPatch")
 			echo -e "$STRT patch files $EFFT $ANYWHERE: $DFILENAME <main file> <updated file>"
 			;;

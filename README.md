@@ -48,6 +48,9 @@
    * curfol command - opens current working directory using file explorer
    * pyxecute - appends shebang and makes your python files executable
    * shxecute - works just like pyxecute but for bash scripts
+
+   * jsxecute - works just like pyxecute but for js scripts
+
    * pycodemore command(pycode with details)
    * createPatch command - creates a .patch file
    * rollback command - reverts the current branch to an older commit instance
@@ -128,6 +131,7 @@ This file contains the notable changes made to the Custom Commands project.
 
 
 ## New
+   - jsxecute
    - restoreFile
    - djangoToolbar
    - jwtDjango
