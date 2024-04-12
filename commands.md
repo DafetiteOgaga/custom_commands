@@ -5,8 +5,7 @@
 ### Git commands
    * push command - synchronse rather than just push
    * pull command - updates your local branch with changes from remote
-   * pushfile command - similar to "push" command but it stages and commits files individually then updates the remote. To skip a file from being staged and committed type "pass".
-   <br>
+   * pushfile command - similar to "push" command but it stages and commits files individually then updates the remote. To skip a file from being staged and committed type "pass".<br>
    Note: you can set and remove "Update README.md" as your default commit message for all README.md files
    * pushall command - similar to "push" command but it stages and commits all changes in the working in one operation
    * createRepo command - creates a github repository right from the command line without having to enter your details everytime

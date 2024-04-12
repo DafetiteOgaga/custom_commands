@@ -1,0 +1,17 @@
+startproject
+py3venv
+startapp		settings and urls
+static4django	settings
+jwtdjango		settings and urls
+drf				settings
+xml renderer	settings
+auth token		settings and urls
+djoser			settings and urls	
+djangotoolbar	settings and urls
+
+# write a command that runs them all
+
+# for js
+sudo apt install nodejs
+sudo apt install npm
+ 
