@@ -189,7 +189,12 @@ def install_entity(entity: str, settings_path: list=settings_path, djoser: bool=
 	"""
 	
 	file_path = [k for k in settings_path if k.endswith('settings.py')][0]
-	app_path = os.sep.join([k for k in settings_path if k.endswith('views.py')][0].split(os.sep)[:-1])
+	try:
+		app_path = os.sep.join([k for k in settings_path if k.endswith('views.py')][0].split(os.sep)[:-1])
+	except IndexError:
+		print('\n')
+		print('Do you have a django app installed?')
+		sys.exit(1)
 	# print('app_path: {}'.format(app_path))
 	# sys.exit(0)
 	command = None
