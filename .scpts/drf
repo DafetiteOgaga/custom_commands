@@ -56,6 +56,9 @@ elif [ "$#" -eq 0 ]; then
 	output1="$(echo "rest_framework" | python3 $path1 2>&1)"
 	echo "$output1"
 	echo ""
+	if [[ "$output1" == *"you have a django app installed?"* ]]; then
+		exit 1
+	fi
 	echo "..............................................."
 
 	for number in {1..2} ; do
@@ -66,4 +69,12 @@ elif [ "$#" -eq 0 ]; then
 	echo ""
 	echo "check out others: djoser, jwtDjango, djangoToolbar and static4django commands."
 	echo "Note: if you are using a virtual environment, you need to specify the path to your interpreter in vscode to enable it recorgnise it."
+	echo ""
+	echo -e "installed API endpoints:
+\t - category			list/creation of book categories
+\t - category/<int>		details of a specific book category
+\t - books			list/creation of books
+\t - books/<int>			details of a specific book
+
+\t - api-token-auth/		django's auth token generation"
 fi
