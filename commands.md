@@ -1,4 +1,4 @@
-# Custom Comands
+# Custom Commands
 
   ### `custom_command` is installed automatically for you - displays all the custom commands installed on your machine
 
