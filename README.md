@@ -20,18 +20,21 @@
    ```bash
    ./setScript.sh
    ```
-   ### **After installation you can access various commands on your computer/phone such as:**
+<br>
+<hr>
+
+### **After installation you can access various commands on your computer/phone such as:**
 
 
 <table>
   <tr>
-    <td>Git commands</td>
-    <td>Django commands</td>
-    <td>Shell commands</td>
-    <td>MySQL commands</td>
-    <td>Betty command</td>
-    <td>Python commands</td>
-    <td>C commands</td>
+    <td><strong>Git commands</strong></td>
+    <td><strong>Django commands</strong></td>
+    <td><strong>Shell commands</strong></td>
+    <td><strong>MySQL commands</strong></td>
+    <td><strong>Betty command</strong></td>
+    <td><strong>Python commands</strong></td>
+    <td><strong>C commands</strong></td>
   </tr>
   <tr>
     <td>push</td>
