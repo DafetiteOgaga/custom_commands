@@ -6,6 +6,10 @@
 
 ### Note: **You can view all your custom commands by running `custom_commands` on your terminal**
 
+## Platform
+* Unix, Linux, Windows Subsystem for Linux
+<br><br>
+
 # Installation
 
 1. ### **Clone the repository:**
@@ -282,31 +286,30 @@
 - Commit your changes and push to your fork.
 - Submit a pull request to this repository.
 
-
 ## New
-   - jsxecute
-   - restoreFile
-   - djangoToolbar
-   - jwtDjango
-   - static4django
-   - djoser
-   - drf
+  - jsxecute
+  - restoreFile
+  - djangoToolbar
+  - jwtDjango
+  - static4django
+  - djoser
+  - drf
 
 ## Changes
-   - Added the list of endpoints created by drf, jwtDjango and djoser to the the displayed text after installation
-   - django config commands now display the specific changes made to the settings and urls files
-   - added support for DRF-xml rednderer configuration, separated DRF-auth configuration from DRF config in DRF command
-   - implemented app-level urls.py auto creation and urls configuration were added in startapp command
-   - gitignore now auto add all \_\_pychache\_\_ files and venv dirs if you choose to
-   - [More](https://github.com/DafetiteOgaga/custom_commands/blob/master/changes.md)
+  - Added the list of endpoints created by drf, jwtDjango and djoser to the the displayed text after installation
+  - django config commands now display the specific changes made to the settings and urls files
+  - added support for DRF-xml rednderer configuration, separated DRF-auth configuration from DRF config in DRF command
+  - implemented app-level urls.py auto creation and urls configuration were added in startapp command
+  - gitignore now auto add all \_\_pychache\_\_ files and venv dirs if you choose to
+  - [More](https://github.com/DafetiteOgaga/custom_commands/blob/master/changes.md)
 
 
 ## Fixes
-   - handled the case where a user tries to install and configure a django project without initially installing an app
-   - fixed the DRF module error for runserver, sqlmigrate commanda
-   - handled moduleNotFound error in migrate command
-   - minor bug fixes to: djshell, makemigrations, mkandmigrate, static4django
-   - [More](https://github.com/DafetiteOgaga/custom_commands/blob/master/fixes.md)
+  - handled the case where a user tries to install and configure a django project without initially installing an app
+  - fixed the DRF module error for runserver, sqlmigrate commanda
+  - handled moduleNotFound error in migrate command
+  - minor bug fixes to: djshell, makemigrations, mkandmigrate, static4django
+  - [More](https://github.com/DafetiteOgaga/custom_commands/blob/master/fixes.md)
 
 
 
