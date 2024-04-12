@@ -26,7 +26,7 @@ for argument in "$@" ; do
     if [[ $argument == *".sh" ]]; then
 		make_exe
 	else
-		echo -n "Is $argument a js script? [y/N] >>> "
+		echo -n "Is $argument a javascript? [y/N] >>> "
 		read -n 1 -s -r RES
 		echo -e "$RES"
 		if [[ $RES =~ [yY] ]]; then
@@ -40,7 +40,7 @@ done
 
 if [[ $nojscount == $count ]]; then
 echo -e ""
-	echo -e "No js script found."
+	echo -e "No javascript found."
 fi
 
 echo -e ""

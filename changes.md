@@ -1,3 +1,6 @@
+# Changelog
+This file contains the notable changes made to the Custom Commands project.
+
 ## Changes
    - Added the list of endpoints created by drf, jwtDjango and djoser to the the displayed text after installation
    - changed compareChanges command to compareChange command
