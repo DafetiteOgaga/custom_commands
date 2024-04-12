@@ -25,6 +25,7 @@
 
 ### **After installation you can access various commands on your computer/phone such as:**
 
+<br>
 
 <table>
   <tr>
