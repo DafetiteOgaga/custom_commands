@@ -27,6 +27,20 @@ elif [ "$#" -eq 0 ]; then
 	output="$(echo "djoser" | python3 $path1/configure_settings_py.py 2>&1)"
 	echo "$output"
 	echo ""
+	if [[ "$output" == *"you have a django app installed?"* ]]; then
+		exit 1
+	fi
 	echo "..............................................."
 	echo "djoser is installed successfully and configured under INSTALLED_APPS in settings.py and in urls.py"
+
+	echo ""
+	echo -e "installed API endpoints:
+\t - /users/					user registerion and list of  users (username, email and password)
+\t - /users/activation/				Activate (confirm) the user's email addres
+\t - /token/login/				log in (username/email and password) and receives a token
+\t - /token/logout/				log out
+\t - /users/reset_password/			Allows users to reset their password
+\t - /users/reset_password_confirm/		Allows users to confirm their password 
+\t - /users/set_password/				Allows authenticated users to set a new password
+\t - /users/me/					Retrieves the details of the currently authenticated user"
 fi

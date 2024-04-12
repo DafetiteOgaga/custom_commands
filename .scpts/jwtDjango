@@ -27,7 +27,15 @@ elif [ "$#" -eq 0 ]; then
 	output1="$(echo "rest_framework_simplejwt" | python3 $path1/configure_settings_py.py 2>&1)"
 	echo "$output1"
 	echo ""
+	if [[ "$output1" == *"you have a django app installed?"* ]]; then
+		exit 1
+	fi
 	echo "..............................................."
 	echo "JWT(json web token) is installed successfully and configured under INSTALLED_APPS in settings.py and in urls.py"
 	echo "Goto settings.py and uncomment some settings under DJOSER and REST_FRAMEWORK variables"
+	echo ""
+	echo -e "installed API endpoints:
+\t - /token/		generates a token for registered users
+\t - /token/refresh/	refreshes token"
+
 fi
