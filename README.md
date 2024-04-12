@@ -146,7 +146,7 @@ This file contains the notable changes made to the Custom Commands project.
    - added support for DRF-xml rednderer configuration, separated DRF-auth configuration from DRF config in DRF command
    - implemented app-level urls.py auto creation and urls configuration were added in startapp command
    - gitignore now auto add all \_\_pychache\_\_ files and venv dirs if you choose to
-   - [More](https://github.com/DafetiteOgaga/custom_commands/changes.md)
+   - [More](https://github.com/DafetiteOgaga/custom_commands/blob/master/changes.md)
 
 
 ## Fixes
@@ -154,8 +154,7 @@ This file contains the notable changes made to the Custom Commands project.
    - fixed the DRF module error for runserver, sqlmigrate commanda
    - handled moduleNotFound error in migrate command
    - minor bug fixes to: djshell, makemigrations, mkandmigrate, static4django
-   - - [More](https://github.com/DafetiteOgaga/custom_commands/fixes.md)
-   
+   - [More](https://github.com/DafetiteOgaga/custom_commands/blob/master/fixes.md)
 
 
 
