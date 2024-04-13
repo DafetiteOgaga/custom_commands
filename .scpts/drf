@@ -71,10 +71,20 @@ elif [ "$#" -eq 0 ]; then
 	echo "Note: if you are using a virtual environment, you need to specify the path to your interpreter in vscode to enable it recorgnise it."
 	echo ""
 	echo -e "installed API endpoints:
-\t - category			list/creation of book categories
-\t - category/<int>		details of a specific book category
-\t - books			list/creation of books
-\t - books/<int>			details of a specific book
+\t - category				List/creation of book categories
+\t - category/<int>			Details of a specific book category
+\t - books				List/creation of books
+\t - books/<int>				Details of a specific book
 
-\t - api-token-auth/		django's auth token generation"
+\t - api-token-auth/			Django's auth token generation
+\t - /users/				Allows users to register
+\t - /users/activation/			Activate (confirm) the user's email addres
+\t - /token/login/			Log in and receives a token
+\t - /token/logout/			Log out
+\t - /users/reset_password/		Allows users to reset their passwords
+\t - /users/reset_password_confirm/	Allows users to confirm password reset
+\t - /users/set_password/			Allows authenticated users to set new passwords
+\t - /users/me/				RSetrieves details of currently authenticated user
+
+run: mkandmigrate to makemigrations and migrate them."
 fi
