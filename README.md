@@ -6,7 +6,7 @@
 
 ### Note: **You can view all your custom commands by running `custom_commands` on your terminal**
 
-## Platform
+## Platforms
 * Unix, Linux, Windows Subsystem for Linux
 <br><br>
 
