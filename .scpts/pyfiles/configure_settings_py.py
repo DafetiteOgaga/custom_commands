@@ -174,7 +174,7 @@ try:
 	# print('file_path global: {}'.format(file_path))
 except IndexError:
 	file_path = ''
-	print('...')
+	print('....')
 
 def install_entity(entity: str, settings_path: list=settings_path, djoser: bool=False,):# variable: str=None):
 	"""Configures the settings.py and project's urls.py files for django apps,
