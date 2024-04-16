@@ -32,10 +32,13 @@ def backward_search():
 			print("You don't seem to be in a git repository")
 			print('Change into a repository and try again')
 			print()
-			sys.exit(1)
+			return True
 		os.chdir(os.pardir)
 		return backward_search()
 
+def exit2(leave: bool = False):
+    if leave == True:
+        sys.exit(0)
 
 def write_to_file(ignore_list, delimiter: str, read: bool=False):
 	"""Inserts the given lines into the .gitignore file.
@@ -85,7 +88,7 @@ try:
 	venv = [dir for dir in venv if dir.split(delimiter)[-1] not in gitignore_content]
 except:
 	print('...')
-
+	exit2(leave=root_repo)
 
 def gitignore():
 	"""Initiates the gitignore operation
