@@ -57,10 +57,11 @@ def write_to_file(ignore_list, delimiter: str, read: bool=False):
 		with open(filename) as g:
 			for line in g:
 				file_list.append(line.strip())
+		if read:
+			return file_list
 	except FileNotFoundError:
-		open(filename, 'w').close()
-	if read:
-		return file_list
+		if not read:
+			open(filename, 'w').close()
 	if filename.split(delimiter)[-1] not in file_list:
 		ignore_file = 0
 	with open(filename, 'a') as f:
