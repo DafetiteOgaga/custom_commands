@@ -248,9 +248,6 @@ dOptions=(
 	"  pull command - updates your local branch with changes from the remote"
 	"  pushfile command - stage, commit individual files to the local/remote repo"
 	"  pushall command - stage, commit and updates the local/remote repos"
-
-	"  pullFromMain command - pulls updates from the remote to the current branch"
-	
 	#...bash script files.................. #
 	"  createRepo command - creates a github repository right from CLI"
 	"  deleteRepo command - deletes a github repository right from CLI"
@@ -391,288 +388,284 @@ options()
 			DFILENAME="pushall"
 			category p "$converted_selection"
 			;;
-		4)
-			DFILENAME="pullFromMain"
-			category p "$converted_selection"
-			;;
 	
 	# ...bash script files................................... #
-		5)
+		4)
 			DFILENAME="createRepo"
 			category b "$converted_selection" "cr"
 			;;
-		6)
+		5)
 			DFILENAME="deleteRepo"
 			category b "$converted_selection" "dr"
 			;;
-		7)
+		6)
 			DFILENAME="cloneRepo"
 			category b "$converted_selection" "cl"
 			;;
-		8)
+		7)
 			DFILENAME="restoreFile"
 			category b "$converted_selection"
 			;;
-		9)
+		8)
 			DFILENAME="viewRepos"
 			category b "$converted_selection" "vr"
 			;;
 		
 	# ...py script files..................................... #
-		10)
+		9)
 			DFILENAME="gitignore"
 			category p "$converted_selection"
 			;;
-		11)
+		10)
 			DFILENAME="branch"
 			category p "$converted_selection"
 			;;
-		12)
+		11)
 			DFILENAME="merge"
 			category p "$converted_selection"
 			;;
-		13)
+		12)
 			DFILENAME="status"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		14)
+		13)
 			DFILENAME="curfol"
 			category b "$converted_selection"
 			;;
-		15)
+		14)
 			DFILENAME="pyxecute"
 			category b "$converted_selection"
 			;;
-		16)
+		15)
 			DFILENAME="shxecute"
 			category b "$converted_selection"
 			;;
-		17)
+		16)
 			DFILENAME="jsxecute"
 			category b "$converted_selection"
 			;;
-		18)
+		17)
 			DFILENAME="pycodemore"
 			category b "$converted_selection"
 			;;
-		19)
+		18)
 			DFILENAME="createPatch"
 			category b "$converted_selection"
 			;;
-		20)
+		19)
 			DFILENAME="rollback"
 			category b "$converted_selection"
 			;;
-		21)
+		20)
 			DFILENAME="cls"
 			category b "$converted_selection"
 			;;
-		22)
+		21)
 			DFILENAME="authorID"
 			category b "$converted_selection"
 			;;
-		23)
+		22)
 			DFILENAME="commitree"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		24)
+		23)
 			DFILENAME="compareChange"
 			category p "$converted_selection"
 			;;
-		25)
+		24)
 			DFILENAME="commitdir"
 			category p "$converted_selection"
 			;;
-		26)
+		25)
 			DFILENAME="commitall"
 			category p "$converted_selection"
 			;;
-		27)
+		26)
 			DFILENAME="wcount"
 			category p "$converted_selection"
 			;;
-		28)
+		27)
 			DFILENAME="stash"
 			category p "$converted_selection"
 			;;
-		29)
+		28)
 			DFILENAME="viewStash"
 			category p "$converted_selection"
 			;;
-		30)
+		29)
 			DFILENAME="logit"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		31)
+		30)
 			DFILENAME="py3venv"
 			category b "$converted_selection"
 			;;
 
-		32)
+		31)
 			DFILENAME="requirement_txt"
 			category p "$converted_selection"
 			;;
 		
 		# ...bash script files................................... #
-		33)
+		32)
 			DFILENAME="djangoToolbar"
 			category b "$converted_selection"
 			;;
-		34)
+		33)
 			DFILENAME="drf"
 			category b "$converted_selection"
 			;;
-		35)
+		34)
 			DFILENAME="djoser"
 			category b "$converted_selection"
 			;;
-		36)
+		35)
 			DFILENAME="jwtDjango"
 			category b "$converted_selection"
 			;;
-		37)
+		36)
 			DFILENAME="static4django"
 			category b "$converted_selection"
 			;;
 
-		38)
+		37)
 			DFILENAME="startproject"
 			category b "$converted_selection"
 			;;
-		39)
+		38)
 			DFILENAME="startapp"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		40)
+		39)
 			DFILENAME="runserver"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		41)
+		40)
 			DFILENAME="makemigrations"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		42)
+		41)
 			DFILENAME="migrate"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		43)
+		42)
 			DFILENAME="django"
 			category b "$converted_selection"
 			;;
-		44)
+		43)
 			DFILENAME="djshell"
 			category b "$converted_selection"
 			;;
-		45)
+		44)
 			DFILENAME="mkandmigrate"
 			category b "$converted_selection"
 			;;
 
 	#...py script files..................................... #
-		46)
+		45)
 			DFILENAME="showmigrations"
 			category p "$converted_selection"
 			;;
-		47)
+		46)
 			DFILENAME="sqlmigrate"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		48)
+		47)
 			DFILENAME="mysqlversion"
 			category b "$converted_selection"
 			;;
-		49)
+		48)
 			DFILENAME="mysqlstartserver"
 			category b "$converted_selection"
 			;;
-		50)
+		49)
 			DFILENAME="mysqlstopserver"
 			category b "$converted_selection"
 			;;
-		51)
+		50)
 			DFILENAME="mysqlrestartserver"
 			category b "$converted_selection"
 			;;
-		52)
+		51)
 			DFILENAME="mysqlstatus_server"
 			category b "$converted_selection"
 			;;
-		53)
+		52)
 			DFILENAME="mysqlshell"
 			category b "$converted_selection"
 			;;
-		54)
+		53)
 			DFILENAME="ctemp"
 			category b "$converted_selection" "ct"
 			;;
 	
 	# ...py script files..................................... #
-		55)
+		54)
 			DFILENAME="clear_commit"
 			category p "$converted_selection"
 			;;
-		56)
+		55)
 			DFILENAME="betty"
 			category b "$converted_selection"
 			;;
-		57)
+		56)
 			DFILENAME="pycode"
 			category b "$converted_selection"
 			;;
 
-		58)
+		57)
 			DFILENAME="printmyEnv"
 			category p "$converted_selection"
 			;;
-		59)
+		58)
 			DFILENAME="show"
 			category p "$converted_selection"
 			;;
-		60)
+		59)
 			DFILENAME="verifyRepo"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		61)
+		60)
 			DFILENAME="mycompile"
 			category b "$converted_selection"
 			;;
-		62)
+		61)
 			DFILENAME="pycompile"
 			category b "$converted_selection"
 			;;
 	
 	# ...C files............................................. #
-		63)
+		62)
 			DFILENAME="myascii"
 			category c "$converted_selection"
 			;;
-		64)
+		63)
 			DFILENAME="rot13"
 			category c "$converted_selection"
 			;;
-		65)
+		64)
 			DFILENAME="rot47"
 			category c "$converted_selection"
 			;;
-		66)
+		65)
 			DFILENAME="guessGame"
 			category c "$converted_selection"
 			;;
@@ -913,9 +906,6 @@ instructn()
 			;;
 		"pull")
 			echo -e "$STRT pull from github. $ANYWHERE: $DFILENAME"
-			;;
-		"pullFromMain")
-			echo -e "$STRT pulls updates from the remote into the current branch. $ANYWHERE: $DFILENAME"
 			;;
 		"createRepo")
 			echo -e "$STRT create a github repo right from your terminal. $ANYWHERE: $DFILENAME"

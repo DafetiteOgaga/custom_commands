@@ -266,15 +266,7 @@
     <td></td>
     <td></td>
   </tr>
-  <tr>
-    <td>pullFromMain</td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
+
 </table>
 
 #### Note: For more details about the each commands. [click me](https://github.com/DafetiteOgaga/custom_commands/blob/master/commands.md)
@@ -295,7 +287,6 @@
 - Submit a pull request to this repository.
 
 ## New
-  - pullFromMain
   - jsxecute
   - restoreFile
   - djangoToolbar
