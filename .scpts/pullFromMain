@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+
+from pyfiles.git_codes import pull_from_main_or_master
+
+pull_from_main_or_master()
+
