@@ -32,6 +32,7 @@
    * show command - displays a list of all commits made to the selected repository
    * verifyRepo command - checkes if the current dir is a repository or not
    * viewRepos command - displays the list of repositories from any account right from the command line. Bringing the information to you on the go!
+   * pullFromMain command - pulls changes from the main remote branch into the current local branch
 
 ### Djando commands
    * startproject command - creates a new django project
