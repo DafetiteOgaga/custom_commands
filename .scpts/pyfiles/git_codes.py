@@ -37,8 +37,8 @@ def backward_search():
 		return backward_search()
 
 def exit2(leave: bool = False):
-	if leave == True:
-		sys.exit(0)
+    if leave == True:
+        sys.exit(0)
 
 def write_to_file(ignore_list, delimiter: str, read: bool=False):
 	"""Inserts the given lines into the .gitignore file.
@@ -799,16 +799,6 @@ def merge_to_main_master():
 	# create_or_switch_branch(current_branch_name)
 
 
-def pull_from_main_or_master():
-	main = view_branch(new_branch="main", action=3)
-	
-	pull_from_main = subprocess.run(['git', 'pull', 'origin', main, '--no-edit'], capture_output=True, text=True)
-	if pull_from_main.stdout:
-		print_stdout(pull_from_main.stdout)
-	elif pull_from_main.stderr:
-		print_stdout(pull_from_main.stderr)
-
-
 def diff(action: int=0):
 	"""display detailed changes on the current branch compared to
 		that in the repository
@@ -914,5 +904,5 @@ def search_repo(repo_dir: list, delimiter: str, dir_path: str=None, repeat: int=
 	return ignore_list
 
 if current_dir_var:
-	os.chdir(current_dir_var)
-	
+    os.chdir(current_dir_var)
+    
