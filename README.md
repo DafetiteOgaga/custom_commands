@@ -35,6 +35,7 @@
   <tr>
     <td><strong>Git commands</strong></td>
     <td><strong>Django commands</strong></td>
+    <td><strong>Javascript commands</strong></td>
     <td><strong>Shell commands</strong></td>
     <td><strong>MySQL commands</strong></td>
     <td><strong>Betty command</strong></td>
@@ -44,6 +45,7 @@
   <tr>
     <td>push</td>
     <td>startproject</td>
+    <td>createReactApp</td>
     <td>pyxecute</td>
     <td>mysqlversion</td>
     <td>betty</td>
@@ -53,6 +55,7 @@
   <tr>
     <td>pull</td>
     <td>startapp</td>
+    <td>dependencyDevReact</td>
     <td>shxecute</td>
     <td>mysqlstartserver</td>
     <td></td>
@@ -62,6 +65,7 @@
   <tr>
     <td>pushfile</td>
     <td>runserver</td>
+    <td></td>
     <td>jsxecute</td>
     <td>mysqlstopserver</td>
     <td></td>
@@ -71,6 +75,7 @@
   <tr>
     <td>pushall</td>
     <td>makemigrations</td>
+    <td></td>
     <td>curfol</td>
     <td>mysqlrestartserver</td>
     <td></td>
@@ -80,6 +85,7 @@
   <tr>
     <td>createRepo</td>
     <td>migrate</td>
+    <td></td>
     <td>cls</td>
     <td>mysqlstatus_server</td>
     <td></td>
@@ -89,6 +95,7 @@
   <tr>
     <td>deleteRepo</td>
     <td>requirement_txt</td>
+    <td></td>
     <td>wcount</td>
     <td>mysqlshell</td>
     <td></td>
@@ -98,6 +105,7 @@
   <tr>
     <td>cloneRepo</td>
     <td>drf</td>
+    <td></td>
     <td>createPatch</td>
     <td></td>
     <td></td>
@@ -107,6 +115,7 @@
   <tr>
     <td>restoreFile</td>
     <td>djoser</td>
+    <td></td>
     <td>printmyEnv</td>
     <td></td>
     <td></td>
@@ -121,10 +130,12 @@
     <td></td>
     <td></td>
     <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>gitignore</td>
     <td>djangoToolbar</td>
+    <td></td>
     <td></td>
     <td></td>
     <td></td>
@@ -139,10 +150,12 @@
     <td></td>
     <td></td>
     <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>merge</td>
     <td>djshell</td>
+    <td></td>
     <td></td>
     <td></td>
     <td></td>
@@ -157,10 +170,12 @@
     <td></td>
     <td></td>
     <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>rollback</td>
     <td>showmigrations</td>
+    <td></td>
     <td></td>
     <td></td>
     <td></td>
@@ -175,6 +190,7 @@
     <td></td>
     <td></td>
     <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>commitree</td>
@@ -184,9 +200,11 @@
     <td></td>
     <td></td>
     <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>compareChange</td>
+    <td></td>
     <td></td>
     <td></td>
     <td></td>
@@ -202,9 +220,11 @@
     <td></td>
     <td></td>
     <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>commitall</td>
+    <td></td>
     <td></td>
     <td></td>
     <td></td>
@@ -220,9 +240,11 @@
     <td></td>
     <td></td>
     <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>viewStash</td>
+    <td></td>
     <td></td>
     <td></td>
     <td></td>
@@ -238,9 +260,11 @@
     <td></td>
     <td></td>
     <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>clear_commit</td>
+    <td></td>
     <td></td>
     <td></td>
     <td></td>
@@ -256,9 +280,21 @@
     <td></td>
     <td></td>
     <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>verifyRepo</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>getRepoUserName</td>
+    <td></td>
     <td></td>
     <td></td>
     <td></td>
@@ -287,6 +323,8 @@
 - Submit a pull request to this repository.
 
 ## New
+  - createReactApp
+  - dependencyDevReact
   - jsxecute
   - restoreFile
   - djangoToolbar
