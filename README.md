@@ -334,6 +334,8 @@
   - drf
 
 ## Changes
+  - implemented the auto detection of node_modeules in React app to gitignore command
+  - createRepo displays the visibility of the repo after selecting the type
   - Added the list of endpoints created by drf, jwtDjango and djoser to the the displayed text after installation
   - django config commands now display the specific changes made to the settings and urls files
   - added support for DRF-xml rednderer configuration, separated DRF-auth configuration from DRF config in DRF command
