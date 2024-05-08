@@ -1,90 +1,64 @@
 #!/usr/bin/env python3
 
-import subprocess, sys, time, os
+import subprocess, sys, os, time
 from datetime import datetime
-from .verify_repo_new import entry_point
-from .my_prompt import main as prompt_1ch
-from .colors import *
-from pyfiles.configure_settings_py import compile_dir_list
+from pyfiles.verify_repo_new import entry_point
+from pyfiles.my_prompt import main as prompt_1ch
+from pyfiles.print import print_stdout, write_to_file, backward_search
+from pyfiles.print import print_norm
+from pyfiles.configure_settings_py import compile_dir_list, list_filter
+from pyfiles.colors import *
 
 # now = datetime.now() 
 formatted_date_time = datetime.now().strftime("%H:%M:%S on %a %b %Y")
 
-# [RED GREEN YELLOW MAGENTA BLUE CYAN]
-# [BRIGHT_BLACK BRIGHT_RED BRIGHT_GREEN BRIGHT_YELLOW
-# BRIGHT_BLUE BRIGHT_MAGENTA BRIGHT_CYAN BRIGHT_WHITE]
-# [RESET BOLD ITALIC UNDERLINE BLINK REVERSE STRIKETHROUGH]
-
-
-def backward_search():
-	"""Generates the path to the repository in the child directory.
-
-	Returns:
-		str: path to root repository
-	"""
-	init_path = os.getcwd()
-	if ".git" in os.listdir():
-		root_repo = init_path
-		return root_repo
-	else:
-		if init_path == '/':
-			print()
-			print("You don't seem to be in a git repository")
-			print('Change into a repository and try again')
-			print()
-			return True
-		os.chdir(os.pardir)
-		return backward_search()
-
 def exit2(leave: bool = False):
-    if leave == True:
-        sys.exit(0)
-
-def write_to_file(ignore_list, delimiter: str, read: bool=False):
-	"""Inserts the given lines into the .gitignore file.
-
-	Args:
-		ignore_list (list): list of path to append to file
-		delimiter (str): delimiter
-		read (bool, optional): indicats that the current process is
-		extract the content of .gitignore file. Defaults to False.
-
-	Returns:
-		list: content of .gitignore file
-	"""
-	# set the file name to .gitignore
-	filename = delimiter + '.gitignore'
-	ignore_file = 1
-	try:
-		file_list = []
-		with open(filename) as g:
-			for line in g:
-				file_list.append(line.strip())
-		if read:
-			return file_list
-	except FileNotFoundError:
-		if not read:
-			open(filename, 'w').close()
-	if filename.split(delimiter)[-1] not in file_list:
-		ignore_file = 0
-	with open(filename, 'a') as f:
-		for k in ignore_list:
-			k = k.split(delimiter)[1]
-			if k not in file_list:
-				f.write(k + '\n')
-		if not ignore_file:
-			filename = filename.split(delimiter)[-1]
-			f.write(filename + '\n')
-
+	if leave == True:
+		sys.exit(0)
 
 try:
+	# print('starting ... ####################')
 	current_dir_var = os.getcwd()
 	root_repo = backward_search()
+
+	# pycache, venv = list_filter(root_repo)
+
 	pycache, venv = compile_dir_list(root_repo, venv=True)
-	pycache = [i for i in pycache if not os.path.isfile(i) and i.split('/')[-1] == '__pycache__']
 	delimiter = root_repo + os.sep
+	# print('..........................')
+	# print('returned: #################')
+	# for d in pycache:
+	# 	print(':::::', f'{os.sep}'.join(d.split(os.sep)[6:]))
+	# print('..........................')
+	# # sys.exit(0)
+
+	py = any(True for _ in pycache if '__pycache__' in _)
+	# print('__pycache__:', py)
+	py = '__pycache__' if py else 'src'
+
+	pycache = [i for i in pycache if not os.path.isfile(i) and i.split(os.sep).pop() == py]
+	if py == 'src':
+		py = 'node_modules'
+		# print(f'check node_modules: {[(os.path.exists(i) and os.path.isdir(i)) for i in pycache]}')
+		pycache = [
+			(f'{os.sep}'.join(i.split(os.sep)[:-1] + ['node_modules'])).split(delimiter).pop()
+			for i in pycache 
+			if (os.path.exists(i) and os.path.isdir(i))]
+		# pycache = [i.split(root_repo) for i in pycache]
+		# [print(f"{index + 1}. {x}") for index, x in enumerate(pycache)]
+		# print('this command is still in development mode.')
+	# if py == 'src':
+	# 	sys.exit(0)
+		
+	# pycache = [i for i in pycache if not os.path.isfile(i) and 'node_modules' not in i]
+
+	# print('returned: #################')
+	# for d in pycache:
+	# 	print(':::::', d.split(root_repo).pop())
+	# print('..........................')
+	# delimiter = root_repo + os.sep
 	gitignore_content = write_to_file([], '', read=True)
-	pycache = [file for file in pycache if file.split(delimiter)[-1] not in gitignore_content]
+	pycache = [file for file in pycache if file.split(delimiter).pop() not in gitignore_content]
 	venv = [dir for dir in venv if dir.split(delimiter)[-1] not in gitignore_content]
 except:
 	print('...')
@@ -93,18 +67,27 @@ except:
 def gitignore():
 	"""Initiates the gitignore operation
 	"""
-	auto_set_pycache1 = setup_gitignore()
-	gitignore_resp(auto_set_pycache1, pycache)
-	auto_set_pycache2 = setup_gitignore(pycache=venv, envFile=True)
-	ret = gitignore_resp(auto_set_pycache2, venv)
+	# print('got to gitignore()')
+	# sys.exit(0)
+	# print('Hold on ...')
+	# print('checking py ##### ', py)
+	# print('empty pycache #####:', pycache)
+	# py = '__pycache__' if py == '__pycache__' else 'node_modules'
+	# print('empty pycache #####:', pycache)
+	# ret = 'y'
+	auto_set_pycache1 = setup_gitignore(py=py)
+	ret = gitignore_resp(auto_set_pycache1, pycache)
+	if py != 'node_modules':
+		auto_set_pycache2 = setup_gitignore(pycache=venv, envFile=True)
+		ret = gitignore_resp(auto_set_pycache2, venv)
 	if ret == 'n':
 		browse_files()
 	print()
-	print('Successful.')
-	print('Check the root of your repository for the newly created/updated .gitignore file')
+	print_norm('Successful.')
+	print_norm('Check the root of your repository for the newly created/updated .gitignore file')
 
 
-def setup_gitignore(pycache: list=pycache, envFile: bool=False):
+def setup_gitignore(pycache: list=pycache, envFile: bool=False, py: str=None):
 	"""display the list of files/directories paths to append to the .gitignore file.
 
 	Args:
@@ -114,25 +97,33 @@ def setup_gitignore(pycache: list=pycache, envFile: bool=False):
 	Returns:
 		str: user's selection
 	"""
-	mainVar = 'Setting up and/or Updating .gitignore file (For'
-	var = '__pycache__ directories'
+	delimiter = backward_search() + f'{os.sep}'
+	# print('delimiter: %s' % delimiter)
+	# print('pycache: %s' % pycache)
+	var = py
 	if envFile:
-		var = 'venv directories'
+		var = 'venv'
+	# if pycache:
+	# 	var = '__pycache__'
+	# if pycache and 'node_modules' in pycache[0]:
+	# 	var = 'node_modules'
 	if pycache == []:
-		print(f'==> .gitignore file is upto date with "{var}"')
+		print()
+		print_norm(f'==> .gitignore file is upto date with "{var}" directories')
 		time.sleep(.5)
-		cont = input('Press Enter to continue...')
+		input('Press Enter to continue...')
 		return 'n'
+	mainVar = 'Setting up and/or Updating .gitignore file (For'
 	print()
-	print(f'{mainVar} {var})')
-	print('.'.rjust(len(mainVar)+len(var)+3, '.'))
+	print_norm(f'{mainVar} {var})')
+	print(''.rjust(len(mainVar)+len(var)+8, '.'))
 	for index, filepath in enumerate(pycache):
 		filepath = filepath.split(delimiter)[-1]
-		print(f'{index+1}. {filepath}')
-	print()
-	print('[y] - To add this list to .gitignore file')
-	print('Press any key to browse through this dir (and subdirs) and select files/dirs to ignore')
-	print('[q] - To quit')
+		print_norm(f'{index+1}. {filepath}')
+	print('\n')
+	print_norm('[y] - To add this list to .gitignore file')
+	print_norm('Press any other key to browse through this directory')
+	print_norm('[q] - To quit')
 	print()
 	auto_set_pycache = prompt_1ch('Make a choice >>> ')
 	print()
@@ -145,9 +136,10 @@ def gitignore_resp(auto_set_pycache: str, pycache: list):
 		auto_set_pycache (str): user's response
 		pycache (list): list of __pycache__ directories in the project
 
-	Returns:
-		str: .
+	Returns: str
 	"""
+	delimiter = backward_search() + f'{os.sep}'
+	# print('delimiter: %s' % delimiter)
 	root_list = []
 	if auto_set_pycache.lower() == 'q':
 		print('Cheers...')
@@ -168,171 +160,6 @@ def browse_files():
 		root_list.append(f'{root_repo}{os.sep}{file}')
 	search_repo(root_list, delimiter=delimiter)
 
-
-
-def print_stdout(stdout: str, index: int=0, serial_numbered: int=0):
-	"""This function nicely colors and prints out the output stream the
-		result of the argument passed to it
-
-	Args:
-		stdout (str): the string to print
-		index (int, optional): Defaults to 0.
-		serial_numbered (int, optional): Defaults to 0.
-
-	Returns:
-		int, list: index of the line and list of line substrings.
-	"""
-	print()
-
-	if stdout == None:
-		std_list = []
-	else:
-		std_list = (stdout.split("\n"))[:-1]
-	i = 0
-	for_untrack = 0
-	for i, line in enumerate(std_list):
-		time.sleep(.03)
-		if '(use "git add <file>..." to include in what will be committed)' in line:
-			print(f"::::: {line}{RESET}")
-			for_untrack += 1
-			continue
-		elif 'fatal' in line and 'did not match any files' in line:
-			continue
-		elif 'no changes added to commit (use "git add" and/or "git commit -a")' in line:
-			for_untrack = 0
-		elif for_untrack == 1:
-			line = f"{YELLOW}{line}{RESET}"
-		if serial_numbered == 1:
-			if not index:
-				if line.startswith("*"):
-					line = f"{i+1}. {BRIGHT_MAGENTA}{line}"
-				else:
-					line = f"{i+1}. {line}"
-		if line.startswith("["):
-			for j, char in enumerate(line):
-				if char == "]":
-					req_index = j+1
-			branch_id = line[:req_index]
-			color_branch_id = f"{BRIGHT_MAGENTA}{branch_id}{RESET}"
-			line = color_branch_id + line[req_index:]
-
-		# s - selected words
-		# y - any half of the line
-		# a - complete line
-		# c - further processing
-		# o - other
-		# n - specific selection
-		sep = "^¬^"
-		words_list = [
-			f"deleted by us:{sep}{BRIGHT_RED}{sep}s",
-			f"remote:{sep}{BRIGHT_CYAN}{sep}s",
-			f"deleted:{sep}{BRIGHT_RED}{sep}s",
-			f"delete {sep}{BRIGHT_RED}{sep}s",
-			f"create {sep}{BRIGHT_GREEN}{sep}s",
-			f"rewrite {sep}{CYAN}{sep}s",
-			f"rename {sep}{BRIGHT_YELLOW}{sep}s",
-			f"both modified{sep}{BRIGHT_GREEN}{sep}s",
-			f"modified:{sep}{BRIGHT_GREEN}{sep}s",
-			f"On branch{sep}{BRIGHT_MAGENTA}{sep}y",
-			f"Untracked files:{sep}{MAGENTA}{sep}a",
-			f"error{sep}{BRIGHT_RED}{sep}a",
-			f"Changes not staged for commit:{sep}{BLUE}{sep}a",
-			f"Your branch is ahead of{sep}{BRIGHT_YELLOW}{sep}y",
-			f"Changes to be committed:{sep}{YELLOW}{sep}a",
-			f"changed{sep}{RESET}{sep}c",
-			f"new file:{sep}{BRIGHT_CYAN}{sep}s",
-			f"diff --git{sep}{UNDERLINE}{BOLD}{BRIGHT_BLUE}{sep}a",
-			f"+{sep}{RESET}{sep}o",
-			f"-{sep}{RESET}{sep}o",
-			f"Switched to branch{sep}{BRIGHT_GREEN}{sep}y",
-			f"Saved working directory and index state{sep}{BRIGHT_MAGENTA}{sep}n",
-			f"Your branch is up to date with{sep}{YELLOW}{sep}y",
-			f"No local changes to save{sep}{BRIGHT_GREEN}{sep}a",
-			f"set up to track remote branch{sep}{RESET}{sep}m", # don't touch this line.
-			f"working tree clean{sep}{BRIGHT_GREEN}{sep}d",
-			f"Unmerged paths{sep}{BRIGHT_CYAN}{sep}a"
-			]
-		
-		words_dict = {}
-		for word in words_list:
-			a_word, color, type = word.split(sep)
-			words_dict[word] = len(a_word)
-
-		for k, v in words_dict.items():
-			c_word, color, type = k.split(sep)
-		
-			if c_word in line:
-				if type == "a":
-					line = f"{color}{line}{RESET}"
-				elif type == "y":
-					line = line[:v] + f"{color}{line[v:]}{RESET}"
-				elif type == "m":
-					br_name1, br_name2 = line.split(c_word)
-					line = " ".join([(br_name1.split())[0], f"{BRIGHT_MAGENTA}{br_name1.split()[1]}{RESET}",
-							c_word, f"{BRIGHT_MAGENTA}{(br_name2.split())[0]}{RESET}", (br_name2.split())[1],
-							f"{BRIGHT_YELLOW}{(br_name2.split())[2]}{RESET}"])
-					# line = " ".join([(br_name1.split())[0], f"{BRIGHT_MAGENTA}{br_name1.split()[1]}{RESET}", c_word, f"{BRIGHT_MAGENTA}{(br_name2.split())[0]}{RESET}", (br_name2.split())[1], f"{BRIGHT_YELLOW}{(br_name2.split())[2]}{RESET}"])
-				elif type == "n":
-					index = next((i for i, char in enumerate(line) if char == ":"), v)
-					line = line[:v] + f"{color}{line[v:index]}{RESET}" + line[index:]
-				elif type == "d":
-					index = line.find(c_word)
-					v = index + v
-					line = line[:index] + f"{color}{line[index:v]}{RESET}" + line[v:]
-				elif type == "o":
-					if "--- a/" in line or "+++ b" in line or "@@" in line:
-						pass
-					elif line.startswith("+"):
-						line = f"{GREEN}{line}{RESET}"
-					elif line.startswith("-"):
-						line = f"{RED}{line}{RESET}"
-				elif type == "c":
-					if "insertion" in line or "deletion" in line:
-						if len(line.split(",")) == 3:
-							file_part, insertions, deletions = line.split(",")
-							num, str_file, change = file_part.split()
-							change = f"{BRIGHT_BLUE}{change}{RESET}"
-							file_part = " ".join([num, str_file, change])
-							insertions = f"{BRIGHT_GREEN}{insertions}{RESET}"
-							deletions = f"{BRIGHT_RED}{deletions}{RESET}"
-							line = ",".join([file_part, insertions, deletions])
-						elif len(line.split(",")) == 2:
-							if "insertion" in line:
-								file_part, insertions = line.split(",")
-								num, str_file, change = file_part.split()
-								change = f"{BRIGHT_BLUE}{change}{RESET}"
-								file_part = " ".join([num, str_file, change])
-								insertions = f"{BRIGHT_GREEN}{insertions}{RESET}"
-								line = ",".join([file_part, insertions])
-							elif "deletion" in line:
-								file_part, deletions = line.split(",")
-								num, str_file, change = file_part.split()
-								change = f"{BRIGHT_BLUE}{change}{RESET}"
-								file_part = " ".join([num, str_file, change])
-								deletions = f"{BRIGHT_RED}{deletions}{RESET}"
-								line = ",".join([file_part, deletions])
-					line = line[:v] + f"{color}{line[v:]}{RESET}"
-				elif type == "s":
-					word = line[:v]
-					color_word = f"{color}{word}{RESET}"
-					remaining_words = line[v:]
-					if "/" in line or "\\" in line: # and line[i] != line[-1]:
-						slash_index = 0
-						for i, char in enumerate(line):
-							if (char == "/" or char == "\\") and char != line[-1]:
-								slash_index = i+1
-							if slash_index:
-								file_name = f"{color}{line[slash_index:]}{RESET}"
-								remaining_words = line[v:slash_index] + file_name
-					else:
-						remaining_words = f"{color}{remaining_words}{RESET}"
-					line = color_word + remaining_words
-					break
-		print(f"::::: {line}{RESET}")
-	print()
-	return i+1, std_list
-
-
 def print_set_commit(var: str):
 	"""This function prints information regarding the state of "Update README.md" setting.
 
@@ -342,10 +169,10 @@ def print_set_commit(var: str):
 
 	print("........................................................................................")
 	if var.lower() == "unset":
-		print('"Update README.md" is no longer your default commit message to all README.md files')
+		print_norm('"Update README.md" is no longer your default commit message to all README.md files')
 	elif var.lower() == "set":
-		print('"Update README.md" is now your default commit message for all README.md files.')
-	print('##### NOTE: CHANGES WILL TAKE EFFECT THE NEXT TIME YOU RUN THE "pushfile" command. #####')
+		print_norm('"Update README.md" is now your default commit message for all README.md files.')
+	print_norm('##### NOTE: CHANGES WILL TAKE EFFECT THE NEXT TIME YOU RUN THE "pushfile" command. #####')
 	print("........................................................................................")
 
 
@@ -354,7 +181,7 @@ def pull():
 	"""
 
 	print()
-	print("#### pulling ...################################################")
+	print_norm("#### pulling ...################################################")
 	pull = subprocess.run(["git", "pull"], capture_output=True, text=True)
 	if pull.returncode == 0:
 		print_stdout(pull.stdout)
@@ -371,9 +198,9 @@ def pull():
 	elif pull.returncode > 0:
 		print_stdout(pull.stderr)
 	else:
-		print("Oops! I got {}".format(pull.stderr))
+		print_norm("Oops! I got {}".format(pull.stderr))
 		sys.exit()
-	print("Pull successful...")
+	print_norm("Pull successful...")
 	print()
 
 
@@ -385,18 +212,18 @@ def push(file_list: list):
 		file_list (list): list of files in the current working directory
 	"""
 
-	print("#### pushing ...################################################")
+	print_norm("#### pushing ...################################################")
 	push = subprocess.run(["git", "push"])
 	if push.returncode == 0:
 		print()
-		print('Changes has been pushed to remote.')
+		print_norm('Changes has been pushed to remote.')
 		# print("The file(s)/folder(s): {} are in the working tree.".format([xfile for xfile in file_list]))
 	elif push.stdout:
 		print_stdout(push.stdout)
 	elif push.stderr:
 		print_stdout(push.stderr)
 	else:
-		print("Oops! I got {}".format(push.stderr))
+		print_norm("Oops! I got {}".format(push.stderr))
 		sys.exit()
 
 
@@ -412,15 +239,17 @@ def add_commit_all(type: str="current", commit_message: str=""):
 		if len(sys.argv) > 1:
 			commit_message = (sys.argv)[1]
 			break
-		if commit_message:
-			pass
-		else:
+		# if commit_message:
+		# 	pass
+		# else:
+		# 	commit_message = input("Provide a commit message. [q] to quit >>> ")
+		if not commit_message:
 			commit_message = input("Provide a commit message. [q] to quit >>> ")
 		quit(commit_message)
 		if commit_message != "":
 			break
-		print("You have to provide a commit message.")
-	print("#### staging and committing ...################################")
+		print_norm("You have to provide a commit message.")
+	print_norm("#### staging and committing ...################################")
 	if type == "current":
 		# stage changes in current directories ####
 		subprocess.run(["git", "add", "."])
@@ -430,7 +259,7 @@ def add_commit_all(type: str="current", commit_message: str=""):
 	commit = subprocess.run(["git", "commit", "-m", commit_message], capture_output=True, text=True)
 	if commit.returncode == 0:
 		print_stdout(commit.stdout)
-		print('"{}" successfully committed to files.'.format(commit_message))
+		print_norm('"{}" successfully committed to files.'.format(commit_message))
 	elif commit.stdout:
 		print_stdout(commit.stdout)
 	elif commit.stderr:
@@ -461,9 +290,9 @@ Are you sure that you want to proceed? [y/N] >>> """)
 		current_branch = subprocess.run(["git", "branch", "--show-current"], capture_output=True, text=True)
 		fetch = subprocess.run(["git", "fetch", "origin", current_branch.stdout.strip()], capture_output=True, text=True)
 		clear = subprocess.run(["git", "reset", "--hard", f"origin/{current_branch.stdout.strip()}"])
-		print("Revert successful...")
-		print("Recent changes on this branch cleaned.")
-		print("Most recent state of the remote has been restored to the working tree of this branch.")
+		print_norm("Revert successful...")
+		print_norm("Recent changes on this branch cleaned.")
+		print_norm("Most recent state of the remote has been restored to the working tree of this branch.")
 	else:
 		print("Operation aborted.")
 	print()
@@ -485,7 +314,7 @@ def git_status(action: int=0):
 			print_stdout(status.stdout)
 		else:
 			if "working tree clean" in status.stdout:
-				print("Working tree is the same as last commit. No changes to save.")
+				print_norm("Working tree is the same as last commit. No changes to save.")
 				return 1
 			else:
 				return 0
@@ -510,7 +339,7 @@ def collect_input(num: int, string: str):
 			item = prompt_1ch('Select a branch to switch to. [q] to quit >>> ')
 			quit(item)
 		elif string == "stash":
-			print(F"{RED}NOTE: IF YOU QUIT. YOUR STASH WILL NOT BE APPLIED TO THIS BRANCH.{RESET}")
+			print_norm(F"{RED}NOTE: IF YOU QUIT. YOUR STASH WILL NOT BE APPLIED TO THIS BRANCH.{RESET}")
 			item = prompt_1ch('Select the stash you wish to apply. [q] to quit >>> ')
 			quit(item)
 		if item.isdecimal() and int(item) > 0 and int(item) <= num:
@@ -518,9 +347,9 @@ def collect_input(num: int, string: str):
 			break
 		print()
 		if string == "branch_list":
-			print("You should enter the number corresponding to the branch name.")
+			print_norm("You should enter the number corresponding to the branch name.")
 		elif string == "stash":
-			print("You should enter the number corresponding to the stash you want to apply.")
+			print_norm("You should enter the number corresponding to the stash you want to apply.")
 	return item
 
 
@@ -554,19 +383,20 @@ def view_branch(action: int=0, new_branch=""):
 		# get main branch
 		for line in (branch_list.stdout).split("\n"):
 			if "main" in line or "master" in line:
-				if line.startswith("*"):
-					main = (line.strip("*")).strip()
-				else:
-					main = line.strip()
+				# if line.startswith("*"):
+				# 	main = (line.strip("*")).strip()
+				# else:
+				# 	main = line.strip()
+				main = (line.strip("*")).strip() if line.startswith("*") else line.strip()
 		return main
 	elif new_branch:
 		for line in (branch_list.stdout).split("\n"):
 			if line.strip() == new_branch.strip():
-				print(f"The branch {new_branch} already exist.")
+				print_norm(f"The branch {new_branch} already exist.")
 				quit("q")
 			if line.startswith("*"):
 				if (line.strip("*").strip()) == new_branch.strip():
-					print(f"You are currently on this branch({new_branch}).")
+					print_norm(f"You are currently on this branch({new_branch}).")
 					quit("q")
 	elif action == 100:
 		for line in (branch_list.stdout).split("\n"):
@@ -599,10 +429,11 @@ def create_or_switch_branch(branch_name: str=None, new_branch_name: str=None):
 	if new_branch_name:
 		# creates new branch
 		create = subprocess.run(["git", "branch", new_branch_name], capture_output=True, text=True)
-		if create.stdout:
-			print_stdout(create.stdout)
-		elif create.stderr:
-			print_stdout(create.stderr)
+		# if create.stdout:
+		# 	print_stdout(create.stdout)
+		# elif create.stderr:
+		# 	print_stdout(create.stderr)
+		print_stdout(f"{create.stdout if create.stdout else create.stderr}")
 		setup_branch = subprocess.run(["git", "push", "-u", "origin", new_branch_name], capture_output=True, text=True)
 		print_stdout(setup_branch.stdout)
 		print_stdout(setup_branch.stderr)
@@ -616,10 +447,11 @@ def create_or_switch_branch(branch_name: str=None, new_branch_name: str=None):
 	
 	# switch to next/new branch
 	switch_branch = subprocess.run(["git", "checkout", branch_name], capture_output=True, text=True)
-	if switch_branch.stderr:
-		print_stdout(switch_branch.stderr)
-	else:
-		print_stdout(switch_branch.stdout)
+	# if switch_branch.stderr:
+	# 	print_stdout(switch_branch.stderr)
+	# else:
+	# 	print_stdout(switch_branch.stdout)
+	print_stdout(f"{switch_branch.stderr if switch_branch.stderr else switch_branch.stdout}")
 
 def auto_apply_stash():
 	"""This function automatically apply the most recent stash to the current
@@ -627,10 +459,11 @@ def auto_apply_stash():
 	"""
 	# auto apply stashed updates
 	auto_stash = subprocess.run(["git", "stash", "apply"], capture_output=True, text=True)
-	if auto_stash.stdout:
-		print_stdout(auto_stash.stdout)
-	elif auto_stash.stderr:
-		print_stdout(auto_stash.stderr)
+	# if auto_stash.stdout:
+	# 	print_stdout(auto_stash.stdout)
+	# elif auto_stash.stderr:
+	# 	print_stdout(auto_stash.stderr)
+	print_stdout(f"{auto_stash.stdout if auto_stash.stdout else auto_stash.stderr}")
 
 
 def stash(action: int=0):
@@ -657,8 +490,8 @@ def stash(action: int=0):
 		print()
 		if action == 0:
 			if not changes:
-				print(f"How do you want to handle changes in {current_branch_name}?")
-				print("[v] to see change(s) - [d] to see content of change(s) - [q] to quit ")
+				print_norm(f"How do you want to handle changes in {current_branch_name}?")
+				print_norm("[v] to see change(s) - [d] to see content of change(s) - [q] to quit ")
 				resp = prompt_1ch("commit[c] or stash[s]? [c/s] >>> ")
 				quit(resp)
 				if resp.lower() == "c":
@@ -767,8 +600,8 @@ def merge_to_main_master():
 	"""
 	# current_branch_name = view_branch(action=100)
 	if current_branch_name == "main" or current_branch_name == "master":
-		print(f"You are in {current_branch_name} branch.")
-		print(f"Switch to the desired branch you want to merge to {current_branch_name}.")
+		print_norm(f"You are in {current_branch_name} branch.")
+		print_norm(f"Switch to the desired branch you want to merge to {current_branch_name}.")
 		quit("q")
 	while True:
 		print()
@@ -778,7 +611,7 @@ def merge_to_main_master():
 		elif check.lower() == "n":
 			quit("q")
 		print()
-		print("You must decide.")
+		print_norm("You must decide.")
 	main = view_branch(new_branch="main", action=3)
 	create_or_switch_branch(main)
 	pull()
@@ -813,11 +646,11 @@ def diff(action: int=0):
 		print_stdout(diff_res.stderr)
 	elif diff_res.stderr == "" and diff_res.stderr == "" and diff_res.returncode == 0:
 		print()
-		print("Nothing to show.")
-		print("Your working directory is in the same state as your last commit.")
+		print_norm("Nothing to show.")
+		print_norm("Your working directory is in the same state as your last commit.")
 	elif diff_res.returncode > 0:
-		print("Oops! I got:")
-		print("{}".format(print_stdout(diff_res.stderr)))
+		print_norm("Oops! I got:")
+		print_norm("{}".format(print_stdout(diff_res.stderr)))
 
 
 def search_repo(repo_dir: list, delimiter: str, dir_path: str=None, repeat: int=0, child_dir: int=0):
@@ -836,7 +669,10 @@ def search_repo(repo_dir: list, delimiter: str, dir_path: str=None, repeat: int=
 		list: list of selected paths
 	"""
 	subprocess.run(['clear'])
-	dir = (os.sep).join((repo_dir[0]).split(os.sep)[:-1])
+	try:
+		dir = (os.sep).join((repo_dir[0]).split(os.sep)[:-1])
+	except:
+		pass
 	if repeat and dir_path:
 		dir = (os.sep).join(dir_path.split(os.sep)[:-1])
 	if child_dir:
@@ -846,10 +682,10 @@ def search_repo(repo_dir: list, delimiter: str, dir_path: str=None, repeat: int=
 	gitignore_content = [file.split(delimiter)[-1] for file in gitignore_content]
 	repo_dir = [dir+f'{os.sep}'+file.split(delimiter)[-1] for file in repo_dir]
 	repo_dir = [file for file in repo_dir if file.split(delimiter)[-1] not in gitignore_content]
-	print(f'Browse through your file/dirs...')
+	print('Browse through your file/dirs...')
 	print()
-	print(f'You are in: {os.path.basename(dir)}')
-	print('.'*(len(os.path.basename(dir)) + 13))
+	print_norm(f'You are in: {os.path.basename(dir)}')
+	print(''.rjust(len(os.path.basename(dir)) + 18, '.'))
 	ignore_list = []
 	count = 0
 	dir_list = []
@@ -857,7 +693,7 @@ def search_repo(repo_dir: list, delimiter: str, dir_path: str=None, repeat: int=
 		i = i.split(os.sep).pop()
 		if i == '.git':
 			continue
-		print(f'{count + 1}. {i}')
+		print_norm(f'{count + 1}. {i}')
 		dir_list.append(i)
 		count += 1
 	print()
@@ -903,6 +739,20 @@ def search_repo(repo_dir: list, delimiter: str, dir_path: str=None, repeat: int=
 		write_to_file(ignore_list, delimiter)
 	return ignore_list
 
-if current_dir_var:
-    os.chdir(current_dir_var)
-    
+
+def repo_details():
+	"""pints the username of the current repository
+	"""
+	root = backward_search()
+	path = f'{root}{os.sep}.git{os.sep}config'
+	config = subprocess.run(['cat', path], capture_output=True, text=True)
+	github_url = [(url.split(os.sep)) for url in (config.stdout).split("\n") if "url =" in url]
+	user_name = github_url[0][-2]
+	repo_name = github_url[0][-1].split(".")[0]
+	print()
+	print_norm(f'Github Username: {user_name}')
+	print_norm(f'Repository: {repo_name}')
+	
+# if current_dir_var:
+os.chdir(current_dir_var) if current_dir_var else None
+	
