@@ -139,7 +139,7 @@ fi
 
 echo -n "Do you want the repository to be private? [Y/N] >>> "
 read -n 1 -s -r PRIVATE_OPTION
-echo -e "$PRIVATE_OPTION"
+# echo -e "$PRIVATE_OPTION"
 
 if [[ -z "$PRIVATE_OPTION" ]]; then
 	echo -e "You did not answer the question."
@@ -149,9 +149,11 @@ elif [[ ${#PRIVATE_OPTION} != 1 ]]; then
 	exiting
 
 elif [[ ${#PRIVATE_OPTION} =~ 1 && ("$PRIVATE_OPTION" =~ [yY]) ]]; then
+	echo "yes, private Repo"
 	PRIVATE_OPTION="true"
 
 elif [[ ${#PRIVATE_OPTION} =~ 1 && ("$PRIVATE_OPTION" =~ [nN]) ]]; then
+	echo "no, public Repo"
 	PRIVATE_OPTION="false"
 fi
 
