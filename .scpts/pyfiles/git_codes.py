@@ -754,8 +754,9 @@ def repo_details():
 	print_norm(f'Repository: {repo_name}')
 
 
-def Update_github_token(token: str):
+def Update_github_token(token: str, my_token: str):
 	abort_op = f'\nOperation Aborted.'
+	done = f"{BOLD}{'Done.'}{RESET}"
 	if len(token) != 36 and (len(token) != 40 or not token.startswith('ghp_')):
 		print_norm("\nInvalid token. Please enter a valid Github token.")
 		sys.exit(1)
@@ -774,20 +775,20 @@ def Update_github_token(token: str):
 	repo_name = github_url[0][-1].split(".")[0]
 	print('Found the following:')
 	print_norm(f'Github Username: {user_name}')
-	print_norm(f'Repository: {repo_name}')
+	print_norm(f'Repository: {BRIGHT_GREEN}{repo_name}{RESET}')
 	if len(github_url[0][2]) == 51:
 		old_token = f'{github_url[0][2][:40]}'
-		print_norm('Old token: {}'.format(old_token))
-		print_norm('New token: {}'.format(token))
-		replace = prompt_1ch(f"\nReplace old token with the new token in {repo_name} ? [y/N] >>> ")
+		print_norm(f'Old token: {BRIGHT_BLUE}{old_token[:8]}...{old_token[32:]}{RESET}')
+		print_norm(f'New token: {BRIGHT_MAGENTA}{token[:8]}...{token[32:]}{RESET}')
+		replace = prompt_1ch(f"\nReplace old token with the new token in the repo {BRIGHT_GREEN}{repo_name}{RESET} ? [y/N] >>> ")
 		search_word = f'{old_token+append_github}'
-		if replace.lower() != 'y':
+		if replace.lower() != 'y' and replace == '':
 			print(abort_op)
 			sys.exit(0)
 	elif len(github_url[0][2]) == 10:
-		print('New token: {}'.format(token))
+		print(f'New token: {BRIGHT_MAGENTA}{token[:8]}...{token[32:]}{RESET}')
 		adding = prompt_1ch(f"\nAdd it to your local credentials ? [y/N] >>> ")
-		if adding.lower() != 'y':
+		if adding.lower() != 'y' and adding == '':
 			print(abort_op)
 			sys.exit(0)
 	replacement = f'{token+append_github}'
@@ -797,7 +798,42 @@ def Update_github_token(token: str):
 	if not os.path.exists(copy_of_config):
 		make_copy = subprocess.run(['cp', path, copy_of_config], capture_output=True, text=True)
 	add_token = subprocess.run(['sed', '-i', f's|{search_word}|{replacement}|g', path ], capture_output=True, text=True)
-	True and print(add_token.stderr, 'Done.')
+	True and print(add_token.stderr, done)
+
+	if token != my_token:
+		save = prompt_1ch(f'\nSave "{BRIGHT_MAGENTA}{token[:8]}...{token[32:]}{RESET}" for future use? [y/N] >>> ')
+		if save.lower() == 'y' or save == '':
+			command_path = f"{os.path.join(os.path.expanduser('~'), '.xbin', 'pyfiles', 'git_codes.py')}"
+			save_token = subprocess.run(['sed', '-i', f's|{my_token}|{token}|g', command_path ], capture_output=True, text=True)
+			True and print(save_token.stderr, done)
+		else:
+			print('Token not saved.')
+
+def incorrect_args():
+    if len(sys.argv) != 2:
+        token = input('Enter Github token to Add/Update to your Credentials [q] - quit >>> ')
+        if token.lower() == 'q':
+            print('\nCheers!')
+            sys.exit(0)
+        return token
+
+def update_token_command():
+    token = ''
+    my_token = 'MY_TOKEN_UPDATED'
+    if len(sys.argv) == 2:
+        token = sys.argv[1]
+    elif my_token.startswith('ghp_'):
+        use_token = prompt_1ch(f'Use the token: {BRIGHT_MAGENTA}{my_token[:8]}...{my_token[32:]}{RESET}? [y/N] >>> ')
+        if use_token.lower() == 'y' or use_token == '':
+            token = my_token
+        else:
+            token = incorrect_args()
+    else:
+        token = incorrect_args()
+
+    Update_github_token(token, my_token)
+
+
 
 # if current_dir_var:
 os.chdir(current_dir_var) if current_dir_var else None
