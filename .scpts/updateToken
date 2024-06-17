@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+
+import sys, subprocess
+from pyfiles.git_codes import Update_github_token
+
+my_token = 'MY_TOKEN'
+
+if len(sys.argv) != 2:
+    token = input('Enter Github token to Add/Update to your Credentials [q] - quit >>> ')
+    if token.lower() == 'q':
+        print('\nCheers!')
+        sys.exit(0)
+elif my_token.startswith('ghp_'):
+    use_token = input('Use the token: {}? [y/N] >>> '.format(my_token))
+    if use_token.lower() == 'y' or use_token == '':
+        token = my_token
+else:
+    token = sys.argv[1]
+Update_github_token(token)
+
+save = input('Save {} for future use? [y/N] >>> ')
+if save.lower() == 'y' or save == '':
+    command_path = './updateToken'
+    save_token = subprocess.run(['sed', '-i', f's|{my_token}|{token}|g', command_path ], capture_output=True, text=True)
+    True and print(save_token.stderr, 'Oopsy!')
+else:
+    print('Done.')
