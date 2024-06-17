@@ -33,6 +33,7 @@
    * verifyRepo command - checkes if the current dir is a repository or not
    * viewRepos command - displays the list of repositories from any account right from the command line. Bringing the information to you on the go!
    * getRepoUserName command - prints the username of the current repository
+   * updateToken command - adds/stores and updates a new github token and swap it with the old (expired) token in your local repository
 
 ### Djando commands
    * startproject command - creates a new django project
