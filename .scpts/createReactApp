@@ -7,12 +7,18 @@ success() {
 }
 
 others() {
-	for i in {1..2}; do
+	for i in {1..5}; do
 		install_command="npm install"
 		if [[ "$i" == 1 ]]; then
 			app_command=" react-router-dom"
 		elif [[ "$i" == 2 ]]; then
 			app_command=" react-player"
+		elif [[ "$i" == 3 ]]; then
+			app_command=" @chakra-ui/react"
+		elif [[ "$i" == 4 ]]; then
+			app_command=" formik"
+		elif [[ "$i" == 5 ]]; then
+			app_command=" yup"
 		fi
 		echo ""
 		read -n 1 -s -r -p "Install $app_command? [y/N] >>> " install
@@ -52,5 +58,6 @@ elif [[ "$#" -eq 1 ]]; then
 	# echo "command #####: $command"
 	$command
 	success
+	cd "$1"
 	others
 fi
