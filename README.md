@@ -302,6 +302,16 @@
     <td></td>
     <td></td>
   </tr>
+  <tr>
+    <td>updateToken</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
 
 </table>
 
@@ -323,6 +333,7 @@
 - Submit a pull request to this repository.
 
 ## New
+  - updateToken
   - createReactApp
   - dependencyDevReact
   - jsxecute
