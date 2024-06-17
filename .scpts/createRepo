@@ -49,7 +49,8 @@ curl_check()
 		git config user.name "$GUSERNAME"
 		git config user.email "$GEMAIL"
 
-		echo -e "### $REPONAME and README were auto created\n\n\n\n\n###### *We Rise by Lifting Others.*" > README.md
+		echo -e "### $REPONAME and README.md were auto created using createRepo command in [*Custom Commands*](https://github.com/DafetiteOgaga/custom_commands)
+		\n\n\n\n\n###### *We Rise by Lifting Others.*" > README.md
 		git add .
 		git commit -m "$REPONAME auto created"
 		git push
@@ -149,14 +150,14 @@ elif [[ ${#PRIVATE_OPTION} != 1 ]]; then
 	exiting
 
 elif [[ ${#PRIVATE_OPTION} =~ 1 && ("$PRIVATE_OPTION" =~ [yY]) ]]; then
-	echo "yes, private Repo"
+	echo "yes, private Repo pls"
 	PRIVATE_OPTION="true"
 
 elif [[ ${#PRIVATE_OPTION} =~ 1 && ("$PRIVATE_OPTION" =~ [nN]) ]]; then
-	echo "no, public Repo"
+	echo "no, public Repo pls"
 	PRIVATE_OPTION="false"
 fi
-
+echo ""
 
 # echo -e "\nYou are creating the repository \"$REPONAME\" in the Account \"$GUSERNAME\"...\n"
 # sleep 2
