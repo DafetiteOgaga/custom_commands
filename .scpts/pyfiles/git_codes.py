@@ -9,7 +9,7 @@ from pyfiles.print import print_norm
 from pyfiles.configure_settings_py import compile_dir_list, list_filter
 from pyfiles.colors import *
 
-# now = datetime.now() 
+# now = datetime.now()
 formatted_date_time = datetime.now().strftime("%H:%M:%S on %a %b %Y")
 
 def exit2(leave: bool = False):
@@ -752,7 +752,52 @@ def repo_details():
 	print()
 	print_norm(f'Github Username: {user_name}')
 	print_norm(f'Repository: {repo_name}')
-	
+
+
+def Update_github_token(token: str):
+	abort_op = f'\nOperation Aborted.'
+	if len(token) != 36 and (len(token) != 40 or not token.startswith('ghp_')):
+		print_norm("\nInvalid token. Please enter a valid Github token.")
+		sys.exit(1)
+	if len(token) == 36:
+		token = f'ghp_{token}'
+	root = backward_search()
+	# path = f'{root}{os.sep}.git{os.sep}config_test'
+	path = f'{root}{os.sep}.git{os.sep}config'
+	config = subprocess.run(['cat', path], capture_output=True, text=True)
+	github_url = [(url.split(os.sep)) for url in (config.stdout).split("\n") if "url =" in url]
+	# print(github_url)
+	append_github = '@github.com'
+	search_word = append_github[1:]
+	print()
+	user_name = github_url[0][-2]
+	repo_name = github_url[0][-1].split(".")[0]
+	print('Found the following:')
+	print_norm(f'Github Username: {user_name}')
+	print_norm(f'Repository: {repo_name}')
+	if len(github_url[0][2]) == 51:
+		old_token = f'{github_url[0][2][:40]}'
+		print_norm('Old token: {}'.format(old_token))
+		print_norm('New token: {}'.format(token))
+		replace = prompt_1ch(f"\nReplace old token with the new token in {repo_name} ? [y/N] >>> ")
+		search_word = f'{old_token+append_github}'
+		if replace.lower() != 'y':
+			print(abort_op)
+			sys.exit(0)
+	elif len(github_url[0][2]) == 10:
+		print('New token: {}'.format(token))
+		adding = prompt_1ch(f"\nAdd it to your local credentials ? [y/N] >>> ")
+		if adding.lower() != 'y':
+			print(abort_op)
+			sys.exit(0)
+	replacement = f'{token+append_github}'
+	# print('search_word:', search_word)
+	# print('replacement:', replacement)
+	copy_of_config = f'{(os.sep).join(path.split(os.sep)[:-1] + ["config_copy"])}'
+	if not os.path.exists(copy_of_config):
+		make_copy = subprocess.run(['cp', path, copy_of_config], capture_output=True, text=True)
+	add_token = subprocess.run(['sed', '-i', f's|{search_word}|{replacement}|g', path ], capture_output=True, text=True)
+	True and print(add_token.stderr, 'Done.')
+
 # if current_dir_var:
 os.chdir(current_dir_var) if current_dir_var else None
-	
