@@ -20,8 +20,7 @@ SCPTS=".scpts"
 UINPUT="$6"
 
 
-quit()
-{
+quit() {
 	# exit
 	local var="$1"
 	if [[ "$var" == "q" || "$var" == "Q" ]]; then
@@ -31,8 +30,7 @@ quit()
 	fi
 }
 
-auth()
-{
+auth() {
 	# initiates sudo authentication
 	local var="$WHICH"
 
@@ -47,8 +45,7 @@ auth()
 	fi
 }
 
-invalid_selection()
-{
+invalid_selection() {
 	# wrong selection
 	if [[ "$OPTION" =~ [zZ] ]]; then
 		echo -e "Wrong selection. You can only select from the options above."
@@ -58,8 +55,7 @@ invalid_selection()
 	fi
 }
 
-streamedit()
-{
+streamedit() {
 	# replaces user details fields with user details
 	local var1="$1"
 	local var2="$2"
@@ -67,8 +63,7 @@ streamedit()
 	sed -i "s/$var1/$var2/g" "$XBIN/$DFILENAME"
 }
 
-details()
-{
+details() {
 	# display the user details for confirmation
 	echo -e ".................................."
 	echo -e "Username: $NUSERNAME"
@@ -77,8 +72,7 @@ details()
 	echo -e ".................................."
 }
 
-unametokenmaill2()
-{
+unametokenmaill2() {
 	# collects user details to createRepo, cloneRepo, deleteRepo and viewRepo commands
 	while [[ -z "$NUSERNAME" ]]; do
 		echo -n "Kindly Enter your Github Username >>> "
@@ -132,8 +126,7 @@ unametokenmaill2()
 	details
 }
 
-unametokenmaill()
-{
+unametokenmaill() {
 	# populates the user details to createRepo, cloneRepo, deleteRepo and viewRepo commands
 	if [[ "$NUSERNAME" && "$NTOKEN" && "$NEMAIL" ]]; then
 		echo -e "Hey! I still have your details"
@@ -188,8 +181,7 @@ unametokenmaill()
 	ANS=""
 }
 
-cpfunc()
-{
+cpfunc() {
 	# identifies device type and cpoies appropriate code for command creation
 	echo "custom commands" > "$XBIN/$DFILENAME"
 	case "$FILETYPE" in
@@ -211,8 +203,7 @@ cpfunc()
 	chmod +x $XBIN/$DFILENAME
 }
 
-intro()
-{
+intro() {
 	# detects device type
 	local whch="$1"
 
@@ -257,6 +248,9 @@ dOptions=(
 
 	"  viewRepos command - displays the list of repos from any account on CLI"
 	#...py script files....................... #
+
+	"  updateToken command - adds/updates your repo with a new token"
+
 	"  gitignore command - creates/updates your .gitignore file"
 	"  branch command - creates and also switch between branches"
 	"  merge command - merge branches to main/master branch"
@@ -278,12 +272,18 @@ dOptions=(
 	"  compareChange command - displays detailed content of updates"
 	"  commitdir command - commits all the changes in the current dir"
 	"  commitall command - commits all the changes in the working tree"
+
+	"  getRepoUserName command - prints the username of the current repo"
+
 	"  wcount command - counts the lines, words and chars in files"
 	"  stash command - saves uncommitted changes in the working tree"
 	"  viewStash command - displays a list of applyable stashes"
 	"  logit command - displays a detailed commit logs"
 	
 	#...bash script files.................. #
+	"  createReactApp command - creates a React application, dependencies"
+	"  dependencyDevReact command - installs dependencies"
+
 	"  py3venv command - creates a python3 virtual environment"
 	#...py script files....................... #
 	"  requirement_txt command - creates/updates/installs dependencies in requirement.txt"
@@ -335,8 +335,7 @@ dOptions=(
 	"  guessGame command- a Guessing Game(To unwind)"
 )
 
-category()
-{
+category() {
 	# reassigns the selection to a different number
 	local type="$1"
 	local value="$2"
@@ -367,8 +366,7 @@ category()
 #...................................................... #
 
 #...3.................. #
-options()
-{
+options() {
 	# ...py script files.................................... #
 	# assign file names
 	case "$converted_selection" in
@@ -413,259 +411,275 @@ options()
 		
 	# ...py script files..................................... #
 		9)
-			DFILENAME="gitignore"
+			DFILENAME="updateToken"
 			category p "$converted_selection"
 			;;
 		10)
-			DFILENAME="branch"
+			DFILENAME="gitignore"
 			category p "$converted_selection"
 			;;
 		11)
-			DFILENAME="merge"
+			DFILENAME="branch"
 			category p "$converted_selection"
 			;;
 		12)
+			DFILENAME="merge"
+			category p "$converted_selection"
+			;;
+		13)
 			DFILENAME="status"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		13)
+		14)
 			DFILENAME="curfol"
 			category b "$converted_selection"
 			;;
-		14)
+		15)
 			DFILENAME="pyxecute"
 			category b "$converted_selection"
 			;;
-		15)
+		16)
 			DFILENAME="shxecute"
 			category b "$converted_selection"
 			;;
-		16)
+		17)
 			DFILENAME="jsxecute"
 			category b "$converted_selection"
 			;;
-		17)
+		18)
 			DFILENAME="pycodemore"
 			category b "$converted_selection"
 			;;
-		18)
+		19)
 			DFILENAME="createPatch"
 			category b "$converted_selection"
 			;;
-		19)
+		20)
 			DFILENAME="rollback"
 			category b "$converted_selection"
 			;;
-		20)
+		21)
 			DFILENAME="cls"
 			category b "$converted_selection"
 			;;
-		21)
+		22)
 			DFILENAME="authorID"
 			category b "$converted_selection"
 			;;
-		22)
+		23)
 			DFILENAME="commitree"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		23)
+		24)
 			DFILENAME="compareChange"
 			category p "$converted_selection"
 			;;
-		24)
+		25)
 			DFILENAME="commitdir"
 			category p "$converted_selection"
 			;;
-		25)
+		26)
 			DFILENAME="commitall"
 			category p "$converted_selection"
 			;;
-		26)
-			DFILENAME="wcount"
-			category p "$converted_selection"
-			;;
 		27)
-			DFILENAME="stash"
+			DFILENAME="getRepoUserName"
 			category p "$converted_selection"
 			;;
 		28)
-			DFILENAME="viewStash"
+			DFILENAME="wcount"
 			category p "$converted_selection"
 			;;
 		29)
+			DFILENAME="stash"
+			category p "$converted_selection"
+			;;
+		30)
+			DFILENAME="viewStash"
+			category p "$converted_selection"
+			;;
+		31)
 			DFILENAME="logit"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		30)
+		32)
+			DFILENAME="createReactApp"
+			category b "$converted_selection"
+			;;
+		33)
+			DFILENAME="dependencyDevReact"
+			category b "$converted_selection"
+			;;
+		34)
 			DFILENAME="py3venv"
 			category b "$converted_selection"
 			;;
 
-		31)
+		35)
 			DFILENAME="requirement_txt"
 			category p "$converted_selection"
 			;;
 		
 		# ...bash script files................................... #
-		32)
+		36)
 			DFILENAME="djangoToolbar"
 			category b "$converted_selection"
 			;;
-		33)
+		37)
 			DFILENAME="drf"
 			category b "$converted_selection"
 			;;
-		34)
+		38)
 			DFILENAME="djoser"
 			category b "$converted_selection"
 			;;
-		35)
+		39)
 			DFILENAME="jwtDjango"
 			category b "$converted_selection"
 			;;
-		36)
+		40)
 			DFILENAME="static4django"
 			category b "$converted_selection"
 			;;
 
-		37)
+		41)
 			DFILENAME="startproject"
 			category b "$converted_selection"
 			;;
-		38)
+		42)
 			DFILENAME="startapp"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		39)
+		43)
 			DFILENAME="runserver"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		40)
+		44)
 			DFILENAME="makemigrations"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		41)
+		45)
 			DFILENAME="migrate"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		42)
+		46)
 			DFILENAME="django"
 			category b "$converted_selection"
 			;;
-		43)
+		47)
 			DFILENAME="djshell"
 			category b "$converted_selection"
 			;;
-		44)
+		48)
 			DFILENAME="mkandmigrate"
 			category b "$converted_selection"
 			;;
 
 	#...py script files..................................... #
-		45)
+		49)
 			DFILENAME="showmigrations"
 			category p "$converted_selection"
 			;;
-		46)
+		50)
 			DFILENAME="sqlmigrate"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		47)
+		51)
 			DFILENAME="mysqlversion"
 			category b "$converted_selection"
 			;;
-		48)
+		52)
 			DFILENAME="mysqlstartserver"
 			category b "$converted_selection"
 			;;
-		49)
+		53)
 			DFILENAME="mysqlstopserver"
 			category b "$converted_selection"
 			;;
-		50)
+		54)
 			DFILENAME="mysqlrestartserver"
 			category b "$converted_selection"
 			;;
-		51)
+		55)
 			DFILENAME="mysqlstatus_server"
 			category b "$converted_selection"
 			;;
-		52)
+		56)
 			DFILENAME="mysqlshell"
 			category b "$converted_selection"
 			;;
-		53)
+		57)
 			DFILENAME="ctemp"
 			category b "$converted_selection" "ct"
 			;;
 	
 	# ...py script files..................................... #
-		54)
+		58)
 			DFILENAME="clear_commit"
 			category p "$converted_selection"
 			;;
-		55)
+		59)
 			DFILENAME="betty"
 			category b "$converted_selection"
 			;;
-		56)
+		60)
 			DFILENAME="pycode"
 			category b "$converted_selection"
 			;;
 
-		57)
+		61)
 			DFILENAME="printmyEnv"
 			category p "$converted_selection"
 			;;
-		58)
+		62)
 			DFILENAME="show"
 			category p "$converted_selection"
 			;;
-		59)
+		63)
 			DFILENAME="verifyRepo"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		60)
+		64)
 			DFILENAME="mycompile"
 			category b "$converted_selection"
 			;;
-		61)
+		65)
 			DFILENAME="pycompile"
 			category b "$converted_selection"
 			;;
 	
 	# ...C files............................................. #
-		62)
+		66)
 			DFILENAME="myascii"
 			category c "$converted_selection"
 			;;
-		63)
+		67)
 			DFILENAME="rot13"
 			category c "$converted_selection"
 			;;
-		64)
+		68)
 			DFILENAME="rot47"
 			category c "$converted_selection"
 			;;
-		65)
+		69)
 			DFILENAME="guessGame"
 			category c "$converted_selection"
 			;;
@@ -687,8 +701,7 @@ options()
 }
 
 #...4.................. #
-opertn()
-{
+opertn() {
 	#...dir.................. #
 
 	mkdir -p $XBIN
@@ -762,30 +775,28 @@ opertn()
 	echo ""
 }
 
-pyfiles()
-{
+pyfiles() {
 	# updates only installed files in pyfiles/
     mkdir -p "$XBIN/pyfiles"
 
     for file in "$SCPTS/pyfiles/"*; do
-        if [[ -f "$file" ]]; then
-            filename=$(basename "$file")
-            destination="$XBIN/pyfiles/$filename"
+        # if [[ -f "$file" ]]; then
+		filename=$(basename "$file")
+		destination="$XBIN/pyfiles/$filename"
 
-            if [[ -f "$destination" ]]; then
-                cp "$file" "$destination"
-            else
-                echo "custom commands" > "$destination"
-				cp "$file" "$destination"
-            fi
-			chmod +x $destination
-        fi
+		if [[ -f "$destination" ]]; then
+			cp "$file" "$destination"
+		else
+			echo "custom commands" > "$destination"
+			cp "$file" "$destination"
+		fi
+		chmod +x $destination
+        # fi
     done
 	update_changes
 }
 
-update_changes()
-{
+update_changes() {
 	# updates any command that has already been installed
 	affected_files="$(ls $PWD/$SCPTS)"
     for file in $affected_files; do
@@ -800,8 +811,7 @@ update_changes()
 }
 
 #...5.................. #
-scptcpy()
-{
+scptcpy() {
 	# copies pymanage and configure_settings_py to .xbin
 	if [[ ! -f "$XBIN/pymanage" || ! -f "$XBIN/configure_settings_py.py" ]]; then
 		cp "$SCPTS/pymanage" "$XBIN/pymanage"
@@ -860,8 +870,7 @@ scptcpy()
 }
 
 #...5a.................. #
-bLinter()
-{
+bLinter() {
 	# creates/install betty linter
 	echo -e ""
 	mkdir -p tempo
@@ -889,8 +898,7 @@ bLinter()
 }
 
 #...6.................. #
-instructn()
-{
+instructn() {
 	# instructions
 	echo -e "Now, RESTART YOUR TERMINAL or START A NEW SESSION."
 	sleep 0.1
@@ -981,12 +989,6 @@ instructn()
 		"pyxecute"|"shxecute"|"jsxecute")
 			echo -e "$STRT adds shebang and turn your file(s) to executable file(s) $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
 			;;
-		# "shxecute")
-		# 	echo -e "$STRT adds shebang and turn your file(s) to executable file(s) $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
-		# 	;;
-		# "jsxecute")
-		# 	echo -e "$STRT adds shebang and turn your file(s) to executable file(s) $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
-		# 	;;
 		"createPatch")
 			echo -e "$STRT patch files $EFFT $ANYWHERE: $DFILENAME <main file> <updated file>"
 			;;
@@ -1109,9 +1111,20 @@ instructn()
 		"restoreFile")
 			echo -e "$STRT restore your file(s) to previous states $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
 			;;
+		"getRepoUserName")
+			echo -e "$STRT printn the username of any repo $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"createReactApp")
+			echo -e "$STRT create a React app $EFFT $ANYWHERE: $DFILENAME <filename>"
+			;;
+		"dependencyDevReact")
+			echo -e "$STRT installs the specified dependency $EFFT $ANYWHERE: $DFILENAME <filename>"
+			;;
+		"updateToken")
+			echo -e "$STRT add/update your local credentials with a new token $EFFT $ANYWHERE: $DFILENAME"
+			;;
 		esac
 	sleep 0.1
-	# fi
 }
 
 

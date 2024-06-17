@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+
+from pyfiles.git_codes import update_token_command
+
+update_token_command()

@@ -1,0 +1,31 @@
+#!/bin/bash
+
+success() {
+	if [[ "$?" == 0 ]]; then
+		echo "Success"
+	fi
+}
+
+path1="$HOME/.xbin/pyfiles"
+# path1="$HOME/alx/custom_commands/.scpts/pyfiles"
+check=$(2>&1 $path1/nodeAndNpm)
+if [[ -n "$check" ]]; then
+	echo "$check"
+	if [[ "$check" == *"not install"* ]]; then
+		exit 1
+	fi
+fi
+
+echo ""
+command="npm install --save-dev"
+
+if [[ "$#" != "1" ]]; then
+	echo ""
+	echo "Enter a package name as argument"
+elif [[ "$#" -eq 1 ]]; then
+	# echo "Project name: $1"
+	command+=" $1"
+	# echo "command #####: $command"
+	$command
+	success
+fi

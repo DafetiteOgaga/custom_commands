@@ -1,0 +1,63 @@
+#!/bin/bash
+
+success() {
+	if [[ "$?" == 0 ]]; then
+		echo "Success"
+	fi
+}
+
+others() {
+	for i in {1..5}; do
+		install_command="npm install"
+		if [[ "$i" == 1 ]]; then
+			app_command=" react-router-dom"
+		elif [[ "$i" == 2 ]]; then
+			app_command=" react-player"
+		elif [[ "$i" == 3 ]]; then
+			app_command=" @chakra-ui/react"
+		elif [[ "$i" == 4 ]]; then
+			app_command=" formik"
+		elif [[ "$i" == 5 ]]; then
+			app_command=" yup"
+		fi
+		echo ""
+		read -n 1 -s -r -p "Install $app_command? [y/N] >>> " install
+		
+		if [[ "$install" =~ [yY] ]]; then
+			echo "$app_command"
+			install_command+="$app_command"
+			# echo "install_command #####: $install_command"
+			$install_command
+			success
+		elif [[ "$install" =~ [nN] ]]; then
+			echo "No"
+			continue
+		fi
+	done
+}
+
+path1="$HOME/.xbin/pyfiles"
+# path1="$HOME/alx/custom_commands/.scpts/pyfiles"
+check=$(2>&1 $path1/nodeAndNpm)
+if [[ -n "$check" ]]; then
+	echo "$check"
+	if [[ "$check" == *"not install"* ]]; then
+		exit 1
+	fi
+fi
+
+echo ""
+command="npm init react-app"
+
+if [[ "$#" != "1" ]]; then
+	echo ""
+	echo "Enter an app name as argument"
+elif [[ "$#" -eq 1 ]]; then
+	# echo "Project name: $1"
+	command+=" $1"
+	# echo "command #####: $command"
+	$command
+	success
+	cd "$1"
+	others
+fi

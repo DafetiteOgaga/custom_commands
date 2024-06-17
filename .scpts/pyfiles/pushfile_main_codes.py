@@ -19,10 +19,11 @@ def add_commit(file):
 		int:
 	"""
 
-	if "\\" == file[-1] or "/" == file[-1]:
-		re_file = (file.split(file[-1]))[0]
-	else:
-		re_file = file
+	# if "\\" == file[-1] or "/" == file[-1]:
+	# 	re_file = (file.split(file[-1]))[0]
+	# else:
+	# 	re_file = file
+	re_file = (file.split(file[-1]))[0] if "\\" == file[-1] or "/" == file[-1] else file
 	file = re_file
 	if file not in os.listdir():
 		print()
@@ -281,5 +282,5 @@ def main_enrty():
 	print()
 
 
-if __name__ == "__main__":
-	main_enrty()
+# if __name__ == "__main__":
+main_enrty() if __name__ == "__main__" else None

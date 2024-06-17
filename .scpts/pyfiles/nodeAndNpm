@@ -1,0 +1,39 @@
+#!/bin/bash
+
+function status() {
+	echo "$?"
+}
+
+path1="$HOME/.xbin/pyfiles"
+
+node=$(2>&1 node -v)
+node_status=$(status)
+# echo "node_status: $node_status"
+npm=$(2>&1 npm -v)
+npm_status=$(status)
+# echo "npm_status: $npm_status"
+
+if [[ "$node_status" != 0 ]]; then
+	echo ""
+	echo "nodeJS is not installed."
+	echo "Go to => https://nodejs.org/en/download/"
+	# exit 1
+fi
+if [[ "$npm_status" != 0 ]]; then
+	echo ""
+	echo "npm is not installed."
+	echo "Go to => https://nodejs.org/en/download/"
+fi
+
+file_list=$(find . \( -name "node_modules" -prune -o -name ".git" -prune \) -o \( -name "index*" -o -name "App*" -o -name "package.json" \) -print)
+# echo "pwd dir #####: $PWD"
+check=$(echo $file_list | python3 $path1/filter.py filterFunc)
+# echo "check #####: $check"
+
+if [[ "$check" == "True" ]]; then
+	appName=$(echo $file_list | python3 $path1/filter.py getAppName)
+	# echo "appName #####: $appName"
+	echo ""
+	echo "Oopsy! can not install."
+	echo "Directory has the app: $appName installed in it already."
+fi

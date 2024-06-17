@@ -37,5 +37,5 @@ def main(prompt_disp: str):
     #     print(f"\nYou pressed: {option}")
     return option
 
-if __name__ == "__main__":
-    main("Press any key (except Enter) to continue >>> ")
+# if __name__ == "__main__":
+main("Press any key (except Enter) to continue >>> ") if __name__ == "__main__" else None

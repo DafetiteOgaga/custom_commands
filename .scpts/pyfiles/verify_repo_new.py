@@ -14,10 +14,11 @@ def create_gitignore(list_dict: dict, current_directory, action: str=None):
 	Returns:
 		_type_: _description_
 	"""
-	if action:
-		file_dir = ".gitignore"
-	else:
-		file_dir = "__pycache__"
+	# if action:
+	# 	file_dir = ".gitignore"
+	# else:
+	# 	file_dir = "__pycache__"
+	file_dir = ".gitignore" if action else "__pycache__"
 	print()
 	for i, dir in enumerate(list_dict.keys()):
 		print(f"Checking for {BRIGHT_BLACK}{file_dir}{RESET} in {BRIGHT_BLACK}{os.path.basename(dir)}{RESET} ...")
@@ -155,6 +156,6 @@ def entry_point(action: str=None, verify_repo: int=0):
 		# print(f"create_gitignore else clause")
 		return 1
 
-if __name__ == "__main__":
-	entry_point()
+# if __name__ == "__main__":
+entry_point() if __name__ == "__main__" else None
 	# entry_point(action="extraction")

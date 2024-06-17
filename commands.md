@@ -32,6 +32,8 @@
    * show command - displays a list of all commits made to the selected repository
    * verifyRepo command - checkes if the current dir is a repository or not
    * viewRepos command - displays the list of repositories from any account right from the command line. Bringing the information to you on the go!
+   * getRepoUserName command - prints the username of the current repository
+   * updateToken command - adds/stores and updates a new github token and swap it with the old (expired) token in your local repository
 
 ### Djando commands
    * startproject command - creates a new django project
@@ -52,6 +54,10 @@
    * showmigrations command - displays the history of migrations within an app or all the apps in a project
    * sqlmigrate command - displays list of all mirations and presents the sql query of the selected item
    * django command - displays the django version you are using
+
+### Javascript commands
+   * createReactApp command - creates a React application and installs dependencies
+   * dependencyDevReact command - installs dependencies in development
 
 ### Shell commands
    * pyxecute - prepends the python3 shebang line to your script and gives it the execute permission

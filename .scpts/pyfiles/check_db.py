@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from pyfiles.print import print_norm as print_stdout
 # CheckDatabase.py
 def check_database(py: bool=False):
 	"""Checks, print and return the type of database installed
@@ -21,7 +22,8 @@ def check_database(py: bool=False):
 
 	cur_dir = os.getcwd()
 	settings_path = settings()
-	settings_path = [setting for setting in settings_path if setting.endswith('settings.py')]
+	# settings_path = [setting for setting in settings_path if setting.endswith('settings.py')]
+	settings_path = list(filter(lambda setting: setting.endswith('settings.py'), settings_path))
 	# print("Settings path: %s" % settings_path)
 	setting_dir = "/".join(settings_path[0].split('/')[:-1])
 	os.chdir(setting_dir)
@@ -39,48 +41,47 @@ def check_database(py: bool=False):
 		for line in data:
 			if postgresql in line:
 				if not py:
-					print("PostgreSQL database detected.")
+					print_stdout("PostgreSQL database detected.")
 				found1 = True
 				ret = 'PostgreSQL database detected.'
 			if sqlite in line:
 				if not py:
-					print("SQLite database detected.")
+					print_stdout("SQLite database detected.")
 				found2 = True
 				ret = 'SQLite database detected.'
 			if mysql in line:
 				if not py:
-					print("MySQL database detected.")
+					print_stdout("MySQL database detected.")
 				found3 = True
 				ret = 'MySQL database detected.'
 			if found1 == found2 == found3 == True:
 				if not py:
-					print(multiple_dbs)
+					print_stdout(multiple_dbs)
 				ret = multiple_dbs
 			elif found1 == found2 == True:
 				if not py:
-					print(multiple_dbs)
+					print_stdout(multiple_dbs)
 				ret = multiple_dbs
 			elif found1 == found3 == True:
 				if not py:
-					print(multiple_dbs)
+					print_stdout(multiple_dbs)
 				ret = multiple_dbs
 			elif found2 == found3 == True:
 				if not py:
-					print(multiple_dbs)
+					print_stdout(multiple_dbs)
 				ret = multiple_dbs
 			elif found1 or found2 or found3:
 				if not py:
-					print(ret)
+					print_stdout(ret)
 				ret = ret
 			else:
 				if not py:
-					print(unknown_db)
+					print_stdout(unknown_db)
 				ret = unknown_db
 		return ret
 	except Exception as e:
 		print("Error:", e)
 
-	
-if __name__ == "__main__":
-	check_database()
+
+check_database() if __name__ == "__main__" else None
 

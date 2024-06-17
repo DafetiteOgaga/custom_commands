@@ -6,6 +6,7 @@ from pyfiles.check_db import check_database
 from pyfiles.check_MySQLdb import check_mysqldb
 from pyfiles import check_MySQLdb
 from pyfiles.configure_settings_py import find_settings_py as settings
+from pyfiles.print import print_norm as print_stdout
 
 def exit(option: str):
 	"""Exits the program
@@ -67,18 +68,19 @@ def main(runserver: str=None, migrate: str=None, show: str=None):
 	# cur_path = os.getcwd()
 	if runserver:
 		if len(manage) == 0:
-			print('No django project found in this directory or its sub-directories.')
-			print('Change to a directory that has a django project or has it in its sub-directory(ies).')
+			print_stdout('No django project found in this directory or its sub-directories.')
+			print_stdout('Change to a directory that has a django project or has it in its sub-directory(ies).')
 			print()
 			sys.exit(1)
 		elif len(manage) == 1:
 			return manage[0]
 		else:
-			print('List of projects in the current directory.')
-			print('..........................................')
+			str_name = 'List of projects in the current directory.'
+			print_stdout(str_name)
+			print(''.rjust(len(str_name) + 5, '.'))
 			for index, i in enumerate(manage):
-				a, b , c= (i.split(os.sep))[-3], (i.split(os.sep))[-2], (i.split(os.sep))[-1]
-				print(f'{index + 1}. {(os.sep).join([a, b, c])}')
+				a, b , c = (i.split(os.sep))[-3], (i.split(os.sep))[-2], (i.split(os.sep))[-1]
+				print_stdout(f'{index + 1}. {(os.sep).join([a, b, c])}')
 			print()
 			try:
 				option = input("Select the project you wish to spin up. [q] - exit >>> ")
@@ -87,7 +89,7 @@ def main(runserver: str=None, migrate: str=None, show: str=None):
 				sys.exit()
 			exit(option)
 			option = int(option) - 1
-			print(f'Spinning server for project: {manage[option].split(os.sep)[-1]}')
+			print_stdout(f'Spinning server for project: {manage[option].split(os.sep)[-1]}')
 			print()
 		return manage[option]
 	elif migrate:
@@ -103,8 +105,8 @@ def main(runserver: str=None, migrate: str=None, show: str=None):
 		if not show or 'sqlmigrate' in sys.argv[0]:
 			if len(app_list) == 0:
 				print()
-				print('No migration found')
-				print('Use "makemigrations", "migrate" or "mkandmigrate"')
+				print_stdout('No migration found')
+				print_stdout('Use "makemigrations", "migrate" or "mkandmigrate"')
 				print()
 				sys.exit(1)
 			for index, i in enumerate(app_list):
@@ -120,12 +122,12 @@ def main(runserver: str=None, migrate: str=None, show: str=None):
 		else:
 			if len(app_name_list) == 0:
 				print()
-				print('No app/history found')
-				print('Use "makemigrations", "migrate" or "mkandmigrate"')
+				print_stdout('No app/history found')
+				print_stdout('Use "makemigrations", "migrate" or "mkandmigrate"')
 				print()
 				sys.exit(1)
 			for index, i in enumerate(app_name_list):
-				print(f'{index + 1}. {i}')
+				print_stdout(f'{index + 1}. {i}')
 			print()
 			try:
 				selection = input('Select an option. [q] - exit >>> ')
@@ -194,10 +196,11 @@ def error_check():
 	check2 = subprocess.run(ls, capture_output=True, text=True)
 	if 'No module named django' in check1.stderr:
 		return check1.returncode, 'django_not_installed'
-	if "manage.py" not in check2.stdout and "runserver" not in sys.argv[0]:
-		return 1, 'wrong_dir'
-	else:
-		return 0, 'all good'
+	# if "manage.py" not in check2.stdout and "runserver" not in sys.argv[0]:
+	# 	return 1, 'wrong_dir'
+	# else:
+	# 	return 0, 'all good'
+	return (1, 'wrong_dir') if ("manage.py" not in check2.stdout and "runserver" not in sys.argv[0]) else (0, 'all good')
 	
 
 def error_response(code, response):
@@ -213,12 +216,12 @@ def error_response(code, response):
 	if code:
 		if response == 'django_not_installed':
 			print()
-			print("You don't have django installed or check your virtual environment")
-			print("pip install django")
+			print_stdout("You don't have django installed or check your virtual environment")
+			print_stdout("pip install django")
 			print()
 		elif response =='wrong_dir':
 			print()
-			print("change to the directory containing \"manage.py\"")
+			print_stdout("change to the directory containing \"manage.py\"")
 			print()
 		return 1
 	return 0
@@ -242,7 +245,7 @@ b. Install the dependencies in the requirements.txt
 		response = prompt(f'Make a choice. [q] - quit >>> ')
 		exit(response)
 	else:
-		print('Creating requirements.txt file ...')
+		print_stdout('Creating requirements.txt file ...')
 		response = 'a'
 
 	if response.lower() == 'a':
@@ -266,20 +269,20 @@ def check_database_type(drf: bool=False):
 	print(db_check)
 	if drf:
 		print()
-		print("You don't have django rest framework installed properly.")
-		print("Run: drf command")
+		print_stdout("You don't have django rest framework installed properly.")
+		print_stdout("Run: drf command")
 		print()
 		sys.exit(1)
 	if 'MySQL' in db_check:
 		mysqlclient = check_mysqldb(py=True)
 		if mysqlclient == 'not installed':
 			print()
-			print("You don't have mysqlclient(django connector) installed.")
-			print("pip install mysqlclient")
-			print("if any issue:")
-			print("    sudo apt-get install pkg-config")
-			print("    sudo apt-get install libmysqlclient-dev")
-			print("    pip install mysqlclient")
+			print_stdout("You don't have mysqlclient(django connector) installed.")
+			print_stdout("pip install mysqlclient")
+			print_stdout("if any issue:")
+			print_stdout("    sudo apt-get install pkg-config")
+			print_stdout("    sudo apt-get install libmysqlclient-dev")
+			print_stdout("    pip install mysqlclient")
 			print()
 			sys.exit(1)
 
@@ -304,12 +307,12 @@ def moduleNotFound_in_settings(err_output):
 		os.chdir(cur_dir)
 		data = " ".join(data)
 		if f'"{module1}"' in data or f"'{module1}'" in data:
-			print(f"Error: ModuleNotFoundError: No module named '{module1}'")
-			print(f"If you installed '{module1}' and later deleted the app:")
-			print(f"	either Remove '{module1}' from the list of INSTALLED_APPS in settings.py")
-			print(f"	and/or Re-install '{module1}'")
+			print_stdout(f"Error: ModuleNotFoundError: No module named '{module1}'")
+			print_stdout(f"If you installed '{module1}' and later deleted the app:")
+			print_stdout(f"	either Remove '{module1}' from the list of INSTALLED_APPS in settings.py")
+			print_stdout(f"	and/or Re-install '{module1}'")
 		else:
-			print('output.stderr:', err_output)
+			print_stdout('output.stderr:', err_output)
 
 
 def django_migrate():
@@ -346,7 +349,7 @@ def runserver_func():
 
 	if len(sys.argv) == 2 and type(sys.argv[1]) != int and len(sys.argv[1]) != 4:
 		print()
-		print('port number must be an integer of 4 numbers')
+		print_stdout('port number must be an integer of 4 numbers')
 		print()
 		sys.exit(1)
 
@@ -358,14 +361,14 @@ def runserver_func():
 
 	command2 = output_func()
 	drf = check_MySQLdb.check_drf(py=True)
-	if drf == "DRF not installed":
-		check_database_type(drf=True)
+	# if drf == "DRF not installed":
+	# 	check_database_type(drf=True)
 	check_database_type()
 	try:
 		ctrl_c = subprocess.run(command2.split())
 	except KeyboardInterrupt:
 		print()
-		print('Development Server exited.')
+		print_stdout('Development Server exited.')
 		print()
 		
 
@@ -420,7 +423,7 @@ def requirements_func():
 		with open(requirement, 'w') as requirements_file:
 			create = subprocess.run(command, stdout=requirements_file)
 		if create.returncode == 0:
-			print('Success.')
+			print_stdout('Success.')
 	else:
 		command = command + [requirement]
 		subprocess.run(command)
