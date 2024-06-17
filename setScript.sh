@@ -248,6 +248,9 @@ dOptions=(
 
 	"  viewRepos command - displays the list of repos from any account on CLI"
 	#...py script files....................... #
+
+	"  updateToken command - adds/updates your repo with a new token"
+
 	"  gitignore command - creates/updates your .gitignore file"
 	"  branch command - creates and also switch between branches"
 	"  merge command - merge branches to main/master branch"
@@ -408,271 +411,275 @@ options() {
 		
 	# ...py script files..................................... #
 		9)
-			DFILENAME="gitignore"
+			DFILENAME="updateToken"
 			category p "$converted_selection"
 			;;
 		10)
-			DFILENAME="branch"
+			DFILENAME="gitignore"
 			category p "$converted_selection"
 			;;
 		11)
-			DFILENAME="merge"
+			DFILENAME="branch"
 			category p "$converted_selection"
 			;;
 		12)
+			DFILENAME="merge"
+			category p "$converted_selection"
+			;;
+		13)
 			DFILENAME="status"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		13)
+		14)
 			DFILENAME="curfol"
 			category b "$converted_selection"
 			;;
-		14)
+		15)
 			DFILENAME="pyxecute"
 			category b "$converted_selection"
 			;;
-		15)
+		16)
 			DFILENAME="shxecute"
 			category b "$converted_selection"
 			;;
-		16)
+		17)
 			DFILENAME="jsxecute"
 			category b "$converted_selection"
 			;;
-		17)
+		18)
 			DFILENAME="pycodemore"
 			category b "$converted_selection"
 			;;
-		18)
+		19)
 			DFILENAME="createPatch"
 			category b "$converted_selection"
 			;;
-		19)
+		20)
 			DFILENAME="rollback"
 			category b "$converted_selection"
 			;;
-		20)
+		21)
 			DFILENAME="cls"
 			category b "$converted_selection"
 			;;
-		21)
+		22)
 			DFILENAME="authorID"
 			category b "$converted_selection"
 			;;
-		22)
+		23)
 			DFILENAME="commitree"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		23)
+		24)
 			DFILENAME="compareChange"
 			category p "$converted_selection"
 			;;
-		24)
+		25)
 			DFILENAME="commitdir"
 			category p "$converted_selection"
 			;;
-		25)
+		26)
 			DFILENAME="commitall"
 			category p "$converted_selection"
 			;;
-		26)
+		27)
 			DFILENAME="getRepoUserName"
 			category p "$converted_selection"
 			;;
-		27)
+		28)
 			DFILENAME="wcount"
 			category p "$converted_selection"
 			;;
-		28)
+		29)
 			DFILENAME="stash"
 			category p "$converted_selection"
 			;;
-		29)
+		30)
 			DFILENAME="viewStash"
 			category p "$converted_selection"
 			;;
-		30)
+		31)
 			DFILENAME="logit"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		31)
+		32)
 			DFILENAME="createReactApp"
 			category b "$converted_selection"
 			;;
-		32)
+		33)
 			DFILENAME="dependencyDevReact"
 			category b "$converted_selection"
 			;;
-		33)
+		34)
 			DFILENAME="py3venv"
 			category b "$converted_selection"
 			;;
 
-		34)
+		35)
 			DFILENAME="requirement_txt"
 			category p "$converted_selection"
 			;;
 		
 		# ...bash script files................................... #
-		35)
+		36)
 			DFILENAME="djangoToolbar"
 			category b "$converted_selection"
 			;;
-		36)
+		37)
 			DFILENAME="drf"
 			category b "$converted_selection"
 			;;
-		37)
+		38)
 			DFILENAME="djoser"
 			category b "$converted_selection"
 			;;
-		38)
+		39)
 			DFILENAME="jwtDjango"
 			category b "$converted_selection"
 			;;
-		39)
+		40)
 			DFILENAME="static4django"
 			category b "$converted_selection"
 			;;
 
-		40)
+		41)
 			DFILENAME="startproject"
 			category b "$converted_selection"
 			;;
-		41)
+		42)
 			DFILENAME="startapp"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		42)
+		43)
 			DFILENAME="runserver"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		43)
+		44)
 			DFILENAME="makemigrations"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		44)
+		45)
 			DFILENAME="migrate"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		45)
+		46)
 			DFILENAME="django"
 			category b "$converted_selection"
 			;;
-		46)
+		47)
 			DFILENAME="djshell"
 			category b "$converted_selection"
 			;;
-		47)
+		48)
 			DFILENAME="mkandmigrate"
 			category b "$converted_selection"
 			;;
 
 	#...py script files..................................... #
-		48)
+		49)
 			DFILENAME="showmigrations"
 			category p "$converted_selection"
 			;;
-		49)
+		50)
 			DFILENAME="sqlmigrate"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		50)
+		51)
 			DFILENAME="mysqlversion"
 			category b "$converted_selection"
 			;;
-		51)
+		52)
 			DFILENAME="mysqlstartserver"
 			category b "$converted_selection"
 			;;
-		52)
+		53)
 			DFILENAME="mysqlstopserver"
 			category b "$converted_selection"
 			;;
-		53)
+		54)
 			DFILENAME="mysqlrestartserver"
 			category b "$converted_selection"
 			;;
-		54)
+		55)
 			DFILENAME="mysqlstatus_server"
 			category b "$converted_selection"
 			;;
-		55)
+		56)
 			DFILENAME="mysqlshell"
 			category b "$converted_selection"
 			;;
-		56)
+		57)
 			DFILENAME="ctemp"
 			category b "$converted_selection" "ct"
 			;;
 	
 	# ...py script files..................................... #
-		57)
+		58)
 			DFILENAME="clear_commit"
 			category p "$converted_selection"
 			;;
-		58)
+		59)
 			DFILENAME="betty"
 			category b "$converted_selection"
 			;;
-		59)
+		60)
 			DFILENAME="pycode"
 			category b "$converted_selection"
 			;;
 
-		60)
+		61)
 			DFILENAME="printmyEnv"
 			category p "$converted_selection"
 			;;
-		61)
+		62)
 			DFILENAME="show"
 			category p "$converted_selection"
 			;;
-		62)
+		63)
 			DFILENAME="verifyRepo"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		63)
+		64)
 			DFILENAME="mycompile"
 			category b "$converted_selection"
 			;;
-		64)
+		65)
 			DFILENAME="pycompile"
 			category b "$converted_selection"
 			;;
 	
 	# ...C files............................................. #
-		65)
+		66)
 			DFILENAME="myascii"
 			category c "$converted_selection"
 			;;
-		66)
+		67)
 			DFILENAME="rot13"
 			category c "$converted_selection"
 			;;
-		67)
+		68)
 			DFILENAME="rot47"
 			category c "$converted_selection"
 			;;
-		68)
+		69)
 			DFILENAME="guessGame"
 			category c "$converted_selection"
 			;;
@@ -1112,6 +1119,9 @@ instructn() {
 			;;
 		"dependencyDevReact")
 			echo -e "$STRT installs the specified dependency $EFFT $ANYWHERE: $DFILENAME <filename>"
+			;;
+		"updateToken")
+			echo -e "$STRT add/update your local credentials with a new token $EFFT $ANYWHERE: $DFILENAME"
 			;;
 		esac
 	sleep 0.1
