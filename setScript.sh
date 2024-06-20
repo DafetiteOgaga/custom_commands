@@ -282,7 +282,9 @@ dOptions=(
 	
 	#...bash script files.................. #
 	"  createReactApp command - creates a React application, dependencies"
-	"  dependencyDevReact command - installs dependencies"
+	"  dependenciesReact command - installs various React packages"
+	"  updateReactPackagez command - updates React packages to their latest versions"
+	"  dependencyDevReact command - installs dev-dependencies"
 
 	"  py3venv command - creates a python3 virtual environment"
 	#...py script files....................... #
@@ -513,173 +515,181 @@ options() {
 			category b "$converted_selection"
 			;;
 		33)
-			DFILENAME="dependencyDevReact"
+			DFILENAME="dependenciesReact"
 			category b "$converted_selection"
 			;;
 		34)
+			DFILENAME="updateReactPackagez"
+			category b "$converted_selection"
+			;;
+		35)
+			DFILENAME="dependencyDevReact"
+			category b "$converted_selection"
+			;;
+		36)
 			DFILENAME="py3venv"
 			category b "$converted_selection"
 			;;
 
-		35)
+		37)
 			DFILENAME="requirement_txt"
 			category p "$converted_selection"
 			;;
 		
 		# ...bash script files................................... #
-		36)
+		38)
 			DFILENAME="djangoToolbar"
 			category b "$converted_selection"
 			;;
-		37)
+		39)
 			DFILENAME="drf"
 			category b "$converted_selection"
 			;;
-		38)
+		40)
 			DFILENAME="djoser"
 			category b "$converted_selection"
 			;;
-		39)
+		41)
 			DFILENAME="jwtDjango"
 			category b "$converted_selection"
 			;;
-		40)
+		42)
 			DFILENAME="static4django"
 			category b "$converted_selection"
 			;;
 
-		41)
+		43)
 			DFILENAME="startproject"
 			category b "$converted_selection"
 			;;
-		42)
+		44)
 			DFILENAME="startapp"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		43)
+		45)
 			DFILENAME="runserver"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		44)
+		46)
 			DFILENAME="makemigrations"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		45)
+		47)
 			DFILENAME="migrate"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		46)
+		48)
 			DFILENAME="django"
 			category b "$converted_selection"
 			;;
-		47)
+		49)
 			DFILENAME="djshell"
 			category b "$converted_selection"
 			;;
-		48)
+		50)
 			DFILENAME="mkandmigrate"
 			category b "$converted_selection"
 			;;
 
 	#...py script files..................................... #
-		49)
+		51)
 			DFILENAME="showmigrations"
 			category p "$converted_selection"
 			;;
-		50)
+		52)
 			DFILENAME="sqlmigrate"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		51)
+		53)
 			DFILENAME="mysqlversion"
 			category b "$converted_selection"
 			;;
-		52)
+		54)
 			DFILENAME="mysqlstartserver"
 			category b "$converted_selection"
 			;;
-		53)
+		55)
 			DFILENAME="mysqlstopserver"
 			category b "$converted_selection"
 			;;
-		54)
+		56)
 			DFILENAME="mysqlrestartserver"
 			category b "$converted_selection"
 			;;
-		55)
+		57)
 			DFILENAME="mysqlstatus_server"
 			category b "$converted_selection"
 			;;
-		56)
+		58)
 			DFILENAME="mysqlshell"
 			category b "$converted_selection"
 			;;
-		57)
+		59)
 			DFILENAME="ctemp"
 			category b "$converted_selection" "ct"
 			;;
 	
 	# ...py script files..................................... #
-		58)
+		60)
 			DFILENAME="clear_commit"
 			category p "$converted_selection"
 			;;
-		59)
+		61)
 			DFILENAME="betty"
 			category b "$converted_selection"
 			;;
-		60)
+		62)
 			DFILENAME="pycode"
 			category b "$converted_selection"
 			;;
 
-		61)
+		63)
 			DFILENAME="printmyEnv"
 			category p "$converted_selection"
 			;;
-		62)
+		64)
 			DFILENAME="show"
 			category p "$converted_selection"
 			;;
-		63)
+		65)
 			DFILENAME="verifyRepo"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		64)
+		66)
 			DFILENAME="mycompile"
 			category b "$converted_selection"
 			;;
-		65)
+		67)
 			DFILENAME="pycompile"
 			category b "$converted_selection"
 			;;
 	
 	# ...C files............................................. #
-		66)
+		68)
 			DFILENAME="myascii"
 			category c "$converted_selection"
 			;;
-		67)
+		69)
 			DFILENAME="rot13"
 			category c "$converted_selection"
 			;;
-		68)
+		70)
 			DFILENAME="rot47"
 			category c "$converted_selection"
 			;;
-		69)
+		71)
 			DFILENAME="guessGame"
 			category c "$converted_selection"
 			;;
@@ -1117,8 +1127,14 @@ instructn() {
 		"createReactApp")
 			echo -e "$STRT create a React app $EFFT $ANYWHERE: $DFILENAME <filename>"
 			;;
+		"dependenciesReact")
+			echo -e "$STRT installs various dependencies $EFFT $ANYWHERE: $DFILENAME"
+			;;
 		"dependencyDevReact")
-			echo -e "$STRT installs the specified dependency $EFFT $ANYWHERE: $DFILENAME <filename>"
+			echo -e "$STRT installs the specified dependency $EFFT $ANYWHERE: $DFILENAME"
+			;;
+			"updateReactPackagez")
+			echo -e "$STRT updates all packages that has new releases $EFFT $ANYWHERE: $DFILENAME"
 			;;
 		"updateToken")
 			echo -e "$STRT add/update your local credentials with a new token $EFFT $ANYWHERE: $DFILENAME"
