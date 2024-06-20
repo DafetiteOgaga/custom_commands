@@ -30,7 +30,9 @@ file_list=$(find . \( -name "node_modules" -prune -o -name ".git" -prune \) -o \
 check=$(echo $file_list | python3 $path1/filter.py filterFunc)
 # echo "check #####: $check"
 
-if [[ "$check" == "True" ]]; then
+if [[ "$1" == "dependencies" && "$check" == "True" ]]; then
+	echo ""
+elif [[ "$check" == "True" ]]; then
 	appName=$(echo $file_list | python3 $path1/filter.py getAppName)
 	# echo "appName #####: $appName"
 	echo ""
