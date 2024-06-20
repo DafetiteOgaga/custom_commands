@@ -6,39 +6,9 @@ success() {
 	fi
 }
 
-others() {
-	for i in {1..5}; do
-		install_command="npm install"
-		if [[ "$i" == 1 ]]; then
-			app_command=" react-router-dom"
-		elif [[ "$i" == 2 ]]; then
-			app_command=" react-player"
-		elif [[ "$i" == 3 ]]; then
-			app_command=" @chakra-ui/react"
-		elif [[ "$i" == 4 ]]; then
-			app_command=" formik"
-		elif [[ "$i" == 5 ]]; then
-			app_command=" yup"
-		fi
-		echo ""
-		read -n 1 -s -r -p "Install $app_command? [y/N] >>> " install
-		
-		if [[ "$install" =~ [yY] ]]; then
-			echo "$app_command"
-			install_command+="$app_command"
-			# echo "install_command #####: $install_command"
-			$install_command
-			success
-		elif [[ "$install" =~ [nN] ]]; then
-			echo "No"
-			continue
-		fi
-	done
-}
-
 path1="$HOME/.xbin/pyfiles"
 # path1="$HOME/alx/custom_commands/.scpts/pyfiles"
-check=$(2>&1 $path1/nodeAndNpm)
+check="$(2>&1 $path1/nodeAndNpm)"
 if [[ -n "$check" ]]; then
 	echo "$check"
 	if [[ "$check" == *"not install"* ]]; then
@@ -47,17 +17,85 @@ if [[ -n "$check" ]]; then
 fi
 
 echo ""
-command="npm init react-app"
+# command="npm init react-app my_default_app"
 
+new_update=0
 if [[ "$#" != "1" ]]; then
 	echo ""
 	echo "Enter an app name as argument"
 elif [[ "$#" -eq 1 ]]; then
-	# echo "Project name: $1"
-	command+=" $1"
-	# echo "command #####: $command"
-	$command
+	if [[ -d "$path1/default-react-project" ]]; then
+		echo "Preparing the project $1 ..."
+		cp -r "$path1/default-react-project/my_default_app/" "$1"
+		cd "$1"
+		sed -i "s|my_default_app|${1}|g" "package.json"
+		echo "Checking for updates ..."
+		updates="$(2>&1 npm outdated)"
+		# echo "......................................."
+		while IFS= read -r line; do
+			current_version=$(echo "$line" | awk '{print $2}')
+			wanted_version=$(echo "$line" | awk '{print $3}')
+			latest_version=$(echo "$line" | awk '{print $4}')
+			# echo "Package: $line"
+			# echo "Current version: $current_version"
+			# echo "Latest version: $latest_version"
+		done <<< "$updates"
+		# echo "......................................."
+		# echo "Package: $line"
+		# echo "Current version: $current_version"
+		# echo "Wanted version: $wanted_version"
+		# echo "Latest version: $latest_version"
+		# echo "......................................."
+		echo -e "$updates\n"
+
+		# loop=1
+		if [[ "$current_version" != "$latest_version" ]]; then
+			loop=1
+			while [[ "$loop" -eq 1 ]]; do
+				echo -n "Do you want to the packages to the latest version? [y/N] >>> "
+				read -n 1 -s -r UPDATE_PACKAGES
+				if [[ "$UPDATE_PACKAGES" =~ [yY] ]]; then
+					echo "Yes, update the packages"
+					npx npm-check-updates -u
+					new_update=1
+					echo "Packages updated to the latest version."
+            		loop=0
+				elif [[ "$UPDATE_PACKAGES" =~ [nN] ]]; then
+					echo "No, don't update"
+					echo "No updates applied."
+            		loop=0
+				else
+					echo -e "\nInvalid input. Please press 'y' for Yes or 'n' for No.\n"
+				fi
+			done
+		fi
+
+		echo "Updating node_modules with package.json ..."
+		npm install
+
+		if [[ "$new_update" -eq 1 ]]; then
+			cp -r "node_modules" "$path1/default-react-project/my_default_app/node_modules"
+			cp -r "package.json" "$path1/default-react-project/my_default_app/package.json"
+			sed -i "s|${1}|my_default_app|g" "$path1/default-react-project/my_default_app/package.json"
+		fi
+	else
+		# echo "Installing and setting up node_modules, package.json for future use."
+		npm init react-app my_default_app
+		index="my_default_app/public/index.html"
+		ogp_title="<meta name=\"og:title\" content=\"Created by custom commands\" />"
+		ogp_description="\t\t<meta name=\"og:description\" content=\"Developed by custom commands\" />"
+		ogp_image="\t\t<meta name=\"og:image\" content=\"%PUBLIC_URL%/logo192.png\" />"
+		ogp="$ogp_title\n$ogp_description\n$ogp_image"
+
+		sed -i '/<link rel="apple-touch-icon" href="%PUBLIC_URL%\/logo192.png" \/>/a\
+		'"$ogp"'' $index
+		mkdir "my_default_app/src/components"
+		mkdir "my_default_app/src/images"
+		echo "Creating copy for future use."
+		mkdir "$path1/default-react-project"
+		cp -r "my_default_app" "$path1/default-react-project/my_default_app"
+		sed -i "s|my_default_app|${1}|g" "my_default_app/package.json"
+		mv "my_default_app" "$1"
+	fi
 	success
-	cd "$1"
-	others
 fi

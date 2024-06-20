@@ -65,7 +65,7 @@
   <tr>
     <td>pushfile</td>
     <td>runserver</td>
-    <td></td>
+    <td>dependenciesReact</td>
     <td>jsxecute</td>
     <td>mysqlstopserver</td>
     <td></td>
@@ -75,7 +75,7 @@
   <tr>
     <td>pushall</td>
     <td>makemigrations</td>
-    <td></td>
+    <td>updateReactPackagez</td>
     <td>curfol</td>
     <td>mysqlrestartserver</td>
     <td></td>
@@ -334,10 +334,9 @@
 
 ## New
   - updateToken
+  - updateReactPackagez
   - createReactApp
   - dependencyDevReact
-  - jsxecute
-  - restoreFile
   - djangoToolbar
   - jwtDjango
   - static4django
@@ -345,13 +344,10 @@
   - drf
 
 ## Changes
+  - createReactApp now downloads the configs for CRA on first use, then uses this config for subsequent use while it updates itself whenever there is an update to CRA config
   - implemented the auto detection of node_modeules in React app to gitignore command
   - createRepo displays the visibility of the repo after selecting the type
   - Added the list of endpoints created by drf, jwtDjango and djoser to the the displayed text after installation
-  - django config commands now display the specific changes made to the settings and urls files
-  - added support for DRF-xml rednderer configuration, separated DRF-auth configuration from DRF config in DRF command
-  - implemented app-level urls.py auto creation and urls configuration were added in startapp command
-  - gitignore now auto add all \_\_pychache\_\_ files and venv dirs if you choose to
   - [More](https://github.com/DafetiteOgaga/custom_commands/blob/master/changes.md)
 
 

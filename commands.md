@@ -58,6 +58,8 @@
 ### Javascript commands
    * createReactApp command - creates a React application and installs dependencies
    * dependencyDevReact command - installs dependencies in development
+   * updateReactPackagez command - updates React packages to their latest versions
+   * dependencyDevReact command - installs dev-dependencies
 
 ### Shell commands
    * pyxecute - prepends the python3 shebang line to your script and gives it the execute permission

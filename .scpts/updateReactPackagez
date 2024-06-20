@@ -1,0 +1,64 @@
+#!/bin/bash
+
+success() {
+	if [[ "$?" == 0 ]]; then
+		echo "Success"
+	fi
+}
+
+path1="$HOME/.xbin/pyfiles"
+# path1="$HOME/alx/custom_commands/.scpts/pyfiles"
+check="$(2>&1 $path1/nodeAndNpm dependencies)"
+if [[ -n "$check" ]]; then
+	echo "$check"
+	if [[ "$check" == *"not install"* ]]; then
+		exit 1
+	fi
+fi
+
+echo ""
+new_update=0
+echo "Checking for updates ..."
+updates="$(2>&1 npm outdated)"
+# echo "......................................."
+while IFS= read -r line; do
+	current_version=$(echo "$line" | awk '{print $2}')
+	wanted_version=$(echo "$line" | awk '{print $3}')
+	latest_version=$(echo "$line" | awk '{print $4}')
+	# echo "Package: $line"
+	# echo "Current version: $current_version"
+	# echo "Latest version: $latest_version"
+done <<< "$updates"
+# echo "......................................."
+# echo "Package: $line"
+# echo "Current version: $current_version"
+# echo "Wanted version: $wanted_version"
+# echo "Latest version: $latest_version"
+# echo "......................................."
+echo -e "$updates\n"
+
+if [[ "$current_version" != "$latest_version" ]]; then
+	loop=1
+	while [[ "$loop" -eq 1 ]]; do
+		echo -n "Do you want to the packages to the latest version? [y/N] >>> "
+		read -n 1 -s -r UPDATE_PACKAGES
+		if [[ "$UPDATE_PACKAGES" =~ [yY] ]]; then
+			echo "Yes, update the packages"
+			npx npm-check-updates -u
+			new_update=1
+			echo "Packages updated to the latest version."
+			echo "Updating node_modules with package.json ..."
+			npm install
+			success
+			loop=0
+		elif [[ "$UPDATE_PACKAGES" =~ [nN] ]]; then
+			echo "No, don't update"
+			echo "No updates applied."
+			loop=0
+		else
+			echo -e "\nInvalid input. Please press 'y' for Yes or 'n' for No.\n"
+		fi
+	done
+else
+	echo "Packages are upto date."
+fi
