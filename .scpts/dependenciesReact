@@ -7,19 +7,23 @@ success() {
 }
 
 others() {
-	for i in {1..5}; do
+	for i in {1..6}; do
 		install_command="npm install"
+		postcss=0
 		if [[ "$i" == 1 ]]; then
-			app_command=" react-router-dom"
-		elif [[ "$i" == 2 ]]; then
-			app_command=" react-player"
-		elif [[ "$i" == 3 ]]; then
 			app_command=" styled-components"
+		elif [[ "$i" == 2 ]]; then
+			app_command=" autoprefixer postcss-cli"
+			postcss=1
+		elif [[ "$i" == 2 ]]; then
+			app_command=" react-router-dom"
 		elif [[ "$i" == 3 ]]; then
-			app_command=" @chakra-ui/react"
+			app_command=" react-player"
 		elif [[ "$i" == 4 ]]; then
-			app_command=" formik"
+			app_command=" @chakra-ui/react"
 		elif [[ "$i" == 5 ]]; then
+			app_command=" formik"
+		elif [[ "$i" == 6 ]]; then
 			app_command=" yup"
 		fi
 		echo ""
@@ -30,6 +34,10 @@ others() {
 			install_command+="$app_command"
 			# echo "install_command #####: $install_command"
 			$install_command
+			if [[ "$postcss" -eq 1 ]]; then	
+				src="$(2>&1 find . -type d -name "node_modules" -prune -o -type d -name "src" -print)"
+				echo -e "module.exports = {\n\tplugins: [\n\trequire('autoprefixer')\n\t]\n};" > "$src/postcss.config.js"
+			fi
 			success
 		elif [[ "$install" =~ [nN] ]]; then
 			echo "No"
@@ -47,21 +55,4 @@ if [[ -n "$check" ]]; then
 		exit 1
 	fi
 fi
-
-# echo ""
-# command="npm init react-app"
-
-# if [[ "$#" != "1" ]]; then
-# 	echo ""
-# 	echo "Enter an app name as argument"
-# elif [[ "$#" -eq 1 ]]; then
-# 	# echo "Project name: $1"
-# 	command+=" $1"
-# 	# echo "command #####: $command"
-# 	$command
-# 	success
-# 	cd "$1"
-# 	others
-# fi
-
 others
