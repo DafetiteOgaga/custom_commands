@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+
+import subprocess, os, sys
+# Your GitHub personal access token
+sys.path.append(os.path.expanduser("~"))
+from myToken import GITHUB_TOKEN
+try:
+	import requests
+except ImportError:
+	subprocess.run(['pip', 'install', 'requests'])
+	import requests
+
+try:
+	from github import Github
+except ImportError:
+	subprocess.run(['pip', 'install', 'PyGithub'])
+	from github import Github
+
+# Google Drive file ID (the part after /d/ in the sharing URL)
+# https://drive.google.com/file/d/1-tKERAlGdmcCXiYo83fNo6c5LNmSGK3A/view?usp=drive_link
+# https://drive.google.com/file/d/1cAovh0Jm2--nrJE7k1GW3cUPl88LhM9u/view?usp=sharing
+GOOGLE_DRIVE_FILE_ID = [ '1cAovh0Jm2--nrJE7k1GW3cUPl88LhM9u', '1-tKERAlGdmcCXiYo83fNo6c5LNmSGK3A',]
+
+# GitHub repository details
+REPONAME = 'DafetiteOgaga'
+GITHUB_REPO = [ f'{REPONAME}/Resume', [ f'{REPONAME}/CV', f'{REPONAME}/dafetite' ]]
+# GITHUB_FILE_NAME = 'Dafetite_Ogaga.pdf'
+
+def download_from_drive(file_id, destination):
+	url = f'https://drive.google.com/uc?export=download&id={file_id}'
+	response = requests.get(url)
+	response.raise_for_status()
+	with open(destination, 'wb') as file:
+		file.write(response.content)
+	print(f"File downloaded to: {destination}")
+
+def upload_to_github(file_path, repo_name, file_path_in_repo, token):
+	g = Github(token)
+	repo = g.get_repo(repo_name)
+	with open(file_path, 'rb') as file:
+		content = file.read()
+
+	print_out = f"File updated: {file_path_in_repo} in the repository {repo_name.split('/').pop()}"
+	try:
+		# Try to get the file (to update it if it exists)
+		file = repo.get_contents(file_path_in_repo)
+		repo.update_file(file_path_in_repo, "Update resume", content, file.sha)
+		print(print_out)
+	except:
+		# If the file doesn't exist, create it
+		repo.create_file(file_path_in_repo, "Add resume", content)
+		print(f"File created: {file_path_in_repo} in the repository {repo_name.split('/').pop()}")
+	print(''.rjust(len(print_out), '.'))
+
+def main():
+	GITHUB_FILE_NAME = 'Dafetite_Ogaga.pdf'
+
+	# Destination file path
+	destination_path = os.path.join(os.getcwd(), "Dafetite_Ogaga.pdf")
+
+	# Download file from Google Drive
+	for driveID, githubRepo in zip(GOOGLE_DRIVE_FILE_ID, GITHUB_REPO):
+		download_from_drive(driveID, destination_path)
+		if isinstance(githubRepo, list):
+			for repo in githubRepo:
+				# Upload to GitHub
+				if repo.endswith('dafetite'):
+					GITHUB_FILE_NAME = 'src/components/Dafetite_Ogaga.pdf'
+				upload_to_github(destination_path, repo, GITHUB_FILE_NAME, GITHUB_TOKEN)
+		else:
+			# Upload to GitHub
+			upload_to_github(destination_path, githubRepo, GITHUB_FILE_NAME, GITHUB_TOKEN)
+	os.remove(destination_path)
+
+if __name__ == "__main__":
+	main()
