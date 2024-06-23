@@ -1,0 +1,13 @@
+#!/bin/bash
+
+OS=$(uname -s)
+
+echo ""
+echo "Wait for it..."
+if [[ -n "$WSL_DISTRO_NAME" || "$OS" == "Windows" ]]; then
+    explorer.exe "$HOME/.xbin"
+elif [[ "$OS" == "Linux" ]]; then
+    xdg-open "$HOME/.xbin"
+fi
+
+echo -e "....................Done....................\n"

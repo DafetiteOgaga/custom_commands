@@ -204,7 +204,7 @@
   </tr>
   <tr>
     <td>compareChange</td>
-    <td></td>
+    <td>djangoUrls</td>
     <td></td>
     <td></td>
     <td></td>
@@ -333,6 +333,7 @@
 - Submit a pull request to this repository.
 
 ## New
+  - djangoUrls
   - updateToken
   - updateReactPackagez
   - createReactApp
@@ -344,6 +345,7 @@
   - drf
 
 ## Changes
+  - Added support for urls display to startproject command when creating a new django project. install and run djangoUrls command to see the list and details of all configured urls.
   - createReactApp now downloads the configs for CRA on first use, then uses this config for subsequent use while it updates itself whenever there is an update to CRA config
   - implemented the auto detection of node_modeules in React app to gitignore command
   - createRepo displays the visibility of the repo after selecting the type

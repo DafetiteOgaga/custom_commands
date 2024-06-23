@@ -2,6 +2,7 @@
 This file contains the notable changes made to the Custom Commands project.
 
 ## Changes
+   - Added support for urls display to startproject command when creating a new django project. install and run djangoUrls command to see the list and details of all configured urls.
    - Added the list of endpoints created by drf, jwtDjango and djoser to the the displayed text after installation
    - changed compareChanges command to compareChange command
    - django config commands now display the specific changes made to the settings and urls files

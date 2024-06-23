@@ -54,6 +54,7 @@
    * showmigrations command - displays the history of migrations within an app or all the apps in a project
    * sqlmigrate command - displays list of all mirations and presents the sql query of the selected item
    * django command - displays the django version you are using
+   * djangoUrls command - displays the list and details of all configured urls in your django project.
 
 ### Javascript commands
    * createReactApp command - creates a React application and installs dependencies

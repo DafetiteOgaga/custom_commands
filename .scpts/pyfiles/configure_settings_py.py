@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
-import os, sys #, time
-from pyfiles.print import print_norm as print_stdout, write_to_file, backward_search
+import os, sys
+try:
+	from .print import print_norm as print_stdout
+except ImportError:
+    from print import print_norm as print_stdout
 
 def skip_venv_dir(dir_check: list=None):
 	"""Checks if the current working directory is a venv or
@@ -319,9 +322,11 @@ def install_entity(entity: str, settings_path: list=settings_path, djoser: bool=
 	try:
 		app_path = os.sep.join([k for k in settings_path if k.endswith('views.py')][0].split(os.sep)[:-1])
 	except IndexError:
-		print('\n')
-		print_stdout('Do you have a django app installed?')
-		sys.exit(1)
+		if entity != 'django_extensions':
+			# print('entity:', entity)
+			print('\n')
+			print_stdout('Do you have a django app installed?')
+			sys.exit(1)
 	# print('app_path: {}'.format(app_path))
 	# sys.exit(0)
 	command = None
@@ -340,8 +345,10 @@ def install_entity(entity: str, settings_path: list=settings_path, djoser: bool=
 	# if command:
 	# 	app = entity
 	# else:
-	# 	app = ([k for k in settings_path if k.endswith('views.py')][0]).split('/')[-2]
-	app = entity if command else ([k for k in settings_path if k.endswith('views.py')][0]).split('/')[-2]
+	app = None
+	if entity != 'django_extensions':
+		# 	app = ([k for k in settings_path if k.endswith('views.py')][0]).split('/')[-2]
+		app = entity if command else ([k for k in settings_path if k.endswith('views.py')][0]).split('/')[-2]
 
 	check, frameW = check_existence(entity=entity)
 	djoser_variable = \

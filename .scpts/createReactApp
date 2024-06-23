@@ -19,14 +19,16 @@ fi
 echo ""
 # command="npm init react-app my_default_app"
 
+def_project="$path1/default-react-project"
+my_default_app="$def_project/my_default_app"
 new_update=0
 if [[ "$#" != "1" ]]; then
 	echo ""
 	echo "Enter an app name as argument"
 elif [[ "$#" -eq 1 ]]; then
-	if [[ -d "$path1/default-react-project" ]]; then
+	if [[ -d "$def_project" ]]; then
 		echo "Preparing the project $1 ..."
-		cp -r "$path1/default-react-project/my_default_app/" "$1"
+		cp -r "$my_default_app/" "$1"
 		cd "$1"
 		sed -i "s|my_default_app|${1}|g" "package.json"
 		echo "Checking for updates ..."
@@ -48,7 +50,6 @@ elif [[ "$#" -eq 1 ]]; then
 		# echo "......................................."
 		echo -e "$updates\n"
 
-		# loop=1
 		if [[ "$current_version" != "$latest_version" ]]; then
 			loop=1
 			while [[ "$loop" -eq 1 ]]; do
@@ -59,6 +60,7 @@ elif [[ "$#" -eq 1 ]]; then
 					npx npm-check-updates -u
 					new_update=1
 					echo "Packages updated to the latest version."
+					echo -e "\nUpdating node_modules with package.json ..."
             		loop=0
 				elif [[ "$UPDATE_PACKAGES" =~ [nN] ]]; then
 					echo "No, don't update"
@@ -69,14 +71,12 @@ elif [[ "$#" -eq 1 ]]; then
 				fi
 			done
 		fi
-
-		echo "Updating node_modules with package.json ..."
 		npm install
 
 		if [[ "$new_update" -eq 1 ]]; then
-			cp -r "node_modules" "$path1/default-react-project/my_default_app/node_modules"
-			cp -r "package.json" "$path1/default-react-project/my_default_app/package.json"
-			sed -i "s|${1}|my_default_app|g" "$path1/default-react-project/my_default_app/package.json"
+			cp -r "node_modules" "$my_default_app/node_modules"
+			cp -r "package.json" "$my_default_app/package.json"
+			sed -i "s|${1}|my_default_app|g" "$my_default_app/package.json"
 		fi
 	else
 		# echo "Installing and setting up node_modules, package.json for future use."
@@ -86,14 +86,14 @@ elif [[ "$#" -eq 1 ]]; then
 		ogp_description="\t\t<meta name=\"og:description\" content=\"Developed by custom commands\" />"
 		ogp_image="\t\t<meta name=\"og:image\" content=\"%PUBLIC_URL%/logo192.png\" />"
 		ogp="$ogp_title\n$ogp_description\n$ogp_image"
-
 		sed -i '/<link rel="apple-touch-icon" href="%PUBLIC_URL%\/logo192.png" \/>/a\
 		'"$ogp"'' $index
-		mkdir "my_default_app/src/components"
-		mkdir "my_default_app/src/images"
+		src="$(2>&1 find . -type d -name "node_modules" -prune -o -type d -name "src" -print)"
+		mkdir "$src/components"
+		mkdir "$src/images"
 		echo "Creating copy for future use."
-		mkdir "$path1/default-react-project"
-		cp -r "my_default_app" "$path1/default-react-project/my_default_app"
+		mkdir "$def_project"
+		cp -r "my_default_app" "$my_default_app"
 		sed -i "s|my_default_app|${1}|g" "my_default_app/package.json"
 		mv "my_default_app" "$1"
 	fi

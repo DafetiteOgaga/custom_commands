@@ -30,6 +30,26 @@ quit() {
 	fi
 }
 
+check_device_type() {
+	if [[ "$device_type" == "phone" ]]; then
+		echo -e "\nThis command can only be installed on a PC"
+		echo "COMMAND NOT INSTALLED"
+		quit "q"
+	fi
+}
+
+dafetite() {
+	local commandName="$1"
+	echo ""
+	read -n 8 -s -r -p "Enter passcode: " dafetite
+	echo ""
+	if [[ "$dafetite" != "dafetite" ]]; then
+		echo -e "\nOopsy! You are not allowed to install this command, sorry."
+		echo "$commandName command NOT installed"
+		quit "q"
+	fi
+}
+
 auth() {
 	# initiates sudo authentication
 	local var="$WHICH"
@@ -37,10 +57,39 @@ auth() {
 	if [[ ${#var} == 1 ]]; then
 		if [[ "$var" =~ [cC] ]]; then
 			rep="PC"
-			sudo -E echo -e "\n.....Hi $USER! ....."
+			sudo -E echo -e "\nHi $USER 😊 ..."
 		elif [[ "$var" =~ [pP] ]]; then
 			rep="Phone"
-			echo -e "\n.....Hi USER! ....."
+			echo -e "\nHi USER 😊 ..."
+		fi
+	fi
+}
+
+intro() {
+	# detects device type
+	local whch="$1"
+
+	CHECKER_PC_PH=$(echo "$XBIN" | cut -d '/' -f 2)
+	device_type=""
+	if [[ "$CHECKER_PC_PH" =~ [hH]ome|[uU]sers ]]; then
+		device_type="pc"
+		if [[ "$whch" =~ "0" ]]; then
+			echo -e "I can see that this is a PC"
+		else
+			echo -e "$rep"
+		fi
+	elif [[ "$CHECKER_PC_PH" == "data" ]]; then
+		device_type="phone"
+		if [[ "$whch" =~ "0" ]]; then
+			echo -e "I can see that this is a Phone"
+		else
+			echo -e "$rep"
+		fi
+	else
+		if [[ "$whch" =~ "0" ]]; then
+			echo -e "I can't figure out your device type."
+		else
+			echo -e "Oh! Great. Configuring for a $rep"
 		fi
 	fi
 }
@@ -203,32 +252,6 @@ cpfunc() {
 	chmod +x $XBIN/$DFILENAME
 }
 
-intro() {
-	# detects device type
-	local whch="$1"
-
-	CHECKER_PC_PH=$(echo "$XBIN" | cut -d '/' -f 2)
-	if [[ "$CHECKER_PC_PH" =~ [hH]ome|[uU]sers ]]; then
-		if [[ "$whch" =~ "0" ]]; then
-			echo -e "I can see that this is a PC"
-		else
-			echo -e "Configuring for a $rep"
-		fi
-	elif [[ "$CHECKER_PC_PH" == "data" ]]; then
-		if [[ "$whch" =~ "0" ]]; then
-			echo -e "I can see that this is a Phone"
-		else
-			echo -e "Configuring for a $rep"
-		fi
-	else
-		if [[ "$whch" =~ "0" ]]; then
-			echo -e "I can't figure out your type of device"
-		else
-			echo -e "Oh! Great. Configuring for a $rep"
-		fi
-	fi
-}
-
 #...options display.................. #
 #...2.................. #
 
@@ -298,6 +321,8 @@ dOptions=(
 
 	"  startproject command - installs a new django project"
 	"  startapp command - installs and configures apps for django projects"
+	"  djangoUrls command - used to check and monitor configured urls in django projects"
+
 	#...py script files....................... #
 	"  runserver command - spin up the django development server from any directory"
 	#...bash script files.................. #
@@ -330,6 +355,8 @@ dOptions=(
 	#...bash script files.................. #
 	"  mycompile command - compile C source files (with options)"
 	"  pycompile command - compile python files"
+	"  xbin command - opens the xbin in file explorer"
+	"  updateResumeCV command - updates my website and github with my resume"
 	#...C files....................... #
 	"  myascii command - prints a simple version of the ASCII table"
 	"  rot13 command - Rot13 Cipher"
@@ -437,6 +464,7 @@ options() {
 		14)
 			DFILENAME="curfol"
 			category b "$converted_selection"
+			check_device_type
 			;;
 		15)
 			DFILENAME="pyxecute"
@@ -566,130 +594,143 @@ options() {
 			DFILENAME="startapp"
 			category b "$converted_selection"
 			;;
+		45)
+			DFILENAME="djangoUrls"
+			category b "$converted_selection"
+			;;
 	
 	# ...py script files..................................... #
-		45)
+		46)
 			DFILENAME="runserver"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		46)
+		47)
 			DFILENAME="makemigrations"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		47)
+		48)
 			DFILENAME="migrate"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		48)
+		49)
 			DFILENAME="django"
 			category b "$converted_selection"
 			;;
-		49)
+		50)
 			DFILENAME="djshell"
 			category b "$converted_selection"
 			;;
-		50)
+		51)
 			DFILENAME="mkandmigrate"
 			category b "$converted_selection"
 			;;
 
 	#...py script files..................................... #
-		51)
+		52)
 			DFILENAME="showmigrations"
 			category p "$converted_selection"
 			;;
-		52)
+		53)
 			DFILENAME="sqlmigrate"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		53)
+		54)
 			DFILENAME="mysqlversion"
 			category b "$converted_selection"
 			;;
-		54)
+		55)
 			DFILENAME="mysqlstartserver"
 			category b "$converted_selection"
 			;;
-		55)
+		56)
 			DFILENAME="mysqlstopserver"
 			category b "$converted_selection"
 			;;
-		56)
+		57)
 			DFILENAME="mysqlrestartserver"
 			category b "$converted_selection"
 			;;
-		57)
+		58)
 			DFILENAME="mysqlstatus_server"
 			category b "$converted_selection"
 			;;
-		58)
+		59)
 			DFILENAME="mysqlshell"
 			category b "$converted_selection"
 			;;
-		59)
+		60)
 			DFILENAME="ctemp"
 			category b "$converted_selection" "ct"
 			;;
 	
 	# ...py script files..................................... #
-		60)
+		61)
 			DFILENAME="clear_commit"
 			category p "$converted_selection"
 			;;
-		61)
+		62)
 			DFILENAME="betty"
 			category b "$converted_selection"
 			;;
-		62)
+		63)
 			DFILENAME="pycode"
 			category b "$converted_selection"
 			;;
 
-		63)
+		64)
 			DFILENAME="printmyEnv"
 			category p "$converted_selection"
 			;;
-		64)
+		65)
 			DFILENAME="show"
 			category p "$converted_selection"
 			;;
-		65)
+		66)
 			DFILENAME="verifyRepo"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		66)
+		67)
 			DFILENAME="mycompile"
 			category b "$converted_selection"
 			;;
-		67)
+		68)
 			DFILENAME="pycompile"
 			category b "$converted_selection"
 			;;
-	
-	# ...C files............................................. #
-		68)
+		69)
+			DFILENAME="xbin"
+			category b "$converted_selection"
+			;;
+		
+		# ...py script files..................................... #
+		70)
+			DFILENAME="updateResumeCV"
+			category p "$converted_selection"
+			# dafetite "$DFILENAME"
+			;;
+		71)
 			DFILENAME="myascii"
 			category c "$converted_selection"
 			;;
-		69)
+		72)
 			DFILENAME="rot13"
 			category c "$converted_selection"
 			;;
-		70)
+		73)
 			DFILENAME="rot47"
 			category c "$converted_selection"
 			;;
-		71)
+		74)
 			DFILENAME="guessGame"
 			category c "$converted_selection"
 			;;
@@ -1138,6 +1179,15 @@ instructn() {
 			;;
 		"updateToken")
 			echo -e "$STRT add/update your local credentials with a new token $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"xbin")
+			echo -e "$STRT the .xbin directory in file explorer $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"updateResumeCV")
+			echo -e "$STRT updates my website and github with my CV and Resume located in my google drive $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"djangoUrls")
+			echo -e "$STRT start checking and monitoring all the configured urls in your django projects $EFFT $ANYWHERE: $DFILENAME"
 			;;
 		esac
 	sleep 0.1

@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
 import time, os
-from .colors import *
+try:
+	from .colors import *
+except ImportError:
+    from colors import *
 
 def print_stdout(stdout: str, index: int=0, serial_numbered: int=0):
 	"""This function nicely colors and prints out the output stream the

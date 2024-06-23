@@ -1,7 +1,7 @@
 #!/bin/bash
 
-path1="$HOME/.xbin/pyfiles"
-check=$(2>&1 $path1/django project)
+path1="$HOME/.xbin"
+check=$(2>&1 $path1/pyfiles/django pass)
 if [[ -n "$check" ]]; then
 	echo ""
 	echo "$check"
@@ -16,20 +16,7 @@ if [[ -n "$check" ]]; then
 	fi
 fi
 
-command="django-admin"
-command+=" startproject"
-
-if [ "$#" != "1" ]; then
-	echo ""
-	echo "Enter a project name as argument"
-elif [ "$#" -eq 1 ]; then
-	# echo "Project name: $1"
-	command+=" $1"
-	$command
-	echo ""
-	pip install django-extensions
-	echo ""
-	output1="$(echo "django_extensions" | python3 $path1/configure_settings_py.py 2>&1)"
-	echo "$output1"
-	echo "Install djangoUrls command and start checking all your configured urls"
-fi
+command=$(cat $path1/pymanage)
+# echo "command: $command"
+command+="show_urls"
+$command
