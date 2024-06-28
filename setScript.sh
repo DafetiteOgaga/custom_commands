@@ -716,7 +716,7 @@ options() {
 		70)
 			DFILENAME="updateResumeCV"
 			category p "$converted_selection"
-			# dafetite "$DFILENAME"
+			dafetite "$DFILENAME"
 			;;
 		71)
 			DFILENAME="myascii"
