@@ -1,0 +1,98 @@
+#!/bin/bash
+
+# PROFILE_FILES=("$HOME/.profile" "$HOME/.zprofile" "$HOME/.bash_profile")
+PROFILE_FILES=("$HOME/.bashrc" "$HOME/.zshrc") # "$HOME/.bash_profile")
+EXIST=0
+
+error_message() {
+	echo -e "\nYou must provide an input\nTry again\n"
+}
+
+echo -e "\nNote:\t The first prompt requires the variable name\n\tAnd the second should be the value of the Env variable\n"
+
+while true; do
+	read -r -p "Enter variable name: " VARIABLE_NAME
+	if [[ -n "$VARIABLE_NAME" ]]; then
+		break
+	fi
+	error_message
+done
+while true; do
+	read -r -p "Enter variable value: " VARIABLE_VALUE
+	if [[ -n "$VARIABLE_VALUE" ]]; then
+		break
+	fi
+	error_message
+done
+
+echo ""
+echo "Variable: $VARIABLE_NAME"
+echo "value: $VARIABLE_VALUE"
+echo "Therefore: '$VARIABLE_NAME=\"$VARIABLE_VALUE\"'"
+echo ""
+read -n 1 -s -r -p "This is correct? [y/N] >>> " CORRECT
+
+if [[ "$CORRECT" != [yY] && "$CORRECT" != "" ]]; then
+	echo "No, abort"
+	echo -e "\nOperation aborted"
+	exit 0
+elif [[ -z "$VARIABLE_NAME" || -z "$VARIABLE_VALUE" ]]; then
+	echo -e "Oopsy!\nBoth fields must not be empty"
+	echo -e "\nOperation aborted"
+	exit 0
+else
+	echo "Yes, it is"
+fi
+echo ""
+#...creating Profile.................. #
+if [ ! -f "$HOME/.bash_profile" ]; then
+	touch "$HOME/.bash_profile"
+	echo ""
+	echo "Creating profile..."
+	sleep 0.1
+else
+	echo ".bash_profile exist ..."
+fi
+
+if ! grep -q  bashrc "$HOME/.bash_profile"; then
+	echo -e "Setting up profile...\n"
+	echo '[ -r ~/.bashrc ] && . ~/.bashrc ' >> "$HOME/.bash_profile"
+	sleep 0.1
+else
+	echo ""
+fi
+
+#...creating other profiles.................. #
+for PROFILE_FILE in "${PROFILE_FILES[@]}"; do
+    # Check if the profile file exists, if not create it
+    if [ ! -f "$PROFILE_FILE" ]; then
+        touch "$PROFILE_FILE"
+		echo ""
+		echo "Creating $(basename "$PROFILE_FILE") ..."
+		sleep 0.1
+	else
+		echo -e "$(basename "$PROFILE_FILE") exist ..."
+    fi
+    
+    # Check if the variable is already set in the profile
+    if ! grep -q "^${VARIABLE_NAME}=" "$PROFILE_FILE"; then
+        echo -e "Setting up $VARIABLE_NAME in $(basename "$PROFILE_FILE") ...\n"
+        echo "export ${VARIABLE_NAME}=\"${VARIABLE_VALUE}\"" >> "$PROFILE_FILE"
+        # echo "export $VARIABLE_NAME" >> "$PROFILE_FILE"
+    else
+        echo -e "$VARIABLE_NAME already exists in $(basename "$PROFILE_FILE") with the detail:"
+        echo "........................................"
+        echo "variable: $VARIABLE_NAME"
+		echo "value: ${!VARIABLE_NAME}"
+		echo "Use a different variable name."
+        # grep "^${VARIABLE_NAME}=" "$PROFILE_FILE"
+        echo -e "........................................\n"
+		EXIST=1
+    fi
+done
+
+sleep 0.1
+if [[ "$EXIST" -eq 0 ]]; then
+	echo "Start a new session to apply these changes"
+fi
+echo -e "Use: 'echo \$${VARIABLE_NAME}' to see variable value\n"
