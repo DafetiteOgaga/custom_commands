@@ -1208,7 +1208,7 @@ instructn() {
 		"dependencyDevReact")
 			echo -e "$STRT installs the specified dependency $EFFT $ANYWHERE: $DFILENAME"
 			;;
-			"updateReactPackagez")
+		"updateReactPackagez")
 			echo -e "$STRT updates all packages that has new releases $EFFT $ANYWHERE: $DFILENAME"
 			;;
 		"updateToken")
