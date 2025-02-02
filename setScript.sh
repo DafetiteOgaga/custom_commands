@@ -279,6 +279,8 @@ dOptions=(
 	"  merge command - merge branches to main/master branch"
 	"  status command - displays updates in the branch"
 	#...bash script files.................. #
+	"  setEnv command - sets a permanent environment variable"
+
 	"  curfol command - opens cwd using file explorer"
 	"  pyxecute - appends shebang and makes your python scripts executable"
 	"  shxecute - appends shebang and makes your bash scripts executable"
@@ -305,14 +307,18 @@ dOptions=(
 	
 	#...bash script files.................. #
 	"  createReactApp command - creates a React application, dependencies"
+	"  createExpoApp command - creates an Expo mobile application, dependencies"
 	"  dependenciesReact command - installs various React packages"
-	"  updateReactPackagez command - updates React packages to their latest versions"
+	"  updateReactPackagez command - updates React packages to latest versions"
 	"  dependencyDevReact command - installs dev-dependencies"
 
 	"  py3venv command - creates a python3 virtual environment"
 	#...py script files....................... #
 	"  requirement_txt command - creates/updates/installs dependencies in requirement.txt"
 	#...bash script files.................. #
+
+	"  collectstatic command - collects static files to the staticfiles dir for production"
+
 	"  djangoToolbar command - install and configures Django debug toolbar"
 	"  drf command - install and configures Django RESTframework, auth, xml renderer"
 	"  djoser command - install and configures djoser (3rd party library)"
@@ -462,275 +468,287 @@ options() {
 
 	# ...bash script files................................... #
 		14)
+			DFILENAME="setEnv"
+			category b "$converted_selection"
+			;;
+		15)
 			DFILENAME="curfol"
 			category b "$converted_selection"
 			check_device_type
 			;;
-		15)
+		16)
 			DFILENAME="pyxecute"
 			category b "$converted_selection"
 			;;
-		16)
+		17)
 			DFILENAME="shxecute"
 			category b "$converted_selection"
 			;;
-		17)
+		18)
 			DFILENAME="jsxecute"
 			category b "$converted_selection"
 			;;
-		18)
+		19)
 			DFILENAME="pycodemore"
 			category b "$converted_selection"
 			;;
-		19)
+		20)
 			DFILENAME="createPatch"
 			category b "$converted_selection"
 			;;
-		20)
+		21)
 			DFILENAME="rollback"
 			category b "$converted_selection"
 			;;
-		21)
+		22)
 			DFILENAME="cls"
 			category b "$converted_selection"
 			;;
-		22)
+		23)
 			DFILENAME="authorID"
 			category b "$converted_selection"
 			;;
-		23)
+		24)
 			DFILENAME="commitree"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		24)
+		25)
 			DFILENAME="compareChange"
 			category p "$converted_selection"
 			;;
-		25)
+		26)
 			DFILENAME="commitdir"
 			category p "$converted_selection"
 			;;
-		26)
+		27)
 			DFILENAME="commitall"
 			category p "$converted_selection"
 			;;
-		27)
+		28)
 			DFILENAME="getRepoUserName"
 			category p "$converted_selection"
 			;;
-		28)
+		29)
 			DFILENAME="wcount"
 			category p "$converted_selection"
 			;;
-		29)
+		30)
 			DFILENAME="stash"
 			category p "$converted_selection"
 			;;
-		30)
+		31)
 			DFILENAME="viewStash"
 			category p "$converted_selection"
 			;;
-		31)
+		32)
 			DFILENAME="logit"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		32)
+		33)
 			DFILENAME="createReactApp"
 			category b "$converted_selection"
 			;;
-		33)
-			DFILENAME="dependenciesReact"
-			category b "$converted_selection"
-			;;
 		34)
-			DFILENAME="updateReactPackagez"
+			DFILENAME="createExpoApp"
 			category b "$converted_selection"
 			;;
 		35)
-			DFILENAME="dependencyDevReact"
+			DFILENAME="dependenciesReact"
 			category b "$converted_selection"
 			;;
 		36)
+			DFILENAME="updateReactPackagez"
+			category b "$converted_selection"
+			;;
+		37)
+			DFILENAME="dependencyDevReact"
+			category b "$converted_selection"
+			;;
+		38)
 			DFILENAME="py3venv"
 			category b "$converted_selection"
 			;;
 
-		37)
+		39)
 			DFILENAME="requirement_txt"
 			category p "$converted_selection"
 			;;
 		
 		# ...bash script files................................... #
-		38)
-			DFILENAME="djangoToolbar"
-			category b "$converted_selection"
-			;;
-		39)
-			DFILENAME="drf"
-			category b "$converted_selection"
-			;;
 		40)
-			DFILENAME="djoser"
+			DFILENAME="collectstatic"
 			category b "$converted_selection"
 			;;
 		41)
-			DFILENAME="jwtDjango"
+			DFILENAME="djangoToolbar"
 			category b "$converted_selection"
 			;;
 		42)
+			DFILENAME="drf"
+			category b "$converted_selection"
+			;;
+		43)
+			DFILENAME="djoser"
+			category b "$converted_selection"
+			;;
+		44)
+			DFILENAME="jwtDjango"
+			category b "$converted_selection"
+			;;
+		45)
 			DFILENAME="static4django"
 			category b "$converted_selection"
 			;;
 
-		43)
+		46)
 			DFILENAME="startproject"
 			category b "$converted_selection"
 			;;
-		44)
+		47)
 			DFILENAME="startapp"
 			category b "$converted_selection"
 			;;
-		45)
+		48)
 			DFILENAME="djangoUrls"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		46)
+		49)
 			DFILENAME="runserver"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		47)
+		50)
 			DFILENAME="makemigrations"
 			category b "$converted_selection"
 			;;
 	
 	# ...py script files..................................... #
-		48)
+		51)
 			DFILENAME="migrate"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		49)
+		52)
 			DFILENAME="django"
 			category b "$converted_selection"
 			;;
-		50)
+		53)
 			DFILENAME="djshell"
 			category b "$converted_selection"
 			;;
-		51)
+		54)
 			DFILENAME="mkandmigrate"
 			category b "$converted_selection"
 			;;
 
 	#...py script files..................................... #
-		52)
+		55)
 			DFILENAME="showmigrations"
 			category p "$converted_selection"
 			;;
-		53)
+		56)
 			DFILENAME="sqlmigrate"
 			category p "$converted_selection"
 			;;
 
 	# ...bash script files................................... #
-		54)
+		57)
 			DFILENAME="mysqlversion"
 			category b "$converted_selection"
 			;;
-		55)
+		58)
 			DFILENAME="mysqlstartserver"
 			category b "$converted_selection"
 			;;
-		56)
+		59)
 			DFILENAME="mysqlstopserver"
 			category b "$converted_selection"
 			;;
-		57)
+		60)
 			DFILENAME="mysqlrestartserver"
 			category b "$converted_selection"
 			;;
-		58)
+		61)
 			DFILENAME="mysqlstatus_server"
 			category b "$converted_selection"
 			;;
-		59)
+		62)
 			DFILENAME="mysqlshell"
 			category b "$converted_selection"
 			;;
-		60)
+		63)
 			DFILENAME="ctemp"
 			category b "$converted_selection" "ct"
 			;;
 	
 	# ...py script files..................................... #
-		61)
+		64)
 			DFILENAME="clear_commit"
 			category p "$converted_selection"
 			;;
-		62)
+		65)
 			DFILENAME="betty"
 			category b "$converted_selection"
 			;;
-		63)
+		66)
 			DFILENAME="pycode"
 			category b "$converted_selection"
 			;;
 
-		64)
+		67)
 			DFILENAME="printmyEnv"
 			category p "$converted_selection"
 			;;
-		65)
+		68)
 			DFILENAME="show"
 			category p "$converted_selection"
 			;;
-		66)
+		69)
 			DFILENAME="verifyRepo"
 			category p "$converted_selection"
 			;;
 	
 	# ...bash script files................................... #
-		67)
+		70)
 			DFILENAME="mycompile"
 			category b "$converted_selection"
 			;;
-		68)
+		71)
 			DFILENAME="pycompile"
 			category b "$converted_selection"
 			;;
-		69)
+		72)
 			DFILENAME="xbin"
 			category b "$converted_selection"
 			;;
 		
 		# ...py script files..................................... #
-		70)
+		73)
 			DFILENAME="updateResumeCV"
 			category p "$converted_selection"
 			dafetite "$DFILENAME"
 			;;
-		71)
+		74)
 			DFILENAME="myascii"
 			category c "$converted_selection"
 			;;
-		72)
+		75)
 			DFILENAME="rot13"
 			category c "$converted_selection"
 			;;
-		73)
+		76)
 			DFILENAME="rot47"
 			category c "$converted_selection"
 			;;
-		74)
+		77)
 			DFILENAME="guessGame"
 			category c "$converted_selection"
 			;;
@@ -827,6 +845,7 @@ opertn() {
 }
 
 pyfiles() {
+	# echo "Updating pyfiles..."
 	# updates only installed files in pyfiles/
     mkdir -p "$XBIN/pyfiles"
 
@@ -834,15 +853,23 @@ pyfiles() {
         # if [[ -f "$file" ]]; then
 		filename=$(basename "$file")
 		destination="$XBIN/pyfiles/$filename"
-
+		# echo "filename: $filename"
 		if [[ -f "$destination" ]]; then
 			cp "$file" "$destination"
+		elif [[ -d "$destination" && "$filename" != "__pycache__" ]]; then
+			cp -r "$file" "$XBIN/pyfiles/"
 		else
-			echo "custom commands" > "$destination"
-			cp "$file" "$destination"
+			if [[ "$filename" != "__pycache__" ]]; then
+				echo "no no no"
+				echo "custom commands" > "$destination"
+				cp "$file" "$destination"
+			# else
+			# 	echo "skipping ..."
+			fi
 		fi
-		chmod +x $destination
-        # fi
+		if [[ -f "$destination" ]]; then
+			chmod +x $destination
+		fi
     done
 	update_changes
 }
@@ -869,6 +896,10 @@ scptcpy() {
 		cp "$SCPTS/pyfiles/configure_settings_py.py" "$XBIN/pyfiles/configure_settings_py.py"
 		cp "$SCPTS/pyfiles/check_db.py" "$XBIN/pyfiles/check_db.py"
 		# check_db.py
+	fi
+	if [[ ! -d "$XBIN/pyfiles/expoDefaults" && "$DFILENAME"=~"createExpoApp" ]]; then
+		mkdir -p "$XBIN/pyfiles/expoDefaults"
+		cp -r "$SCPTS/pyfiles/expoDefaults" "$XBIN/pyfiles/"
 	fi
 	pyfiles
 	sleep 0.1
@@ -1168,6 +1199,9 @@ instructn() {
 		"createReactApp")
 			echo -e "$STRT create a React app $EFFT $ANYWHERE: $DFILENAME <filename>"
 			;;
+		"createExpoApp")
+			echo -e "$STRT create an Expo Mobile app $EFFT $ANYWHERE: $DFILENAME <filename>"
+			;;
 		"dependenciesReact")
 			echo -e "$STRT installs various dependencies $EFFT $ANYWHERE: $DFILENAME"
 			;;
@@ -1188,6 +1222,12 @@ instructn() {
 			;;
 		"djangoUrls")
 			echo -e "$STRT start checking and monitoring all the configured urls in your django projects $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"setEnv")
+			echo -e "$STRT set a permanent environmental variable $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"collectstatic")
+			echo -e "$STRT collect static files into staticfiles dir for production $EFFT $ANYWHERE: $DFILENAME"
 			;;
 		esac
 	sleep 0.1
