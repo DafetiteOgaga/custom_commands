@@ -21,9 +21,8 @@ try:
 	current_dir_var = os.getcwd()
 	root_repo = backward_search()
 
-	# pycache, venv = list_filter(root_repo)
-
 	pycache, venv = compile_dir_list(root_repo, venv=True)
+	# print(f'pycache: {pycache}')
 	delimiter = root_repo + os.sep
 	# print('..........................')
 	# print('returned: #################')
@@ -33,30 +32,23 @@ try:
 	# # sys.exit(0)
 
 	py = any(True for _ in pycache if '__pycache__' in _)
-	# print('__pycache__:', py)
-	py = '__pycache__' if py else 'src'
+	nodeModules = any(True for _ in pycache if 'node_modules' in _)
+	# print('nodeModules:', nodeModules)
+	if py or nodeModules:
+		py = '__pycache__' if py else 'node_modules'
+		# py = '__pycache__' if py else 'src'
 
 	pycache = [i for i in pycache if not os.path.isfile(i) and i.split(os.sep).pop() == py]
-	if py == 'src':
-		py = 'node_modules'
-		# print(f'check node_modules: {[(os.path.exists(i) and os.path.isdir(i)) for i in pycache]}')
+	if py == 'node_modules':
+		# py = 'node_modules'
+	# if py == 'src':
+	# 	py = 'node_modules'
 		pycache = [
 			(f'{os.sep}'.join(i.split(os.sep)[:-1] + ['node_modules'])).split(delimiter).pop()
-			for i in pycache 
+			for i in pycache
 			if (os.path.exists(i) and os.path.isdir(i))]
-		# pycache = [i.split(root_repo) for i in pycache]
-		# [print(f"{index + 1}. {x}") for index, x in enumerate(pycache)]
-		# print('this command is still in development mode.')
-	# if py == 'src':
-	# 	sys.exit(0)
-		
-	# pycache = [i for i in pycache if not os.path.isfile(i) and 'node_modules' not in i]
+		# print('pycache4:', pycache)
 
-	# print('returned: #################')
-	# for d in pycache:
-	# 	print(':::::', d.split(root_repo).pop())
-	# print('..........................')
-	# delimiter = root_repo + os.sep
 	gitignore_content = write_to_file([], '', read=True)
 	pycache = [file for file in pycache if file.split(delimiter).pop() not in gitignore_content]
 	venv = [dir for dir in venv if dir.split(delimiter)[-1] not in gitignore_content]
@@ -67,16 +59,12 @@ except:
 def gitignore():
 	"""Initiates the gitignore operation
 	"""
-	# print('got to gitignore()')
-	# sys.exit(0)
-	# print('Hold on ...')
-	# print('checking py ##### ', py)
-	# print('empty pycache #####:', pycache)
-	# py = '__pycache__' if py == '__pycache__' else 'node_modules'
-	# print('empty pycache #####:', pycache)
-	# ret = 'y'
+	# print('Setting up .gitignore file ...')
+	# print(f'py: {py}')
 	auto_set_pycache1 = setup_gitignore(py=py)
+	# print(f'auto_set_pycache1: {auto_set_pycache1}')
 	ret = gitignore_resp(auto_set_pycache1, pycache)
+	# print(f'ret: {ret}')
 	if py != 'node_modules':
 		auto_set_pycache2 = setup_gitignore(pycache=venv, envFile=True)
 		ret = gitignore_resp(auto_set_pycache2, venv)
@@ -99,14 +87,12 @@ def setup_gitignore(pycache: list=pycache, envFile: bool=False, py: str=None):
 	"""
 	delimiter = backward_search() + f'{os.sep}'
 	# print('delimiter: %s' % delimiter)
-	# print('pycache: %s' % pycache)
+	# print('envFile: %s' % envFile)
 	var = py
 	if envFile:
 		var = 'venv'
-	# if pycache:
-	# 	var = '__pycache__'
-	# if pycache and 'node_modules' in pycache[0]:
-	# 	var = 'node_modules'
+	# print(f'var: {var}')
+	# print(f'pycache: {pycache}')
 	if pycache == []:
 		print()
 		print_norm(f'==> .gitignore file is upto date with "{var}" directories')
