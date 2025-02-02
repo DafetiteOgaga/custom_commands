@@ -70,8 +70,8 @@ YELLOW='\033[0;33m'
 MAGENTA='\033[0;35m'
 # ...............
 
-# XBIN="$HOME/.xbin"
-XBIN="."
+XBIN="$HOME/.xbin/pyfiles/"
+# XBIN="."
 
 repo_name=$(git config -l | grep -oP '(?<=\/)[^\/]+(?=\.git)')
 entries_arr=()
