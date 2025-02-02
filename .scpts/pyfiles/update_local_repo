@@ -1,0 +1,34 @@
+#!/bin/bash
+
+ROOT_DIREC="alx" # search starts at here
+repos="$(find $HOME/$ROOT_DIREC -type d -name ".git")"
+# echo "working ... "
+target_repos=("dafetite" "CV" "Resume")
+repo_list=()
+while IFS= read -r repo; do
+	# repo_list+=("$repo")
+	repo="${repo%/*}"
+	repo_basename="$(basename "$repo")"
+	# echo "basename: $repo_basename"
+	for target in "${target_repos[@]}"; do
+		# echo "target: $target"
+		if [[ "$repo_basename" == "$target" ]]; then
+			# echo -e "cding into repo:$repo"
+			cd "$repo"
+			echo "################################################"
+			echo "pulling into the $repo_basename repo"
+			echo "################################################"
+			if [[ "$repo_basename" == "dafetite" ]]; then
+				git pull origin main
+				sleep 3
+				echo "################################################"
+				echo "pushing into the $repo_basename repo"
+				echo "################################################"
+				push update_CV
+			else
+				pull
+			fi
+			break
+		fi
+	done
+done <<< $repos

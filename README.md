@@ -85,7 +85,7 @@
   <tr>
     <td>createRepo</td>
     <td>migrate</td>
-    <td></td>
+    <td>createExpoApp</td>
     <td>cls</td>
     <td>mysqlstatus_server</td>
     <td></td>
@@ -126,7 +126,7 @@
     <td>viewRepos</td>
     <td>jwtDjango</td>
     <td></td>
-    <td></td>
+    <td>setEnv</td>
     <td></td>
     <td></td>
     <td></td>
@@ -214,7 +214,7 @@
   </tr>
   <tr>
     <td>commitdir</td>
-    <td></td>
+    <td>collectstatic</td>
     <td></td>
     <td></td>
     <td></td>
@@ -333,31 +333,31 @@
 - Submit a pull request to this repository.
 
 ## New
+  - createExpoApp
+  - createReactApp
+  - setEnv
+  - collectstatic
   - djangoUrls
   - updateToken
-  - updateReactPackagez
-  - createReactApp
-  - dependencyDevReact
   - djangoToolbar
   - jwtDjango
-  - static4django
-  - djoser
   - drf
 
 ## Changes
+  - Added (New) createExpoApp - uses backed up app config setup to create apps after the initial (first downloaded) setup and spins up the local server automatically.
+   - Added (New) setEnv command - creates environmental variables automatically.
+   - Added collectstatic command - collects static files in django for production.
   - Added support for urls display to startproject command when creating a new django project. install and run djangoUrls command to see the list and details of all configured urls.
   - createReactApp now downloads the configs for CRA on first use, then uses this config for subsequent use while it updates itself whenever there is an update to CRA config
-  - implemented the auto detection of node_modeules in React app to gitignore command
-  - createRepo displays the visibility of the repo after selecting the type
-  - Added the list of endpoints created by drf, jwtDjango and djoser to the the displayed text after installation
   - [More](https://github.com/DafetiteOgaga/custom_commands/blob/master/changes.md)
 
 
 ## Fixes
+  - fixed updateResumeCV command to automatically update concerned repos locally after execution.
+  - Added support for ignoring node_modules using gitignore command for Expo (React Native) Apps.
+  - corrrected typos in createReactApp command setup.
   - handled the case where a user tries to install and configure a django project without initially installing an app
   - fixed the DRF module error for runserver, sqlmigrate commanda
-  - handled moduleNotFound error in migrate command
-  - minor bug fixes to: djshell, makemigrations, mkandmigrate, static4django
   - [More](https://github.com/DafetiteOgaga/custom_commands/blob/master/fixes.md)
 
 

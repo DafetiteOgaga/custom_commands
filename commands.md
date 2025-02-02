@@ -55,9 +55,11 @@
    * sqlmigrate command - displays list of all mirations and presents the sql query of the selected item
    * django command - displays the django version you are using
    * djangoUrls command - displays the list and details of all configured urls in your django project.
+   * collectstatic command - collects static files to the staticfiles dir for production in django applications.
 
 ### Javascript commands
    * createReactApp command - creates a React application and installs dependencies
+   * createExpoApp command - creates an Expo mobile application, dependencies from the initial copy (i.e saving you installation time) and spin up the server automatically.
    * dependencyDevReact command - installs dependencies in development
    * updateReactPackagez command - updates React packages to their latest versions
    * dependencyDevReact command - installs dev-dependencies
@@ -71,6 +73,7 @@
    * wcount command - counts the lines, words and chars in files and prints it to display
    * createPatch command - creates a .patch file
    * printmyEnv command - prints a list of your env paths
+   * setEnv command - sets environment variable for all sessions
 
 ### MySQL commands
    * mysqlversion - checks if MySQL is installed and also prints its version

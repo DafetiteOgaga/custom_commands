@@ -2,6 +2,9 @@
 This file contains the notable changes made to the Custom Commands project.
 
 ## Changes
+   - Added (New) createExpoApp - uses backed up app config setup to create apps after the initial (first downloaded) setup and spins up the local server automatically.
+   - Added (New) setEnv command - creates environmental variables automatically.
+   - Added collectstatic command - collects static files in django for production.
    - Added support for urls display to startproject command when creating a new django project. install and run djangoUrls command to see the list and details of all configured urls.
    - Added the list of endpoints created by drf, jwtDjango and djoser to the the displayed text after installation
    - changed compareChanges command to compareChange command

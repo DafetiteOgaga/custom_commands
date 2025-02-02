@@ -27,7 +27,8 @@ elif [ "$#" -eq 1 ]; then
 	command+=" $1"
 	$command
 	echo ""
-	pip install django-extensions
+	sleep 3
+	pip install -q django-extensions
 	echo ""
 	output1="$(echo "django_extensions" | python3 $path1/configure_settings_py.py 2>&1)"
 	echo "$output1"

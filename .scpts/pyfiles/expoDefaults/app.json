@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "my_default_app",
+    "slug": "my_default_app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/dafelogo1.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/dafelogo1.png",
+        "backgroundColor": "#000000"
+      },
+      "softwareKeyboardLayoutMode": "pan"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/dafelogo1.png"
+    },
+    "splash": {
+      "image": "./assets/images/dafelogo1.png",
+      "imageWidth": 200,
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/dafelogo1.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#000000"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "androidNavigationBar": {
+      "backgroundColor": "#000000"
+    },
+    "androidStatusBar": {
+      "backgroundColor": "#000000",
+      "translucent": false
+    }
+  }
+}

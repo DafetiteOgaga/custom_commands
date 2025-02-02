@@ -72,5 +72,9 @@ def main():
 			upload_to_github(destination_path, githubRepo, GITHUB_FILE_NAME, GITHUB_TOKEN)
 	os.remove(destination_path)
 
+	# update/pull into the affected local repositories if they exist
+	update_local_repos = os.path.join(os.path.expanduser('~'), '.xbin', 'pyfiles', 'update_local_repo')
+	subprocess.run(["bash", update_local_repos])
+
 if __name__ == "__main__":
 	main()
