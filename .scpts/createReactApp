@@ -1,11 +1,13 @@
 #!/bin/bash
 
+# success message
 success() {
 	if [[ "$?" == 0 ]]; then
 		echo "Success"
 	fi
 }
 
+# check if node and npm are installed
 path1="$HOME/.xbin/pyfiles"
 # path1="$HOME/alx/custom_commands/.scpts/pyfiles"
 check="$(2>&1 $path1/nodeAndNpm)"
@@ -19,82 +21,112 @@ fi
 echo ""
 # command="npm init react-app my_default_app"
 
-def_project="$path1/default-react-project"
-my_default_app="$def_project/my_default_app"
+def_project="$path1/default-react-project" # location of the default project
+my_default_app="$def_project/my_default_app" # location of the default app
 new_update=0
+
+# checks if arg was passed
 if [[ "$#" != "1" ]]; then
 	echo ""
 	echo "Enter an app name as argument"
 elif [[ "$#" -eq 1 ]]; then
+	# tries to create react app from default project
 	if [[ -d "$def_project" ]]; then
 		echo "Preparing the project $1 ..."
 		cp -r "$my_default_app/" "$1"
 		cd "$1"
 		sed -i "s|my_default_app|${1}|g" "package.json"
-		echo "Checking for updates ..."
-		updates="$(2>&1 npm outdated)"
-		# echo "......................................."
-		while IFS= read -r line; do
-			current_version=$(echo "$line" | awk '{print $2}')
-			wanted_version=$(echo "$line" | awk '{print $3}')
-			latest_version=$(echo "$line" | awk '{print $4}')
+
+		# inquest for update
+		echo ""
+		echo -n "Checking for updates? [y - to check] >>> "
+		read -n 1 -s -r UPDATE_CHECK
+		if [[ "$UPDATE_CHECK" =~ [yY] ]]; then
+			echo "Checking for updates ..."
+			updates="$(2>&1 npm outdated)"
+			# echo "......................................."
+
+			# checks if there are updates since last default project use
+			while IFS= read -r line; do
+				current_version=$(echo "$line" | awk '{print $2}')
+				wanted_version=$(echo "$line" | awk '{print $3}')
+				latest_version=$(echo "$line" | awk '{print $4}')
+				# echo "Package: $line"
+				# echo "Current version: $current_version"
+				# echo "Latest version: $latest_version"
+			done <<< "$updates"
+			# echo "......................................."
 			# echo "Package: $line"
 			# echo "Current version: $current_version"
+			# echo "Wanted version: $wanted_version"
 			# echo "Latest version: $latest_version"
-		done <<< "$updates"
-		# echo "......................................."
-		# echo "Package: $line"
-		# echo "Current version: $current_version"
-		# echo "Wanted version: $wanted_version"
-		# echo "Latest version: $latest_version"
-		# echo "......................................."
-		echo -e "$updates\n"
+			# echo "......................................."
+			echo -e "$updates\n"
 
-		if [[ "$current_version" != "$latest_version" ]]; then
-			loop=1
-			while [[ "$loop" -eq 1 ]]; do
-				echo -n "Do you want to the packages to the latest version? [y/N] >>> "
-				read -n 1 -s -r UPDATE_PACKAGES
-				if [[ "$UPDATE_PACKAGES" =~ [yY] ]]; then
-					echo "Yes, update the packages"
-					npx npm-check-updates -u
-					new_update=1
-					echo "Packages updated to the latest version."
-					echo -e "\nUpdating node_modules with package.json ..."
-            		loop=0
-				elif [[ "$UPDATE_PACKAGES" =~ [nN] ]]; then
-					echo "No, don't update"
-					echo "No updates applied."
-            		loop=0
-				else
-					echo -e "\nInvalid input. Please press 'y' for Yes or 'n' for No.\n"
-				fi
-			done
-		fi
-		npm install
+			# comapares the packages to ascertain if there are updates and proceed accordingly
+			if [[ "$current_version" != "$latest_version" ]]; then
+				loop=1
+				while [[ "$loop" -eq 1 ]]; do
+					echo -n "Do you want to update the packages to the latest version? [y/N] >>> "
+					read -n 1 -s -r UPDATE_PACKAGES
+					if [[ "$UPDATE_PACKAGES" =~ [yY] ]]; then
+						echo "Yes, update the packages"
+						# checks and updates the packages in the package.json but does not download the updates yet
+						npx npm-check-updates -u
+						new_update=1
+						echo "Packages updated to the latest version."
+						echo -e "\nUpdating node_modules with package.json ..."
+						npm install # installs the updates
+						loop=0
+					elif [[ "$UPDATE_PACKAGES" =~ [nN] ]]; then
+						echo "No, don't update"
+						echo "No updates applied."
+						loop=0
+					else
+						echo -e "\nInvalid input. Please press 'y' for Yes or 'n' for No.\n"
+					fi
+				done
+			fi
+			# npm install # installs the updates
 
-		if [[ "$new_update" -eq 1 ]]; then
-			cp -r "node_modules" "$my_default_app/node_modules"
-			cp -r "package.json" "$my_default_app/package.json"
-			sed -i "s|${1}|my_default_app|g" "$my_default_app/package.json"
+			# update the default project with the latest versions
+			if [[ "$new_update" -eq 1 ]]; then
+				cp -r "node_modules" "$my_default_app/node_modules"
+				cp -r "package.json" "$my_default_app/package.json"
+				sed -i "s|${1}|my_default_app|g" "$my_default_app/package.json"
+			fi
+		else
+			echo "No, don't check for updates ..."
 		fi
 	else
 		# echo "Installing and setting up node_modules, package.json for future use."
+		# installs a fresh react app and setup a default project for furure use
 		npm init react-app my_default_app
 		index="my_default_app/public/index.html"
-		ogp_title="<meta name=\"og:title\" content=\"Created by custom commands\" />"
-		ogp_description="\t\t<meta name=\"og:description\" content=\"Developed by custom commands\" />"
-		ogp_image="\t\t<meta name=\"og:image\" content=\"%PUBLIC_URL%/logo192.png\" />"
-		ogp="$ogp_title\n$ogp_description\n$ogp_image"
+		ogp_title="<meta property=\"og:title\" content=\"Created Using custom commands\" />"
+		ogp_description="\t\t<meta property=\"og:description\" content=\"Developed using by custom commands\" />"
+		ogp_image="\t\t<meta property=\"og:image\" content=\"%PUBLIC_URL%/logo192.png\" />"
+		ogp_url="\t\t<meta property=\"og:url\" content=\"\" />"
+		ogp_type="\t\t<meta property=\"og:type\" content=\"website\" />"
+		ogp="$ogp_title\n$ogp_description\n$ogp_image\n$ogp_url\n$ogp_type"
 		sed -i '/<link rel="apple-touch-icon" href="%PUBLIC_URL%\/logo192.png" \/>/a\
-		'"$ogp"'' $index
+		'"$ogp"'' $index # changes the
 		src="$(2>&1 find . -type d -name "node_modules" -prune -o -type d -name "src" -print)"
-		mkdir "$src/components"
-		mkdir "$src/images"
+		line="£<p>&£*<a&*£*className=\"App-link\"*£
+          *href=\"https://github.com/DafetiteOgaga/custom_commands\"*£
+          *target=\"_blank\"&*£*rel=\"noopener noreferrer\"&£*>
+          *Install more custom commands&£*</a>&£</p>&"
+		app_js_path="$(find $PWD -name "App.js")"
+		cat "$app_js_path" | python3 "$path1/process_more.py" "react" "$line" "$app_js_path"
+		mkdir "$src/components" # creates components dir in src dir
+		mkdir "$src/images" # creates images dir in src dir
 		echo "Creating copy for future use."
+		# creates default project for future use
 		mkdir "$def_project"
 		cp -r "my_default_app" "$my_default_app"
-		sed -i "s|my_default_app|${1}|g" "my_default_app/package.json"
+		# npm pkg set name="${1}" # this is believed to do the same thing as sed
+		sed -i "s|my_default_app|${1}|g" "my_default_app/package.json" # sets the react app to align with the current name
+		sed -i "s|my_default_app|${1}|g" "my_default_app/package-lock.json"
 		mv "my_default_app" "$1"
 	fi
 	success
