@@ -1,0 +1,181 @@
+#!/bin/bash
+
+# success message
+success() {
+	local project_name="$1"
+	local fresh_install="$2"
+	if [[ "$?" == 0 ]]; then
+		echo "Success"
+		currentDir=$(pwd)
+		# echo "Current directory: $currentDir"
+		if [[ "$fresh_install" -eq 1 ]]; then
+			# echo "going to: $currentDir/$project_name"
+			cd "$currentDir/$1"
+		fi
+		# echo "in directory: $(pwd)"
+		sleep 0.5
+		npm start
+		if [[ "$fresh_install" -eq 1 ]]; then
+			# echo "going to: $currentDir/$project_name"
+			cd "$currentDir"
+		fi
+	fi
+}
+
+# check if node and npm are installed
+path1="$HOME/.xbin/pyfiles"
+# path1="$HOME/alx/custom_commands/.scpts/pyfiles"
+check="$(2>&1 $path1/nodeAndNpm)"
+if [[ -n "$check" ]]; then
+	echo "$check"
+	if [[ "$check" == *"not install"* ]]; then
+		exit 1
+	fi
+fi
+
+echo ""
+# command="npm init react-app my_default_app"
+
+def_project="$path1/default-expo-project" # location of the default project
+my_default_app="$def_project/my_default_app" # location of the default app
+new_update=0
+
+# checks if arg was passed
+if [[ "$#" != "1" ]]; then
+	echo ""
+	echo "Enter an Expo app name as argument"
+elif [[ "$#" -eq 1 ]]; then
+	# tries to create react app from default project
+	fresh=0
+	if [[ -d "$def_project" ]]; then
+		echo "Preparing the project $1 ..."
+		cp -r "$my_default_app/" "$1"
+		cd "$1"
+		sed -i "s|my_default_app|${1}|g" "package.json" # replaces 'my_default_app' with the value in ${1}
+		sed -i "s|my_default_app|${1}|g" "package-lock.json"
+		sed -i "s|my_default_app|${1}|g" "app.json"
+
+		# inquest for update
+		echo ""
+		echo -n "Checking for updates? [y - to check] >>> "
+		read -n 1 -s -r UPDATE_CHECK
+		if [[ "$UPDATE_CHECK" =~ [yY] ]]; then
+			echo "Checking for updates ..."
+			updates="$(2>&1 npm outdated)"
+			# echo "......................................."
+
+			# checks if there are updates since last default project use
+			while IFS= read -r line; do
+				current_version=$(echo "$line" | awk '{print $2}')
+				wanted_version=$(echo "$line" | awk '{print $3}')
+				latest_version=$(echo "$line" | awk '{print $4}')
+				# echo "Package: $line"
+				# echo "Current version: $current_version"
+				# echo "Latest version: $latest_version"
+			done <<< "$updates"
+			# echo "......................................."
+			# echo "Package: $line"
+			# echo "Current version: $current_version"
+			# echo "Wanted version: $wanted_version"
+			# echo "Latest version: $latest_version"
+			# echo "......................................."
+			echo -e "$updates\n"
+
+			# comapares the packages to ascertain if there are updates and proceed accordingly
+			if [[ "$current_version" != "$latest_version" ]]; then
+				loop=1
+				while [[ "$loop" -eq 1 ]]; do
+					echo -n "Do you want update to the packages to the latest version? [y/N] >>> "
+					read -n 1 -s -r UPDATE_PACKAGES
+					if [[ "$UPDATE_PACKAGES" =~ [yY] ]]; then
+						echo "Yes, update the packages"
+						# checks and updates the packages in the package.json but does not download the updates yet
+						npx npm-check-updates -u
+						new_update=1
+						echo "Package.json updated to the latest version."
+						echo -e "\nUpdating node_modules with package.json ..."
+						npm install # installs the updates in the project
+						loop=0
+					elif [[ "$UPDATE_PACKAGES" =~ [nN] ]]; then
+						echo "No, don't update"
+						echo "No updates applied."
+						loop=0
+					else
+						echo -e "\nInvalid input. Please press 'y' for Yes or 'n' for No.\n"
+					fi
+				done
+			fi
+			# npm install # installs the updates
+
+			# update the default project with the latest versions
+			if [[ "$new_update" -eq 1 ]]; then
+				cp -r "node_modules" "$my_default_app/node_modules"
+				cp -r "package.json" "$my_default_app/package.json"
+				sed -i "s|${1}|my_default_app|g" "$my_default_app/package.json"
+			fi
+		else
+			echo "No, don't check for updates ..."
+		fi
+	else
+		echo "fresh install ..."
+		# echo "Installing and setting up node_modules, package.json for future use."
+		# installs a fresh react app and setup a default project for furure use
+		npx create-expo-app@latest my_default_app
+		# install drawer dependencies
+		echo "installing drawer dependencies ..."
+		currentDir=$(pwd)
+		# echo "Current directory: $currentDir"
+		# echo "going to: $currentDir/my_default_app"
+		cd "$currentDir/my_default_app"
+		# echo "in directory: $(pwd)"
+		sleep 0.5
+		npm install @react-navigation/drawer
+		sleep 0.5
+		npm install react-native-gesture-handler react-native-reanimated react-native-screens react-native-safe-area-context react-native-vector-icons
+
+		cd "$currentDir"
+		# echo "back to: $(pwd)"
+		# creates default project for future use
+		echo ""
+		echo "Creating copy for future use."
+		# copying and updating these default files to the new project
+		# pwd
+		sleep 0.5
+		cp -r "$path1/expoDefaults/app/" "my_default_app/"
+		# echo "Updating app ..."
+		sleep 0.5
+		cp -r "$path1/expoDefaults/assets/images/" "my_default_app/assets/"
+		# echo "Updating images ..."
+		sleep 0.5
+		cp -r "$path1/expoDefaults/constants/" "my_default_app/"
+		# echo "Updating constants ..."
+		sleep 0.5
+		cp -r "$path1/expoDefaults/hooks/" "my_default_app/"
+		# echo "Updating hooks ..."
+		sleep 0.5
+		cp -r "$path1/expoDefaults/myConfig/" "my_default_app/"
+		# echo "Updating myConfig ..."
+		sleep 0.5
+		cp -r "$path1/expoDefaults/navigations/" "my_default_app/"
+		# echo "Updating navigations ..."
+		sleep 0.5
+		cp -r "$path1/expoDefaults/app.json" "my_default_app/app.json"
+		cp -r "$path1/expoDefaults/babel.config.js" "my_default_app/babel.config.js"
+		cp -r "$path1/expoDefaults/tsconfig.json" "my_default_app/tsconfig.json"
+		mkdir -p "$def_project"
+		# echo "Updating app.json, babel.config.js, tsconfig.json ..."
+		sleep 0.5
+		# mkdir -p "$my_default_app"
+		# echo "Creating backup ..."
+		cp -r "my_default_app" "$my_default_app"
+		sleep 0.5
+		# echo "Updating package.json, package-lock.json and app.json for this project ..."
+		# npm pkg set name="${1}" # this is believed to do the same thing as sed
+		sed -i "s|my_default_app|${1}|g" "my_default_app/package.json" # sets the react app to align with the current name
+		sed -i "s|my_default_app|${1}|g" "my_default_app/package-lock.json"
+		sed -i "s|my_default_app|${1}|g" "my_default_app/app.json"
+		mv "my_default_app" "$1"
+		fresh=1
+	fi
+	success "$1" "$fresh"
+fi
