@@ -1,4 +1,7 @@
 ## Fixes
+   - fixed updateResumeCV command to automatically update concerned repos locally after execution.
+   - Added support for ignoring node_modules using gitignore command for Expo (React Native) Apps.
+   - corrrected typos in createReactApp command setup.
    - createReactApp now downloads the configs for CRA on first use, then uses this config for subsequent use while it updates itself whenever there is an update to CRA config
    - handled the case where a user tries to install and configure a django project without initially installing an app
    - fixed the DRF module error for runserver, sqlmigrate commanda
