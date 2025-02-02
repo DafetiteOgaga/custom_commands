@@ -1,5 +1,0 @@
-	Revert "<previous commit_message>"
-
-	<user_commit_message>
-
-    	This reverts commit <previous_commit_id>.
