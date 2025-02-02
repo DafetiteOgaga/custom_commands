@@ -20,7 +20,7 @@ additonals()
 		local number="$1"
 		if [[ "$number" == "1" ]]; then
 			install="xml renderer"
-			commandx="pip3 install djangorestframework-xml"
+			commandx="pip3 install -q djangorestframework-xml"
 			argument="rest_framework_xml.renderers.XMLRenderer"
 		elif [[ "$number" == "2" ]]; then
 			install="rest_framework.authtoken"
@@ -45,7 +45,7 @@ additonals()
 		fi
 	}
 
-command="pip3 install djangorestframework"
+command="pip3 install -q djangorestframework"
 
 if [ "$#" -gt 0 ]; then
 	echo ""
