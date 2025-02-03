@@ -6,7 +6,7 @@ import ScreenStyle from '@/hooks/ScreenStyle';
 export default function Greet() {
 	const {message, myName} = useLocalSearchParams(); // get the data from the navigation (passed from another screen)
 	const navigation: any|undefined = useNavigation(); // navigation to set/update data to another screen/the screen itself
-	console.log({myName});
+	// console.log({myName});
 	return (
 		<>
 			<View style={[ScreenStyle.allScreenContainer, { justifyContent: 'center', alignItems: 'center'}]}>

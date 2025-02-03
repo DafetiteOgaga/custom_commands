@@ -29,8 +29,8 @@ success() {
 		# 	git init
 		fi
 		# echo "in directory: $(pwd)"
-		sleep 0.5
-		# npm start
+		sleep 1
+		npm start
 		if [[ "$fresh_install" -eq 1 ]]; then
 			# echo "going to: $currentDir/$project_name"
 			cd "$currentDir"
@@ -179,11 +179,12 @@ elif [[ "$#" -eq 1 ]]; then
 		cp -r "$path1/expoDefaults/app.json" "my_default_app/app.json"
 		cp -r "$path1/expoDefaults/babel.config.js" "my_default_app/babel.config.js"
 		cp -r "$path1/expoDefaults/tsconfig.json" "my_default_app/tsconfig.json"
-		mkdir -p "$def_project"
+		mkdir -p "$def_project/gitSsetup"
 		# echo "Updating app.json, babel.config.js, tsconfig.json ..."
 		sleep 0.5
 		# mkdir -p "$my_default_app"
 		# echo "Creating backup ..."
+		mv "my_default_app/.git" "$def_project/gitSsetup"
 		cp -r "my_default_app" "$my_default_app"
 		sleep 0.5
 		# echo "Updating package.json, package-lock.json and app.json for this project ..."
