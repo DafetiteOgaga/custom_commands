@@ -10,7 +10,7 @@ success() {
 # check if node and npm are installed
 path1="$HOME/.xbin/pyfiles"
 # path1="$HOME/alx/custom_commands/.scpts/pyfiles"
-check="$(2>&1 $path1/nodeAndNpm)"
+check="$(2>&1 $path1/nodeAndNpm react)"
 if [[ -n "$check" ]]; then
 	echo "$check"
 	if [[ "$check" == *"not install"* ]]; then
@@ -32,7 +32,8 @@ if [[ "$#" != "1" ]]; then
 elif [[ "$#" -eq 1 ]]; then
 	# tries to create react app from default project
 	if [[ -d "$def_project" ]]; then
-		echo "Preparing the project $1 ..."
+		echo "Preparing the ReactApp $1 ..."
+		# exit 0
 		cp -r "$my_default_app/" "$1"
 		cd "$1"
 		sed -i "s|my_default_app|${1}|g" "package.json"
@@ -99,6 +100,7 @@ elif [[ "$#" -eq 1 ]]; then
 			echo "No, don't check for updates ..."
 		fi
 	else
+		echo "fresh install ..."
 		# echo "Installing and setting up node_modules, package.json for future use."
 		# installs a fresh react app and setup a default project for furure use
 		npm init react-app my_default_app
