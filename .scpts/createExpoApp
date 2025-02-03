@@ -7,14 +7,30 @@ success() {
 	if [[ "$?" == 0 ]]; then
 		echo "Success"
 		currentDir=$(pwd)
+		# echo "currentDir: $currentDir"
 		# echo "Current directory: $currentDir"
 		if [[ "$fresh_install" -eq 1 ]]; then
 			# echo "going to: $currentDir/$project_name"
 			cd "$currentDir/$1"
 		fi
+		echo ""
+		if [[ -d "./.git" ]]; then
+			echo -n "Git setup exists. [y - to leave setup] >>> "
+			read -n 1 -s -r DELETE_GIT
+			if [[ "$DELETE_GIT" =~ [yY] ]]; then
+				echo "No, don't delete the git setup."
+			else
+				echo "Yes, delete the git setup."
+				rm -rf ".git"
+				echo "Git setup deleted."
+			fi
+		# else
+		# 	echo "Initializing git ..."
+		# 	git init
+		fi
 		# echo "in directory: $(pwd)"
 		sleep 0.5
-		npm start
+		# npm start
 		if [[ "$fresh_install" -eq 1 ]]; then
 			# echo "going to: $currentDir/$project_name"
 			cd "$currentDir"
@@ -25,7 +41,7 @@ success() {
 # check if node and npm are installed
 path1="$HOME/.xbin/pyfiles"
 # path1="$HOME/alx/custom_commands/.scpts/pyfiles"
-check="$(2>&1 $path1/nodeAndNpm)"
+check="$(2>&1 $path1/nodeAndNpm reactNative)"
 if [[ -n "$check" ]]; then
 	echo "$check"
 	if [[ "$check" == *"not install"* ]]; then
@@ -48,7 +64,8 @@ elif [[ "$#" -eq 1 ]]; then
 	# tries to create react app from default project
 	fresh=0
 	if [[ -d "$def_project" ]]; then
-		echo "Preparing the project $1 ..."
+		echo "Preparing the ExpoApp $1 ..."
+		# exit 0
 		cp -r "$my_default_app/" "$1"
 		cd "$1"
 		sed -i "s|my_default_app|${1}|g" "package.json" # replaces 'my_default_app' with the value in ${1}
