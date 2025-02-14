@@ -76,7 +76,7 @@ function usePut () {
 	const [isPutLoading, setIsPutLoading] = useState(false)
 	const [isPutError, setIsPutError] = useState(null);
 	const PutSetup = async (url, formData) => {
-		const csrfToken = await fetchCsrfToken() // Fetch CSRF token
+		const csrfToken = await fetchCsrfToken() // Fetch CSRF token.
 		setIsPutLoading(true);
 		setIsPutError(null);
 		setPutData(null);
