@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Button } from 'react-native';
 import React from 'react';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
-import ScreenStyle from '@/hooks/ScreenStyle';
+import { ScreenStyle } from '@/myConfig/navigation';
 
 export default function Greet() {
 	const {message, myName} = useLocalSearchParams(); // get the data from the navigation (passed from another screen)
