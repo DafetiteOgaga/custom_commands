@@ -19,14 +19,18 @@ def exit2(leave: bool = False):
 	if leave == True:
 		sys.exit(0)
 
+root_repo = True
 try:
 	# print('starting ... ####################')
 	current_dir_var = os.getcwd()
+	# print(f'current_dir_var: {current_dir_var}')
 	root_repo = backward_search()
+	# print(f'root_repo: {root_repo}')
 
 	pycache, venv = compile_dir_list(root_repo, venv=True)
 	# print(f'pycache: {pycache}')
 	delimiter = root_repo + os.sep
+	# print(f'delimiter: {delimiter}')
 	# print('..........................')
 	# print('returned: #################')
 	# for d in pycache:
