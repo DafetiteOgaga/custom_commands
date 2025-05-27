@@ -1,0 +1,467 @@
+#!/usr/bin/env bash
+
+# 1. download APK from eas build
+# 2. upload APK for distribution via GitHub releases
+# 3. update backend with new version
+# 4. update frontend with new version
+# 5. update frontend-mobile with new version
+# 6. update portfolio with new version
+# 7. delete the APK file after updating the backend
+
+
+# download APK from eas build
+##################################
+
+# Configuration
+APP_FILE_PATTERN="eas.json"  # Pattern to search for (e.g., "version.py")
+APP_SEARCH_DIRECTORY="$HOME/alx/altaviz/altaviz_mobile"
+path1="$HOME/.xbin"
+CURRDIR="$(pwd)"
+
+echo -e "Downloading APK from eas build..."
+echo -e "Searching for $APP_FILE_PATTERN in $APP_SEARCH_DIRECTORY..."
+APP_FILE_PATH=$(find "$APP_SEARCH_DIRECTORY" -type d -name "node_modules" -prune -o -type f -path "*/$APP_FILE_PATTERN" -print | head -n 1)
+
+# Check if file was found
+if [[ -z "$APP_FILE_PATH" ]]; then
+	echo "Error: File not found!"
+	exit 1
+fi
+
+echo -e "Found $APP_FILE_PATTERN at: $APP_FILE_PATH"
+
+# change to the directory containing the file
+APP_FILE_DIR=$(dirname "$APP_FILE_PATH")
+echo -e "Changing to directory: $APP_FILE_DIR"
+cd "$APP_FILE_DIR" || exit 1
+
+echo -e "Download directory: $CURRDIR\n"
+
+# Check if `eas` is installed
+if ! command -v eas &> /dev/null; then
+    echo -e "EAS CLI not found. Installing...\n"
+    npm install -g eas-cli
+fi
+
+# Check if user is logged in
+if ! eas whoami &> /dev/null; then
+    echo -e "You are not logged in to Expo. Please enter your credentials.\n"
+
+    # Prompt for username and password
+    read -p "Expo Username: " EXPO_USER
+    read -s -p "Expo Password: " EXPO_PASS
+    echo ""
+
+    # Login using credentials
+    echo "$EXPO_PASS" | eas login --username "$EXPO_USER" --password-stdin
+
+    # Verify login success
+    if eas whoami &> /dev/null; then
+        echo -e "Login successful!\n"
+    else
+        echo -e "Login failed. Please check your credentials.\n"
+        exit 1
+    fi
+fi
+
+# get latest build url and version number
+buildList=$(eas build:list | python3 "$path1/pyfiles/getEchoOutput.py")
+read -r version url <<< "$buildList"
+echo "Version: $version"
+echo "URL: $url"
+echo -e ""
+
+# download APK in the current directory
+cd "$CURRDIR" || exit 1
+wget -q --show-progress -O altaviz.apk "$url"
+######################################################################################################
+######################################################################################################
+
+
+
+
+
+
+
+# upload APK for distribution via GitHub releases
+##################################
+
+# configuration
+REPO_OWNER="YOUR_GITHUB_USERNAME"
+GITHUB_TOKEN="YOUR_PERSONAL_ACCESS_TOKEN"
+GITHUB_Email="YOUR_REGISTERED_GITHUB_EMAIL"
+REPO_NAME="altavizMobileReleases"
+APK_PATH="./altaviz.apk"  # Path to your APK file
+RELEASE_NAME="Altaviz Mobile"  # Keep this consistent for all releases
+VERSION_TAG="$version"   # "v$(date +%Y%m%d.%H%M)"  # Creates a version tag based on date and time
+RELEASE_NOTES="New release for $VERSION_TAG"  # You can customize this
+VERSION_NAME="altavizMobile-$VERSION_TAG.apk"  # Name of the APK file in the release
+
+echo -e "\n\n"
+echo "Uploading APK for distribution via GitHub releases..."
+
+# Create the release
+echo "REPO_OWNER: $REPO_OWNER"
+echo "REPO_NAME: $REPO_NAME"
+echo "LOCAL_APK_PATH: $APK_PATH"
+echo "RELEASE_NAME: $RELEASE_NAME"
+echo "VERSION_TAG: $VERSION_TAG"
+echo "Creating GitHub release with tag $VERSION_TAG..."
+echo "VERSION_NAME: $VERSION_NAME"
+create_release_response=$(curl -s -X POST \
+	-H "Authorization: token ghp_$GITHUB_TOKEN" \
+	-H "Accept: application/vnd.github.v3+json" \
+	-d "{\"tag_name\":\"$VERSION_TAG\",\"name\":\"$RELEASE_NAME $VERSION_TAG\",\"body\":\"$RELEASE_NOTES\",\"draft\":false,\"prerelease\":false}" \
+	"https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases")
+
+# Extract the upload URL from the response
+upload_url=$(echo "$create_release_response" | grep -o '"upload_url": "[^"]*' | grep -o 'https://[^"]*' | sed 's/{?name,label}//')
+
+# Check if upload_url is empty
+if [ -z "$upload_url" ]; then
+	echo "Error creating release. Response:"
+	echo "$create_release_response"
+	exit 1
+fi
+
+echo "Release created successfully. Uploading APK..."
+
+# Upload the APK
+upload_response=$(curl -s -X POST \
+	-H "Authorization: token ghp_$GITHUB_TOKEN" \
+	-H "Accept: application/vnd.github.v3+json" \
+	-H "Content-Type: application/vnd.android.package-archive" \
+	--data-binary @"$APK_PATH" \
+	"$upload_url?name=$VERSION_NAME")  # Always use the same filename
+
+echo "Upload completed. Response:"
+# echo "$upload_response" | jq
+
+# Extract the browser download URL from the response
+download_url=$(echo "$upload_response" | grep -o '"browser_download_url": "[^"]*' | grep -o 'https://[^"]*')
+
+echo "===================="
+echo "APK published successfully!"
+echo "Direct download URL: $download_url"
+echo "Latest release URL: https://github.com/$REPO_OWNER/$REPO_NAME/releases/latest/download/app.apk"
+echo "===================="
+echo -e "\n\n"
+######################################################################################################
+######################################################################################################
+
+
+
+
+
+
+# update frontend, backend, mobile and portfolio with new version
+##################################
+
+# Configuration
+BE_FILE_PATTERN="views.py"  # Pattern to search for (e.g., "version.py")
+BE_SEARCH_DIRECTORY="/home/dafetite/alx/altaviz/altaviz_backend/project_altaviz/app_altaviz"       # Directory to start the search from
+FE_FILE_PATTERN="package.json"  # Pattern to search for (e.g., "version.py")
+FE_SEARCH_DIRECTORY="/home/dafetite/alx/altaviz/altaviz_frontend/altaviz"       # Directory to start the search from
+MOBILE_FILE_PATTERN="package.json"  # Pattern to search for (e.g., "version.py")
+MOBILE_SEARCH_DIRECTORY="/home/dafetite/alx/altaviz/altaviz_mobile"       # Directory to start the search from
+PORTFOLIO_PATTERN="package.json"  # Pattern to search for (e.g., "version.py")
+PORTFOLIO_SEARCH_DIRECTORY="/home/dafetite/alx/creonovo/dafetite"       # Directory to start the search from
+NEW_VERSION="$VERSION_TAG"                      # New version number to set
+COMMIT_MESSAGE="Bumped version to $NEW_VERSION"  # Git commit message
+
+# Find the files for BE, FE, MOBILE and portfolio
+
+# for BE
+echo -e "Searching (backend) for $BE_FILE_PATTERN in $BE_SEARCH_DIRECTORY..."
+# BE_FILE_PATH=$(find "$BE_SEARCH_DIRECTORY" -name "$BE_FILE_PATTERN" -type f | head -n 1)
+BE_FILE_PATH=$(find "$BE_SEARCH_DIRECTORY" -type f -path "*/$BE_FILE_PATTERN" | head -n 1)
+
+# for FE
+echo -e "Searching (frontend) for $FE_FILE_PATTERN in $FE_SEARCH_DIRECTORY..."
+# FE_FILE_PATH=$(find "$FE_SEARCH_DIRECTORY" -name "$FE_FILE_PATTERN" -type f | head -n 1)
+# FE_FILE_PATH=$(find "$FE_SEARCH_DIRECTORY" -type f -path "*/$FE_FILE_PATTERN" | head -n 1)
+FE_FILE_PATH=$(find "$FE_SEARCH_DIRECTORY" -type d -name "node_modules" -prune -o -type f -path "*/$FE_FILE_PATTERN" -print | head -n 1)
+
+# for FE-MOBILE
+echo -e "Searching (mobile) for $MOBILE_FILE_PATTERN in $MOBILE_SEARCH_DIRECTORY..."
+# MOBILE_FILE_PATH=$(find "$MOBILE_SEARCH_DIRECTORY" -name "$MOBILE_FILE_PATTERN" -type f | head -n 1)
+# MOBILE_FILE_PATH=$(find "$MOBILE_SEARCH_DIRECTORY" -type f -path "*/$MOBILE_FILE_PATTERN" | head -n 1)
+MOBILE_FILE_PATH=$(find "$MOBILE_SEARCH_DIRECTORY" -type d -name "node_modules" -prune -o -type f -path "*/$MOBILE_FILE_PATTERN" -print | head -n 1)
+
+# for portfolio
+echo -e "Searching (portfolio) for $PORTFOLIO_PATTERN in $PORTFOLIO_SEARCH_DIRECTORY...\n"
+PORTFOLIO_FILE_PATH=$(find "$PORTFOLIO_SEARCH_DIRECTORY" -type d -name "node_modules" -prune -o -type f -path "*/$PORTFOLIO_PATTERN" -print | head -n 1)
+
+
+# Check if file was found
+if [[ -z "$BE_FILE_PATH" || -z "$FE_FILE_PATH" || -z "$MOBILE_FILE_PATH" ]]; then
+	echo "Error: File(s) not found!"
+	exit 1
+fi
+
+echo -e "Found (backend) $BE_FILE_PATTERN at: $BE_FILE_PATH"
+echo -e "Found (frontend) $FE_FILE_PATTERN at: $FE_FILE_PATH"
+echo -e "Found (mobile) $MOBILE_FILE_PATTERN at: $MOBILE_FILE_PATH"
+echo -e "Found (portfolio) $PORTFOLIO_PATTERN at: $PORTFOLIO_FILE_PATH\n"
+
+
+
+
+
+# update backend with new version
+##################################
+echo -e "Updating backend with new version..."
+# Change to the directory containing the file
+BE_FILE_DIR=$(dirname "$BE_FILE_PATH")
+echo -e "Changing to directory: $BE_FILE_DIR"
+cd "$BE_FILE_DIR" || exit 1
+
+# Verify we're in a git repository
+if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+	echo "Error: Not in a git repository!"
+	exit 1
+fi
+
+# Backup the file
+cp "$BE_FILE_PATH" "${BE_FILE_PATH}.bak"
+
+# Replace the version number using regex
+echo -e "Updating version number to $NEW_VERSION..."
+if [[ "$OSTYPE" == "darwin"* ]]; then
+	# macOS requires an empty string after -i for in-place editing
+	sed -i '' "s/versionDict = {'version': 'v\?[0-9]\{8\}\.[0-9]\{4\}'}/versionDict = {'version': '$NEW_VERSION'}/g" "$BE_FILE_PATH"
+else
+	# Linux sed syntax
+	sed -i "s/versionDict = {'version': 'v\?[0-9]\{8\}\.[0-9]\{4\}'}/versionDict = {'version': '$NEW_VERSION'}/g" "$BE_FILE_PATH"
+fi
+
+# Check if changes were made
+if diff "$BE_FILE_PATH" "${BE_FILE_PATH}.bak" > /dev/null; then
+	echo -e "No changes made to the file. Make sure the version pattern matches.\n"
+	rm "${BE_FILE_PATH}.bak"
+	# exit 0
+else
+	echo -e "Version updated successfully.\n"
+	rm "${BE_FILE_PATH}.bak"
+
+	# Add, commit and push changes
+	echo -e "Committing changes to git...\n"
+	git add "$BE_FILE_PATH"
+	git commit -m "$COMMIT_MESSAGE"
+
+	echo -e "Pushing changes to remote repository...\n"
+	git push origin HEAD
+
+	echo -e "Backend updated successfully.\n\n"
+fi
+# if git diff --quiet "$BE_FILE_PATH"; then
+#   echo "No changes detected in version file. Skipping commit."
+#   exit 0
+# fi
+
+######################################################################################################
+######################################################################################################
+
+
+
+
+
+
+
+# update frontend with new version
+##################################
+echo -e "Updating frontend with new version..."
+# Change to the directory containing the file
+FE_FILE_DIR=$(dirname "$FE_FILE_PATH")
+echo -e "Changing to directory: $FE_FILE_DIR"
+cd "$FE_FILE_DIR" || exit 1
+
+# Verify we're in a git repository
+if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+	echo "Error: Not in a git repository!"
+	exit 1
+fi
+
+# Backup the file
+cp "$FE_FILE_PATH" "${FE_FILE_PATH}.bak"
+
+# Replace the version number using regex
+echo -e "Updating version number to $NEW_VERSION..."
+if [[ "$OSTYPE" == "darwin"* ]]; then
+	# macOS requires an empty string after -i for in-place editing
+	# sed -i '' "s/versionDict = {'version': 'v\?[0-9]\{8\}\.[0-9]\{4\}'}/versionDict = {'version': '$NEW_VERSION'}/g" "$BE_FILE_PATH"
+	sed -i '' "s/\"version\": \"v\?[0-9]\{8\}\.[0-9]\{4\}\"/\"version\": \"$NEW_VERSION\"/g" "$FE_FILE_PATH"
+else
+	# Linux sed syntax
+	# sed -i "s/versionDict = {'version': 'v\?[0-9]\{8\}\.[0-9]\{4\}'}/versionDict = {'version': '$NEW_VERSION'}/g" "$BE_FILE_PATH"
+	sed -i "s/\"version\": \"v\?[0-9]\{8\}\.[0-9]\{4\}\"/\"version\": \"$NEW_VERSION\"/g" "$FE_FILE_PATH"
+fi
+
+# Check if changes were made
+if diff "$FE_FILE_PATH" "${FE_FILE_PATH}.bak" > /dev/null; then
+	echo -e "No changes made to the file. Make sure the version pattern matches.\n"
+	rm "${FE_FILE_PATH}.bak"
+	# exit 0
+else
+	echo -e "Version updated successfully.\n"
+	rm "${FE_FILE_PATH}.bak"
+
+	# Add, commit and push changes
+	echo -e "Committing changes to git...\n"
+	git add "$FE_FILE_PATH"
+	git commit -m "$COMMIT_MESSAGE"
+
+	echo -e "Pushing changes to remote repository...\n"
+	git push origin HEAD
+
+	echo -e "Frontend updated successfully.\n\n"
+fi
+# if git diff --quiet "$FE_FILE_PATH"; then
+#   echo "No changes detected in version file. Skipping commit."
+#   exit 0
+# fi
+
+######################################################################################################
+######################################################################################################
+
+
+
+
+
+
+
+# update frontend-mobile with new version
+##################################
+
+# Change to the directory containing the file
+# MOBILE_FILE_DIR=$(dirname "$MOBILE_FILE_PATH")
+# echo -e "Changing to directory: $MOBILE_FILE_DIR\n"
+# cd "$MOBILE_FILE_DIR" || exit 1
+
+# # Verify we're in a git repository
+# if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+# 	echo "Error: Not in a git repository!"
+# 	exit 1
+# fi
+
+# # Backup the file
+# cp "$MOBILE_FILE_PATH" "${MOBILE_FILE_PATH}.bak"
+
+# # Replace the version number using regex
+# echo -e "Updating version number to $NEW_VERSION...\n"
+# if [[ "$OSTYPE" == "darwin"* ]]; then
+# 	# macOS requires an empty string after -i for in-place editing
+# 	# sed -i '' "s/versionDict = {'version': 'v\?[0-9]\{8\}\.[0-9]\{4\}'}/versionDict = {'version': '$NEW_VERSION'}/g" "$BE_FILE_PATH"
+# 	sed -i '' "s/\"version\": \"v\?[0-9]\{8\}\.[0-9]\{4\}\"/\"version\": \"$NEW_VERSION\"/g" "$MOBILE_FILE_PATH"
+# else
+# 	# Linux sed syntax
+# 	# sed -i "s/versionDict = {'version': 'v\?[0-9]\{8\}\.[0-9]\{4\}'}/versionDict = {'version': '$NEW_VERSION'}/g" "$BE_FILE_PATH"
+# 	sed -i "s/\"version\": \"v\?[0-9]\{8\}\.[0-9]\{4\}\"/\"version\": \"$NEW_VERSION\"/g" "$MOBILE_FILE_PATH"
+# fi
+
+# # Check if changes were made
+# if diff "$MOBILE_FILE_PATH" "${MOBILE_FILE_PATH}.bak" > /dev/null; then
+# 	echo "No changes made to the file. Make sure the version pattern matches."
+# 	rm "${MOBILE_FILE_PATH}.bak"
+#	# exit 0
+# else
+	# echo -e "Version updated successfully.\n"
+	# rm "${MOBILE_FILE_PATH}.bak"
+
+	# # Add, commit and push changes
+	# echo -e "Committing changes to git...\n"
+	# git add "$MOBILE_FILE_PATH"
+	# git commit -m "$COMMIT_MESSAGE"
+
+	# echo -e "Pushing changes to remote repository...\n"
+	# git push origin HEAD
+# fi
+# # if git diff --quiet "$MOBILE_FILE_PATH"; then
+# #   echo "No changes detected in version file. Skipping commit."
+# #   exit 0
+# # fi
+
+# echo -e "Frontend-MOBILE updated successfully.\n"
+# ######################################################################################################
+# ######################################################################################################
+
+
+
+
+
+
+
+
+# update portfolio with new version
+##################################
+echo -e "Updating portfolio with new version..."
+# Change to the directory containing the file
+PORTFOLIO_FILE_DIR=$(dirname "$PORTFOLIO_FILE_PATH")
+echo -e "Changing to directory: $PORTFOLIO_FILE_DIR"
+cd "$PORTFOLIO_FILE_DIR" || exit 1
+
+# Verify we're in a git repository
+if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+	echo "Error: Not in a git repository!"
+	exit 1
+fi
+
+# Backup the file
+cp "$PORTFOLIO_FILE_PATH" "${PORTFOLIO_FILE_PATH}.bak"
+
+# Replace the version number using regex
+echo -e "Updating version number to $NEW_VERSION..."
+if [[ "$OSTYPE" == "darwin"* ]]; then
+	# macOS requires an empty string after -i for in-place editing
+	# sed -i '' "s/versionDict = {'version': 'v\?[0-9]\{8\}\.[0-9]\{4\}'}/versionDict = {'version': '$NEW_VERSION'}/g" "$BE_FILE_PATH"
+	sed -i '' "s/\"version\": \"v\?[0-9]\{8\}\.[0-9]\{4\}\"/\"version\": \"$NEW_VERSION\"/g" "$PORTFOLIO_FILE_PATH"
+else
+	# Linux sed syntax
+	# sed -i "s/versionDict = {'version': 'v\?[0-9]\{8\}\.[0-9]\{4\}'}/versionDict = {'version': '$NEW_VERSION'}/g" "$BE_FILE_PATH"
+	sed -i "s/\"version\": \"v\?[0-9]\{8\}\.[0-9]\{4\}\"/\"version\": \"$NEW_VERSION\"/g" "$PORTFOLIO_FILE_PATH"
+fi
+
+# Check if changes were made
+if diff "$PORTFOLIO_FILE_PATH" "${PORTFOLIO_FILE_PATH}.bak" > /dev/null; then
+	echo -e "No changes made to the file. Make sure the version pattern matches.\n"
+	rm "${PORTFOLIO_FILE_PATH}.bak"
+	# exit 0
+else
+	echo -e "Version updated successfully.\n"
+	rm "${PORTFOLIO_FILE_PATH}.bak"
+
+	# Add, commit and push changes
+	echo -e "Committing changes to git...\n"
+	git add "$PORTFOLIO_FILE_PATH"
+	git commit -m "$COMMIT_MESSAGE"
+
+	echo -e "Pushing changes to remote repository...\n"
+	git push origin HEAD
+
+	echo -e "portfolio updated successfully.\n\n"
+fi
+# if git diff --quiet "$PORTFOLIO_FILE_PATH"; then
+#   echo "No changes detected in version file. Skipping commit."
+#   exit 0
+# fi
+
+######################################################################################################
+######################################################################################################
+
+
+
+
+
+# delete the APK file after updating the backend
+##################################
+cd "$CURRDIR" || exit 1
+echo -e "Deleting APK file ...\n"
+rm altaviz.apk
+
+
+echo -e "\nAll done! Version bumped to $NEW_VERSION and changes have been pushed to GitHub.\n"
+
+echo -e "✅ Updated backend with new version $NEW_VERSION."
+echo -e "✅ Updated frontend with new version $NEW_VERSION."
+# echo -e "✅ Updated frontend-mobile with new version $NEW_VERSION."
+echo -e "✅ Updated portfolio with new version $NEW_VERSION."
