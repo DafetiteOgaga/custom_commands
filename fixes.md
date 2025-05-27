@@ -1,4 +1,5 @@
 ## Fixes
+   - fixed all commands to be gitbash compartible
    - fixed updateResumeCV command to automatically update concerned repos locally after execution.
    - Added support for ignoring node_modules using gitignore command for Expo (React Native) Apps.
    - corrrected typos in createReactApp command setup.
