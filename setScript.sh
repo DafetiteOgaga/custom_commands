@@ -30,6 +30,26 @@ quit() {
 	fi
 }
 
+is_git_bash() {
+    [[ "$OSTYPE" == "msys" || "$MSYSTEM" == MINGW* ]]
+}
+is_wsl() {
+    grep -qi "microsoft" /proc/version 2>/dev/null
+}
+is_macos() {
+    [[ "$OSTYPE" == "darwin"* ]]
+}
+is_linux() {
+    [[ "$OSTYPE" == "linux-gnu"* && ! $(is_wsl) ]]
+}
+get_username() {
+    if is_git_bash; then
+        echo "$USERNAME"
+    else
+        echo "$USER"
+    fi
+}
+
 check_device_type() {
 	if [[ "$device_type" == "phone" ]]; then
 		echo -e "\nThis command can only be installed on a PC"
@@ -57,7 +77,12 @@ auth() {
 	if [[ ${#var} == 1 ]]; then
 		if [[ "$var" =~ [cC] ]]; then
 			rep="PC"
-			sudo -E echo -e "\nHi $USER 😊 ..."
+			name=$(get_username)
+			if is_git_bash; then
+				echo -e "\nHi $name  😊 ..."
+			else
+				sudo -E echo -e "\nHi $name  😊 ..."
+			fi
 		elif [[ "$var" =~ [pP] ]]; then
 			rep="Phone"
 			echo -e "\nHi USER 😊 ..."
@@ -74,7 +99,11 @@ intro() {
 	if [[ "$CHECKER_PC_PH" =~ [hH]ome|[uU]sers ]]; then
 		device_type="pc"
 		if [[ "$whch" =~ "0" ]]; then
-			echo -e "I can see that this is a PC"
+			if is_wsl; then echo -e "I can see this is a Windows subsystem for linux."
+			elif is_macos; then echo -e "I can see this is a macOs device."
+			elif is_linux; then echo -e "I can see this is a linux device."
+			# echo -e "I can see that this is a PC"
+			fi
 		else
 			echo -e "$rep"
 		fi
@@ -85,6 +114,8 @@ intro() {
 		else
 			echo -e "$rep"
 		fi
+	elif is_git_bash; then
+		echo -e "I can see this is a Windows device."
 	else
 		if [[ "$whch" =~ "0" ]]; then
 			echo -e "I can't figure out your device type."
@@ -106,10 +137,17 @@ invalid_selection() {
 
 streamedit() {
 	# replaces user details fields with user details
-	local var1="$1"
-	local var2="$2"
+	local var1="$1" # what to find
+	local var2="$2" # what to replace with
+	# $XBIN/$DFILENAME is the path to the file
 
 	sed -i "s/$var1/$var2/g" "$XBIN/$DFILENAME"
+}
+
+converPyShebang4gitbash() {
+	# replaces all occurences of the shebang line to tune to gitbash env
+	local file_path="$1" # file path
+	sed -i "s|#!/usr/bin/env python3|#!/usr/bin/env python|g" "$file_path"
 }
 
 details() {
@@ -250,6 +288,9 @@ cpfunc() {
 	esac
 	# make the script executable
 	chmod +x $XBIN/$DFILENAME
+	if is_git_bash; then
+		converPyShebang4gitbash "$XBIN/$DFILENAME"
+    fi
 }
 
 #...options display.................. #
@@ -853,7 +894,6 @@ opertn() {
 }
 
 pyfiles() {
-	# echo "Updating pyfiles..."
 	# updates only installed files in pyfiles/
     mkdir -p "$XBIN/pyfiles"
 
@@ -866,6 +906,18 @@ pyfiles() {
 			cp "$file" "$destination"
 		elif [[ -d "$destination" && "$filename" != "__pycache__" ]]; then
 			cp -r "$file" "$XBIN/pyfiles/"
+			if is_git_bash; then
+				for file in "$XBIN/pyfiles/"*; do
+					# Skip unwanted directories
+					[[ "$(basename "$file")" == "__pycache__" || "$(basename "$file")" == "expoDefaults" ]] && continue
+
+					# Only process files
+					if [[ -f "$file" ]]; then
+						# echo "Processing: $file"
+						converPyShebang4gitbash "$file"
+					fi
+				done
+			fi
 		else
 			if [[ "$filename" != "__pycache__" ]]; then
 				echo "no no no"
@@ -877,6 +929,9 @@ pyfiles() {
 		fi
 		if [[ -f "$destination" ]]; then
 			chmod +x $destination
+		fi
+		if is_git_bash && [ ! -d "$destination" ]; then
+			converPyShebang4gitbash "$destination"
 		fi
     done
 	update_changes
@@ -892,6 +947,9 @@ update_changes() {
             source="$SCPTS/$filename"
 			destination="$XBIN/$filename"
 			cp "$source" "$destination"
+			if is_git_bash; then
+				converPyShebang4gitbash "$destination"
+			fi
         fi
     done
 }
@@ -904,6 +962,11 @@ scptcpy() {
 		cp "$SCPTS/pyfiles/configure_settings_py.py" "$XBIN/pyfiles/configure_settings_py.py"
 		cp "$SCPTS/pyfiles/check_db.py" "$XBIN/pyfiles/check_db.py"
 		# check_db.py
+		if is_git_bash; then
+			converPyShebang4gitbash "$XBIN/pymanage"
+			converPyShebang4gitbash "$XBIN/pyfiles/configure_settings_py.py"
+			converPyShebang4gitbash "$XBIN/pyfiles/check_db.py"
+		fi
 	fi
 	if [[ ! -d "$XBIN/pyfiles/expoDefaults" && "$DFILENAME"=~"createExpoApp" ]]; then
 		mkdir -p "$XBIN/pyfiles/expoDefaults"
@@ -918,24 +981,39 @@ scptcpy() {
 	# for pyscripts/pycodemore/pycode command installation
 	elif [[ $DFILENAME =~ "pycode" || $DFILENAME =~ "pycodemore" || $FILETYPE =~ "pyscript" ]]; then
 		cpfunc
+		PYTHON="python3"
+		if is_git_bash; then
+			PYTHON="python"
+		fi
 		# Check if Python3 is installed
-		if command -v python3 &> /dev/null; then
-			echo "..."
+		# echo "Checking if $PYTHON is installed"
+		if command -v $PYTHON &> /dev/null; then
+			# echo "... $PYTHON is installed"
 			sleep 0.1
 		else
-			# Attempt to install Python3
-			echo "Installing Python3..."
-			sleep 0.1
-			# other package managers command
-			
-			if [[ "$WHICH" =~ 'p' ]]; then
-				# for phone
-				pkg update
-				pkg install python
-			elif [[ "$WHICH" =~ 'c' ]]; then
-				# for pc
-				sudo apt-get update
-				sudo apt-get install -y python3
+			if is_git_bash; then
+				# if os is windows (running git bash)
+				echo "Python not found."
+				echo "Visit https://www.python.org/downloads/ to download and install it."
+				echo ""
+				exit 1
+			else
+				# other unix-like os
+				# Attempt to install Python3
+				echo "Python3 not installed."
+				echo "Installing it..."
+				sleep 0.1
+				# other package managers command
+				
+				if [[ "$WHICH" =~ 'p' ]]; then
+					# for phone
+					pkg update
+					pkg install python
+				elif [[ "$WHICH" =~ 'c' ]]; then
+					# for pc
+					sudo apt-get update
+					sudo apt-get install -y python3
+				fi
 			fi
 		fi
 
