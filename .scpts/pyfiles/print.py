@@ -250,6 +250,7 @@ def backward_search():
 		str: path to root repository
 	"""
 	init_path = os.getcwd()
+	# print(f'init_path: {init_path}')
 	if ".git" in os.listdir():
 		root_repo = init_path
 		return root_repo
