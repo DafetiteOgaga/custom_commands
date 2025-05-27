@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+echo "MongoDB is server operations ..."
+echo "1. Start"
+echo "2. Stop"
+echo "3. Restart"
+echo "4. Check status of server"
+echo "[q] to quit"
+echo ""
+read -n 1 -s -r -p "Select an option >>> " MONGO_OPTION
+if [[ "$MONGO_OPTION" =~ [qQ] ]]; then
+	echo "$MONGO_OPTION"
+	echo ""
+	echo "Cheers"
+	exit 0
+elif [[ "$MONGO_OPTION" =~ [1] ]]; then
+	echo "Starting server ..."
+	sudo systemctl start mongod
+	echo "MongoDB started successfully."
+elif [[ "$MONGO_OPTION" =~ [2] ]]; then
+	echo "Stopping server ..."
+	sudo systemctl stop mongod
+	echo "MongoDB stopped successfully."
+elif [[ "$MONGO_OPTION" =~ [3] ]]; then
+	echo "Restarting server ..."
+	sudo systemctl restart mongod
+	echo "MongoDB restarted successfully."
+elif [[ "$MONGO_OPTION" =~ [4] ]]; then
+	echo "Checking server status ..."
+	sudo systemctl status mongod
+else
+	echo "Invalid option selected. Please try again."
+	exit 1
+fi
