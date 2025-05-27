@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 success() {
 	if [[ "$?" == 0 ]]; then
