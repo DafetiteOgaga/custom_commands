@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import React from 'react';
 import { ThemedText } from '../components/ThemedText';
 import { ThemedView } from '../components/ThemedView';
-import ScreenStyle from '@/hooks/ScreenStyle';
+import { ScreenStyle } from '../myConfig/navigation';
 
 export default function TestScreen() {
   return (
