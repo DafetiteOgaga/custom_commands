@@ -202,6 +202,8 @@ def write_to_file(ignore_list, delimiter: str, read: bool=False, empty: bool=Fal
 	"""
 	# set the file name to .gitignore
 	filename = delimiter + '.gitignore'
+	# print('filename:', filename)
+	# print('ignore_list:', ignore_list)
 	ignore_file = 1
 	file_list = []
 	try:
@@ -218,6 +220,7 @@ def write_to_file(ignore_list, delimiter: str, read: bool=False, empty: bool=Fal
 			return file_list
 	try:
 		if filename.split(delimiter)[-1] not in file_list:
+			# print('filename:', filename, 'in file_list:', file_list)
 			ignore_file = 0
 	except ValueError:
 		ignore_file = 0

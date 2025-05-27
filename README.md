@@ -7,7 +7,7 @@
 ### Note: **You can view all your custom commands by running `custom_commands` on your terminal**
 
 ## Platforms
-* Unix, Linux, Windows Subsystem for Linux
+* Unix, Linux, Windows Subsystem for Linux, Git Bash (Windows)
 <br><br>
 
 # Installation
@@ -136,7 +136,7 @@
     <td>gitignore</td>
     <td>djangoToolbar</td>
     <td></td>
-    <td></td>
+    <td>distributeApk</td>
     <td></td>
     <td></td>
     <td></td>
@@ -173,7 +173,7 @@
     <td></td>
   </tr>
   <tr>
-    <td>rollback</td>
+    <td>revert2commit</td>
     <td>showmigrations</td>
     <td></td>
     <td></td>
@@ -333,6 +333,7 @@
 - Submit a pull request to this repository.
 
 ## New
+  - revert2commit
   - createExpoApp
   - createReactApp
   - setEnv
@@ -340,10 +341,13 @@
   - djangoUrls
   - updateToken
   - djangoToolbar
-  - jwtDjango
   - drf
 
 ## Changes
+  - changed rollback to revert2commit command, which is preferred because
+   it reverts to any earlier commit state and still keeps the commit history by undoing all the changes made upto the selected commit and
+   creating a new commit for this revert. Hence, history is not lost or
+   discarded
   - Added (New) createExpoApp - uses backed up app config setup to create apps after the initial (first downloaded) setup and spins up the local server automatically.
    - Added (New) setEnv command - creates environmental variables automatically.
    - Added collectstatic command - collects static files in django for production.
@@ -353,6 +357,7 @@
 
 
 ## Fixes
+  - fixed all commands to be gitbash compartible
   - fixed updateResumeCV command to automatically update concerned repos locally after execution.
   - Added support for ignoring node_modules using gitignore command for Expo (React Native) Apps.
   - corrrected typos in createReactApp command setup.

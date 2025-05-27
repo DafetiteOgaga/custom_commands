@@ -5,7 +5,7 @@ import { StyleSheet, Text, View, SafeAreaView, TextInput,
 import { useCurrColorMode } from '@/constants/Colors';
 import { StatusBar as MyBar } from 'expo-status-bar';
 import { useNavigation } from 'expo-router';
-import ScreenStyle from '@/hooks/ScreenStyle';
+import { ScreenStyle, generalstyles } from '@/myConfig/navigation';
 
 // type declarations
 interface getType {
@@ -108,7 +108,7 @@ export default function App() {
     // Loading screen (if data is still loading)
     if (isLoading) {
         return (
-            <SafeAreaView style={[ScreenStyle.allScreenContainer, styles.loading]}>
+            <SafeAreaView style={[ScreenStyle.allScreenContainer, generalstyles.loading]}>
                 <MyBar style="auto" />
                 <ActivityIndicator size="large" color="blue" />
                 <Text style={[myDynamicStyles.textColor]}>Loading...</Text>
@@ -121,33 +121,33 @@ export default function App() {
             {/* safeareaview works only on ios */}
             <SafeAreaView style={[ScreenStyle.allScreenContainer]}>
             <MyBar // StatusBar styling
-            style="auto" />
+            style={"auto"} />
 
-            <View style={styles.imageContainer}>
+            <View style={generalstyles.imageContainer}>
                 <Image // logo
-                source={dafelogo} style={styles.image} />
+                source={dafelogo} style={generalstyles.image} />
             </View>
 
             {isError? // if there's an error, show error message
-                (<View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>Oopsy!</Text>
-                    <Text style={styles.errorText}>{isError}</Text>
+                (<View style={generalstyles.errorContainer}>
+                    <Text style={generalstyles.errorText}>Oopsy!</Text>
+                    <Text style={generalstyles.errorText}>{isError}</Text>
                 </View>) :
                 (// otherwise, if there's no error, show the form and the data
                 <>
 
-                <View style={[styles.formContainer, myDynamicStyles.bgColor]}>
+                <View style={[generalstyles.formContainer, myDynamicStyles.bgColor]}>
                     <Text // form/post container
-                    style={[styles.headerFooter, myDynamicStyles.textColor]}>Create Post</Text>
+                    style={[generalstyles.headerFooter, myDynamicStyles.textColor]}>Create Post</Text>
                     <TextInput // input1 (title)
-                        style={[styles.input, myDynamicStyles.inputColor, myDynamicStyles.textColor, myDynamicStyles.inputBgColor]}
+                        style={[generalstyles.input, myDynamicStyles.inputColor, myDynamicStyles.textColor, myDynamicStyles.inputBgColor]}
                         placeholder="Title"
                         placeholderTextColor={placeholderTextColor}
                         value={userPost.title}
                         onChangeText={title=>setUserPost({...userPost, title})}
                     />
                     <TextInput // input2 (body)
-                        style={[styles.input, myDynamicStyles.inputColor, myDynamicStyles.textColor, myDynamicStyles.inputBgColor]}
+                        style={[generalstyles.input, myDynamicStyles.inputColor, myDynamicStyles.textColor, myDynamicStyles.inputBgColor]}
                         placeholder="Body"
                         placeholderTextColor={placeholderTextColor}
                         value={userPost.body}
@@ -172,16 +172,16 @@ export default function App() {
                     data={getData}
                     renderItem={({item})=>{
                         return (
-                            <View style={[styles.card, myDynamicStyles.bgColor]}>
-                                <Text style={[styles.titleText, myDynamicStyles.textColor]}>{item.title}</Text>
+                            <View style={[generalstyles.card, myDynamicStyles.bgColor]}>
+                                <Text style={[generalstyles.titleText, myDynamicStyles.textColor]}>{item.title}</Text>
                                 <Text style={[myDynamicStyles.textColor]}>{item.body}</Text>
                             </View>
                     )}}
                     keyExtractor={(item, index)=>item.id+index+item.title.toString()}
                     ItemSeparatorComponent={()=><View style={{height: 5}} />}
-                    ListEmptyComponent={()=><Text style={[styles.notFound, myDynamicStyles.textColor]}>No Post found</Text>}
-                    ListHeaderComponent={()=><Text style={[styles.headerFooter, myDynamicStyles.textColor]}>Post List {getData.length} Items</Text>}
-                    ListFooterComponent={()=><Text style={[styles.headerFooter, myDynamicStyles.textColor, {paddingBottom: 320,}]}>End of Post</Text>}
+                    ListEmptyComponent={()=><Text style={[generalstyles.notFound, myDynamicStyles.textColor]}>No Post found</Text>}
+                    ListHeaderComponent={()=><Text style={[generalstyles.headerFooter, myDynamicStyles.textColor]}>Post List {getData.length} Items</Text>}
+                    ListFooterComponent={()=><Text style={[generalstyles.headerFooter, myDynamicStyles.textColor, {paddingBottom: 320,}]}>End of Post</Text>}
                     refreshing={refreshing}
                     onRefresh={handleRefresh}
                     />
@@ -191,62 +191,3 @@ export default function App() {
     )
 }
 
-const styles = StyleSheet.create({
-    card: {
-        padding: 16,
-        borderRadius: 10,
-        borderWidth: 1,
-    },
-    titleText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    notFound: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        alignSelf: 'center',
-        paddingTop: 100
-    },
-    headerFooter: {
-        fontSize: 25,
-        fontWeight: 'bold',
-        alignSelf: 'center',
-        padding: 10,
-    },
-    loading: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    formContainer: {
-        padding: 20,
-        borderRadius: 10,
-        marginBottom: 10,
-        borderWidth: 1,
-    },
-    input: {
-        borderWidth: 1,
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    errorContainer: {
-        paddingTop: 100,
-    },
-    errorText: {
-        fontSize: 25,
-        fontWeight: 'bold',
-        alignSelf: 'center',
-        color: 'red',
-        textAlign: 'center',
-        // borderWidth: 1,
-        paddingTop: 10,
-    },
-    imageContainer: {
-        // width: 10
-    },
-    image: {
-        width: 100,
-        height: 40,
-        resizeMode: 'contain',
-    },
-});

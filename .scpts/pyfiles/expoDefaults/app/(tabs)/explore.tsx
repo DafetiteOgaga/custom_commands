@@ -7,7 +7,7 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import ScreenStyle from '@/hooks/ScreenStyle';
+import { ScreenStyle } from '@/myConfig/navigation';
 
 export default function TabTwoScreen() {
   return (

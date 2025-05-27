@@ -19,7 +19,7 @@
    * merge command - merges changes in the current branch to main/master branch.<br>
    Note: keeps commit history linear, preventing 3way merge
    * status command - displays information about tracked, untracked, committed and uncommitted changes in the branch
-   * rollback command - reverts the current branch to an older commit instance
+   * revert2commit command - safely reverts the current branch to an older commit instance but with a new revert commit without disrupting the commit history
    * authorID - configures your Github Identity (Globally and Locally) on your local machine
    * commitree command - displays a tree of your commit history
    * compareChange command - displays the content of uncommited changes on the working tree of the current branch
@@ -34,6 +34,9 @@
    * viewRepos command - displays the list of repositories from any account right from the command line. Bringing the information to you on the go!
    * getRepoUserName command - prints the username of the current repository
    * updateToken command - adds/stores and updates a new github token and swap it with the old (expired) token in your local repository
+   * distributeApk command - updates the versioning and distributing my
+   altaviz mobile app accordingly i.e making it available for updates and
+   downloads
 
 ### Djando commands
    * startproject command - creates a new django project

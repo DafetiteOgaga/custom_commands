@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+currDir="$(pwd)"
+home="$HOME/alx/altaviz/altaviz_mobile/altaviz_mobile"
+
+# echo "11111111111111111"
+# Get the current date and time in YYYYMMDD.HHMM format
+NEW_VERSION=$(date +"%Y%m%d.%H%M")
+
+# echo "22222222222222222"
+# echo "🚫 Updating app.json version to $NEW_VERSION before commit ..."
+# echo "new version: $NEW_VERSION"
+# echo "curr dir old: $(pwd)"
+cd "$home"
+# echo "curr dir new: $(pwd)"
+# Update the version field in app.json
+# Linux sed syntax
+# "version": "1.0.0",
+sed -i "s/\"version\": \"v\?[0-9]\{8\}\.[0-9]\{4\}\"/\"version\": \"$NEW_VERSION\"/g" "$home/app.json"
+sed -i "s/\"version\": \"v\?[0-9]\{8\}\.[0-9]\{4\}\"/\"version\": \"$NEW_VERSION\"/g" "$home/package.json"
+
+# echo "333333333333333333"
+# Stage the modified app.json
+git add app.json
+git add package.json
+# git commit -m "version auto bumped to $NEW_VERSION ..."
+
+cd "$currDir"
+echo "✅ Updated app.json version to $NEW_VERSION before commit."
+echo "✅ Updated package.json version to $NEW_VERSION before commit."

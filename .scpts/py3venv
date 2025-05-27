@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 command_arg="python3 -m venv"
 if [[ "$#" == "0" || "$#" -gt 1 ]]; then

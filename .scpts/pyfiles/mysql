@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 output=$(mysql --version 2>&1)
 echo ""

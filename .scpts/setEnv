@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # PROFILE_FILES=("$HOME/.profile" "$HOME/.zprofile" "$HOME/.bash_profile")
 PROFILE_FILES=("$HOME/.bashrc" "$HOME/.zshrc") # "$HOME/.bash_profile")
