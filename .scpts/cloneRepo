@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Kindly supply your Github Username and Personal Access Token(without the "ghp_").
 GUSERNAME="YOUR_GITHUB_USERNAME"
