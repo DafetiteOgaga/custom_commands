@@ -2,6 +2,13 @@
 This file contains the notable changes made to the Custom Commands project.
 
 ## Changes
+   - changed rollback to revert2commit command, which is preferred because
+   it reverts to any earlier commit state and still keeps the commit history by undoing all the changes made upto the selected commit and
+   creating a new commit for this revert. Hence, history is not lost or
+   discarded
+   - added distributeApk command, it helps to update the versioning and
+   distribution of my altaviz mobile app for update and download to the
+   latest version.
    - Added (New) createExpoApp - uses backed up app config setup to create apps after the initial (first downloaded) setup and spins up the local server automatically.
    - Added (New) setEnv command - creates environmental variables automatically.
    - Added collectstatic command - collects static files in django for production.
