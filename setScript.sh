@@ -307,27 +307,20 @@ dOptions=(
 	"  createRepo command - creates a github repository right from CLI"
 	"  deleteRepo command - deletes a github repository right from CLI"
 	"  cloneRepo command - clone a repository with less commands"
-
 	"  restoreFile command - restores file(s) to previous states"
-
 	"  viewRepos command - displays the list of repos from any account on CLI"
 	#...py script files....................... #
-
 	"  updateToken command - adds/updates your repo with a new token"
-
 	"  gitignore command - creates/updates your .gitignore file"
 	"  branch command - creates and also switch between branches"
 	"  merge command - merge branches to main/master branch"
 	"  status command - displays updates in the branch"
 	#...bash script files.................. #
 	"  setEnv command - sets a permanent environment variable"
-
 	"  curfol command - opens cwd using file explorer"
 	"  pyxecute - appends shebang and makes your python scripts executable"
 	"  shxecute - appends shebang and makes your bash scripts executable"
-
 	"  jsxecute - appends shebang and makes your js scripts executable"
-
 	"  pycodemore command(pycode with details)"
 	"  createPatch command - creates a .patch file from two files"
 	"  revert2commit command - safely reverts changes to an earlier commit state"
@@ -338,38 +331,30 @@ dOptions=(
 	"  compareChange command - displays detailed content of updates"
 	"  commitdir command - commits all the changes in the current dir"
 	"  commitall command - commits all the changes in the working tree"
-
 	"  getRepoUserName command - prints the username of the current repo"
-
 	"  wcount command - counts the lines, words and chars in files"
 	"  stash command - saves uncommitted changes in the working tree"
 	"  viewStash command - displays a list of applyable stashes"
 	"  logit command - displays a detailed commit logs"
-	
 	#...bash script files.................. #
 	"  createReactApp command - creates a React application, dependencies"
 	"  createExpoApp command - creates an Expo mobile application, dependencies"
 	"  dependenciesReact command - installs various React packages"
 	"  updateReactPackagez command - updates React packages to latest versions"
 	"  dependencyDevReact command - installs dev-dependencies"
-
 	"  py3venv command - creates a python3 virtual environment"
 	#...py script files....................... #
 	"  requirement_txt command - creates/updates/installs dependencies in requirement.txt"
 	#...bash script files.................. #
-
 	"  collectstatic command - collects static files to the staticfiles dir for production"
-
 	"  djangoToolbar command - install and configures Django debug toolbar"
 	"  drf command - install and configures Django RESTframework, auth, xml renderer"
 	"  djoser command - install and configures djoser (3rd party library)"
 	"  jwtDjango command - install and configures json web token in your django project"
 	"  static4django command - configures the STATIC_DIRS in settings.py"
-
 	"  startproject command - installs a new django project"
 	"  startapp command - installs and configures apps for django projects"
 	"  djangoUrls command - used to check and monitor configured urls in django projects"
-
 	#...py script files....................... #
 	"  runserver command - spin up the django development server from any directory"
 	#...bash script files.................. #
@@ -384,6 +369,7 @@ dOptions=(
 	"  showmigrations command - displays the history of django migrations"
 	"  sqlmigrate command - presents the sql query of any migration"
 	#...bash script files.................. #
+	"  mongoOp - starts, stops, restarts or checks the status of MongoDB server"
 	"  mysqlversion - checks if MySQL is installed and also prints its version"
 	"  mysqlstartserver - starts MySQL server"
 	"  mysqlstopserver - stops MySQL server"
@@ -391,7 +377,6 @@ dOptions=(
 	"  mysqlstatus_server - displays the status of MySQL server"
 	"  mysqlshell - launches MySQL shell"
 	"  ctemp - generates a default C source file template"
-	
 	"  clear_commit command - restores local repo to the same state as the remote"
 	"  betty linter command"
 	"  pycode command a \"pycodestyle (PEP 8)\" linter"
@@ -465,7 +450,6 @@ options() {
 			DFILENAME="pushall"
 			category p "$converted_selection"
 			;;
-	
 	# ...bash script files................................... #
 		4)
 			DFILENAME="createRepo"
@@ -487,7 +471,6 @@ options() {
 			DFILENAME="viewRepos"
 			category b "$converted_selection" "vr"
 			;;
-		
 	# ...py script files..................................... #
 		9)
 			DFILENAME="updateToken"
@@ -509,7 +492,6 @@ options() {
 			DFILENAME="status"
 			category p "$converted_selection"
 			;;
-
 	# ...bash script files................................... #
 		14)
 			DFILENAME="setEnv"
@@ -556,7 +538,6 @@ options() {
 			DFILENAME="commitree"
 			category b "$converted_selection"
 			;;
-	
 	# ...py script files..................................... #
 		25)
 			DFILENAME="compareChange"
@@ -590,7 +571,6 @@ options() {
 			DFILENAME="logit"
 			category p "$converted_selection"
 			;;
-	
 	# ...bash script files................................... #
 		33)
 			DFILENAME="createReactApp"
@@ -616,12 +596,10 @@ options() {
 			DFILENAME="py3venv"
 			category b "$converted_selection"
 			;;
-
 		39)
 			DFILENAME="requirement_txt"
 			category p "$converted_selection"
 			;;
-		
 		# ...bash script files................................... #
 		40)
 			DFILENAME="collectstatic"
@@ -647,7 +625,6 @@ options() {
 			DFILENAME="static4django"
 			category b "$converted_selection"
 			;;
-
 		46)
 			DFILENAME="startproject"
 			category b "$converted_selection"
@@ -660,25 +637,21 @@ options() {
 			DFILENAME="djangoUrls"
 			category b "$converted_selection"
 			;;
-	
 	# ...py script files..................................... #
 		49)
 			DFILENAME="runserver"
 			category p "$converted_selection"
 			;;
-
 	# ...bash script files................................... #
 		50)
 			DFILENAME="makemigrations"
 			category b "$converted_selection"
 			;;
-	
 	# ...py script files..................................... #
 		51)
 			DFILENAME="migrate"
 			category p "$converted_selection"
 			;;
-	
 	# ...bash script files................................... #
 		52)
 			DFILENAME="django"
@@ -692,7 +665,6 @@ options() {
 			DFILENAME="mkandmigrate"
 			category b "$converted_selection"
 			;;
-
 	#...py script files..................................... #
 		55)
 			DFILENAME="showmigrations"
@@ -702,102 +674,101 @@ options() {
 			DFILENAME="sqlmigrate"
 			category p "$converted_selection"
 			;;
-
 	# ...bash script files................................... #
 		57)
-			DFILENAME="mysqlversion"
+			DFILENAME="mongoOp"
 			category b "$converted_selection"
 			;;
 		58)
-			DFILENAME="mysqlstartserver"
+			DFILENAME="mysqlversion"
 			category b "$converted_selection"
 			;;
 		59)
-			DFILENAME="mysqlstopserver"
+			DFILENAME="mysqlstartserver"
 			category b "$converted_selection"
 			;;
 		60)
-			DFILENAME="mysqlrestartserver"
+			DFILENAME="mysqlstopserver"
 			category b "$converted_selection"
 			;;
 		61)
-			DFILENAME="mysqlstatus_server"
+			DFILENAME="mysqlrestartserver"
 			category b "$converted_selection"
 			;;
 		62)
-			DFILENAME="mysqlshell"
+			DFILENAME="mysqlstatus_server"
 			category b "$converted_selection"
 			;;
 		63)
+			DFILENAME="mysqlshell"
+			category b "$converted_selection"
+			;;
+		64)
 			DFILENAME="ctemp"
 			category b "$converted_selection" "ct"
 			;;
-	
 	# ...py script files..................................... #
-		64)
+		65)
 			DFILENAME="clear_commit"
 			category p "$converted_selection"
 			;;
-		65)
+		66)
 			DFILENAME="betty"
 			category b "$converted_selection"
 			;;
-		66)
+		67)
 			DFILENAME="pycode"
 			category b "$converted_selection"
 			;;
-
-		67)
+		68)
 			DFILENAME="printmyEnv"
 			category p "$converted_selection"
 			;;
-		68)
+		69)
 			DFILENAME="show"
 			category p "$converted_selection"
 			;;
-		69)
+		70)
 			DFILENAME="verifyRepo"
 			category p "$converted_selection"
 			;;
-	
 	# ...bash script files................................... #
-		70)
+		71)
 			DFILENAME="mycompile"
 			category b "$converted_selection"
 			;;
-		71)
+		72)
 			DFILENAME="pycompile"
 			category b "$converted_selection"
 			;;
-		72)
+		73)
 			DFILENAME="xbin"
 			category b "$converted_selection"
 			;;
-		73)
+		74)
 			DFILENAME="distributeApk"
 			category b "$converted_selection" "da"
 			dafetite "$DFILENAME"
 			;;
-		
 		# ...py script files..................................... #
-		74)
+		75)
 			DFILENAME="updateResumeCV"
 			category p "$converted_selection"
 			dafetite "$DFILENAME"
 			;;
-		75)
+		76)
 			DFILENAME="myascii"
 			category c "$converted_selection"
 			;;
-		76)
+		77)
 			DFILENAME="rot13"
 			category c "$converted_selection"
 			;;
-		77)
+		78)
 			DFILENAME="rot47"
 			category c "$converted_selection"
 			;;
-		78)
+		79)
 			DFILENAME="guessGame"
 			category c "$converted_selection"
 			;;
@@ -1193,7 +1164,6 @@ instructn() {
 		"verifyRepo")
 			echo -e "$STRT verify that you are in a repository $EFFT $ANYWHERE: $DFILENAME"
 			;;
-
 		"startproject")
 			echo -e "$STRT start/create a django project $EFFT $ANYWHERE: $DFILENAME <project name>"
 			echo -e "Note: You must either have django installed on your machine or in a virtual environment"
@@ -1242,7 +1212,9 @@ instructn() {
 		"gitignore")
 			echo -e "$STRT create or update the .gitignore file by navigating through your repository $EFFT $ANYWHERE: $DFILENAME"
 			;;
-	
+		"mongoOp")
+			echo -e "$STRT start, stop, restart and check the status of mongodb $EFFT $ANYWHERE: $DFILENAME"
+			;;
 		"mysqlversion")
 			echo -e "$STRT check if you have MySQL installed on your machine and prints its version $EFFT $ANYWHERE: $DFILENAME"
 			;;
