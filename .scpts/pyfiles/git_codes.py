@@ -9,6 +9,9 @@ from pyfiles.print import print_norm
 from pyfiles.configure_settings_py import compile_dir_list, list_filter
 from pyfiles.colors import *
 
+home_dir = os.path.expanduser("~")  # Expands "~" to "/home/your-username"
+bumpAppJsonVersionScript = os.path.join(home_dir, ".xbin", "pyfiles")  # location to bumpAppJsonVersion
+
 # now = datetime.now()
 formatted_date_time = datetime.now().strftime("%H:%M:%S on %a %b %Y")
 
@@ -144,6 +147,7 @@ def browse_files():
 	root_list = []
 	for file in os.listdir(root_repo):
 		root_list.append(f'{root_repo}{os.sep}{file}')
+	# print(f'root_list: {root_list}')
 	search_repo(root_list, delimiter=delimiter)
 
 def print_set_commit(var: str):
@@ -242,6 +246,16 @@ def add_commit_all(type: str="current", commit_message: str=""):
 	elif type == "all":
 		# stage changes in all directories ########
 		subprocess.run(["git", "add", "-A"])
+	############################################################################################################
+	############################################################################################################
+	############################################################################################################
+	# print(f'current location (git_codes): {os.getcwd()}')
+	if '/home/dafetite/alx/altaviz/altaviz_mobile/altaviz_mobile' in os.getcwd():
+		subprocess.run(["bash", "bumpAppJsonVersion"], check=True, cwd=bumpAppJsonVersionScript, stdout=None, stderr=None)
+	# print(f'current location (git_codes): {os.getcwd()}')
+	############################################################################################################
+	############################################################################################################
+	############################################################################################################
 	commit = subprocess.run(["git", "commit", "-m", commit_message], capture_output=True, text=True)
 	if commit.returncode == 0:
 		print_stdout(commit.stdout)
@@ -675,15 +689,15 @@ def search_repo(repo_dir: list, delimiter: str, dir_path: str=None, repeat: int=
 	ignore_list = []
 	count = 0
 	dir_list = []
-	for i in repo_dir:
-		i = i.split(os.sep).pop()
-		if i == '.git':
+	for fileOrDir in repo_dir:
+		fileOrDir = fileOrDir.split(os.sep).pop()
+		if fileOrDir == '.git':
 			continue
-		print_norm(f'{count + 1}. {i}')
-		dir_list.append(i)
+		print_norm(f'{count + 1}. {fileOrDir}')
+		dir_list.append(fileOrDir)
 		count += 1
 	print()
-	selection = input('Make a selecion [q] - quit >>> ')
+	selection = input('Make a selecion [Enter to submit], [q to quit] >>> ')
 	if selection == '':
 		return ignore_list
 	quit(selection)
@@ -698,6 +712,7 @@ def search_repo(repo_dir: list, delimiter: str, dir_path: str=None, repeat: int=
 		print("Selection is out of range. Please enter a valid number.")
 		sys.exit(1)
 	cur_dir = f'{dir}{os.sep}{item}'
+	# print(f'You selected: {cur_dir}')
 	print()
 	if os.path.isdir(cur_dir):
 		print('[n] - to add the dir to .gitignore file')
