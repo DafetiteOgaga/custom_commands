@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [ "$#" = "0" ]; then
     echo "No arguments passed."
@@ -9,9 +9,9 @@ make_exe()
 {
 	echo -e "\n========== $argument =========="
 	shcount=$((count + 1))
-	if [[ $(head -n 1 "$argument" | grep -c "#!/bin/bash") -eq 0 ]]; then
+	if [[ $(head -n 1 "$argument" | grep -c "#!/usr/bin/env bash") -eq 0 ]]; then
 		tmpfile=$(mktemp)
-		echo -e "#!/bin/bash\n" > "$tmpfile"
+		echo -e "#!/usr/bin/env bash\n" > "$tmpfile"
 		cat "$argument" >> "$tmpfile"
 
 		mv "$tmpfile" "$argument"
