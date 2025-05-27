@@ -104,6 +104,9 @@
    * rot47 command - Rot47 Cipher
    * guessGame command- a Guessing Game(To unwind)
 
+### MongoDB command
+   * mongoOp command - starts, stops, restarts and checks the status of
+   the server
 
 
    ###### *We Rise by Lifting Others.*
