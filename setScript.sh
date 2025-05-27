@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 OPTION="$1"
 DFILENAME="$2"
@@ -122,7 +122,7 @@ details() {
 }
 
 unametokenmaill2() {
-	# collects user details to createRepo, cloneRepo, deleteRepo and viewRepo commands
+	# collects user details to createRepo, cloneRepo, deleteRepo, viewRepo and distributeApk commands
 	while [[ -z "$NUSERNAME" ]]; do
 		echo -n "Kindly Enter your Github Username >>> "
 		read NUSERNAME
@@ -176,7 +176,7 @@ unametokenmaill2() {
 }
 
 unametokenmaill() {
-	# populates the user details to createRepo, cloneRepo, deleteRepo and viewRepo commands
+	# populates the user details to createRepo, cloneRepo, deleteRepo, viewRepo and distributeApk commands
 	if [[ "$NUSERNAME" && "$NTOKEN" && "$NEMAIL" ]]; then
 		echo -e "Hey! I still have your details"
 		while [[ "$VALS" != [yYnN] ]]; do
@@ -289,7 +289,7 @@ dOptions=(
 
 	"  pycodemore command(pycode with details)"
 	"  createPatch command - creates a .patch file from two files"
-	"  rollback command - reverts the current branch to an earlier commit"
+	"  revert2commit command - safely reverts changes to an earlier commit state"
 	"  cls command - clear your screen"
 	"  authorID - configures your Github Identity(Global and Local)"
 	"  commitree command - displays a tree of your commit history"
@@ -362,6 +362,7 @@ dOptions=(
 	"  mycompile command - compile C source files (with options)"
 	"  pycompile command - compile python files"
 	"  xbin command - opens the xbin in file explorer"
+	"  distributeApk command - Downloads the apk from eas and updates it to github"
 	"  updateResumeCV command - updates my website and github with my resume"
 	#...C files....................... #
 	"  myascii command - prints a simple version of the ASCII table"
@@ -391,6 +392,8 @@ category() {
 			new_value=55555
 		elif [[ "$btype" == "ct" ]]; then
 			new_value=44444
+		elif [[ "$btype" == "da" ]]; then
+			new_value=66666
 		fi
 	elif [[ "$type" == "c" ]]; then
 		# c scripts
@@ -497,7 +500,7 @@ options() {
 			category b "$converted_selection"
 			;;
 		21)
-			DFILENAME="rollback"
+			DFILENAME="revert2commit"
 			category b "$converted_selection"
 			;;
 		22)
@@ -729,26 +732,31 @@ options() {
 			DFILENAME="xbin"
 			category b "$converted_selection"
 			;;
+		73)
+			DFILENAME="distributeApk"
+			category b "$converted_selection" "da"
+			dafetite "$DFILENAME"
+			;;
 		
 		# ...py script files..................................... #
-		73)
+		74)
 			DFILENAME="updateResumeCV"
 			category p "$converted_selection"
 			dafetite "$DFILENAME"
 			;;
-		74)
+		75)
 			DFILENAME="myascii"
 			category c "$converted_selection"
 			;;
-		75)
+		76)
 			DFILENAME="rot13"
 			category c "$converted_selection"
 			;;
-		76)
+		77)
 			DFILENAME="rot47"
 			category c "$converted_selection"
 			;;
-		77)
+		78)
 			DFILENAME="guessGame"
 			category c "$converted_selection"
 			;;
@@ -757,7 +765,7 @@ options() {
 	#....tags............................. #
 	# checks the type of file in process
 	case "$new_value" in
-		[4-6][0-9][0-9]|11111|22222|33333|44444|55555)
+		[4-6][0-9][0-9]|11111|22222|33333|44444|55555|66666)
 			FILETYPE="bashscript"
 			;;
 		[1-3][0-9][0-9])
@@ -828,7 +836,7 @@ opertn() {
 		echo -e "Creating $DFILENAME as a command..."
 		# copies the command code into .xbin/
 		case "$new_value" in
-			11111|22222|33333|55555)
+			11111|22222|33333|55555|66666)
 				unametokenmaill
 				;;
 			44444)
@@ -1074,7 +1082,7 @@ instructn() {
 		"createPatch")
 			echo -e "$STRT patch files $EFFT $ANYWHERE: $DFILENAME <main file> <updated file>"
 			;;
-		"rollback")
+		"revert2commit")
 			echo -e "$STRT revert to a previous commit instance $EFFT $ANYWHERE: $DFILENAME"
 			;;
 		"commitree")
@@ -1228,6 +1236,9 @@ instructn() {
 			;;
 		"collectstatic")
 			echo -e "$STRT collect static files into staticfiles dir for production $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"distributeApk")
+			echo -e "$STRT download your apk file from eas (expo) and upload to github release for distribution $EFFT $ANYWHERE: $DFILENAME"
 			;;
 		esac
 	sleep 0.1
