@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 path1="$HOME/.xbin/pyfiles"
 check=$(2>&1 $path1/django)
