@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+sedFunc () {
+	local VERSION="$1"
+	local FILEPATH="$2"
+	sed -i "s|VERSIONNUMBER=\"v\?[0-9]\{8\}\.[0-9]\{4\}\"|VERSIONNUMBER=\"$VERSION\"|g" "$FILEPATH"
+}
+
+# use find for dynamic path resolution
+# custom_commands=$(find . -type d -name custom_commands -exec test -d "{}/.git" \; -print)
+
+# use absolute path for clarity
+currDir="$(pwd)"
+custom_commands="$HOME/alx/custom_commands"
+cd "$custom_commands"
+echo "custom_commands: $custom_commands"
+NEW_VERSION=$(date +"%Y%m%d.%H%M")
+
+sedFunc "$NEW_VERSION" "$custom_commands/setScript.sh"
+
+git add "$custom_commands/setScript.sh"
+cd "$currDir"
+
+echo "✅ Auto updated setScript.sh version to $NEW_VERSION."

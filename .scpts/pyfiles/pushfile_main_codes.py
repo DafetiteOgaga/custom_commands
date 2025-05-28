@@ -4,8 +4,9 @@ import subprocess, sys, os, time, shutil
 from .my_prompt import main as prompt_1ch
 from .git_codes import *
 
-home_dir = os.path.expanduser("~")  # Expands "~" to "/home/your-username"
-bumpAppJsonVersionScript = os.path.join(home_dir, ".xbin", "pyfiles")  # location to bumpAppJsonVersion
+home_dir = os.path.join(os.path.expanduser("~"), '.xbin')  # Expands "~" to "/home/your-username"
+bumpAppJsonVersionScript = os.path.join(home_dir, "pyfiles")  # location to bumpAppJsonVersion
+bumpCCVersion = os.path.join(home_dir, "pyfiles")  # location to bumpCCVersion
 
 def add_commit(file):
 	"""This function will:
@@ -103,12 +104,14 @@ def add_commit(file):
 	else:
 		print_stdout(add.stdout)
 		print("{} successfully staged.".format(file))
-	############################################################################################################
+	###########################################################################################################
 	############################################################################################################
 	############################################################################################################
 	# print(f'current location (pushfile_main_codes): {os.getcwd()}')
 	if '/home/dafetite/alx/altaviz/altaviz_mobile/altaviz_mobile' in os.getcwd():
 		subprocess.run(["bash", "bumpAppJsonVersion"], check=True, cwd=bumpAppJsonVersionScript, stdout=None, stderr=None)
+	if 'custom_commands' in os.getcwd():
+		subprocess.run(["bash", "bumpCCVersion"], check=True, cwd=bumpCCVersion, stdout=None, stderr=None)
 	# print(f'current location (pushfile_main_codes): {os.getcwd()}')
 	############################################################################################################
 	############################################################################################################

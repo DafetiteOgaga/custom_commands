@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+sedFunc () {
+	local VERSION="$1"
+	local FILEPATH="$2"
+	sed -i "s/\"version\": \"v\?[0-9]\{8\}\.[0-9]\{4\}\"/\"version\": \"$VERSION\"/g" "$FILEPATH"
+	# sed -i "s|\"version\": \"v\?[0-9]\{8\}\.[0-9]\{4\}\"|\"version\": \"$VERSION\"|g" "$FILEPATH"
+}
+
 currDir="$(pwd)"
 home="$HOME/alx/altaviz/altaviz_mobile/altaviz_mobile"
 
@@ -16,8 +23,10 @@ cd "$home"
 # Update the version field in app.json
 # Linux sed syntax
 # "version": "1.0.0",
-sed -i "s/\"version\": \"v\?[0-9]\{8\}\.[0-9]\{4\}\"/\"version\": \"$NEW_VERSION\"/g" "$home/app.json"
-sed -i "s/\"version\": \"v\?[0-9]\{8\}\.[0-9]\{4\}\"/\"version\": \"$NEW_VERSION\"/g" "$home/package.json"
+sedFunc "$NEW_VERSION" "$home/app.json"
+sedFunc "$NEW_VERSION" "$home/package.json"
+# sed -i "s/\"version\": \"v\?[0-9]\{8\}\.[0-9]\{4\}\"/\"version\": \"$NEW_VERSION\"/g" "$home/app.json"
+# sed -i "s/\"version\": \"v\?[0-9]\{8\}\.[0-9]\{4\}\"/\"version\": \"$NEW_VERSION\"/g" "$home/package.json"
 
 # echo "333333333333333333"
 # Stage the modified app.json
