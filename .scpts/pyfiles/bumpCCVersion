@@ -6,7 +6,10 @@ sedFunc () {
 	sed -i "s|VERSIONNUMBER=\"v\?[0-9]\{8\}\.[0-9]\{4\}\"|VERSIONNUMBER=\"$VERSION\"|g" "$FILEPATH"
 }
 
+# use find for dynamic path resolution
 # custom_commands=$(find . -type d -name custom_commands -exec test -d "{}/.git" \; -print)
+
+# use absolute path for clarity
 currDir="$(pwd)"
 custom_commands="$HOME/alx/custom_commands"
 cd "$custom_commands"
