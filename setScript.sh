@@ -19,6 +19,20 @@ DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
 
+# colors and styles
+RESET="\033[0m"
+BOLD="\033[1m"
+ITALIC="\033[3m"
+UNDERLINE="\033[4m"
+GREEN="\033[32m"
+BRIGHT_BLACK="\033[90m"
+BRIGHT_RED="\033[91m"
+BRIGHT_GREEN="\033[92m"
+BRIGHT_YELLOW="\033[93m"
+BRIGHT_BLUE="\033[94m"
+BRIGHT_MAGENTA="\033[95m"
+BRIGHT_CYAN="\033[96m"
+BRIGHT_WHITE="\033[97m"
 
 quit() {
 	# exit
@@ -73,6 +87,8 @@ dafetite() {
 auth() {
 	# initiates sudo authentication
 	local var="$WHICH"
+	# echo "VARX: $var"
+	# echo "WHICHX: $WHICH"
 
 	if [[ ${#var} == 1 ]]; then
 		if [[ "$var" =~ [cC] ]]; then
@@ -99,9 +115,9 @@ intro() {
 	if [[ "$CHECKER_PC_PH" =~ [hH]ome|[uU]sers ]]; then
 		device_type="pc"
 		if [[ "$whch" =~ "0" ]]; then
-			if is_wsl; then echo -e "I can see this is a Windows subsystem for linux."
-			elif is_macos; then echo -e "I can see this is a macOs device."
-			elif is_linux; then echo -e "I can see this is a linux device."
+			if is_wsl; then echo -e "Machine: Windows subsystem for linux (WSL)"
+			elif is_macos; then echo -e "Machine: macOs"
+			elif is_linux; then echo -e "Machine: linux"
 			# echo -e "I can see that this is a PC"
 			fi
 		else
@@ -110,12 +126,12 @@ intro() {
 	elif [[ "$CHECKER_PC_PH" == "data" ]]; then
 		device_type="phone"
 		if [[ "$whch" =~ "0" ]]; then
-			echo -e "I can see that this is a Phone"
+			echo -e "Device: Phone"
 		else
 			echo -e "$rep"
 		fi
 	elif is_git_bash; then
-		echo -e "I can see this is a Windows device."
+		echo -e "Machine: Windows (Git Bash)."
 	else
 		if [[ "$whch" =~ "0" ]]; then
 			echo -e "I can't figure out your device type."
@@ -299,102 +315,102 @@ cpfunc() {
 dOptions=(
 	# options display
 	#...py script files....................... #
-	"  push command - stage, commit/updates local/remote repo"
-	"  pull command - updates your local branch with changes from the remote"
-	"  pushfile command - stage, commit individual files to the local/remote repo"
-	"  pushall command - stage, commit and updates the local/remote repos"
+	"  ${BOLD}${BRIGHT_YELLOW}push command${RESET} - stage, commit/updates local/remote repo"
+	"  ${BOLD}${BRIGHT_YELLOW}pull command${RESET} - updates your local branch with changes from the remote"
+	"  ${BOLD}${BRIGHT_YELLOW}pushfile command${RESET} - stage, commit individual files to the local/remote repo"
+	"  ${BOLD}${BRIGHT_YELLOW}pushall command${RESET} - stage, commit and updates the local/remote repos"
 	#...bash script files.................. #
-	"  createRepo command - creates a github repository right from CLI"
-	"  deleteRepo command - deletes a github repository right from CLI"
-	"  cloneRepo command - clone a repository with less commands"
-	"  restoreFile command - restores file(s) to previous states"
-	"  viewRepos command - displays the list of repos from any account on CLI"
+	"  ${BOLD}${BRIGHT_YELLOW}createRepo command${RESET} - creates a github repository right from CLI"
+	"  ${BOLD}${BRIGHT_YELLOW}deleteRepo command${RESET} - deletes a github repository right from CLI"
+	"  ${BOLD}${BRIGHT_YELLOW}cloneRepo command${RESET} - clone a repository with less commands"
+	"  ${BOLD}${BRIGHT_YELLOW}restoreFile command${RESET} - restores file(s) to previous states"
+	"  ${BOLD}${BRIGHT_YELLOW}viewRepos command${RESET} - displays the list of repos from any account on CLI"
 	#...py script files....................... #
-	"  updateToken command - adds/updates your repo with a new token"
-	"  gitignore command - creates/updates your .gitignore file"
-	"  branch command - creates and also switch between branches"
-	"  merge command - merge branches to main/master branch"
-	"  status command - displays updates in the branch"
+	"  ${BOLD}${BRIGHT_YELLOW}updateToken command${RESET} - adds/updates your repo with a new token"
+	"  ${BOLD}${BRIGHT_YELLOW}gitignore command${RESET} - creates/updates your .gitignore file"
+	"  ${BOLD}${BRIGHT_YELLOW}branch command${RESET} - creates and also switch between branches"
+	"  ${BOLD}${BRIGHT_YELLOW}merge command${RESET} - merge branches to main/master branch"
+	"  ${BOLD}${BRIGHT_YELLOW}status command${RESET} - displays updates in the branch"
 	#...bash script files.................. #
-	"  setEnv command - sets a permanent environment variable"
-	"  curfol command - opens cwd using file explorer"
-	"  pyxecute - appends shebang and makes your python scripts executable"
-	"  shxecute - appends shebang and makes your bash scripts executable"
-	"  jsxecute - appends shebang and makes your js scripts executable"
-	"  pycodemore command(pycode with details)"
-	"  createPatch command - creates a .patch file from two files"
-	"  revert2commit command - safely reverts changes to an earlier commit state"
-	"  cls command - clear your screen"
-	"  authorID - configures your Github Identity(Global and Local)"
-	"  commitree command - displays a tree of your commit history"
+	"  ${BOLD}${BRIGHT_YELLOW}setEnv command${RESET} - sets a permanent environment variable"
+	"  ${BOLD}${BRIGHT_YELLOW}curfol command${RESET} - opens cwd using file explorer"
+	"  ${BOLD}${BRIGHT_YELLOW}pyxecute${RESET} - appends shebang and makes your python scripts executable"
+	"  ${BOLD}${BRIGHT_YELLOW}shxecute${RESET} - appends shebang and makes your bash scripts executable"
+	"  ${BOLD}${BRIGHT_YELLOW}jsxecute${RESET} - appends shebang and makes your js scripts executable"
+	"  ${BOLD}${BRIGHT_YELLOW}pycodemore command${RESET}(pycode with details)"
+	"  ${BOLD}${BRIGHT_YELLOW}createPatch command${RESET} - creates a .patch file from two files"
+	"  ${BOLD}${BRIGHT_YELLOW}revert2commit command${RESET} - safely reverts changes to an earlier commit state"
+	"  ${BOLD}${BRIGHT_YELLOW}cls command${RESET} - clear your screen"
+	"  ${BOLD}${BRIGHT_YELLOW}authorID${RESET} - configures your Github Identity(Global and Local)"
+	"  ${BOLD}${BRIGHT_YELLOW}commitree command${RESET} - displays a tree of your commit history"
 	#...py script files....................... #
-	"  compareChange command - displays detailed content of updates"
-	"  commitdir command - commits all the changes in the current dir"
-	"  commitall command - commits all the changes in the working tree"
-	"  getRepoUserName command - prints the username of the current repo"
-	"  wcount command - counts the lines, words and chars in files"
-	"  stash command - saves uncommitted changes in the working tree"
-	"  viewStash command - displays a list of applyable stashes"
-	"  logit command - displays a detailed commit logs"
+	"  ${BOLD}${BRIGHT_YELLOW}compareChange command${RESET} - displays detailed content of updates"
+	"  ${BOLD}${BRIGHT_YELLOW}commitdir command${RESET} - commits all the changes in the current dir"
+	"  ${BOLD}${BRIGHT_YELLOW}commitall command${RESET} - commits all the changes in the working tree"
+	"  ${BOLD}${BRIGHT_YELLOW}getRepoUserName command${RESET} - prints the username of the current repo"
+	"  ${BOLD}${BRIGHT_YELLOW}wcount command${RESET} - counts the lines, words and chars in files"
+	"  ${BOLD}${BRIGHT_YELLOW}stash command${RESET} - saves uncommitted changes in the working tree"
+	"  ${BOLD}${BRIGHT_YELLOW}viewStash command${RESET} - displays a list of applyable stashes"
+	"  ${BOLD}${BRIGHT_YELLOW}logit command${RESET} - displays a detailed commit logs"
 	#...bash script files.................. #
-	"  createReactApp command - creates a React application, dependencies"
-	"  createExpoApp command - creates an Expo mobile application, dependencies"
-	"  dependenciesReact command - installs various React packages"
-	"  updateReactPackagez command - updates React packages to latest versions"
-	"  dependencyDevReact command - installs dev-dependencies"
-	"  py3venv command - creates a python3 virtual environment"
+	"  ${BOLD}${BRIGHT_YELLOW}createReactApp command${RESET} - creates a React application, dependencies"
+	"  ${BOLD}${BRIGHT_YELLOW}createExpoApp command${RESET} - creates an Expo mobile application, dependencies"
+	"  ${BOLD}${BRIGHT_YELLOW}dependenciesReact command${RESET} - installs various React packages"
+	"  ${BOLD}${BRIGHT_YELLOW}updateReactPackagez command${RESET} - updates React packages to latest versions"
+	"  ${BOLD}${BRIGHT_YELLOW}dependencyDevReact command${RESET} - installs dev-dependencies"
+	"  ${BOLD}${BRIGHT_YELLOW}py3venv command${RESET} - creates a python3 virtual environment"
 	#...py script files....................... #
-	"  requirement_txt command - creates/updates/installs dependencies in requirement.txt"
+	"  ${BOLD}${BRIGHT_YELLOW}requirement_txt command${RESET} - creates/updates/installs dependencies in requirement.txt"
 	#...bash script files.................. #
-	"  collectstatic command - collects static files to the staticfiles dir for production"
-	"  djangoToolbar command - install and configures Django debug toolbar"
-	"  drf command - install and configures Django RESTframework, auth, xml renderer"
-	"  djoser command - install and configures djoser (3rd party library)"
-	"  jwtDjango command - install and configures json web token in your django project"
-	"  static4django command - configures the STATIC_DIRS in settings.py"
-	"  startproject command - installs a new django project"
-	"  startapp command - installs and configures apps for django projects"
-	"  djangoUrls command - used to check and monitor configured urls in django projects"
+	"  ${BOLD}${BRIGHT_YELLOW}collectstatic command${RESET} - collects static files to the staticfiles dir for production"
+	"  ${BOLD}${BRIGHT_YELLOW}djangoToolbar command${RESET} - install and configures Django debug toolbar"
+	"  ${BOLD}${BRIGHT_YELLOW}drf command${RESET} - install and configures Django RESTframework, auth, xml renderer"
+	"  ${BOLD}${BRIGHT_YELLOW}djoser command${RESET} - install and configures djoser (3rd party library)"
+	"  ${BOLD}${BRIGHT_YELLOW}jwtDjango command${RESET} - install and configures json web token in your django project"
+	"  ${BOLD}${BRIGHT_YELLOW}static4django command${RESET} - configures the STATIC_DIRS in settings.py"
+	"  ${BOLD}${BRIGHT_YELLOW}startproject command${RESET} - installs a new django project"
+	"  ${BOLD}${BRIGHT_YELLOW}startapp command${RESET} - installs and configures apps for django projects"
+	"  ${BOLD}${BRIGHT_YELLOW}djangoUrls command${RESET} - used to check and monitor configured urls in django projects"
 	#...py script files....................... #
-	"  runserver command - spin up the django development server from any directory"
+	"  ${BOLD}${BRIGHT_YELLOW}runserver command${RESET} - spin up the django development server from any directory"
 	#...bash script files.................. #
-	"  makemigrations command - performs the makemigrations process"
+	"  ${BOLD}${BRIGHT_YELLOW}makemigrations command${RESET} - performs the makemigrations process"
 	#...py script files....................... #
-	"  migrate command - creates the model tables in the database"
+	"  ${BOLD}${BRIGHT_YELLOW}migrate command${RESET} - creates the model tables in the database"
 	#...bash script files.................. #
-	"  django command - displays the django version you are using"
-	"  djshell command - launches the django shell"
-	"  mkandmigrate command - a combines the makemigrations and migrate commands"
+	"  ${BOLD}${BRIGHT_YELLOW}django command${RESET} - displays the django version you are using"
+	"  ${BOLD}${BRIGHT_YELLOW}djshell command${RESET} - launches the django shell"
+	"  ${BOLD}${BRIGHT_YELLOW}mkandmigrate command${RESET} - a combines the makemigrations and migrate commands"
 	#...py script files....................... #
-	"  showmigrations command - displays the history of django migrations"
-	"  sqlmigrate command - presents the sql query of any migration"
+	"  ${BOLD}${BRIGHT_YELLOW}showmigrations command${RESET} - displays the history of django migrations"
+	"  ${BOLD}${BRIGHT_YELLOW}sqlmigrate command${RESET} - presents the sql query of any migration"
 	#...bash script files.................. #
-	"  mongoOp - starts, stops, restarts or checks the status of MongoDB server"
-	"  mysqlversion - checks if MySQL is installed and also prints its version"
-	"  mysqlstartserver - starts MySQL server"
-	"  mysqlstopserver - stops MySQL server"
-	"  mysqlrestartserver - restarts MySQL server"
-	"  mysqlstatus_server - displays the status of MySQL server"
-	"  mysqlshell - launches MySQL shell"
-	"  ctemp - generates a default C source file template"
-	"  clear_commit command - restores local repo to the same state as the remote"
-	"  betty linter command"
-	"  pycode command a \"pycodestyle (PEP 8)\" linter"
+	"  ${BOLD}${BRIGHT_YELLOW}mongoOp${RESET} - starts, stops, restarts or checks the status of MongoDB server"
+	"  ${BOLD}${BRIGHT_YELLOW}mysqlversion${RESET} - checks if MySQL is installed and also prints its version"
+	"  ${BOLD}${BRIGHT_YELLOW}mysqlstartserver${RESET} - starts MySQL server"
+	"  ${BOLD}${BRIGHT_YELLOW}mysqlstopserver${RESET} - stops MySQL server"
+	"  ${BOLD}${BRIGHT_YELLOW}mysqlrestartserver${RESET} - restarts MySQL server"
+	"  ${BOLD}${BRIGHT_YELLOW}mysqlstatus_server${RESET} - displays the status of MySQL server"
+	"  ${BOLD}${BRIGHT_YELLOW}mysqlshell${RESET} - launches MySQL shell"
+	"  ${BOLD}${BRIGHT_YELLOW}ctemp${RESET} - generates a default C source file template"
+	"  ${BOLD}${BRIGHT_YELLOW}clear_commit command${RESET} - restores local repo to the same state as the remote"
+	"  ${BOLD}${BRIGHT_YELLOW}betty linter command${RESET}"
+	"  ${BOLD}${BRIGHT_YELLOW}pycode command${RESET} a \"pycodestyle (PEP 8)\" linter"
 	#...py script files....................... #
-	"  printmyEnv command - prints a list of your env paths"
-	"  show command - displays a list of all commits made to the repository"
-	"  verifyRepo command - checkes if the current dir is a repository or not"
+	"  ${BOLD}${BRIGHT_YELLOW}printmyEnv command${RESET} - prints a list of your env paths"
+	"  ${BOLD}${BRIGHT_YELLOW}show command${RESET} - displays a list of all commits made to the repository"
+	"  ${BOLD}${BRIGHT_YELLOW}verifyRepo command${RESET} - checkes if the current dir is a repository or not"
 	#...bash script files.................. #
-	"  mycompile command - compile C source files (with options)"
-	"  pycompile command - compile python files"
-	"  xbin command - opens the xbin in file explorer"
-	"  distributeApk command - Downloads the apk from eas and updates it to github"
-	"  updateResumeCV command - updates my website and github with my resume"
+	"  ${BOLD}${BRIGHT_YELLOW}mycompile command${RESET} - compile C source files (with options)"
+	"  ${BOLD}${BRIGHT_YELLOW}pycompile command${RESET} - compile python files"
+	"  ${BOLD}${BRIGHT_YELLOW}xbin command${RESET} - opens the xbin in file explorer"
+	"  ${BOLD}${BRIGHT_YELLOW}distributeApk command${RESET} - Downloads the apk from eas and updates it to github"
+	"  ${BOLD}${BRIGHT_YELLOW}updateResumeCV command${RESET} - updates my website and github with my resume"
 	#...C files....................... #
-	"  myascii command - prints a simple version of the ASCII table"
-	"  rot13 command - Rot13 Cipher"
-	"  rot47 command - Rot47 Cipher"
-	"  guessGame command- a Guessing Game(To unwind)"
+	"  ${BOLD}${BRIGHT_YELLOW}myascii command${RESET} - prints a simple version of the ASCII table"
+	"  ${BOLD}${BRIGHT_YELLOW}rot13 command${RESET} - Rot13 Cipher"
+	"  ${BOLD}${BRIGHT_YELLOW}rot47 command${RESET} - Rot47 Cipher"
+	"  ${BOLD}${BRIGHT_YELLOW}guessGame command${RESET}- a Guessing Game(To unwind)"
 )
 
 category() {
@@ -1299,7 +1315,9 @@ instructn() {
 
 #........ intro .......................... #
 
-
+# note: the intro function is called to display the introduction message
+# but this has been automated except for when script cannot detect the
+# type of device
 launch=(
     "However, please go on and select your type of device:"
     "[p] - Phone"
@@ -1307,22 +1325,45 @@ launch=(
     "[q] - quit"
 	""
 )
-while true; do
-	clear
-	intro "0"
-	for i in "${launch[@]}"; do
-		echo -e "$i"
-		sleep 0.05
-	done
-	read -n 1 -s -r -p "Is this a phone or a pc? [P/C/Q] >>> " WHICH
-	if [[ "$WHICH" =~ [pPcC] ]]; then
-		break
-	elif [[ "$WHICH" =~ [qQ] ]]; then
-		echo -e "Ok."
-		exit 0
-	fi
-done
 
+CHECKERPCPH=$(echo "$XBIN" | cut -d '/' -f 2)
+if is_wsl || is_macos || is_linux || is_git_bash; then
+	if is_wsl;
+		then
+			echo -e "Windows subsystem for linux (WSL)."
+	elif is_macos;
+		then
+			echo -e "macOs."
+	elif is_linux;
+		then
+			echo -e "linux."
+	elif is_git_bash;
+		then
+			echo -e "Git bash."
+	fi
+	WHICH="c"
+elif [[ "$CHECKERPCPH" == "data" ]]; then
+	echo -e "p"
+	WHICH="phone"
+else
+	while true; do
+		clear
+		intro "0"
+		for i in "${launch[@]}"; do
+			echo -e "$i"
+			sleep 0.05
+		done
+		read -n 1 -s -r -p "Is this a phone or a pc? [P/C/Q] >>> " WHICH
+		if [[ "$WHICH" =~ [pPcC] ]]; then
+			break
+		elif [[ "$WHICH" =~ [qQ] ]]; then
+			echo -e "Ok."
+			exit 0
+		fi
+	done
+fi
+
+# echo -e "WHICH: $WHICH"
 #...main operation.................. #
 #...Entry point.................. #
 
@@ -1341,7 +1382,7 @@ while [[ "$UINPUT" != [nN] ]]; do
     while true; do
         clear
         auth $WHICH
-        intro "1"
+        intro "0"
         echo ""
 
 		echo "Page $page of $total_pages:"
@@ -1375,7 +1416,7 @@ while [[ "$UINPUT" != [nN] ]]; do
                 instructn
             fi
             echo -e ""
-            echo -e "Last command created: $DFILENAME"
+            echo -e "Last command created: ${UNDERLINE}${ITALIC}${BOLD}${BRIGHT_GREEN}$DFILENAME${RESET}"
             sleep 0.1
             echo -e ""
 			invalid_selection
