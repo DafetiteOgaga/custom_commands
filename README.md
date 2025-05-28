@@ -48,7 +48,7 @@
     <td>startproject</td>
     <td>createReactApp</td>
     <td>pyxecute</td>
-    <td>mysqlversion</td>
+    <td>mysqlOp</td>
     <td>betty</td>
     <td>py3venv</td>
     <td>ctemp</td>
@@ -59,18 +59,18 @@
     <td>startapp</td>
     <td>dependencyDevReact</td>
     <td>shxecute</td>
-    <td>mysqlstartserver</td>
+    <td>mysqlversion</td>
     <td></td>
     <td>pycodemore</td>
     <td>mycompile</td>
-    <td></td>
+    <td>mongoVersion</td>
   </tr>
   <tr>
     <td>pushfile</td>
     <td>runserver</td>
     <td>dependenciesReact</td>
     <td>jsxecute</td>
-    <td>mysqlstopserver</td>
+    <td>mysqlshell</td>
     <td></td>
     <td>pycode</td>
     <td>myascii</td>
@@ -81,7 +81,7 @@
     <td>makemigrations</td>
     <td>updateReactPackagez</td>
     <td>curfol</td>
-    <td>mysqlrestartserver</td>
+    <td></td>
     <td></td>
     <td>pycompile</td>
     <td>rot13</td>
@@ -92,7 +92,7 @@
     <td>migrate</td>
     <td>createExpoApp</td>
     <td>cls</td>
-    <td>mysqlstatus_server</td>
+    <td></td>
     <td></td>
     <td></td>
     <td>rot47</td>
@@ -103,7 +103,7 @@
     <td>requirement_txt</td>
     <td></td>
     <td>wcount</td>
-    <td>mysqlshell</td>
+    <td></td>
     <td></td>
     <td></td>
     <td>guessGame</td>
@@ -362,35 +362,33 @@
 
 ## New
   - mongoOp
+  - mongoVersion
   - revert2commit
   - createExpoApp
   - createReactApp
   - setEnv
   - djangoUrls
   - updateToken
-  - djangoToolbar
   - drf
 
 ## Changes
+  - merged mysqlstart, mysqlstop, mysqlrestart and mysql_status commands
+   into mysqlOp command
   - changed rollback to revert2commit command, which is preferred because
    it reverts to any earlier commit state and still keeps the commit history by undoing all the changes made upto the selected commit and
    creating a new commit for this revert. Hence, history is not lost or
    discarded
   - Added (New) createExpoApp - uses backed up app config setup to create apps after the initial (first downloaded) setup and spins up the local server automatically.
    - Added (New) setEnv command - creates environmental variables automatically.
-   - Added collectstatic command - collects static files in django for production.
-  - Added support for urls display to startproject command when creating a new django project. install and run djangoUrls command to see the list and details of all configured urls.
-  - createReactApp now downloads the configs for CRA on first use, then uses this config for subsequent use while it updates itself whenever there is an update to CRA config
   - [More](https://github.com/DafetiteOgaga/custom_commands/blob/master/changes.md)
 
 
 ## Fixes
+  - Added checks to mongoOp command to check if mongodb is installed before proceeding with its operations
   - fixed all commands to be gitbash compartible
   - fixed updateResumeCV command to automatically update concerned repos locally after execution.
   - Added support for ignoring node_modules using gitignore command for Expo (React Native) Apps.
   - corrrected typos in createReactApp command setup.
-  - handled the case where a user tries to install and configure a django project without initially installing an app
-  - fixed the DRF module error for runserver, sqlmigrate commanda
   - [More](https://github.com/DafetiteOgaga/custom_commands/blob/master/fixes.md)
 
 

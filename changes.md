@@ -2,6 +2,8 @@
 This file contains the notable changes made to the Custom Commands project.
 
 ## Changes
+   - merged mysqlstart, mysqlstop, mysqlrestart and mysql_status commands
+   into mysqlOp command
    - changed rollback to revert2commit command, which is preferred because
    it reverts to any earlier commit state and still keeps the commit history by undoing all the changes made upto the selected commit and
    creating a new commit for this revert. Hence, history is not lost or
