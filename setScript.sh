@@ -386,11 +386,9 @@ dOptions=(
 	"  ${BOLD}${BRIGHT_YELLOW}sqlmigrate command${RESET} - presents the sql query of any migration"
 	#...bash script files.................. #
 	"  ${BOLD}${BRIGHT_YELLOW}mongoOp${RESET} - starts, stops, restarts or checks the status of MongoDB server"
+	"  ${BOLD}${BRIGHT_YELLOW}mongoVersion${RESET} - checks the version of MongoDB installed"
+	"  ${BOLD}${BRIGHT_YELLOW}mysqlOp${RESET} - starts, stops, restarts or checks the status of MySQL server"
 	"  ${BOLD}${BRIGHT_YELLOW}mysqlversion${RESET} - checks if MySQL is installed and also prints its version"
-	"  ${BOLD}${BRIGHT_YELLOW}mysqlstartserver${RESET} - starts MySQL server"
-	"  ${BOLD}${BRIGHT_YELLOW}mysqlstopserver${RESET} - stops MySQL server"
-	"  ${BOLD}${BRIGHT_YELLOW}mysqlrestartserver${RESET} - restarts MySQL server"
-	"  ${BOLD}${BRIGHT_YELLOW}mysqlstatus_server${RESET} - displays the status of MySQL server"
 	"  ${BOLD}${BRIGHT_YELLOW}mysqlshell${RESET} - launches MySQL shell"
 	"  ${BOLD}${BRIGHT_YELLOW}ctemp${RESET} - generates a default C source file template"
 	"  ${BOLD}${BRIGHT_YELLOW}clear_commit command${RESET} - restores local repo to the same state as the remote"
@@ -696,95 +694,87 @@ options() {
 			category b "$converted_selection"
 			;;
 		58)
-			DFILENAME="mysqlversion"
+			DFILENAME="mongoVersion"
 			category b "$converted_selection"
 			;;
 		59)
-			DFILENAME="mysqlstartserver"
+			DFILENAME="mysqlOp"
 			category b "$converted_selection"
 			;;
 		60)
-			DFILENAME="mysqlstopserver"
+			DFILENAME="mysqlversion"
 			category b "$converted_selection"
 			;;
 		61)
-			DFILENAME="mysqlrestartserver"
-			category b "$converted_selection"
-			;;
-		62)
-			DFILENAME="mysqlstatus_server"
-			category b "$converted_selection"
-			;;
-		63)
 			DFILENAME="mysqlshell"
 			category b "$converted_selection"
 			;;
-		64)
+		62)
 			DFILENAME="ctemp"
 			category b "$converted_selection" "ct"
 			;;
 	# ...py script files..................................... #
-		65)
+		63)
 			DFILENAME="clear_commit"
 			category p "$converted_selection"
 			;;
-		66)
+		64)
 			DFILENAME="betty"
 			category b "$converted_selection"
 			;;
-		67)
+		65)
 			DFILENAME="pycode"
 			category b "$converted_selection"
 			;;
-		68)
+		66)
 			DFILENAME="printmyEnv"
 			category p "$converted_selection"
 			;;
-		69)
+		67)
 			DFILENAME="show"
 			category p "$converted_selection"
 			;;
-		70)
+		68)
 			DFILENAME="verifyRepo"
 			category p "$converted_selection"
 			;;
 	# ...bash script files................................... #
-		71)
+		69)
 			DFILENAME="mycompile"
 			category b "$converted_selection"
 			;;
-		72)
+		70)
 			DFILENAME="pycompile"
 			category b "$converted_selection"
 			;;
-		73)
+		71)
 			DFILENAME="xbin"
 			category b "$converted_selection"
 			;;
-		74)
+		72)
 			DFILENAME="distributeApk"
 			category b "$converted_selection" "da"
 			dafetite "$DFILENAME"
 			;;
 		# ...py script files..................................... #
-		75)
+		73)
 			DFILENAME="updateResumeCV"
 			category p "$converted_selection"
 			dafetite "$DFILENAME"
 			;;
-		76)
+		74)
 			DFILENAME="myascii"
 			category c "$converted_selection"
 			;;
-		77)
+		75)
 			DFILENAME="rot13"
 			category c "$converted_selection"
 			;;
-		78)
+		76)
 			DFILENAME="rot47"
 			category c "$converted_selection"
 			;;
-		79)
+		77)
 			DFILENAME="guessGame"
 			category c "$converted_selection"
 			;;
@@ -1231,20 +1221,14 @@ instructn() {
 		"mongoOp")
 			echo -e "$STRT start, stop, restart and check the status of mongodb $EFFT $ANYWHERE: $DFILENAME"
 			;;
+		"mongoVersion")
+			echo -e "$STRT start, stop, restart and check the status of mongodb $EFFT $ANYWHERE: $DFILENAME"
+			;;
+		"mysqlOp")
+			echo -e "$STRT start, stop, restart and check the status of mysql DB $EFFT $ANYWHERE: $DFILENAME"
+			;;
 		"mysqlversion")
 			echo -e "$STRT check if you have MySQL installed on your machine and prints its version $EFFT $ANYWHERE: $DFILENAME"
-			;;
-		"mysqlstartserver")
-			echo -e "$STRT spin up MySQL server $EFFT $ANYWHERE: $DFILENAME"
-			;;
-		"mysqlstopserver")
-			echo -e "$STRT stop MySQL server $EFFT $ANYWHERE: $DFILENAME"
-			;;
-		"mysqlrestartserver")
-			echo -e "$STRT restart MySQL server $EFFT $ANYWHERE: $DFILENAME"
-			;;
-		"mysqlstatus_server")
-			echo -e "$STRT check the status of MySQL server $EFFT $ANYWHERE: $DFILENAME"
 			;;
 		"mysqlshell")
 			echo -e "$STRT launch MySQL shell $EFFT $ANYWHERE: $DFILENAME"
