@@ -206,7 +206,8 @@ def push(file_list: list):
 	Args:
 		file_list (list): list of files in the current working directory
 	"""
-
+	if 'custom_commands' in os.getcwd():
+		subprocess.run(["bash", "bumpCCVersion"], check=True, cwd=bumpCCVersion, stdout=None, stderr=None)
 	print_norm("#### pushing ...################################################")
 	push = subprocess.run(["git", "push"])
 	if push.returncode == 0:
@@ -257,8 +258,6 @@ def add_commit_all(type: str="current", commit_message: str=""):
 	# print(f'current location (git_codes): {os.getcwd()}')
 	if '/home/dafetite/alx/altaviz/altaviz_mobile/altaviz_mobile' in os.getcwd():
 		subprocess.run(["bash", "bumpAppJsonVersion"], check=True, cwd=bumpAppJsonVersionScript, stdout=None, stderr=None)
-	if 'custom_commands' in os.getcwd():
-		subprocess.run(["bash", "bumpCCVersion"], check=True, cwd=bumpCCVersion, stdout=None, stderr=None)
 	# print(f'current location (git_codes): {os.getcwd()}')
 	############################################################################################################
 	############################################################################################################
