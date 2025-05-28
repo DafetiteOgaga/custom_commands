@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+
+is_repo() {
+	[[ -d ".git" ]]
+}
+
+check4UpdateFunc() {
+	clear
+	echo -e ""
+	# --- SETTINGS ---
+	LOCAL_FILE="./setScript.sh"
+	VERSIONNUMBER="20250528.1442"
+	REMOTE_FILE_URL="https://raw.githubusercontent.com/DafetiteOgaga/custom_commands/master/setScript.sh"
+
+	# --- EXTRACT LOCAL VERSION ---
+	# local_version=$(grep -oP 'VERSIONNUMBER="\K[0-9.]+' "$LOCAL_FILE")
+	local_version="$VERSIONNUMBER"
+
+	# --- EXTRACT REMOTE VERSION ---
+	remote_file_content=$(curl -fsSL "$REMOTE_FILE_URL") || {
+		echo "Failed to fetch remote file."
+		return
+	}
+	# echo "remote_file_content: $remote_file_content"
+	remote_version=$(echo "$remote_file_content" | grep -oP 'VERSIONNUMBER="\K[0-9.]+')
+
+	# --- COMPARE ---
+	# echo "🔍 Checking for update..."
+	# echo "Local Version:  $local_version"
+	# echo "Remote Version: $remote_version"
+	# echo "pwd: $(pwd)"
+
+	# if is_repo; then
+	# 	echo "Git repository detected."
+	# else
+	# 	echo "No git repository detected."
+	# fi
+
+	if [[ "$local_version" != "$remote_version" ]]; then
+		echo "Update Available!"
+		read -n 1 -s -r -p "Pull update? [y/N] >>> " PULL_UPDATE
+		if [[ "$PULL_UPDATE" =~ [nN] ]]; then
+			echo -e "no\n"
+			echo -e "❌ Update skipped."
+		else
+			echo -e "yes"
+			echo -e "\n🔄 Pulling update...\n"
+			if is_repo; then
+				git pull origin master
+				echo -e "✅ Update pulled successfully."
+				read yyy
+			else
+				echo "This is not a git repository. Cannot pull updates."
+				exit 1
+			fi
+		fi
+		sleep 1
+		echo -e ""
+	# else
+	#     echo "✅ Versions match."
+	fi
+}
+
+NOW=$(date +%s)
+LAST_UPDATE_FILE="$HOME/.xbin/pyfiles/lastUpdateTime"
+
+mkdir -p "$(dirname "$LAST_UPDATE_FILE")"
+
+if [[ ! -f "$LAST_UPDATE_FILE" ]]; then
+	echo "Last update file not found. Creating a new one."
+	echo "$NOW" > "$LAST_UPDATE_FILE"
+fi
+
+LAST_CHECK=$(cat "$LAST_UPDATE_FILE")
+
+if (( NOW < LAST_CHECK + 86400 )); then
+	echo ""
+	# echo "Last update check was more than 24 hours ago."
+	# read ch
+	check4UpdateFunc
+	echo "$NOW" > "$LAST_UPDATE_FILE"
+# else
+# 	echo "Last update check was less than 24 hours ago."
+fi
+
+# echo "PULL_UPDATE: $PULL_UPDATE"
+# read yes
