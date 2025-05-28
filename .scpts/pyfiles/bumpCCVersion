@@ -18,4 +18,4 @@ sedFunc "$NEW_VERSION" "$custom_commands/setScript.sh"
 git add "$custom_commands/setScript.sh"
 cd "$currDir"
 
-echo "✅ Updated app.json version to $NEW_VERSION before commit."
+echo "✅ Auto updated setScript.sh version to $NEW_VERSION."
