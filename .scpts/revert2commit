@@ -55,8 +55,10 @@ disp()
             converted_selection="$(( ($page - 1) * $page_size + $((selection-1)) ))"
             selected_commit_id=${hash_entries[$converted_selection]}
             selected_commit_message=${subject_entries[$converted_selection]}
+            selected_commit_date=${extracted_dates[$converted_selection]}
+            selected_commit_author=${extracted_authors[$converted_selection]}
 			echo -e ""
-            echo -e "You selected the commit:\n${GREEN}${BOLD}$selected_commit_message${RESET}\n\nWith the commit ID:\n${YELLOW}${BOLD}$selected_commit_id${RESET}\n\nMade on ${GREEN}${BOLD}$extracted_date${RESET}\n"
+            echo -e "Commit info:\n${GREEN}${BOLD}$selected_commit_message${RESET}\n\nWith the commit ID:\n${YELLOW}${BOLD}$selected_commit_id${RESET}\n\nMade on ${GREEN}${BOLD}$selected_commit_date${RESET}\nBy: ${MAGENTA}${BOLD}$selected_commit_author${RESET}"
             break
         else
             echo "Invalid selection."
@@ -64,38 +66,25 @@ disp()
     done
 }
 
-streamedit()
-{
-	local var1="$1"
-	local var2="$2"
-
-	sed -i "s/$var1/$var2/g" "$XBIN/tempfile.txt"
-}
-
 # ...............
-
-XBIN="$HOME/.xbin/pyfiles/"
-# XBIN="."
 
 repo_name=$(git config -l | grep -oP '(?<=\/)[^\/]+(?=\.git)')
 monthArray=(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec)
 entries_arr=()
 hash_entries=()
 subject_entries=()
-extracted_date=""
+extracted_dates=()
+extracted_authors=()
 while read -r line;
-    do
+   do
     fields=($line)
     commit_hash_complete="${fields[0]}"
     commit_hash="${commit_hash_complete:0:10}"
     author="${fields[1]}"
     email="${fields[2]}"
     raw_date="${fields[@]:3:6}"
-    # echo "raw_date: $raw_date"
     new_raw_date=($raw_date)
     new_raw_date_length="${#new_raw_date}"
-    # echo "new_raw_date: #${new_raw_date}#"
-    # echo "new_raw_date_length: $new_raw_date_length"
     day="${new_raw_date[0]}"
     month="${new_raw_date[1]}"
     date="${new_raw_date[2]}"
@@ -109,6 +98,12 @@ while read -r line;
         year="${new_raw_date[5]}"
     fi
     processed_time="${time%:*}"
+    # echo "author: $author"
+    # echo "email: $email"
+    # echo "raw_date: $raw_date"
+    # echo "new_raw_date: #${new_raw_date}#"
+    # echo "new_raw_date_length: $new_raw_date_length"
+
     # echo "day: $day"
     # echo "month: $month"
     # echo "date: $date"
@@ -148,7 +143,8 @@ while read -r line;
     entries_arr+=("$colored_line")
     hash_entries+=("$commit_hash_complete")
     subject_entries+=("$subject_complete")
-    extracted_date="$raw_date"
+    extracted_dates+=("$raw_date")
+    extracted_authors+=("$author")
 done < <(git log --format="%H %an %ae %ad %s")
 
 disp
@@ -157,7 +153,7 @@ disp
 FINAL_COMMIT_MESSAGE="$1"
 
 if [[ -z "$FINAL_COMMIT_MESSAGE" ]]; then
-    # echo ""
+    echo ""
 	echo -n "Enter a commit message [q - abort] >>> "
 	read FINAL_COMMIT_MESSAGE
 
