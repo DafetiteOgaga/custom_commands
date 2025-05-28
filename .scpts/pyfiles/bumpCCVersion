@@ -6,7 +6,7 @@ sedFunc () {
 	sed -i "s|VERSIONNUMBER=\"v\?[0-9]\{8\}\.[0-9]\{4\}\"|VERSIONNUMBER=\"$VERSION\"|g" "$FILEPATH"
 }
 
-setScript="$HOME/.xbin/setScript.sh"
+setScript=$(find . -type d -name custom_commands -exec test -d "{}/.git" \; -print)
 NEW_VERSION=$(date +"%Y%m%d.%H%M")
 
 sedFunc "$NEW_VERSION" "$setScript"
