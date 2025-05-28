@@ -17,8 +17,10 @@ echo "custom_commands: $custom_commands"
 NEW_VERSION=$(date +"%Y%m%d.%H%M")
 
 sedFunc "$NEW_VERSION" "$custom_commands/setScript.sh"
+sedFunc "$NEW_VERSION" "$HOME/.xbin/pyfiles/check4Update"
 
 git add "$custom_commands/setScript.sh"
+git commit -m "Auto updated setScript.sh version to $NEW_VERSION"
 cd "$currDir"
 
 echo "✅ Auto updated setScript.sh version to $NEW_VERSION."
