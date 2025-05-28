@@ -6,13 +6,16 @@ sedFunc () {
 	sed -i "s|VERSIONNUMBER=\"v\?[0-9]\{8\}\.[0-9]\{4\}\"|VERSIONNUMBER=\"$VERSION\"|g" "$FILEPATH"
 }
 
-# setScript=$(find . -type d -name custom_commands -exec test -d "{}/.git" \; -print)
-setScript="$HOME/alx/custom_commands/setScript.sh"
-echo "setScript: $setScript"
+# custom_commands=$(find . -type d -name custom_commands -exec test -d "{}/.git" \; -print)
+currDir="$(pwd)"
+custom_commands="$HOME/alx/custom_commands"
+cd "$custom_commands"
+echo "custom_commands: $custom_commands"
 NEW_VERSION=$(date +"%Y%m%d.%H%M")
 
-sedFunc "$NEW_VERSION" "$setScript"
+sedFunc "$NEW_VERSION" "$custom_commands/setScript.sh"
 
-git add "$setScript"
+git add "$custom_commands/setScript.sh"
+cd "$currDir"
 
 echo "✅ Updated app.json version to $NEW_VERSION before commit."
