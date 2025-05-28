@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+path1="$HOME/.xbin"
+# path1="$HOME/alx/raw/cfiles"
+check=$($path1/pyfiles/mysql arg 2>&1)
+if [ -n "$check" ]; then
+	echo "$check"
+	echo ""
+	exit 1
+fi
+
+# sudo mysql_secure_installation
+# sudo apt install mysql-client
+
+echo "MySQL server operations ..."
+echo "1. Start"
+echo "2. Stop"
+echo "3. Restart"
+echo "4. Check server status"
+echo "[q] to quit"
+echo ""
+read -n 1 -s -r -p "Select an option >>> " MySQL_OPTION
+if [[ "$MySQL_OPTION" =~ [qQ] ]]; then
+	echo "$MySQL_OPTION"
+	echo ""
+	echo "Cheers"
+	exit 0
+elif [[ "$MySQL_OPTION" =~ [1] ]]; then
+	echo "Starting server ..."
+	sudo service mysql start
+	echo "MySQL started successfully."
+elif [[ "$MySQL_OPTION" =~ [2] ]]; then
+	echo "Stopping server ..."
+	sudo service mysql stop
+	echo "MySQL stopped successfully."
+elif [[ "$MySQL_OPTION" =~ [3] ]]; then
+	echo "Restarting server ..."
+	sudo service mysql restart
+	echo "MySQL restarted successfully."
+elif [[ "$MySQL_OPTION" =~ [4] ]]; then
+	echo "Checking server status ..."
+	sudo service mysql status
+else
+	echo "Invalid option selected. Please try again."
+	exit 1
+fi
+
