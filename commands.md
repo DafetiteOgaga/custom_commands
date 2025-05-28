@@ -79,11 +79,8 @@
    * setEnv command - sets environment variable for all sessions
 
 ### MySQL commands
+   * mysqlOp - starts, stops, restarts and checks the status of MySQL server
    * mysqlversion - checks if MySQL is installed and also prints its version
-   * mysqlstartserver - starts MySQL server
-   * mysqlstopserver - stops MySQL server
-   * mysqlrestartserver - restarts MySQL server
-   * mysqlstatus_server - displays the status of MySQL server
    * mysqlshell - launches MySQL shell
 
 ### Betty command
@@ -107,6 +104,7 @@
 ### MongoDB command
    * mongoOp command - starts, stops, restarts and checks the status of
    the server
+   * mongoVersion - checks if MongoDB is installed and also prints its version
 
 
    ###### *We Rise by Lifting Others.*
