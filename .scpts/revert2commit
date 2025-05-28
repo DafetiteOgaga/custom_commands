@@ -76,7 +76,7 @@ subject_entries=()
 extracted_dates=()
 extracted_authors=()
 while read -r line;
-   do
+    do
     fields=($line)
     commit_hash_complete="${fields[0]}"
     commit_hash="${commit_hash_complete:0:10}"
