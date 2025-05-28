@@ -13,15 +13,18 @@ sedFunc () {
 currDir="$(pwd)"
 custom_commands="$HOME/alx/custom_commands"
 cd "$custom_commands"
+setScript="$custom_commands/setScript.sh"
+check4UpdateCustomCommands="$custom_commands/.scpts/pyfiles/check4Update"
+check4UpdateXbin="$HOME/.xbin/pyfiles/check4Update"
 echo "custom_commands: $custom_commands"
 NEW_VERSION=$(date +"%Y%m%d.%H%M")
 
-sedFunc "$NEW_VERSION" "$custom_commands/setScript.sh"
-sedFunc "$NEW_VERSION" "$custom_commands/.scpts/pyfiles/check4Update"
-sedFunc "$NEW_VERSION" "$HOME/.xbin/pyfiles/check4Update"
+sedFunc "$NEW_VERSION" "$setScript"
+sedFunc "$NEW_VERSION" "$check4UpdateCustomCommands"
+sedFunc "$NEW_VERSION" "$check4UpdateXbin"
 
-git add "$custom_commands/setScript.sh"
-git add "$custom_commands/pyfiles/check4Update"
+git add "$setScript"
+git add "$check4UpdateCustomCommands"
 git commit -m "Auto bumped version to $NEW_VERSION"
 cd "$currDir"
 
