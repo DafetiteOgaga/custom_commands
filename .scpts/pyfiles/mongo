@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+output=$(mongod --version 2>&1)
+echo ""
+# if [[ "$output" != *"db version"* ]] && [[ "$output" != *"gitVersion"* ]] && [[ "$output" != *"openSSLVersion"* ]]; then
+if ! command -v mongod >/dev/null 2>&1; then
+	echo "You don't have mongoDB installed"
+	echo "visit: https://www.mongodb.com/docs/manual/installation/"
+else
+	if [[ -n "$1" ]]; then
+		echo ""
+	else
+		echo "$output"
+	fi
+fi

@@ -1,11 +1,21 @@
 #!/usr/bin/env bash
 
-echo "MongoDB is server operations ..."
+path1="$HOME/.xbin"
+# path1="$HOME/alx/raw/cfiles"
+check=$($path1/pyfiles/mongo arg 2>&1)
+if [ -n "$check" ]; then
+	echo "$check"
+	echo ""
+	exit 1
+fi
+
+echo "MongoDB server operations ..."
 echo "1. Start"
 echo "2. Stop"
 echo "3. Restart"
-echo "4. Check status of server"
+echo "4. Check server status"
 echo "[q] to quit"
+echo -e "\nUse 'mongosh' command - to start the MongoDB shell\n"
 echo ""
 read -n 1 -s -r -p "Select an option >>> " MONGO_OPTION
 if [[ "$MONGO_OPTION" =~ [qQ] ]]; then
