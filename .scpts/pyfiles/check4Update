@@ -26,8 +26,8 @@ check4UpdateFunc() {
 
 	# --- COMPARE ---
 	# echo "🔍 Checking for update..."
-	echo "Current Version:  $local_version"
-	echo "Latest Version: $remote_version"
+	# echo "Current Version:  $local_version"
+	# echo "Latest Version: $remote_version"
 	# echo -e ""
 	# echo "pwd: $(pwd)"
 
