@@ -39,7 +39,7 @@ disp()
     while true; do
         clear
         echo "Available repositories in $AUSERNAME:"
-        echo "Page $page:"
+        echo "Page $page of $num_pages:"
         
         serial_number=0
         for ((i = (page - 1) * page_size; i < page * page_size && i < total_repos; i++)); do

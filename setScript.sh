@@ -1331,17 +1331,20 @@ done
 # #...1.................. #
 
 count=0
-default_option='0'  
+default_option='0'
 while [[ "$UINPUT" != [nN] ]]; do
     page=1
     items_per_page=10
+	total_items=${#dOptions[@]}
+	total_pages=$(( (total_items + items_per_page - 1) / items_per_page ))
 
     while true; do
         clear
         auth $WHICH
         intro "1"
         echo ""
-        echo "Page $page:"
+
+		echo "Page $page of $total_pages:"
 
         start=$((($page - 1) * $items_per_page))
         end=$(($page * $items_per_page))
