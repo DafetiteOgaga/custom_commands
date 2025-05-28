@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+sedFunc () {
+	local VERSION="$1"
+	local FILEPATH="$2"
+	sed -i "s|VERSIONNUMBER=\"v\?[0-9]\{8\}\.[0-9]\{4\}\"|VERSIONNUMBER=\"$VERSION\"|g" "$FILEPATH"
+}
+
+setScript="$HOME/.xbin/setScript.sh"
+NEW_VERSION=$(date +"%Y%m%d.%H%M")
+
+sedFunc "$NEW_VERSION" "$setScript"
+
+git add "$setScript"
+
+echo "✅ Updated app.json version to $NEW_VERSION before commit."
