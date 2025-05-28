@@ -16,7 +16,7 @@ cd "$custom_commands"
 setScript="$custom_commands/setScript.sh"
 check4UpdateCustomCommands="$custom_commands/.scpts/pyfiles/check4Update"
 check4UpdateXbin="$HOME/.xbin/pyfiles/check4Update"
-echo "custom_commands: $custom_commands"
+# echo "custom_commands: $custom_commands"
 NEW_VERSION=$(date +"%Y%m%d.%H%M")
 
 sedFunc "$NEW_VERSION" "$setScript"
