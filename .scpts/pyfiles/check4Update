@@ -26,8 +26,9 @@ check4UpdateFunc() {
 
 	# --- COMPARE ---
 	# echo "🔍 Checking for update..."
-	# echo "Local Version:  $local_version"
-	# echo "Remote Version: $remote_version"
+	echo "Current Version:  $local_version"
+	echo "Latest Version: $remote_version"
+	# echo -e ""
 	# echo "pwd: $(pwd)"
 
 	# if is_repo; then
@@ -37,7 +38,12 @@ check4UpdateFunc() {
 	# fi
 
 	if [[ "$local_version" != "$remote_version" ]]; then
+		echo ""
 		echo "Update Available!"
+		echo "--------------------------------------"
+		echo "Current Version: $local_version"
+		echo "Latest Version:  $remote_version"
+		echo ""
 		read -n 1 -s -r -p "Pull update? [y/N] >>> " PULL_UPDATE
 		if [[ "$PULL_UPDATE" =~ [nN] ]]; then
 			echo -e "no\n"
@@ -73,6 +79,10 @@ fi
 
 LAST_CHECK=$(cat "$LAST_UPDATE_FILE")
 
+echo "NOW: $NOW"
+echo "LAST_CHECK: $((LAST_CHECK + 86400))"
+echo "NOW > LAST_CHECK: $(( NOW > LAST_CHECK + 86400 ))"
+
 if (( NOW < LAST_CHECK + 86400 )); then
 	echo ""
 	# echo "Last update check was more than 24 hours ago."
@@ -83,5 +93,5 @@ if (( NOW < LAST_CHECK + 86400 )); then
 # 	echo "Last update check was less than 24 hours ago."
 fi
 
-# echo "PULL_UPDATE: $PULL_UPDATE"
-# read yes
+echo "PULL_UPDATE: $PULL_UPDATE"
+read yes
