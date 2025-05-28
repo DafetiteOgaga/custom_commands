@@ -9,8 +9,9 @@ from pyfiles.print import print_norm
 from pyfiles.configure_settings_py import compile_dir_list, list_filter
 from pyfiles.colors import *
 
-home_dir = os.path.expanduser("~")  # Expands "~" to "/home/your-username"
-bumpAppJsonVersionScript = os.path.join(home_dir, ".xbin", "pyfiles")  # location to bumpAppJsonVersion
+home_dir = os.path.join(os.path.expanduser("~"), '.xbin')  # Expands "~" to "/home/your-username"
+bumpAppJsonVersionScript = os.path.join(home_dir, "pyfiles")  # location to bumpAppJsonVersion
+bumpCCVersion = os.path.join(home_dir, "pyfiles")  # location to bumpCCVersion
 
 # now = datetime.now()
 formatted_date_time = datetime.now().strftime("%H:%M:%S on %a %b %Y")
@@ -256,6 +257,8 @@ def add_commit_all(type: str="current", commit_message: str=""):
 	# print(f'current location (git_codes): {os.getcwd()}')
 	if '/home/dafetite/alx/altaviz/altaviz_mobile/altaviz_mobile' in os.getcwd():
 		subprocess.run(["bash", "bumpAppJsonVersion"], check=True, cwd=bumpAppJsonVersionScript, stdout=None, stderr=None)
+	if 'custom_commands' in os.getcwd():
+		subprocess.run(["bash", "bumpCCVersion"], check=True, cwd=bumpCCVersion, stdout=None, stderr=None)
 	# print(f'current location (git_codes): {os.getcwd()}')
 	############################################################################################################
 	############################################################################################################
