@@ -110,8 +110,8 @@ def add_commit(file):
 	# print(f'current location (pushfile_main_codes): {os.getcwd()}')
 	if '/home/dafetite/alx/altaviz/altaviz_mobile/altaviz_mobile' in os.getcwd():
 		subprocess.run(["bash", "bumpAppJsonVersion"], check=True, cwd=bumpAppJsonVersionScript, stdout=None, stderr=None)
-	if 'custom_commands' in os.getcwd():
-		subprocess.run(["bash", "bumpCCVersion"], check=True, cwd=bumpCCVersion, stdout=None, stderr=None)
+	# if 'custom_commands' in os.getcwd():
+	# 	subprocess.run(["bash", "bumpCCVersion"], check=True, cwd=bumpCCVersion, stdout=None, stderr=None)
 	# print(f'current location (pushfile_main_codes): {os.getcwd()}')
 	############################################################################################################
 	############################################################################################################
