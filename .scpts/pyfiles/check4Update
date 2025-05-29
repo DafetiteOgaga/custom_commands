@@ -5,7 +5,7 @@ is_repo() {
 }
 
 check4UpdateFunc() {
-	clear
+	# clear # uncomment this
 	echo -e ""
 	# --- SETTINGS ---
 	LOCAL_FILE="./setScript.sh"
@@ -25,7 +25,7 @@ check4UpdateFunc() {
 	remote_version=$(echo "$remote_file_content" | grep -oP 'VERSIONNUMBER="\K[0-9.]+')
 
 	# --- COMPARE ---
-	# echo "🔍 Checking for update..."
+	# echo "Checking for update..."
 	# echo "Current Version:  $local_version"
 	# echo "Latest Version: $remote_version"
 	# echo -e ""
@@ -47,25 +47,27 @@ check4UpdateFunc() {
 		read -n 1 -s -r -p "Pull update? [y/N] >>> " PULL_UPDATE
 		if [[ "$PULL_UPDATE" =~ [nN] ]]; then
 			echo -e "no\n"
-			echo -e "❌ Update skipped."
+			echo -e "Update skipped."
 		else
 			echo -e "yes"
-			echo -e "\n🔄 Pulling update...\n"
+			echo -e "\nPulling update...\n"
 			if is_repo; then
 				git pull origin master
-				echo -e "✅ Update pulled successfully."
+				echo -e "Update pulled successfully."
 				read yyy
 			else
 				echo "This is not a git repository. Cannot pull updates."
 				exit 1
 			fi
 		fi
-		sleep 1
+		# sleep 1
 		echo -e ""
 	# else
 	#     echo "✅ Versions match."
 	fi
 }
+
+# ENTRY POINT
 
 NOW=$(date +%s)
 LAST_UPDATE_FILE="$HOME/.xbin/pyfiles/lastUpdateTime"
@@ -80,17 +82,17 @@ fi
 LAST_CHECK=$(cat "$LAST_UPDATE_FILE")
 
 echo "NOW: $NOW"
-echo "LAST_CHECK: $((LAST_CHECK + 86400))"
+echo "LAS: $((LAST_CHECK + 86400))"
 echo "NOW > LAST_CHECK: $(( NOW > LAST_CHECK + 86400 ))"
 
 if (( NOW < LAST_CHECK + 86400 )); then
 	echo ""
-	# echo "Last update check was more than 24 hours ago."
+	echo "Last update check was more than 24 hours ago."
 	# read ch
 	check4UpdateFunc
 	echo "$NOW" > "$LAST_UPDATE_FILE"
-# else
-# 	echo "Last update check was less than 24 hours ago."
+else
+	echo "Last update check was less than 24 hours ago."
 fi
 
 echo "PULL_UPDATE: $PULL_UPDATE"
