@@ -5,7 +5,7 @@ is_repo() {
 }
 
 check4UpdateFunc() {
-	# clear # uncomment this
+	clear # uncomment this
 	echo -e ""
 	# --- SETTINGS ---
 	LOCAL_FILE="./setScript.sh"
