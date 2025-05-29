@@ -47,7 +47,7 @@ check4UpdateFunc() {
 		read -n 1 -s -r -p "Pull update? [y/N] >>> " PULL_UPDATE
 		if [[ "$PULL_UPDATE" =~ [nN] ]]; then
 			echo -e "no\n"
-			echo -e "Update skipped."
+			echo -e "Skipping update..."
 		else
 			echo -e "yes"
 			echo -e "\nPulling update...\n"
@@ -58,14 +58,14 @@ check4UpdateFunc() {
 					echo -e "\nUpdate pulled successfully."
 				else
 					echo -e "Git Pull Failed:\n$gitOp"
-					sleep 4
+					# sleep 4
 				fi
 			else
 				echo "This is not a git repository. Cannot pull updates."
 				exit 1
 			fi
 		fi
-		sleep 1
+		sleep 5
 		echo -e ""
 	# else
 	#     echo "✅ Versions match."
