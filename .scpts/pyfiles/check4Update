@@ -38,9 +38,9 @@ check4UpdateFunc() {
 	# fi
 
 	if [[ "$local_version" != "$remote_version" ]]; then
-		echo ""
+		# echo ""
 		echo "Update Available!"
-		echo "--------------------------------------"
+		echo "------------------------------"
 		echo "Current Version: $local_version"
 		echo "Latest Version:  $remote_version"
 		echo ""
@@ -52,9 +52,13 @@ check4UpdateFunc() {
 			echo -e "yes"
 			echo -e "\nPulling update...\n"
 			if is_repo; then
-				git pull origin master
-				echo -e "Update pulled successfully."
-				# read yyy
+				gitOp=$(git pull origin master 2>&1)
+				if [[ $? -eq 0 ]]; then
+					echo -e "Pull Successful:\n$gitOp"
+					echo -e "Update pulled successfully."
+				else
+					echo -e "Git Pull Failed:\n$gitOp"
+				fi
 			else
 				echo "This is not a git repository. Cannot pull updates."
 				exit 1
@@ -81,13 +85,13 @@ fi
 
 LAST_CHECK=$(cat "$LAST_UPDATE_FILE")
 
-echo "NOW: $NOW"
-echo "LAS: $((LAST_CHECK + 86400))"
-echo "NOW > LAST_CHECK: $(( NOW > LAST_CHECK + 86400 ))"
+# echo "NOW: $NOW"
+# echo "LAS: $((LAST_CHECK + 86400))"
+# echo "NOW > LAST_CHECK: $(( NOW > LAST_CHECK + 86400 ))"
 
 if (( NOW < LAST_CHECK + 86400 )); then
-	echo ""
-	echo "Last update check was more than 24 hours ago."
+	# echo ""
+	# echo "Last update check was more than 24 hours ago."
 	# read ch
 	check4UpdateFunc
 	echo "$NOW" > "$LAST_UPDATE_FILE"
