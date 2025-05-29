@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+UPDATEPATH="$HOME/.xbin/pyfiles/check4Update"
 OPTION="$1"
 DFILENAME="$2"
 DUSERNAME="YOUR_GITHUB_USERNAME"
@@ -18,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250528.1442"
+VERSIONNUMBER="20250529.1130"
 
 # colors and styles
 RESET="\033[0m"
@@ -1303,6 +1304,12 @@ instructn() {
 # note: the intro function is called to display the introduction message
 # but this has been automated except for when script cannot detect the
 # type of device
+
+if [[ -f "$UPDATEPATH" ]];
+	then
+		bash "$UPDATEPATH"
+fi
+
 launch=(
     "However, please go on and select your type of device:"
     "[p] - Phone"
