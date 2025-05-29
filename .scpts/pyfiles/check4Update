@@ -60,7 +60,7 @@ check4UpdateFunc() {
 				exit 1
 			fi
 		fi
-		# sleep 1
+		sleep 1
 		echo -e ""
 	# else
 	#     echo "✅ Versions match."
