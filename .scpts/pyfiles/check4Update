@@ -90,7 +90,7 @@ LAST_CHECK=$(cat "$LAST_UPDATE_FILE")
 # echo "LAS: $((LAST_CHECK + 86400))"
 # echo "NOW > LAST_CHECK: $(( NOW > LAST_CHECK + 86400 ))"
 
-if (( NOW < LAST_CHECK + 86400 )); then
+if (( NOW > LAST_CHECK + 86400 )); then
 	# echo ""
 	# echo "Last update check was more than 24 hours ago."
 	# read ch
