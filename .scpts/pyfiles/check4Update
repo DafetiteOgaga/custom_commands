@@ -54,7 +54,7 @@ check4UpdateFunc() {
 			if is_repo; then
 				git pull origin master
 				echo -e "Update pulled successfully."
-				read yyy
+				# read yyy
 			else
 				echo "This is not a git repository. Cannot pull updates."
 				exit 1
