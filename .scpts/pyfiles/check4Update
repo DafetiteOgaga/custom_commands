@@ -55,9 +55,10 @@ check4UpdateFunc() {
 				gitOp=$(git pull origin master 2>&1)
 				if [[ $? -eq 0 ]]; then
 					echo -e "$gitOp"
-					echo -e "Update pulled successfully."
+					echo -e "\nUpdate pulled successfully."
 				else
 					echo -e "Git Pull Failed:\n$gitOp"
+					sleep 4
 				fi
 			else
 				echo "This is not a git repository. Cannot pull updates."
@@ -95,9 +96,9 @@ if (( NOW < LAST_CHECK + 86400 )); then
 	# read ch
 	check4UpdateFunc
 	echo "$NOW" > "$LAST_UPDATE_FILE"
-else
-	echo "Last update check was less than 24 hours ago."
+# else
+# 	echo "Last update check was less than 24 hours ago."
 fi
 
-echo "PULL_UPDATE: $PULL_UPDATE"
-read yes
+# echo "PULL_UPDATE: $PULL_UPDATE"
+# read yes
