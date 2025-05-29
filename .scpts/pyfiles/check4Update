@@ -62,7 +62,7 @@ check4UpdateFunc() {
 # ENTRY POINT
 
 NOW=$(date +%s)
-LAST_UPDATE_FILE="$HOME/.xbin/pyfiles/lastUpdateTime"
+LAST_UPDATE_FILE="$HOME/.xbin/pyfiles/lastUpdateTime.txt"
 
 mkdir -p "$(dirname "$LAST_UPDATE_FILE")"
 
