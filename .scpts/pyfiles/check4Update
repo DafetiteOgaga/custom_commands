@@ -24,19 +24,6 @@ check4UpdateFunc() {
 	# echo "remote_file_content: $remote_file_content"
 	remote_version=$(echo "$remote_file_content" | grep -oP 'VERSIONNUMBER="\K[0-9.]+')
 
-	# --- COMPARE ---
-	# echo "Checking for update..."
-	# echo "Current Version:  $local_version"
-	# echo "Latest Version: $remote_version"
-	# echo -e ""
-	# echo "pwd: $(pwd)"
-
-	# if is_repo; then
-	# 	echo "Git repository detected."
-	# else
-	# 	echo "No git repository detected."
-	# fi
-
 	if [[ "$local_version" != "$remote_version" ]]; then
 		# echo ""
 		echo "Update Available!"
