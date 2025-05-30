@@ -404,8 +404,8 @@ dOptions=(
 	"  ${BOLD}${BRIGHT_YELLOW}mycompile command${RESET} - compile C source files (with options)"
 	"  ${BOLD}${BRIGHT_YELLOW}pycompile command${RESET} - compile python files"
 	"  ${BOLD}${BRIGHT_YELLOW}xbin command${RESET} - opens the xbin in file explorer"
-	"  ${BOLD}${BRIGHT_YELLOW}distributeApk command${RESET} - Downloads the apk from eas and updates it to github"
-	"  ${BOLD}${BRIGHT_YELLOW}updateResumeCV command${RESET} - updates my website and github with my resume"
+	"  ${BOLD}${BRIGHT_BLACK}distributeApk command${RESET} - Downloads the apk from eas and updates it to github"
+	"  ${BOLD}${BRIGHT_BLACK}updateResumeCV command${RESET} - updates my website and github with my resume"
 	#...C files....................... #
 	"  ${BOLD}${BRIGHT_YELLOW}myascii command${RESET} - prints a simple version of the ASCII table"
 	"  ${BOLD}${BRIGHT_YELLOW}rot13 command${RESET} - Rot13 Cipher"
