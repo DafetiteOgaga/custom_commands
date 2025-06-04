@@ -1,7 +1,18 @@
 #!/usr/bin/env bash
 
+SCPTS=".scpts/pyfiles/check4Update"
+XBIN="$HOME/.xbin/pyfiles"
+
 is_repo() {
 	[[ -d ".git" ]]
+}
+
+update_script () {
+	# ...update check4Update commands.................. #
+	echo "custom commands" > "$XBIN/check4Update"
+	cp "$SCPTS" "$XBIN/check4Update"
+	chmod +x "$XBIN/check4Update"
+	pwd
 }
 
 check4UpdateFunc() {
@@ -9,7 +20,7 @@ check4UpdateFunc() {
 	echo -e ""
 	# --- SETTINGS ---
 	LOCAL_FILE="./setScript.sh"
-	VERSIONNUMBER="20250529.1136"
+	VERSIONNUMBER="20250604.0222"
 	REMOTE_FILE_URL="https://raw.githubusercontent.com/DafetiteOgaga/custom_commands/master/setScript.sh"
 
 	# --- EXTRACT LOCAL VERSION ---
@@ -42,6 +53,7 @@ check4UpdateFunc() {
 				gitOp=$(git pull origin master 2>&1)
 				if [[ $? -eq 0 ]]; then
 					echo -e "$gitOp"
+					update_script
 					echo -e "\nUpdate pulled successfully."
 				else
 					echo -e "Git Pull Failed:\n$gitOp"
@@ -60,7 +72,7 @@ check4UpdateFunc() {
 # ENTRY POINT
 
 NOW=$(date +%s)
-LAST_UPDATE_FILE="$HOME/.xbin/pyfiles/lastUpdateTime.txt"
+LAST_UPDATE_FILE="$XBIN/lastUpdateTime.txt"
 
 mkdir -p "$(dirname "$LAST_UPDATE_FILE")"
 
@@ -83,6 +95,7 @@ if (( NOW > LAST_CHECK + 86400 )); then
 	echo "$NOW" > "$LAST_UPDATE_FILE"
 # else
 # 	echo "Last update check was less than 24 hours ago."
+# 	read ch
 fi
 
 # echo "PULL_UPDATE: $PULL_UPDATE"

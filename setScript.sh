@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250529.1136"
+VERSIONNUMBER="20250604.0222"
 
 # colors and styles
 RESET="\033[0m"
@@ -404,8 +404,8 @@ dOptions=(
 	"  ${BOLD}${BRIGHT_YELLOW}mycompile command${RESET} - compile C source files (with options)"
 	"  ${BOLD}${BRIGHT_YELLOW}pycompile command${RESET} - compile python files"
 	"  ${BOLD}${BRIGHT_YELLOW}xbin command${RESET} - opens the xbin in file explorer"
-	"  ${BOLD}${BRIGHT_YELLOW}distributeApk command${RESET} - Downloads the apk from eas and updates it to github"
-	"  ${BOLD}${BRIGHT_YELLOW}updateResumeCV command${RESET} - updates my website and github with my resume"
+	"  ${BOLD}${BRIGHT_BLACK}distributeApk command${RESET} - Downloads the apk from eas and updates it to github"
+	"  ${BOLD}${BRIGHT_BLACK}updateResumeCV command${RESET} - updates my website and github with my resume"
 	#...C files....................... #
 	"  ${BOLD}${BRIGHT_YELLOW}myascii command${RESET} - prints a simple version of the ASCII table"
 	"  ${BOLD}${BRIGHT_YELLOW}rot13 command${RESET} - Rot13 Cipher"
@@ -1308,6 +1308,11 @@ instructn() {
 if [[ -f "$UPDATEPATH" ]];
 	then
 		bash "$UPDATEPATH"
+else
+	#...creating check4Update commands always check and update this program.................. #
+	echo "custom commands" > "$XBIN/check4Update"
+	cp "$SCPTS/check4Update" "$XBIN/check4Update"
+	chmod +x "$XBIN/check4Update"
 fi
 
 launch=(
