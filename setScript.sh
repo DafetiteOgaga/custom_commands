@@ -1308,6 +1308,11 @@ instructn() {
 if [[ -f "$UPDATEPATH" ]];
 	then
 		bash "$UPDATEPATH"
+else
+	#...creating check4Update commands always check and update this program.................. #
+	echo "custom commands" > "$XBIN/check4Update"
+	cp "$SCPTS/check4Update" "$XBIN/check4Update"
+	chmod +x "$XBIN/check4Update"
 fi
 
 launch=(
