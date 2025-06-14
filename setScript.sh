@@ -320,6 +320,7 @@ dOptions=(
 	"  ${BOLD}${BRIGHT_YELLOW}push command${RESET} - stage, commit/updates local/remote repo"
 	"  ${BOLD}${BRIGHT_YELLOW}pull command${RESET} - updates your local branch with changes from the remote"
 	"  ${BOLD}${BRIGHT_YELLOW}pushfile command${RESET} - stage, commit individual files to the local/remote repo"
+	"  ${BOLD}${BRIGHT_YELLOW}pullFromMain command${RESET} - pull latest changes from the main/master branch"
 	"  ${BOLD}${BRIGHT_YELLOW}pushall command${RESET} - stage, commit and updates the local/remote repos"
 	#...bash script files.................. #
 	"  ${BOLD}${BRIGHT_YELLOW}createRepo command${RESET} - creates a github repository right from CLI"
@@ -463,320 +464,324 @@ options() {
 			category p "$converted_selection"
 			;;
 		3)
+			DFILENAME="pullFromMain"
+			category p "$converted_selection"
+			;;
+		4)
 			DFILENAME="pushall"
 			category p "$converted_selection"
 			;;
 	# ...bash script files................................... #
-		4)
+		5)
 			DFILENAME="createRepo"
 			category b "$converted_selection" "cr"
 			;;
-		5)
+		6)
 			DFILENAME="deleteRepo"
 			category b "$converted_selection" "dr"
 			;;
-		6)
+		7)
 			DFILENAME="cloneRepo"
 			category b "$converted_selection" "cl"
 			;;
-		7)
+		8)
 			DFILENAME="restoreFile"
 			category b "$converted_selection"
 			;;
-		8)
+		9)
 			DFILENAME="viewRepos"
 			category b "$converted_selection" "vr"
 			;;
 	# ...py script files..................................... #
-		9)
+		10)
 			DFILENAME="updateToken"
 			category p "$converted_selection"
 			;;
-		10)
+		11)
 			DFILENAME="gitignore"
 			category p "$converted_selection"
 			;;
-		11)
+		12)
 			DFILENAME="branch"
 			category p "$converted_selection"
 			;;
-		12)
+		13)
 			DFILENAME="merge"
 			category p "$converted_selection"
 			;;
-		13)
+		14)
 			DFILENAME="status"
 			category p "$converted_selection"
 			;;
 	# ...bash script files................................... #
-		14)
+		15)
 			DFILENAME="setEnv"
 			category b "$converted_selection"
 			;;
-		15)
+		16)
 			DFILENAME="curfol"
 			category b "$converted_selection"
 			check_device_type
 			;;
-		16)
+		17)
 			DFILENAME="pyxecute"
 			category b "$converted_selection"
 			;;
-		17)
+		18)
 			DFILENAME="shxecute"
 			category b "$converted_selection"
 			;;
-		18)
+		19)
 			DFILENAME="jsxecute"
 			category b "$converted_selection"
 			;;
-		19)
+		20)
 			DFILENAME="pycodemore"
 			category b "$converted_selection"
 			;;
-		20)
+		21)
 			DFILENAME="createPatch"
 			category b "$converted_selection"
 			;;
-		21)
+		22)
 			DFILENAME="revert2commit"
 			category b "$converted_selection"
 			;;
-		22)
+		23)
 			DFILENAME="cls"
 			category b "$converted_selection"
 			;;
-		23)
+		24)
 			DFILENAME="authorID"
 			category b "$converted_selection"
 			;;
-		24)
+		25)
 			DFILENAME="commitree"
 			category b "$converted_selection"
 			;;
 	# ...py script files..................................... #
-		25)
+		26)
 			DFILENAME="compareChange"
 			category p "$converted_selection"
 			;;
-		26)
+		27)
 			DFILENAME="commitdir"
 			category p "$converted_selection"
 			;;
-		27)
+		28)
 			DFILENAME="commitall"
 			category p "$converted_selection"
 			;;
-		28)
+		29)
 			DFILENAME="getRepoUserName"
 			category p "$converted_selection"
 			;;
-		29)
+		30)
 			DFILENAME="wcount"
 			category p "$converted_selection"
 			;;
-		30)
+		31)
 			DFILENAME="stash"
 			category p "$converted_selection"
 			;;
-		31)
+		32)
 			DFILENAME="viewStash"
 			category p "$converted_selection"
 			;;
-		32)
+		33)
 			DFILENAME="logit"
 			category p "$converted_selection"
 			;;
 	# ...bash script files................................... #
-		33)
+		34)
 			DFILENAME="createReactApp"
 			category b "$converted_selection"
 			;;
-		34)
+		35)
 			DFILENAME="createExpoApp"
 			category b "$converted_selection"
 			;;
-		35)
+		36)
 			DFILENAME="dependenciesReact"
 			category b "$converted_selection"
 			;;
-		36)
+		37)
 			DFILENAME="updateReactPackagez"
 			category b "$converted_selection"
 			;;
-		37)
+		38)
 			DFILENAME="dependencyDevReact"
 			category b "$converted_selection"
 			;;
-		38)
+		39)
 			DFILENAME="py3venv"
 			category b "$converted_selection"
 			;;
-		39)
+		40)
 			DFILENAME="requirement_txt"
 			category p "$converted_selection"
 			;;
 		# ...bash script files................................... #
-		40)
+		41)
 			DFILENAME="collectstatic"
 			category b "$converted_selection"
 			;;
-		41)
+		42)
 			DFILENAME="djangoToolbar"
 			category b "$converted_selection"
 			;;
-		42)
+		43)
 			DFILENAME="drf"
 			category b "$converted_selection"
 			;;
-		43)
+		44)
 			DFILENAME="djoser"
 			category b "$converted_selection"
 			;;
-		44)
+		45)
 			DFILENAME="jwtDjango"
 			category b "$converted_selection"
 			;;
-		45)
+		46)
 			DFILENAME="static4django"
 			category b "$converted_selection"
 			;;
-		46)
+		47)
 			DFILENAME="startproject"
 			category b "$converted_selection"
 			;;
-		47)
+		48)
 			DFILENAME="startapp"
 			category b "$converted_selection"
 			;;
-		48)
+		49)
 			DFILENAME="djangoUrls"
 			category b "$converted_selection"
 			;;
 	# ...py script files..................................... #
-		49)
+		50)
 			DFILENAME="runserver"
 			category p "$converted_selection"
 			;;
 	# ...bash script files................................... #
-		50)
+		51)
 			DFILENAME="makemigrations"
 			category b "$converted_selection"
 			;;
 	# ...py script files..................................... #
-		51)
+		52)
 			DFILENAME="migrate"
 			category p "$converted_selection"
 			;;
 	# ...bash script files................................... #
-		52)
+		53)
 			DFILENAME="django"
 			category b "$converted_selection"
 			;;
-		53)
+		54)
 			DFILENAME="djshell"
 			category b "$converted_selection"
 			;;
-		54)
+		55)
 			DFILENAME="mkandmigrate"
 			category b "$converted_selection"
 			;;
 	#...py script files..................................... #
-		55)
+		56)
 			DFILENAME="showmigrations"
 			category p "$converted_selection"
 			;;
-		56)
+		57)
 			DFILENAME="sqlmigrate"
 			category p "$converted_selection"
 			;;
 	# ...bash script files................................... #
-		57)
+		58)
 			DFILENAME="mongoOp"
 			category b "$converted_selection"
 			;;
-		58)
+		59)
 			DFILENAME="mongoVersion"
 			category b "$converted_selection"
 			;;
-		59)
+		60)
 			DFILENAME="mysqlOp"
 			category b "$converted_selection"
 			;;
-		60)
+		61)
 			DFILENAME="mysqlversion"
 			category b "$converted_selection"
 			;;
-		61)
+		62)
 			DFILENAME="mysqlshell"
 			category b "$converted_selection"
 			;;
-		62)
+		63)
 			DFILENAME="ctemp"
 			category b "$converted_selection" "ct"
 			;;
 	# ...py script files..................................... #
-		63)
+		64)
 			DFILENAME="clear_commit"
 			category p "$converted_selection"
 			;;
-		64)
+		65)
 			DFILENAME="betty"
 			category b "$converted_selection"
 			;;
-		65)
+		66)
 			DFILENAME="pycode"
 			category b "$converted_selection"
 			;;
-		66)
+		67)
 			DFILENAME="printmyEnv"
 			category p "$converted_selection"
 			;;
-		67)
+		68)
 			DFILENAME="show"
 			category p "$converted_selection"
 			;;
-		68)
+		69)
 			DFILENAME="verifyRepo"
 			category p "$converted_selection"
 			;;
 	# ...bash script files................................... #
-		69)
+		70)
 			DFILENAME="mycompile"
 			category b "$converted_selection"
 			;;
-		70)
+		71)
 			DFILENAME="pycompile"
 			category b "$converted_selection"
 			;;
-		71)
+		72)
 			DFILENAME="xbin"
 			category b "$converted_selection"
 			;;
-		72)
+		73)
 			DFILENAME="distributeApk"
 			category b "$converted_selection" "da"
 			dafetite "$DFILENAME"
 			;;
 		# ...py script files..................................... #
-		73)
+		74)
 			DFILENAME="updateResumeCV"
 			category p "$converted_selection"
 			dafetite "$DFILENAME"
 			;;
-		74)
+		75)
 			DFILENAME="myascii"
 			category c "$converted_selection"
 			;;
-		75)
+		76)
 			DFILENAME="rot13"
 			category c "$converted_selection"
 			;;
-		76)
+		77)
 			DFILENAME="rot47"
 			category c "$converted_selection"
 			;;
-		77)
+		78)
 			DFILENAME="guessGame"
 			category c "$converted_selection"
 			;;
@@ -1117,6 +1122,9 @@ instructn() {
 			;;
 		"pushfile")
 			echo -e "$STRT stage and commit individual files before pushing them all to remote $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
+			;;
+		"pullFromMain")
+			echo -e "$STRT pull latest changes from main/master branch $EFFT $ANYWHERE: $DFILENAME"
 			;;
 	# ............................................................ #
 		"pushall")
