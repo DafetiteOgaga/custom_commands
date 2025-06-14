@@ -340,6 +340,17 @@
     <td></td>
     <td></td>
   </tr>
+  <tr>
+    <td>pullFromMain</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
 
 </table>
 
@@ -361,6 +372,7 @@
 - Submit a pull request to this repository.
 
 ## New
+  - pullFromMain
   - mongoOp
   - mongoVersion
   - revert2commit
@@ -372,6 +384,7 @@
   - drf
 
 ## Changes
+  - pullFromMain command pulls (rebase) changes from main/master branch and plays it in from of the changes from main/master into the current branch
   - merged mysqlstart, mysqlstop, mysqlrestart and mysql_status commands
    into mysqlOp command
   - changed rollback to revert2commit command, which is preferred because
