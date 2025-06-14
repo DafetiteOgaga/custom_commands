@@ -20,7 +20,7 @@ check4UpdateFunc() {
 	echo -e ""
 	# --- SETTINGS ---
 	LOCAL_FILE="./setScript.sh"
-	VERSIONNUMBER="20250614.2200"
+	VERSIONNUMBER="20250614.2216"
 	REMOTE_FILE_URL="https://raw.githubusercontent.com/DafetiteOgaga/custom_commands/master/setScript.sh"
 
 	# --- EXTRACT LOCAL VERSION ---
