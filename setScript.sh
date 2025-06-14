@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250604.0222"
+VERSIONNUMBER="20250614.2200"
 
 # colors and styles
 RESET="\033[0m"
