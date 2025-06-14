@@ -817,28 +817,89 @@ def Update_github_token(token: str, my_token: str):
 			print('Token not saved.')
 
 def incorrect_args():
-    if len(sys.argv) != 2:
-        token = input('Enter Github token to Add/Update to your Credentials [q] - quit >>> ')
-        if token.lower() == 'q':
-            print('\nCheers!')
-            sys.exit(0)
-        return token
+	if len(sys.argv) != 2:
+		token = input('Enter Github token to Add/Update to your Credentials [q] - quit >>> ')
+		if token.lower() == 'q':
+			print('\nCheers!')
+			sys.exit(0)
+		return token
 
 def update_token_command():
-    token = ''
-    my_token = 'MY_TOKEN_UPDATED'
-    if len(sys.argv) == 2:
-        token = sys.argv[1]
-    elif my_token.startswith('ghp_'):
-        use_token = prompt_1ch(f'Use the token: {BRIGHT_MAGENTA}{my_token[:8]}...{my_token[32:]}{RESET}? [y/N] >>> ')
-        if use_token.lower() == 'y' or use_token == '':
-            token = my_token
-        else:
-            token = incorrect_args()
-    else:
-        token = incorrect_args()
+	token = ''
+	my_token = 'MY_TOKEN_UPDATED'
+	if len(sys.argv) == 2:
+		token = sys.argv[1]
+	elif my_token.startswith('ghp_'):
+		use_token = prompt_1ch(f'Use the token: {BRIGHT_MAGENTA}{my_token[:8]}...{my_token[32:]}{RESET}? [y/N] >>> ')
+		if use_token.lower() == 'y' or use_token == '':
+			token = my_token
+		else:
+			token = incorrect_args()
+	else:
+		token = incorrect_args()
 
-    Update_github_token(token, my_token)
+	Update_github_token(token, my_token)
+
+
+# def print_stashes():
+# 	"""This function prints the list of stashes in the repository
+# 	"""
+# 	stashList = subprocess.run(["git", "stash", "list"], capture_output=True, text=True)
+# 	if stashList.stdout:
+# 		print_stdout(f'$$$$$ {stashList.stdout} fxn')
+# 	elif stashList.stderr:
+# 		print_stdout(f'$$$$$ {stashList.stderr} fxn')
+# 	else:
+# 		print_norm(f"$$$$$ No stashes found. fxn")
+
+
+
+
+# entry point for pull_from_main_or_master command
+def pull_from_main_or_master():
+	"""pulls changes from the main/master branch into the current branch
+	"""
+	stashCreated = False
+	main = view_branch(new_branch="main", action=-2)
+
+	print_norm(f'current branch: {current_branch_name}')
+	if current_branch_name in ["main", "master"]:
+		print_norm(f"You are on {main} branch.")
+		print_norm(f"Switch to the desired branch you want to pull {main} into.")
+		quit("q")
+
+	# stash changes, if any
+	stashChanges = subprocess.run(["git", "stash"], capture_output=True, text=True)
+	stashedOutput = stashChanges.stdout.strip()
+	if "No local changes" not in stashedOutput:
+		print_norm(stashedOutput)
+		stashCreated = True
+	else:
+		print_norm("No local changes to stash. Proceeding with rebase...")
+
+	# fetch changes from origin
+	fetchChangesFromOrigin = subprocess.run(["git", "fetch", "origin"], capture_output=True, text=True)
+	if fetchChangesFromOrigin.stderr:
+		print_norm(fetchChangesFromOrigin.stderr)
+		quit("q")
+
+	# rebase from main/master branch
+	rebaseFromMain = subprocess.run(["git", "rebase", f"origin/{main}"], capture_output=True, text=True)
+	if rebaseFromMain.stdout:
+		print_norm(rebaseFromMain.stdout)
+	elif rebaseFromMain.stderr:
+		print_norm('Rebase failed.')
+		print_norm(rebaseFromMain.stderr)
+		quit("q")
+
+	# pop stash if one was created
+	if stashCreated:
+		popStash = subprocess.run(["git", "stash", "pop"], capture_output=True, text=True)
+		if popStash.stdout:
+			print_norm(popStash.stdout)
+		elif popStash.stderr:
+			print_norm(popStash.stderr)
+			quit("q")
 
 
 
