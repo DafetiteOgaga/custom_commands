@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
 
-# success message
-success() {
-	if [[ "$?" == 0 ]]; then
-		echo "Success"
-	fi
-}
-
 # check if node and npm are installed
 path1="$HOME/.xbin/pyfiles"
 # path1="$HOME/alx/custom_commands/.scpts/pyfiles"
@@ -17,6 +10,109 @@ if [[ -n "$check" ]]; then
 		exit 1
 	fi
 fi
+
+# success message
+success() {
+	if [[ "$?" == 0 ]]; then
+		echo "Success"
+	fi
+}
+
+replace_in_place() {
+	local searchedText="$1"
+	local replacementText="$2"
+	local filePath="$3"
+	if [[ -f "$filePath" ]]; then
+		sed -i "s|$searchedText|$replacementText|g" "$filePath"
+	else
+		echo "Oopsy! File not found: $filePath"
+	fi
+}
+
+delete_contents_between_headtag_in_place_in_index() {
+	local filePath="$1"
+	if [[ -f "$filePath" ]]; then
+		searchedText=("<link rel" "<meta name" "name=\"description\"" "content=\"" "^\s*<meta\s*$" "^\s*\/>\s*$" "<title>")
+		for text in "${searchedText[@]}"; do
+			sed -i "/$text/d" "$filePath"
+		done
+	else
+		echo "Oopsy! File not found: $filePath"
+	fi
+}
+
+replace_contents_between_headtag_in_place_in_index() {
+	local filePath="$1"
+	if [[ -f "$filePath" ]]; then
+		# title tag
+		title_comment="\t\t<!-- title -->"
+		title_tag="\t\t<title>Created Using custom commands</title>"
+		title="$title_comment\n$title_tag\n"
+
+		# cananonical link tag
+		canonical_comment="\t\t<!-- canonical link. note: change %PUBLIC_URL% to your absolute url -->"
+		canonical_link="\t\t<link rel=\"canonical\" href=\"%PUBLIC_URL%/\" />"
+		canonical="$canonical_comment\n$canonical_link\n"
+
+		# links
+		link_comment="\t\t<!-- links note: change %PUBLIC_URL% to your absolute url and logo192.png to desired logo -->"
+		image32="\t\t<link rel=\"icon\" type=\"image\/png\" sizes=\"32x32\" href=\"%PUBLIC_URL%/logo192.png\" />"
+		image16="\t\t<link rel=\"icon\" type=\"image\/png\" sizes=\"16x16\" href=\"%PUBLIC_URL%/logo192.png\" />"
+		apple_touch_icon180="\t\t<link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"%PUBLIC_URL%/logo192.png\" />"
+		apple_touch_icon="\t\t<link rel=\"apple-touch-icon\" href=\"%PUBLIC_URL%/logo192.png\" />"
+		manifest_comment="\t\t<!-- note: open manifest.json and change logo192.png to desired logo -->"
+		manifest="\t\t<link rel=\"manifest\" href=\"%PUBLIC_URL%/manifest.json\" />"
+		link="$link_comment\n$image32\n$image16\n$apple_touch_icon180\n$apple_touch_icon\n$manifest_comment\n$manifest\n"
+
+		sample_description="Site developed using React via custom commands"
+		# description, viewport, and theme color, etc
+		description_comment="\t\t<!-- description, viewport, and theme color, etc -->"
+		viewport="\t\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />"
+		theme_color="\t\t<meta name=\"theme-color\" content=\"#000000\" />"
+		description="\t\t<meta\n\t\t\tname=\"description\"\n\t\t\tcontent=\"$sample_description\" />"
+		robots="\t\t<meta name=\"robots\" content=\"index, follow\" />"
+		google_site_verification="\t\t<meta name=\"google-site-verification\" content=\"google_key_goes_here\" />"
+		description_tags="$description_comment\n$viewport\n$theme_color\n$description\n$robots\n$google_site_verification\n"
+
+		# ogp tags
+		ogp_comment="\t\t<!-- Open Graph Protocol (OGP) tags note: change %PUBLIC_URL% to your absolute url and logo192.png to desired logo -->"
+		ogp_title="\t\t<meta property=\"og:title\" content=\"$sample_description\" />"
+		ogp_description="\t\t<meta\n\t\t\tproperty=\"og:description\"\n\t\t\tcontent=\"$sample_description\" />"
+		ogp_image="\t\t<meta property=\"og:image\" content=\"%PUBLIC_URL%/logo192.png\" />"
+		ogp_image_width="\t\t<meta property=\"og:image:width\" content=\"1200\" />"
+		ogp_image_height="\t\t<meta property=\"og:image:height\" content=\"1048\" />"
+		ogp_url="\t\t<meta property=\"og:url\" content=\"%PUBLIC_URL%\" />"
+		ogp_type="\t\t<meta property=\"og:type\" content=\"website\" />"
+		ogp="$ogp_comment\n$ogp_title\n$ogp_description\n$ogp_image\n$ogp_image_width\n$ogp_image_height\n$ogp_url\n$ogp_type\n"
+
+		new_head_content="\n$title\n$canonical\n$link\n$description_tags\n$ogp"
+		sed -i '/<meta charset="utf-8" \/>/a\
+		'"$new_head_content"'' "$filePath"
+	else
+		echo "Oopsy! File not found: $filePath"
+	fi
+}
+
+replace_contents_in_place_in_robots() {
+	local filePath="$1"
+	if [[ -f "$filePath" ]]; then
+		replace_in_place "Disallow:" "Allow: \/" "$filePath"
+		echo "Sitemap: <your_absolute_url>/sitemap.xml" >> "$filePath"
+	else
+		echo "Oopsy! File not found: $filePath"
+	fi
+}
+
+create_sitemap() {
+	local filePath="$1"
+	if [[ ! -f "$filePath" ]]; then
+		touch "$filePath"
+		echo "Custom Commands" > "$filePath"
+	fi
+	sitemap="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n\t<url>\n\t\t<loc>your_absolute_url</loc>\n\t\t<lastmod>2024-06-09</lastmod>\n\t\t<priority>1.0</priority>\n\t</url>\n</urlset>"
+	echo -e "$sitemap" > "$filePath"
+}
+
 
 echo ""
 # command="npm init react-app my_default_app"
@@ -36,7 +132,8 @@ elif [[ "$#" -eq 1 ]]; then
 		# exit 0
 		cp -r "$my_default_app/" "$1"
 		cd "$1"
-		sed -i "s|my_default_app|${1}|g" "package.json"
+		replace_in_place "my_default_app" "${1}" "package.json"
+		# sed -i "s|my_default_app|${1}|g" "package.json"
 
 		# inquest for update
 		echo ""
@@ -94,7 +191,8 @@ elif [[ "$#" -eq 1 ]]; then
 			if [[ "$new_update" -eq 1 ]]; then
 				cp -r "node_modules" "$my_default_app/node_modules"
 				cp -r "package.json" "$my_default_app/package.json"
-				sed -i "s|${1}|my_default_app|g" "$my_default_app/package.json"
+				replace_in_place "${1}" "my_default_app" "$my_default_app/package.json"
+				# sed -i "s|${1}|my_default_app|g" "$my_default_app/package.json"
 			fi
 		else
 			echo "No, don't check for updates ..."
@@ -103,16 +201,22 @@ elif [[ "$#" -eq 1 ]]; then
 		echo "fresh install ..."
 		# echo "Installing and setting up node_modules, package.json for future use."
 		# installs a fresh react app and setup a default project for furure use
-		npm init react-app my_default_app
+
+		# npm init react-app my_default_app # old command
+		npx create-react-app my_default_app
+
 		index="my_default_app/public/index.html"
-		ogp_title="<meta property=\"og:title\" content=\"Created Using custom commands\" />"
-		ogp_description="\t\t<meta property=\"og:description\" content=\"Developed using by custom commands\" />"
-		ogp_image="\t\t<meta property=\"og:image\" content=\"%PUBLIC_URL%/logo192.png\" />"
-		ogp_url="\t\t<meta property=\"og:url\" content=\"\" />"
-		ogp_type="\t\t<meta property=\"og:type\" content=\"website\" />"
-		ogp="$ogp_title\n$ogp_description\n$ogp_image\n$ogp_url\n$ogp_type"
-		sed -i '/<link rel="apple-touch-icon" href="%PUBLIC_URL%\/logo192.png" \/>/a\
-		'"$ogp"'' $index # changes the
+		robotFile="my_default_app/public/robots.txt"
+		sitemap="my_default_app/public/sitemap.xml"
+
+		delete_contents_between_headtag_in_place_in_index "$index" # deletes the contents between the head tag in index.html
+		replace_contents_between_headtag_in_place_in_index "$index" # replaces the contents between the head tag in index.html
+		echo "improved index.html in /public/."
+		replace_contents_in_place_in_robots "$robotFile" # replaces the contents in robots.txt
+		echo "improved robots.txt in /public/."
+		create_sitemap "$sitemap" # creates a sitemap.xml file in the public directory
+		echo "created sitemap.xml in /public/."
+
 		src="$(2>&1 find . -type d -name "node_modules" -prune -o -type d -name "src" -print)"
 		line="£<p>&£*<a&*£*className=\"App-link\"*£
           *href=\"https://github.com/DafetiteOgaga/custom_commands\"*£
@@ -121,14 +225,18 @@ elif [[ "$#" -eq 1 ]]; then
 		app_js_path="$(find $PWD -name "App.js")"
 		cat "$app_js_path" | python3 "$path1/process_more.py" "react" "$line" "$app_js_path"
 		mkdir "$src/components" # creates components dir in src dir
+		echo "Created components directory in src."
 		mkdir "$src/images" # creates images dir in src dir
+		echo "Created images directory in src."
 		echo "Creating copy for future use."
 		# creates default project for future use
 		mkdir "$def_project"
 		cp -r "my_default_app" "$my_default_app"
 		# npm pkg set name="${1}" # this is believed to do the same thing as sed
-		sed -i "s|my_default_app|${1}|g" "my_default_app/package.json" # sets the react app to align with the current name
-		sed -i "s|my_default_app|${1}|g" "my_default_app/package-lock.json"
+		replace_in_place "my_default_app" "${1}" "my_default_app/package.json" # sets the react app to align with the current name
+		replace_in_place "my_default_app" "${1}" "my_default_app/package-lock.json"
+		# sed -i "s|my_default_app|${1}|g" "my_default_app/package.json" # sets the react app to align with the current name
+		# sed -i "s|my_default_app|${1}|g" "my_default_app/package-lock.json"
 		mv "my_default_app" "$1"
 	fi
 	success
