@@ -384,6 +384,7 @@
   - drf
 
 ## Changes
+  - createReactApp - changed the default tags within the head tag of index.html in /public/ to accomodate setup for seo, preview cards for social media, etc
   - pullFromMain command pulls (rebase) changes from main/master branch and plays it in from of the changes from main/master into the current branch
   - merged mysqlstart, mysqlstop, mysqlrestart and mysql_status commands
    into mysqlOp command
@@ -392,7 +393,6 @@
    creating a new commit for this revert. Hence, history is not lost or
    discarded
   - Added (New) createExpoApp - uses backed up app config setup to create apps after the initial (first downloaded) setup and spins up the local server automatically.
-   - Added (New) setEnv command - creates environmental variables automatically.
   - [More](https://github.com/DafetiteOgaga/custom_commands/blob/master/changes.md)
 
 
