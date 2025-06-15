@@ -2,6 +2,7 @@
 This file contains the notable changes made to the Custom Commands project.
 
 ## Changes
+   - createReactApp - changed the default tags within the head tag of index.html in /public/ to accomodate setup for seo, preview cards for social media, etc
    - merged mysqlstart, mysqlstop, mysqlrestart and mysql_status commands
    into mysqlOp command
    - changed rollback to revert2commit command, which is preferred because

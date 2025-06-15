@@ -39,6 +39,6 @@ elif [[ "$check" == "True" ]]; then
 	appName=$(echo $file_list | python3 $path1/filter.py $1)
 	# echo "appName #####: $appName"
 	echo ""
-	echo "Oopsy! can not install."
+	echo "Oopsy! cannot install."
 	echo "Directory has the app: $appName installed in it already."
 fi
