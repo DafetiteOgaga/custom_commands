@@ -397,11 +397,11 @@
 
 
 ## Fixes
+  - fixed base code to dynamically handle merge conflict for operations involving pull (from current branch), using rebase instead of merge resolution
   - Added checks to mongoOp command to check if mongodb is installed before proceeding with its operations
   - fixed all commands to be gitbash compartible
   - fixed updateResumeCV command to automatically update concerned repos locally after execution.
   - Added support for ignoring node_modules using gitignore command for Expo (React Native) Apps.
-  - corrrected typos in createReactApp command setup.
   - [More](https://github.com/DafetiteOgaga/custom_commands/blob/master/fixes.md)
 
 

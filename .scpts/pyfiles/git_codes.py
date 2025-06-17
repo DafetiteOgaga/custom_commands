@@ -8,6 +8,10 @@ from pyfiles.print import print_stdout, write_to_file, backward_search
 from pyfiles.print import print_norm
 from pyfiles.configure_settings_py import compile_dir_list, list_filter
 from pyfiles.colors import *
+try:
+	from .colors import *
+except ImportError:
+	from colors import *
 
 home_dir = os.path.join(os.path.expanduser("~"), '.xbin')  # Expands "~" to "/home/your-username"
 bumpAppJsonVersionScript = os.path.join(home_dir, "pyfiles")  # location to bumpAppJsonVersion
@@ -171,33 +175,285 @@ def print_set_commit(var: str):
 	print("........................................................................................")
 
 
+# def pull():
+# 	"""This function pulls and merges updates from the remote to the local branch
+# 	"""
+
+# 	print()
+# 	print_norm("#### pulling ...################################################")
+# 	pull = subprocess.run(["git", "pull"], capture_output=True, text=True)
+# 	if pull.returncode == 0:
+# 		print_stdout(pull.stdout)
+# 	elif "You have divergent branches and need to specify how to reconcile them" in pull.stderr\
+# 			and "Need to specify how to reconcile divergent branches" in pull.stderr:
+# 		rebase = subprocess.run(["git", "config", "pull.rebase", "true"])
+# 		pull = subprocess.run(["git", "pull"], capture_output=True, text=True)
+# 		if pull.returncode == 0:
+# 			print_stdout(pull.stdout)
+# 		elif pull.stdout:
+# 			print_stdout(pull.stdout)
+# 		elif pull.stderr:
+# 			print_stdout(pull.stderr)
+# 	elif pull.returncode > 0:
+# 		print_stdout(pull.stderr)
+# 	else:
+# 		print_norm("Oops! I got {}".format(pull.stderr))
+# 		sys.exit()
+# 	print_norm("Pull successful...")
+# 	print()
+
+def print_stashes(arg=''):
+	"""This function prints the list of stashes in the repository
+	"""
+	stashList = subprocess.run(["git", "stash", "list"], capture_output=True, text=True)
+	if stashList.stdout:
+		print_norm(f'$$$$$ stdout: {stashList.stdout.strip()} fxn {arg}')
+	elif stashList.stderr:
+		print_norm(f'$$$$$ stderr: {stashList.stderr.strip()} fxn {arg}')
+	else:
+		print_norm(f"$$$$$ No stashes found. fxn {arg}")
+	return ''
+
+
+def run_subprocess(cmd, capture=True):
+	return subprocess.run(cmd, capture_output=capture, text=True)
+
+def getUserInput(promptText='Select a choice', allowedEntryArray=None, invalidText='Invalid choice.'):
+	while True:
+		choice = prompt_1ch(promptText).strip().lower()
+		if choice == 'q':
+			quit()
+		elif allowedEntryArray:
+			if choice in allowedEntryArray:
+				return choice
+		else:
+			if choice:
+				return choice
+		print_norm(invalidText)
+
+def get_conflicted_files():
+	result = run_subprocess(['git', 'diff', '--name-only', '--diff-filter=U'])
+	return result.stdout.strip().splitlines()
+
+def is_binary(file_path):
+	result = run_subprocess(["git", "check-attr", "binary", file_path])
+	return "binary: set" in result.stdout
+
+def show_conflict_lines(file_path):
+	conflict_start = '<<<<<<<'
+	conflict_middle = '======='
+	conflict_end = '>>>>>>>'
+
+	try:
+		with open(file_path, 'r', errors='ignore') as f:
+			lines = f.readlines()
+
+		filename = f"{('/').join(file_path.split('/')[:-1])}/{BOLD}{MAGENTA}{file_path.split('/')[-1]}{RESET}" if '/' in file_path else f'{BOLD}{MAGENTA}{file_path}{RESET}'
+		print(f"\nConflicts in: {filename}")
+
+		in_conflict = False
+		for i, line in enumerate(lines):
+			stripped_line = line.strip()
+
+			if stripped_line.startswith(conflict_start):
+				in_conflict = "remote"
+				print(f"line: {i+1} {stripped_line}	{BOLD}{YELLOW} - changes from {UNDERLINE}{in_conflict.upper()}{RESET}{BOLD}{YELLOW} starts here{RESET}")
+			elif stripped_line.startswith(conflict_middle):
+				in_conflict = "local"
+				print(f"line: {i+1} {stripped_line}			{BOLD}{GREEN} - your {UNDERLINE}{in_conflict.upper()}{RESET}{BOLD}{GREEN} changes starts here{RESET}")
+			elif stripped_line.startswith(conflict_end):
+				print(f"line: {i+1} {stripped_line}	{BOLD}{WHITE} - end of conflict{RESET}\n")
+				in_conflict = False
+			elif in_conflict:
+				print(f"line: {i+1} {stripped_line}")
+	except FileNotFoundError:
+		print(f"File not found: {file_path}")
+
+def pop_stash(stash_resp=None):
+	# if not stash_resp:
+	# 	stash_pop = run_subprocess(['git', 'stash', 'pop'])
+	# else:
+	
+	if stash_resp:
+		stash_pop = stash_resp
+		# print_norm(f"EEEEE{stash_pop.stdout}EEEEE")
+		# print_norm(f"FFFFF{stash_pop.stderr}FFFFF")
+		# print(f'{print_stashes(77777)}')
+		
+			# print('2222222222')
+		# print_norm(f"CCCCC{stash_pop.stdout}CCCCC")
+		# if stash_pop.stderr:
+		# 	print_norm(f"DDDDD{stash_pop.stderr}DDDDD")
+		print_stdout(f"{stash_pop.stdout.strip() or stash_pop.stderr.strip()}")
+	# print(f'{print_stashes(88888)}')
+	# Clean up stash if it still exists after popping
+	cleanup = run_subprocess(['git', 'stash', 'list'])
+	if cleanup.stdout.strip():
+		print_norm("Cleaning up...")
+		run_subprocess(['git', 'stash', 'drop'])  # drops top stash (stas
+
+def is_rebase_in_progress():
+	result = run_subprocess(['git', 'rev-parse', '--git-dir'])
+	git_dir = result.stdout.strip()
+	# print(f'git_dir: {git_dir}')
+	response = os.path.exists(os.path.join(git_dir, 'rebase-merge')) or os.path.exists(os.path.join(git_dir, 'rebase-apply'))
+	# print(f'is_rebase_in_progress: {response}')
+	return response
+
+def resolve_conflict(file_path, keep='local', rebase_in_progress=None):
+	# print(f"keep arg received: {keep}")
+	# print(f"file_path: {file_path}")
+
+	# if rebase_in_progress is None:
+	rebase_in_progress = is_rebase_in_progress()
+	# print(f'rebase_in_progress: {rebase_in_progress} ##########')
+	# if rebase_in_progress:
+	# 	# During rebase: --ours = remote (upstream), --theirs = local
+	# 	oursOrTheirs = '--ours' if keep == 'remote' else '--theirs'
+	# else:
+	# 	# During merge: --ours = local, --theirs = remote
+	# 	oursOrTheirs = '--theirs' if keep == 'remote' else '--ours'
+
+	oursOrTheirs = '--ours' if keep == 'remote' else '--theirs'
+	# print(f'Using git checkout {oursOrTheirs} for {file_path}')
+	run_subprocess(['git', 'checkout', oursOrTheirs, file_path])
+	# if resoleve_conflict_result.returncode != 0:
+	# 	print(f'failed to resolve conflict for {file_path}')
+	run_subprocess(['git', 'add', file_path])
+	# else:
+	# 	run_subprocess(['git', 'checkout', '--theirs', file_path])
+	# run_subprocess(['git', 'add', file_path])
+	check_result = run_subprocess(['git', 'diff', '--check'])
+	# print(f'return code from git diff check: {check_result.returncode}')
+	# if check_result.returncode != 0:
+	# 	print(f"Warning: Conflict markers might still exist in the file: {file_path}")
+	# 	print(f"Please check the file manually to ensure all conflicts are resolved.")
+
+def check_for_conflicts(rebase_in_progress=is_rebase_in_progress()):
+	# if 'CONFLICT' in conflictText or 'you have unmerged files' in conflictText:
+	print()
+	print_norm("Oopsi! Merge conflicts detected...")
+	# print_norm(f"Pull unsuccessful. YYYYY{conflictText}YYYYY")
+
+	# print(f'{print_stashes(33333)}')
+	conflicted_files = get_conflicted_files()
+
+	number_of_conflicted_files = len(conflicted_files)
+	append_s = 's' if number_of_conflicted_files > 1 else ''
+	print_norm(f"Found {number_of_conflicted_files} conflicted file{append_s}.")
+	# print()
+	for file in conflicted_files:
+		# if file.endswith('.png') or file.endswith('.jpg') or file.endswith('.jpeg') or file.endswith('.pdf') or file.endswith('.docx'):
+		# 	# binary file — prompt user
+		# 	choice = input(f"Binary conflict in {file}. Keep (l)ocal or (r)emote? ").strip().lower()
+		# 	resolve_conflict(file, 'local' if choice == 'l' else 'remote')
+		filename = f"{('/').join(file.split('/')[:-1])}/{BOLD}{BLUE}{file.split('/')[-1]}{RESET}" if '/' in file else f'{BOLD}{BLUE}{file}{RESET}'
+		promptText = f"Conflict in {filename}. Keep (l)ocal or (r)emote? [l/r and q - quit] >>> "
+		invalidText = "Invalid choice. Please enter 'l' for local or 'r' for remote or q to quit."
+		if not is_binary(file):
+			show_conflict_lines(file)
+		choice = getUserInput(promptText, allowedEntryArray=['l', 'r'], invalidText=invalidText)
+		# print(f"choice: X{choice}X #####")
+		# print(f'file: {file}')
+		# print(f'choice: {choice}')
+		resolve_conflict(file, keep='local' if choice == 'l' else 'remote', rebase_in_progress=rebase_in_progress)
+		# resolve_conflict(file, keep='local' if choice == 'l' else 'remote')
+		# else:
+			
+		# 	choice = getUserInput(promptText, allowedEntryArray=['l', 'r'], invalidText=invalidText)
+		# 	resolve_conflict(file, keep='local' if choice == 'l' else 'remote')
+
+	print()
+	conflictSuccess = 'Successful! conflicts resolved.'
+	# print(f'rebase_in_progress: {rebase_in_progress} #####XXXXX#####')
+	# if rebase_in_progress:
+	# Continue rebase after resolving
+	# print(f'{print_stashes(44444)}')
+	cont = run_subprocess(['git', 'rebase', '--continue'])
+	# print_norm(f"cont stdout: {cont.stdout}")
+	# print_norm(f"cont returncode: {cont.returncode}")
+	if cont.returncode != 0 and 'No rebase in progress' not in cont.stderr.strip():
+		print_norm("Rebase continue failed. You may need to fix manually.")
+		print_norm(f"Rebase unsuccessful. {cont.stderr}")
+		quit()
+	print_norm(f"{conflictSuccess} {cont.stdout}")
+	# else:
+	# 	# print(f'{print_stashes(55555)}')
+	# 	print_norm(f"{conflictSuccess}")
+	# return rebase_in_progress
+
 def pull():
 	"""This function pulls and merges updates from the remote to the local branch
 	"""
 
 	print()
 	print_norm("#### pulling ...################################################")
-	pull = subprocess.run(["git", "pull"], capture_output=True, text=True)
+
+	# print(f'{print_stashes(11111)}')
+
+	# Stash everything
+	# print_norm("Stashing changes...")
+	# stash_result = run_subprocess(['git', 'stash', '--include-untracked'])
+	# resolved = False
+	is_stashed = None
+	status = run_subprocess(['git', 'status', '--porcelain'])
+	if status.stdout.strip():
+		run_subprocess(['git', 'stash', '--include-untracked'])
+		is_stashed = True
+		# print_norm("Stashed local changes...")
+	else: # consider removing
+		# _ = ''
+		print_norm("No local changes found.")
+
+	# print_norm("Stashed local changes...")
+	# print_stdout(stash_result.stdout)
+	# print(f'{print_stashes(22222)}')
+
+	# Pull with rebase
+	pull = run_subprocess(["git", "pull", "--rebase"])
+	# print_norm(f"stdout: {pull.stdout}")
+	# print_norm(f"stderr: {pull.stderr}")
+	is_stashed and print_norm("adding local changes ontop of remote...")
 	if pull.returncode == 0:
 		print_stdout(pull.stdout)
-	elif "You have divergent branches and need to specify how to reconcile them" in pull.stderr\
-			and "Need to specify how to reconcile divergent branches" in pull.stderr:
-		rebase = subprocess.run(["git", "config", "pull.rebase", "true"])
-		pull = subprocess.run(["git", "pull"], capture_output=True, text=True)
-		if pull.returncode == 0:
-			print_stdout(pull.stdout)
-		elif pull.stdout:
-			print_stdout(pull.stdout)
-		elif pull.stderr:
-			print_stdout(pull.stderr)
-	elif pull.returncode > 0:
-		print_stdout(pull.stderr)
 	else:
-		print_norm("Oops! I got {}".format(pull.stderr))
-		sys.exit()
+		# stderr_content = map(lambda x: x, pull.stderr)
+		# print('type of stderr:', type(pull.stderr))
+		# print(pull.stderr.replace('\n', ' '))
+		unmerged_text = pull.stderr.replace('\n', ' ')
+		# print_norm(f"HHHHH{unmerged_text}HHHHHH")
+		if 'you have unmerged files' in unmerged_text:
+			# print_norm("&&&&&&&&&&&&&&&&&&&")
+			check_for_conflicts()
+			pop_stash()
+			is_stashed = False
+		else:
+			print_norm("Oops! I got {}".format(pull.stderr))
+			quit()
+
+	if is_stashed:
+		stash_pop = run_subprocess(['git', 'stash', 'pop'])
+		stderr_clean = stash_pop.stderr.replace('\n', ' ')
+		stdout_clean = stash_pop.stdout.replace('\n', ' ')
+		unmerged_pop_text = f"{stderr_clean} {stdout_clean}"
+		# print_norm(f"GGGGG{unmerged_pop_text}GGGGG")
+		
+		if 'CONFLICT' in unmerged_pop_text:
+			# print_norm("|||||||||||||||||||||")
+			# print('111111111')
+			check_for_conflicts(rebase_in_progress=False)
+			pop_stash(stash_resp=stash_pop)
+		# else: # consider removing
+		# 	_ = ''
+	# Apply stash back
+	# print_norm("Applying stash back...")
+	# print(f'{print_stashes(66666)}')
+	# print_norm(f"AAAAA{pull.stdout}AAAAA")
+	# print_norm(f"BBBBB{pull.stderr}BBBBB")
+	# print(f'{print_stashes(99999)}')
+	print()
 	print_norm("Pull successful...")
 	print()
-
 
 def push(file_list: list):
 	"""This function takes a list as argument and Updates the
@@ -272,7 +528,7 @@ def add_commit_all(type: str="current", commit_message: str=""):
 		print_stdout(commit.stderr)
 
 
-def quit(val):
+def quit(val='q'):
 	"""
 	This function stops and exit the program.
 	"""
@@ -497,7 +753,7 @@ def stash(action: int=0):
 		if action == 0:
 			if not changes:
 				print_norm(f"How do you want to handle changes in {current_branch_name}?")
-				print_norm("[v] to see change(s) - [d] to see content of change(s) - [q] to quit ")
+				print_norm("[v] to see file(s) with changes - [d] to see content of change(s) - [q] to quit ")
 				resp = prompt_1ch("commit[c] or stash[s]? [c/s] >>> ")
 				quit(resp)
 				if resp.lower() == "c":

@@ -1,4 +1,5 @@
 ## Fixes
+   - fixed base code to dynamically handle merge conflict for operations involving pull (from current branch), using rebase instead of merge resolution
    - Added checks to mongoOp command to check if mongodb is installed before proceeding with its operations
    - fixed all commands to be gitbash compartible
    - fixed updateResumeCV command to automatically update concerned repos locally after execution.
