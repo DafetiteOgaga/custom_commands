@@ -2,6 +2,7 @@
 This file contains the notable changes made to the Custom Commands project.
 
 ## Changes
+   - fixed pushfile command to now execute without argument, parsing through all the directories and subdirectories in the given repository and listing the modified, changed, new, deleted, etc files in-turns for staging and commiting before pushing only the committed changes to remote
    - createReactApp - changed the default tags within the head tag of index.html in /public/ to accomodate setup for seo, preview cards for social media, etc
    - merged mysqlstart, mysqlstop, mysqlrestart and mysql_status commands
    into mysqlOp command
