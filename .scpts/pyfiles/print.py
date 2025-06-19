@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-import time, os
+import time
+from pyfiles.subprocessfxn import run_subprocess
 try:
 	from .colors import *
 except ImportError:
-    from colors import *
+	from colors import *
 
 def print_stdout(stdout: str, index: int=0, serial_numbered: int=0):
 	"""This function nicely colors and prints out the output stream the
@@ -243,23 +244,40 @@ def write_to_file(ignore_list, delimiter: str, read: bool=False, empty: bool=Fal
 			filename = (filename.split(delimiter)[-1]) if delimiter else filename
 			f.write(filename + '\n')
 
-def backward_search():
-	"""Generates the path to the repository in the child directory.
+def backward_search(path=None):
+	"""Uses recursion to generate the path to the root of the
+		repository in the parent directories.
+
+	Args:
+		path (str or Path): Starting directory. If None, uses current working directory.
 
 	Returns:
-		str: path to root repository
+		Path or None: Path to the root Git repository or None if not found.
 	"""
-	init_path = os.getcwd()
-	# print(f'init_path: {init_path}')
-	if ".git" in os.listdir():
-		root_repo = init_path
-		return root_repo
+	# def delayed_print():
+	# 	print("Checking if you are in a repository...")
+
+	# # Set a timer to print after 5 seconds, unless canceled
+	# timer = threading.Timer(2.0, delayed_print)
+	# timer.start()
+	# start = time.time()
+
+	root_repo = run_subprocess(['git', 'rev-parse', '--show-toplevel'])
+	# print_norm('Searching for root repository...')
+
+	# duration = time.time() - start
+	# print_norm(f'Search completed in {duration:.2f} seconds.')
+	# timer.cancel()  # Cancel the timer if the process completes in time
+
+	# print('using subprocess to find root repository...')
+	if root_repo.returncode == 0:
+		path = root_repo.stdout.strip()
+		# print(f'Found root repository at: {path}')
+		return path
 	else:
-		if init_path == '/':
-			print()
-			print_norm("You don't seem to be in a git repository")
-			print_norm('Change into a repository and try again')
-			print()
-			return True
-		os.chdir(os.pardir)
-		return backward_search()
+		# print_norm(f'Error: {root_repo.stderr.strip()}')
+		print()
+		print_norm("You don't seem to be in a git repository")
+		print_norm('Change into a repository and try again')
+		print()
+		return True
