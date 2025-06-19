@@ -1,10 +1,11 @@
-<div style="display: flex; flex-direction: row;  align-items: center; gap: 10px;">
-
-  <h3 style="margin: 0; font-size: 40px;">Custom Commands</h3>
-  <p style="margin-bottom: 5px; font-size: 30px">by</p>
-  <img src=".dafetite-ogaga-logo.png" alt="Dafetite Ogaga logo" style="width: 150px; height: 70px; border: 1px solid #ddd;" />
-
-</div>
+<table style="width: 100%;">
+  <tr>
+    <td><h3 style="margin: 0;">Custom Commands</h3></td>
+    <td align="right">
+      <img src=".dafetite-ogaga-logo.png" alt="Dafetite Ogaga logo" style="width: 150px; height: 70px; border: 1px solid #ddd;" />
+    </td>
+  </tr>
+</table>
 <!-- # Custom Commands <img src=".dafelogo.png" alt="Diagram" style="width:120px; height:50px; border:1px solid #ddd;" /> -->
 
 ![Device check Image](.intro.jpg)
