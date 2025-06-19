@@ -1,6 +1,6 @@
 <table width="100%">
   <tr>
-    <td><h3>Custom Commands</h3></td>
+    <td><h3>Custom Commands</h3><p>by</p></td>
     <td style="text-align: right;"><img src=".dafetite-ogaga-logo.png" alt="Logo" width="150" height="70"></td>
   </tr>
 </table>
