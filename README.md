@@ -1,9 +1,7 @@
-<table style="width: 100%;">
+<table width="100%">
   <tr>
-    <td><h3 style="margin: 0;">Custom Commands</h3></td>
-    <td align="right">
-      <img src=".dafetite-ogaga-logo.png" alt="Dafetite Ogaga logo" style="width: 150px; height: 70px; border: 1px solid #ddd;" />
-    </td>
+    <td><h3>Custom Commands</h3></td>
+    <td style="text-align: right;"><img src=".dafetite-ogaga-logo.png" alt="Logo" width="150" height="70"></td>
   </tr>
 </table>
 <!-- # Custom Commands <img src=".dafelogo.png" alt="Diagram" style="width:120px; height:50px; border:1px solid #ddd;" /> -->
