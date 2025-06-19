@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250619.1511"
+VERSIONNUMBER="20250619.2144"
 
 # colors and styles
 RESET="\033[0m"
@@ -904,7 +904,7 @@ pyfiles() {
 			fi
 		else
 			if [[ "$filename" != "__pycache__" ]]; then
-				echo "no no no"
+				# echo "no no no"
 				echo "custom commands" > "$destination"
 				cp "$file" "$destination"
 			# else
@@ -1385,7 +1385,7 @@ while [[ "$UINPUT" != [nN] ]]; do
 	total_pages=$(( (total_items + items_per_page - 1) / items_per_page ))
 
     while true; do
-		echo "Plse wait..."
+		echo "Pls wait..."
         clear
         auth $WHICH
         intro "0"
