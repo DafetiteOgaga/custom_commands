@@ -1,4 +1,11 @@
-# Custom Commands
+<div style="display: flex; align-items: center; gap: 10px;">
+
+  <h3 style="margin: 0;">Custom Commands</h3>
+  <p style="margin-bottom: 9px; font-size: 20px">by</p>
+  <img src=".dafetite-ogaga-logo.png" alt="Dafetite Ogaga logo" style="width: 120px; height: 50px; border: 1px solid #ddd;" />
+
+</div>
+<!-- # Custom Commands <img src=".dafelogo.png" alt="Diagram" style="width:120px; height:50px; border:1px solid #ddd;" /> -->
 
 ![Device check Image](.intro.jpg)
 ![Main menu page 1](.main_menu.jpg)
