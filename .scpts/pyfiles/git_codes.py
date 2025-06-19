@@ -455,7 +455,7 @@ def pull():
 	print_norm("Pull successful...")
 	print()
 
-def push(file_list: list):
+def push(file_list: list=None):
 	"""This function takes a list as argument and Updates the
 		remote with the changes on the local machine.
 
@@ -468,7 +468,7 @@ def push(file_list: list):
 	push = subprocess.run(["git", "push"])
 	if push.returncode == 0:
 		print()
-		print_norm('Changes has been pushed to remote.')
+		print_norm('Handshake with remote successful.')
 		# print("The file(s)/folder(s): {} are in the working tree.".format([xfile for xfile in file_list]))
 	elif push.stdout:
 		print_stdout(push.stdout)

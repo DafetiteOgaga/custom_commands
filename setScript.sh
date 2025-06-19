@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250617.1942"
+VERSIONNUMBER="20250619.1503"
 
 # colors and styles
 RESET="\033[0m"
@@ -287,7 +287,7 @@ unametokenmaill() {
 }
 
 cpfunc() {
-	# identifies device type and cpoies appropriate code for command creation
+	# identifies device type and copies/create the script for the command
 	echo "custom commands" > "$XBIN/$DFILENAME"
 	case "$FILETYPE" in
 		"bashscript"|"pyscript")
@@ -1121,7 +1121,7 @@ instructn() {
 			echo -e "$STRT unstage your files, clear commit messages on your local machine(provided, you are yet to push to remote). Revert to the same state as your remote $EFFT $ANYWHERE: $DFILENAME"
 			;;
 		"pushfile")
-			echo -e "$STRT stage and commit individual files before pushing them all to remote $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
+			echo -e "$STRT stage and commit individual files before pushing them all to remote $EFFT $ANYWHERE: $DFILENAME OR $DFILENAME <filename(s)>"
 			;;
 		"pullFromMain")
 			echo -e "$STRT pull latest changes from main/master branch $EFFT $ANYWHERE: $DFILENAME"
@@ -1385,6 +1385,7 @@ while [[ "$UINPUT" != [nN] ]]; do
 	total_pages=$(( (total_items + items_per_page - 1) / items_per_page ))
 
     while true; do
+		echo "Plse wait..."
         clear
         auth $WHICH
         intro "0"
