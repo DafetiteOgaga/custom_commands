@@ -294,7 +294,7 @@ def main_enrty():
 	"""The main execution of the program
 	"""
 
-	currentDirectory = os.getcwd()
+	# currentDirectory = os.getcwd()
 	status_details = run_subprocess(["git", "status"])
 	# print(f'status_details.stdout: {status_details.stdout}')
 	status_string = status_details.stdout.strip().replace("\n", " ")
