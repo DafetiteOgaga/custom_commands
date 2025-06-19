@@ -77,7 +77,7 @@ LAST_UPDATE_FILE="$XBIN/lastUpdateTime.txt"
 mkdir -p "$(dirname "$LAST_UPDATE_FILE")"
 
 if [[ ! -f "$LAST_UPDATE_FILE" ]]; then
-	echo "Last update not tracked. Starting tracker."
+	# echo "Last update not tracked. Starting tracker."
 	echo "$NOW" > "$LAST_UPDATE_FILE"
 fi
 
