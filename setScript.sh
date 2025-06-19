@@ -904,7 +904,7 @@ pyfiles() {
 			fi
 		else
 			if [[ "$filename" != "__pycache__" ]]; then
-				echo "no no no"
+				# echo "no no no"
 				echo "custom commands" > "$destination"
 				cp "$file" "$destination"
 			# else
@@ -1385,7 +1385,7 @@ while [[ "$UINPUT" != [nN] ]]; do
 	total_pages=$(( (total_items + items_per_page - 1) / items_per_page ))
 
     while true; do
-		echo "Plse wait..."
+		echo "Pls wait..."
         clear
         auth $WHICH
         intro "0"
