@@ -1,5 +1,6 @@
 <p align="end">
-  <img src="dafetite-ogaga-logo.png" alt="Dafetite Ogaga" width="100" />
+<!--   <img src="dafetite-ogaga-logo.png" alt="Dafetite Ogaga" width="100" /> -->
+  <img src="[dafetite-ogaga-logo.png](https://github.com/DafetiteOgaga/dafetite_logo/blob/main/dafetite-ogaga-logo.png)" alt="Dafetite Ogaga" width="100" />
 </p>
 
 # Custom Commands
