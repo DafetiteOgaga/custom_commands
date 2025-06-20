@@ -49,7 +49,10 @@ curl_check()
 		git config user.name "$GUSERNAME"
 		git config user.email "$GEMAIL"
 
-		echo -e "### $REPONAME and README.md were auto created using createRepo command in [*Custom Commands*](https://github.com/DafetiteOgaga/custom_commands)
+		echo -e "<p align="end">
+		\t<img src="https://raw.githubusercontent.com/DafetiteOgaga/dafetite_logo/main/dafetite-ogaga-logo.png" alt="Dafetite Ogaga" width="100" />
+		</p>
+		\n### $REPONAME and README.md were auto created using createRepo command in [*Custom Commands*](https://github.com/DafetiteOgaga/custom_commands)
 		\n\n\n\n\n###### *We Rise by Lifting Others.*" > README.md
 		git add .
 		git commit -m "$REPONAME auto created"
@@ -163,7 +166,7 @@ echo ""
 # sleep 2
 if [[ -z "$RESP" ]]; then
 	echo ""
-	echo -e "Pls, cnofirm that this is the directory where you want to create the repo:"
+	echo -e "Pls, confirm that this is the directory where you want to create the repo:"
 	echo -e "Current Directory: $(pwd)"
 	echo ""
 	echo -n "Do you want to abort to fix this? [y/N] >>> "
