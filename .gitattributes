@@ -1,3 +1,6 @@
+# Force Git to normalize line endings on checkout
+* text=auto
+
 # Use Unix LF line endings for all shell scripts
 *.sh text eol=lf
 
@@ -10,6 +13,3 @@ scripts/* text eol=lf
 # All other text files (e.g., .txt, .md) can use native OS endings
 *.txt text
 *.md text
-
-# Force Git to normalize line endings on checkout
-* text=auto
