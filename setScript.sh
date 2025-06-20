@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250620.2030"
+VERSIONNUMBER="20250620.2232"
 
 # colors and styles
 RESET="\033[0m"
@@ -943,6 +943,8 @@ update_changes() {
 scptcpy() {
 	# copies pymanage and configure_settings_py to .xbin
 	if [[ ! -f "$XBIN/pymanage" || ! -f "$XBIN/configure_settings_py.py" ]]; then
+		# echo "start making xbin dir ..."
+		mkdir -p "$XBIN/pyfiles"
 		cp "$SCPTS/pymanage" "$XBIN/pymanage"
 		cp "$SCPTS/pyfiles/configure_settings_py.py" "$XBIN/pyfiles/configure_settings_py.py"
 		cp "$SCPTS/pyfiles/check_db.py" "$XBIN/pyfiles/check_db.py"
@@ -952,6 +954,7 @@ scptcpy() {
 			converPyShebang4gitbash "$XBIN/pyfiles/configure_settings_py.py"
 			converPyShebang4gitbash "$XBIN/pyfiles/check_db.py"
 		fi
+		# echo "end making xbin dir ..."
 	fi
 	if [[ ! -d "$XBIN/pyfiles/expoDefaults" && "$DFILENAME"=~"createExpoApp" ]]; then
 		mkdir -p "$XBIN/pyfiles/expoDefaults"
