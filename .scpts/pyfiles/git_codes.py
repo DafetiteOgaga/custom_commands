@@ -478,6 +478,21 @@ def push(file_list: list=None):
 		print_norm("Oops! I got {}".format(push.stderr))
 		sys.exit()
 
+def checkPushAccess():
+	"""This function checks if the user has push access to the remote repository.
+	"""
+	with open(f'{root_repo}/.git/config', 'r') as f:
+		config_content = f.readlines()
+	for line in config_content:
+		if 'url =' in line:
+			url = line.split('=')[1].strip()
+			if 'ghp_' in url:
+				token = url.split('//')[1].split('@')[0]
+				return True
+			else:
+				print_norm("You don't have push access to this repository, only pull.")
+				print_norm("Please provide a valid Github token with push access.")
+				return False
 
 def add_commit_all(type: str="current", commit_message: str=""):
 	"""This function stages and commits all changes made on the working tree
@@ -487,6 +502,9 @@ def add_commit_all(type: str="current", commit_message: str=""):
 		type (str, optional): Defaults to "current".
 		commit_message (str, optional): Defaults to "".
 	"""
+	checkEditAccess = checkPushAccess()
+	if not checkEditAccess:
+		sys.exit()
 	while True:
 		if len(sys.argv) > 1:
 			commit_message = (sys.argv)[1]
@@ -1157,28 +1175,19 @@ def pull_from_main_or_master():
 			print_norm(popStash.stderr)
 			quit("q")
 
-
-def checkPushAccess():
-	"""This function checks if the user has push access to the remote repository.
+def getCurrentAccessToken():
+	"""This function fetches the users access token from the repository.
 	"""
-	print('hey there')
-	print(f'root_repo: {root_repo}')
 	with open(f'{root_repo}/.git/config', 'r') as f:
 		config_content = f.readlines()
-	print(f'config_content: {config_content}')
 	for line in config_content:
 		if 'url =' in line:
-			print()
-			print(f'line: {line}')
 			url = line.split('=')[1].strip()
 			if 'ghp_' in url:
 				token = url.split('//')[1].split('@')[0]
-				print(f'token: {token}')
-				return True
+				print(f'Found token: {token}')
 			else:
-				print_norm("You don't have push access to this repository, only pull.")
-				print_norm("Please provide a valid Github token with push access.")
-				return False
+				print_norm("No token found for this repository.")
 
 
 # if current_dir_var:
