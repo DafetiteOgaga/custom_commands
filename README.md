@@ -1,10 +1,8 @@
-<table width="100%">
-  <tr>
-    <td><h3>Custom Commands</h3></td>
-    <td style="text-align: right;"><img src=".dafetite-ogaga-logo.png" alt="dafetite ogaga" width="100" height="60"></td>
-  </tr>
-</table>
-<!-- # Custom Commands <img src=".dafelogo.png" alt="Diagram" style="width:120px; height:50px; border:1px solid #ddd;" /> -->
+<p align="end">
+  <img src="dafetite-ogaga-logo.png" alt="Dafetite Ogaga" width="100" />
+</p>
+
+# Custom Commands
 
 ![Device check Image](.intro.jpg)
 ![Main menu page 1](.main_menu.jpg)
