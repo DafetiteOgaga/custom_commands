@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+
+# Use first argument as root dir, default to current directory
+# ROOT_DIR="${1:-.}" e.g ./normalize_line_endings.sh /path/to/scripts
+# XBIN="$HOME/.xbin"
+ROOT_DIR="${1:-.}"
+
+echo "📁 Normalizing line endings in: $ROOT_DIR"
+
+# --- Platform Detection ---
+is_git_bash() {
+    [[ "$OSTYPE" == "msys" || "$MSYSTEM" == MINGW* ]]
+}
+
+if is_git_bash; then
+    TARGET_EOL=$'\r\n'
+    echo "🪟 Git Bash detected — using CRLF"
+else
+    TARGET_EOL=$'\n'
+    echo "🐧 Unix-like OS detected — using LF"
+fi
+
+# --- File Extensions to Process ---
+EXTENSIONS=("sh" "py" "txt" "md" "json" "csv" "yml" "yaml")
+
+# --- Check if file is a Bash or Python script based on shebang ---
+is_shebang_script() {
+    local file="$1"
+    if head -n 1 "$file" | grep -qE '^#!.*(bash|python)'; then
+        return 0
+    fi
+    return 1
+}
+
+# --- Check if file is text ---
+is_text_file() {
+    file --mime "$1" | grep -q '^text/'
+}
+
+# --- Normalize line endings in a file ---
+# normalize_file() {
+#     local file="$1"
+#     echo "🔧 Normalizing: $file"
+#     awk -v eol="$TARGET_EOL" '{ sub("\r$", ""); printf "%s%s", $0, eol }' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+# }
+normalize_file() {
+    local file="$1"
+
+    # Save original permission mode (cross-platform)
+    local mode
+    if stat -c '%a' "$file" >/dev/null 2>&1; then
+        mode=$(stat -c '%a' "$file")    # Linux, WSL, Git Bash
+    else
+        mode=$(stat -f '%A' "$file")    # macOS
+    fi
+
+    echo "🔧 Normalizing: $file"
+
+    # Normalize line endings
+    awk -v eol="$TARGET_EOL" '{ sub("\r$", ""); printf "%s%s", $0, eol }' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+
+    # Restore original permissions
+    chmod "$mode" "$file"
+}
+
+
+# --- Process files with extensions ---
+for ext in "${EXTENSIONS[@]}"; do
+    find "$ROOT_DIR" -type f -iname "*.${ext}" | while read -r file; do
+        if is_text_file "$file"; then
+            normalize_file "$file"
+        fi
+    done
+done
+
+# --- Process extensionless files ---
+find "$ROOT_DIR" -type f ! -name "*.*" | while read -r file; do
+    if is_text_file "$file" && is_shebang_script "$file"; then
+        normalize_file "$file"
+    fi
+done
+
+echo "✅ Done normalizing script line endings."

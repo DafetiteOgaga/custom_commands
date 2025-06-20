@@ -1314,6 +1314,9 @@ instructn() {
 # but this has been automated except for when script cannot detect the
 # type of device
 
+# this sets/keeps the line endings consistent across different systems
+git config --global core.autocrlf input
+
 if [[ -f "$UPDATEPATH" ]];
 	then
 		bash "$UPDATEPATH"
@@ -1374,6 +1377,9 @@ fi
 #...main operation.................. #
 #...Entry point.................. #
 
+# bash "$SCPTS/pyfiles/convertLineEndings"
+# bash "$SCPTS/pyfiles/convertLineEndings" "$DBIN"
+
 #...options display.................. #
 
 # #...1.................. #
@@ -1391,7 +1397,7 @@ while [[ "$UINPUT" != [nN] ]]; do
 			echo "Pls wait..."
 		fi
 		sleep 0.1
-        clear
+        # clear
         auth $WHICH
         intro "0"
         echo ""

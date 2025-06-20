@@ -1,15 +1,32 @@
-# Force Git to normalize line endings on checkout
+# Normalize line endings for all text files (default)
 * text=auto
 
-# Use Unix LF line endings for all shell scripts
+# Force LF line endings for scripts
 *.sh text eol=lf
-
-# Use Unix LF line endings for all Python scripts
 *.py text eol=lf
+.scpts/* text eol=lf
 
-# Treat extensionless files in a specific folder as Unix scripts
-scripts/* text eol=lf
+# Explicitly mark known script folders
+.scpts/pyfiles/* text eol=lf
+.scpts/* text eol=lf
 
-# All other text files (e.g., .txt, .md) can use native OS endings
-*.txt text
+# 🚫 Extensionless files in /pc and /phone are compiled binaries — mark as binary
+.scpts/pc/* binary
+.scpts/phone/* binary
+
+# 🧱 Optional: catch any other known binaries/images
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.zip binary
+*.exe binary
+*.out binary
+*.o binary
+*.so binary
+*.a binary
+
+# 📄 Docs (allow OS-native line endings)
 *.md text
+*.txt text
