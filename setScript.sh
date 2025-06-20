@@ -1302,7 +1302,6 @@ instructn() {
 			echo -e "$STRT download your apk file from eas (expo) and upload to github release for distribution $EFFT $ANYWHERE: $DFILENAME"
 			;;
 		esac
-		# find "$XBIN" -type f -exec sed -i 's/\r$//' {} +
 	sleep 0.1
 }
 
@@ -1379,12 +1378,6 @@ fi
 
 # #...1.................. #
 
-if is_git_bash; then
-	git config --global core.autocrlf true
-else
-	git config --global core.autocrlf input
-fi
-
 count=0
 default_option='0'
 while [[ "$UINPUT" != [nN] ]]; do
@@ -1398,7 +1391,7 @@ while [[ "$UINPUT" != [nN] ]]; do
 			echo "Pls wait..."
 		fi
 		sleep 0.1
-        # clear
+        clear
         auth $WHICH
         intro "0"
         echo ""
@@ -1488,5 +1481,3 @@ while [[ "$UINPUT" != [nN] ]]; do
 done
 # #........ finish .......................... #
 echo -e "\ncompleted."
-
-# find ~/.xbin/pyfiles -type f -exec sed -i 's/\r$//' {} +
