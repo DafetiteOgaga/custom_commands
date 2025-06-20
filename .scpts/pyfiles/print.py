@@ -262,6 +262,10 @@ def backward_search(path=None):
 	# timer.start()
 	# start = time.time()
 
+	add_safe_dir = run_subprocess(['git', 'config', '--global', '--add', 'safe.directory', '*'])
+	# print(f'add_safe_dir.stdout: {add_safe_dir.stdout}')
+	# print(f'add_safe_dir.stderr: {add_safe_dir.stderr}')
+
 	root_repo = run_subprocess(['git', 'rev-parse', '--show-toplevel'])
 	# print_norm('Searching for root repository...')
 
@@ -275,8 +279,8 @@ def backward_search(path=None):
 		# print(f'Found root repository at: {path}')
 		return path
 	else:
-		# print_norm(f'Error: {root_repo.stderr.strip()}')
 		print()
+		print_norm(f'Error: {root_repo.stderr.strip()}')
 		print_norm("You don't seem to be in a git repository")
 		print_norm('Change into a repository and try again')
 		print()

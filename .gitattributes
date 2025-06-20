@@ -1,0 +1,32 @@
+# Normalize line endings for all text files (default)
+* text=auto
+
+# Force LF line endings for scripts
+*.sh text eol=lf
+*.py text eol=lf
+.scpts/* text eol=lf
+
+# Explicitly mark known script folders
+.scpts/pyfiles/* text eol=lf
+.scpts/* text eol=lf
+
+# 🚫 Extensionless files in /pc and /phone are compiled binaries — mark as binary
+.scpts/pc/* binary
+.scpts/phone/* binary
+
+# 🧱 Optional: catch any other known binaries/images
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.zip binary
+*.exe binary
+*.out binary
+*.o binary
+*.so binary
+*.a binary
+
+# 📄 Docs (allow OS-native line endings)
+*.md text
+*.txt text

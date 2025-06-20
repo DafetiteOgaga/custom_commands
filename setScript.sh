@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250620.0811"
+VERSIONNUMBER="20250620.2030"
 
 # colors and styles
 RESET="\033[0m"
@@ -865,6 +865,7 @@ opertn() {
 				unametokenmaill
 				;;
 			44444)
+				mkdir -p "$XBIN/pyfiles"
 				echo -e "custom commands" >  $XBIN/C_template.c
 				cp "$SCPTS/C_template.c" "$XBIN/C_template.c"
 				scptcpy
@@ -1313,13 +1314,17 @@ instructn() {
 # but this has been automated except for when script cannot detect the
 # type of device
 
+# this sets/keeps the line endings consistent across different systems
+git config --global core.autocrlf input
+
 if [[ -f "$UPDATEPATH" ]];
 	then
 		bash "$UPDATEPATH"
 else
 	#...creating check4Update commands always check and update this program.................. #
+	mkdir -p "$XBIN"
 	echo "custom commands" > "$XBIN/check4Update"
-	cp "$SCPTS/check4Update" "$XBIN/check4Update"
+	cp "$SCPTS/pyfiles/check4Update" "$XBIN/check4Update"
 	chmod +x "$XBIN/check4Update"
 fi
 
@@ -1372,6 +1377,9 @@ fi
 #...main operation.................. #
 #...Entry point.................. #
 
+# bash "$SCPTS/pyfiles/convertLineEndings"
+# bash "$SCPTS/pyfiles/convertLineEndings" "$DBIN"
+
 #...options display.................. #
 
 # #...1.................. #
@@ -1385,7 +1393,10 @@ while [[ "$UINPUT" != [nN] ]]; do
 	total_pages=$(( (total_items + items_per_page - 1) / items_per_page ))
 
     while true; do
-		echo "Pls wait..."
+		if [[ $count -eq 0 ]]; then
+			echo "Pls wait..."
+		fi
+		sleep 0.1
         clear
         auth $WHICH
         intro "0"
