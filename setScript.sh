@@ -1397,7 +1397,7 @@ while [[ "$UINPUT" != [nN] ]]; do
 			echo "Pls wait..."
 		fi
 		sleep 0.1
-        # clear
+        clear
         auth $WHICH
         intro "0"
         echo ""
