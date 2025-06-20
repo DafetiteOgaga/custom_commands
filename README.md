@@ -1,5 +1,4 @@
 <p align="end">
-<!--   <img src="dafetite-ogaga-logo.png" alt="Dafetite Ogaga" width="100" /> -->
   <img src="https://raw.githubusercontent.com/DafetiteOgaga/dafetite_logo/main/dafetite-ogaga-logo.png" alt="Dafetite Ogaga" width="100" />
 </p>
 
