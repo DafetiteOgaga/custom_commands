@@ -1,0 +1,15 @@
+# Use Unix LF line endings for all shell scripts
+*.sh text eol=lf
+
+# Use Unix LF line endings for all Python scripts
+*.py text eol=lf
+
+# Treat extensionless files in a specific folder as Unix scripts
+scripts/* text eol=lf
+
+# All other text files (e.g., .txt, .md) can use native OS endings
+*.txt text
+*.md text
+
+# Force Git to normalize line endings on checkout
+* text=auto

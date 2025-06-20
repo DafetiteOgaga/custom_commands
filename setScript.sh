@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250620.0811"
+VERSIONNUMBER="20250619.1511"
 
 # colors and styles
 RESET="\033[0m"
@@ -865,6 +865,7 @@ opertn() {
 				unametokenmaill
 				;;
 			44444)
+				mkdir -p "$XBIN/pyfiles"
 				echo -e "custom commands" >  $XBIN/C_template.c
 				cp "$SCPTS/C_template.c" "$XBIN/C_template.c"
 				scptcpy
@@ -1301,6 +1302,7 @@ instructn() {
 			echo -e "$STRT download your apk file from eas (expo) and upload to github release for distribution $EFFT $ANYWHERE: $DFILENAME"
 			;;
 		esac
+		# find "$XBIN" -type f -exec sed -i 's/\r$//' {} +
 	sleep 0.1
 }
 
@@ -1318,8 +1320,9 @@ if [[ -f "$UPDATEPATH" ]];
 		bash "$UPDATEPATH"
 else
 	#...creating check4Update commands always check and update this program.................. #
+	mkdir -p "$XBIN"
 	echo "custom commands" > "$XBIN/check4Update"
-	cp "$SCPTS/check4Update" "$XBIN/check4Update"
+	cp "$SCPTS/pyfiles/check4Update" "$XBIN/check4Update"
 	chmod +x "$XBIN/check4Update"
 fi
 
@@ -1376,6 +1379,12 @@ fi
 
 # #...1.................. #
 
+if is_git_bash; then
+	git config --global core.autocrlf true
+else
+	git config --global core.autocrlf input
+fi
+
 count=0
 default_option='0'
 while [[ "$UINPUT" != [nN] ]]; do
@@ -1385,8 +1394,11 @@ while [[ "$UINPUT" != [nN] ]]; do
 	total_pages=$(( (total_items + items_per_page - 1) / items_per_page ))
 
     while true; do
-		echo "Pls wait..."
-        clear
+		if [[ $count -eq 0 ]]; then
+			echo "Pls wait..."
+		fi
+		sleep 0.1
+        # clear
         auth $WHICH
         intro "0"
         echo ""
@@ -1476,3 +1488,5 @@ while [[ "$UINPUT" != [nN] ]]; do
 done
 # #........ finish .......................... #
 echo -e "\ncompleted."
+
+# find ~/.xbin/pyfiles -type f -exec sed -i 's/\r$//' {} +

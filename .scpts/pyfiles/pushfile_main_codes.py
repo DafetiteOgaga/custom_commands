@@ -2,7 +2,7 @@
 
 import subprocess, sys, os, time, shutil
 from .my_prompt import main as prompt_1ch
-from .git_codes import print_set_commit, print_norm, print_stdout, quit, clear_staged_and_commit, pull, push, add_commit_all
+from .git_codes import print_set_commit, print_norm, print_stdout, quit, clear_staged_and_commit, pull, push, checkPushAccess
 from pyfiles.subprocessfxn import run_subprocess
 
 home_dir = os.path.join(os.path.expanduser("~"), '.xbin')  # Expands "~" to "/home/your-username"
@@ -294,6 +294,9 @@ def main_enrty():
 	"""The main execution of the program
 	"""
 
+	checkEditAccess = checkPushAccess()
+	if not checkEditAccess:
+		sys.exit()
 	# currentDirectory = os.getcwd()
 	status_details = run_subprocess(["git", "status"])
 	# print(f'status_details.stdout: {status_details.stdout}')
@@ -513,7 +516,6 @@ def main_enrty():
 			elif ready == "" or ready.lower() == "y":
 				if deleted_file_list:
 					commit_deleted_files(deleted_file_list, mode=1)
-				# add_commit_all("only_committed", "Bug Fixes-x") and use_pushall
 				pull()
 				push(all_files if not use_pushall else ["*ALL CHANGES*"])
 				break

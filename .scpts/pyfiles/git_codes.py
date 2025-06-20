@@ -1158,6 +1158,28 @@ def pull_from_main_or_master():
 			quit("q")
 
 
+def checkPushAccess():
+	"""This function checks if the user has push access to the remote repository.
+	"""
+	print('hey there')
+	print(f'root_repo: {root_repo}')
+	with open(f'{root_repo}/.git/config', 'r') as f:
+		config_content = f.readlines()
+	print(f'config_content: {config_content}')
+	for line in config_content:
+		if 'url =' in line:
+			print()
+			print(f'line: {line}')
+			url = line.split('=')[1].strip()
+			if 'ghp_' in url:
+				token = url.split('//')[1].split('@')[0]
+				print(f'token: {token}')
+				return True
+			else:
+				print_norm("You don't have push access to this repository, only pull.")
+				print_norm("Please provide a valid Github token with push access.")
+				return False
+
 
 # if current_dir_var:
 os.chdir(current_dir_var) if current_dir_var else None

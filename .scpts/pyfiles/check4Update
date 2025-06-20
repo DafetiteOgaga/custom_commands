@@ -20,7 +20,7 @@ check4UpdateFunc() {
 	echo -e ""
 	# --- SETTINGS ---
 	LOCAL_FILE="./setScript.sh"
-	VERSIONNUMBER="20250620.0811"
+	VERSIONNUMBER="20250619.1511"
 	REMOTE_FILE_URL="https://raw.githubusercontent.com/DafetiteOgaga/custom_commands/master/setScript.sh"
 
 	# --- EXTRACT LOCAL VERSION ---
@@ -57,7 +57,6 @@ check4UpdateFunc() {
 					echo -e "\nUpdate pulled successfully."
 				else
 					echo -e "Git Pull Failed:\n$gitOp"
-					# exit 1
 				fi
 			else
 				echo "This is not a git repository. Cannot pull updates."
@@ -77,7 +76,7 @@ LAST_UPDATE_FILE="$XBIN/lastUpdateTime.txt"
 mkdir -p "$(dirname "$LAST_UPDATE_FILE")"
 
 if [[ ! -f "$LAST_UPDATE_FILE" ]]; then
-	# echo "Last update not tracked. Starting tracker."
+	echo "Last update not tracked. Starting tracker."
 	echo "$NOW" > "$LAST_UPDATE_FILE"
 fi
 
