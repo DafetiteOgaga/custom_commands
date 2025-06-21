@@ -200,16 +200,16 @@ unametokenmaill2() {
 		quit "$NTOKEN"
 		NUM2=${#NTOKEN}
 		echo -e "$NUM2"
-		if [[ $NUM2 -ne 36 && $NUM2 -ne 40 ]]; then
+		if [[ "$NUM2" -ne 36 ]] && [[ "$NUM2" -ne 40 ]]; then
 			echo -e ""
 			echo -e "TOKEN: $NTOKEN which you supplied is not a classic token."
 			echo -e "Make sure to remove \"ghp_\" and that there is no whitespace."
 			echo ""
 		fi
-		if [[ $NUM2 -eq 40 && "$NTOKEN" == *"ghp_"* ]]; then
+		if [[ "$NUM2" -eq 40 ]] && [[ "$NTOKEN" == *"ghp_"* ]]; then
 			NTOKEN="${NTOKEN#ghp_}"
 			break
-		elif [[ $NUM2 -eq 36 ]]; then
+		elif [[ "$NUM2" -eq 36 ]]; then
 			break
 		fi
 		echo -e "You must provide your Classic Github token to proceed."
@@ -305,7 +305,7 @@ cpfunc() {
 	# fi
 	esac
 	# make the script executable
-	chmod +x $XBIN/$DFILENAME
+	chmod +x "$XBIN/$DFILENAME"
 	if is_git_bash; then
 		converPyShebang4gitbash "$XBIN/$DFILENAME"
     fi
@@ -806,7 +806,7 @@ options() {
 opertn() {
 	#...dir.................. #
 
-	mkdir -p $XBIN
+	mkdir -p "$XBIN"
 
 	#... command assignment.................. #
 
@@ -866,7 +866,7 @@ opertn() {
 				;;
 			44444)
 				mkdir -p "$XBIN/pyfiles"
-				echo -e "custom commands" >  $XBIN/C_template.c
+				echo -e "custom commands" >  "$XBIN/C_template.c"
 				cp "$SCPTS/C_template.c" "$XBIN/C_template.c"
 				scptcpy
 				;;
@@ -913,7 +913,7 @@ pyfiles() {
 			fi
 		fi
 		if [[ -f "$destination" ]]; then
-			chmod +x $destination
+			chmod +x "$destination"
 		fi
 		if is_git_bash && [ ! -d "$destination" ]; then
 			converPyShebang4gitbash "$destination"
@@ -924,7 +924,7 @@ pyfiles() {
 
 update_changes() {
 	# updates any command that has already been installed
-	affected_files="$(ls $PWD/$SCPTS)"
+	affected_files="$(ls "$PWD/$SCPTS")"
     for file in $affected_files; do
 		file="$XBIN/$file"
         if [[ -f "$file" ]]; then
@@ -963,11 +963,11 @@ scptcpy() {
 	pyfiles
 	sleep 0.1
 	# for betty command installation
-	if [[ $DFILENAME =~ "betty" ]]; then
+	if [[ "$DFILENAME" == "betty" ]]; then
 		bLinter
 
 	# for pyscripts/pycodemore/pycode command installation
-	elif [[ $DFILENAME =~ "pycode" || $DFILENAME =~ "pycodemore" || $FILETYPE =~ "pyscript" ]]; then
+	elif [[ "$DFILENAME" == "pycode" || "$DFILENAME" == "pycodemore" || "$FILETYPE" == "pyscript" ]]; then
 		cpfunc
 		PYTHON="python3"
 		if is_git_bash; then
@@ -975,7 +975,7 @@ scptcpy() {
 		fi
 		# Check if Python3 is installed
 		# echo "Checking if $PYTHON is installed"
-		if command -v $PYTHON &> /dev/null; then
+		if command -v "$PYTHON" &> /dev/null; then
 			# echo "... $PYTHON is installed"
 			sleep 0.1
 		else
@@ -1005,7 +1005,7 @@ scptcpy() {
 			fi
 		fi
 
-		if [[ $DFILENAME =~ "pycode" || $DFILENAME =~ "pycodemore" ]]; then
+		if [[ "$DFILENAME" == "pycode" || "$DFILENAME" == "pycodemore" ]]; then
 			if [[ "$WHICH" =~ 'c' ]]; then
 				# installation for pc
 				sudo apt install pycodestyle
@@ -1396,12 +1396,12 @@ while [[ "$UINPUT" != [nN] ]]; do
 	total_pages=$(( (total_items + items_per_page - 1) / items_per_page ))
 
     while true; do
-		if [[ $count -eq 0 ]]; then
+		if [[ "$count" -eq 0 ]]; then
 			echo "Pls wait..."
 		fi
 		sleep 0.1
         clear
-        auth $WHICH
+        auth "$WHICH"
         intro "0"
         echo ""
 
@@ -1410,7 +1410,7 @@ while [[ "$UINPUT" != [nN] ]]; do
         start=$((($page - 1) * $items_per_page))
         end=$(($page * $items_per_page))
 
-        current_option=$default_option
+        current_option="$default_option"
 
         for ((i = $start; i < $end && i < ${#dOptions[@]}; i++)); do
             echo -e "${current_option} - ${dOptions[$i]#??}"
@@ -1430,7 +1430,7 @@ while [[ "$UINPUT" != [nN] ]]; do
 
         echo "[q] - Quit"
 
-        if [[ $count -gt 0 ]]; then
+        if [[ "$count" -gt 0 ]]; then
             if [[ "$OPTION" != [nNpPzZ] ]]; then
                 opertn
                 instructn
