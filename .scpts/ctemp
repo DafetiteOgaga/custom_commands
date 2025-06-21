@@ -13,7 +13,7 @@ fi
 
 echo "....................Creating C file...................."
 for chk in "$FILE" ; do
-	if [[ $chk == *.c ]]; then
+	if [[ "$chk" == *.c ]]; then
 		cp "$SDIR/C_template.c" "$FILE"
 		echo -e "$OUT $FILE"
 	else

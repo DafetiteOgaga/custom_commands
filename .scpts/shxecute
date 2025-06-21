@@ -23,7 +23,7 @@ make_exe()
 
 count=1
 for argument in "$@" ; do
-    if [[ $argument == *".sh" ]]; then
+    if [[ "$argument" == *".sh" ]]; then
 		make_exe
 	else
 		echo -n "Is $argument a bash script? [y/N] >>> "
@@ -38,7 +38,7 @@ for argument in "$@" ; do
 	count=$((count + 1))
 done
 
-if [[ $noshcount == $count ]]; then
+if [[ "$noshcount" == "$count" ]]; then
 echo -e ""
 	echo -e "No bash script found."
 fi

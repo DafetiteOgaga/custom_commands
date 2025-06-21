@@ -8,6 +8,7 @@ from pyfiles.print import print_stdout, write_to_file, backward_search
 from pyfiles.print import print_norm
 from pyfiles.configure_settings_py import compile_dir_list, list_filter
 from pyfiles.colors import *
+from pyfiles.subprocessfxn import run_subprocess, run_subprocess_cmd_alone
 try:
 	from .colors import *
 except ImportError:
@@ -181,13 +182,13 @@ def print_set_commit(var: str):
 
 # 	print()
 # 	print_norm("#### pulling ...################################################")
-# 	pull = subprocess.run(["git", "pull"], capture_output=True, text=True)
+# 	pull = run_subprocess(["git", "pull"])
 # 	if pull.returncode == 0:
 # 		print_stdout(pull.stdout)
 # 	elif "You have divergent branches and need to specify how to reconcile them" in pull.stderr\
 # 			and "Need to specify how to reconcile divergent branches" in pull.stderr:
-# 		rebase = subprocess.run(["git", "config", "pull.rebase", "true"])
-# 		pull = subprocess.run(["git", "pull"], capture_output=True, text=True)
+# 		rebase = run_subprocess_cmd_alone(["git", "config", "pull.rebase", "true"])
+# 		pull = run_subprocess(["git", "pull"])
 # 		if pull.returncode == 0:
 # 			print_stdout(pull.stdout)
 # 		elif pull.stdout:
@@ -205,7 +206,7 @@ def print_set_commit(var: str):
 def print_stashes(arg=''):
 	"""This function prints the list of stashes in the repository
 	"""
-	stashList = subprocess.run(["git", "stash", "list"], capture_output=True, text=True)
+	stashList = run_subprocess(["git", "stash", "list"])
 	if stashList.stdout:
 		print_norm(f'$$$$$ stdout: {stashList.stdout.strip()} fxn {arg}')
 	elif stashList.stderr:
@@ -214,9 +215,6 @@ def print_stashes(arg=''):
 		print_norm(f"$$$$$ No stashes found. fxn {arg}")
 	return ''
 
-
-def run_subprocess(cmd, capture=True):
-	return subprocess.run(cmd, capture_output=capture, text=True)
 
 def getUserInput(promptText='Select a choice', allowedEntryArray=None, invalidText='Invalid choice.'):
 	while True:
@@ -465,7 +463,7 @@ def push(file_list: list=None):
 	if 'custom_commands' in os.getcwd():
 		subprocess.run(["bash", "bumpCCVersion"], check=True, cwd=bumpCCVersion, stdout=None, stderr=None)
 	print_norm("#### pushing ...################################################")
-	push = subprocess.run(["git", "push"])
+	push = run_subprocess_cmd_alone(["git", "push"])
 	if push.returncode == 0:
 		print()
 		print_norm('Handshake with remote successful.')
@@ -522,10 +520,10 @@ def add_commit_all(type: str="current", commit_message: str=""):
 	print_norm("#### staging and committing ...################################")
 	if type == "current":
 		# stage changes in current directories ####
-		subprocess.run(["git", "add", "."])
+		run_subprocess_cmd_alone(["git", "add", "."])
 	elif type == "all":
 		# stage changes in all directories ########
-		subprocess.run(["git", "add", "-A"])
+		run_subprocess_cmd_alone(["git", "add", "-A"])
 	############################################################################################################
 	############################################################################################################
 	############################################################################################################
@@ -536,7 +534,7 @@ def add_commit_all(type: str="current", commit_message: str=""):
 	############################################################################################################
 	############################################################################################################
 	############################################################################################################
-	commit = subprocess.run(["git", "commit", "-m", commit_message], capture_output=True, text=True)
+	commit = run_subprocess(["git", "commit", "-m", commit_message])
 	if commit.returncode == 0:
 		print_stdout(commit.stdout)
 		print_norm('"{}" successfully committed to files.'.format(commit_message))
@@ -567,9 +565,9 @@ def clear_staged_and_commit():
 Are you sure that you want to proceed? [y/N] >>> """)
 	print()
 	if sure.lower() == "y":
-		current_branch = subprocess.run(["git", "branch", "--show-current"], capture_output=True, text=True)
-		fetch = subprocess.run(["git", "fetch", "origin", current_branch.stdout.strip()], capture_output=True, text=True)
-		clear = subprocess.run(["git", "reset", "--hard", f"origin/{current_branch.stdout.strip()}"])
+		current_branch = run_subprocess(["git", "branch", "--show-current"])
+		fetch = run_subprocess(["git", "fetch", "origin", current_branch.stdout.strip()])
+		clear = run_subprocess_cmd_alone(["git", "reset", "--hard", f"origin/{current_branch.stdout.strip()}"])
 		print_norm("Revert successful...")
 		print_norm("Recent changes on this branch cleaned.")
 		print_norm("Most recent state of the remote has been restored to the working tree of this branch.")
@@ -579,7 +577,7 @@ Are you sure that you want to proceed? [y/N] >>> """)
 	sys.exit()
 
 def git_status(action: int=0):
-	"""This function displays the current changes made to the working tree compared to that in the 
+	"""This function displays the current changes made to the working tree compared to that in the
 		repositories
 
 	Args:
@@ -588,7 +586,7 @@ def git_status(action: int=0):
 	Returns:
 		int: 1 for success, 0 for failure
 	"""
-	status = subprocess.run(["git", "status"], capture_output=True, text=True)
+	status = run_subprocess(["git", "status"])
 	if status.stdout:
 		if action == 0:
 			print_stdout(status.stdout)
@@ -650,7 +648,7 @@ def view_branch(action: int=0, new_branch=""):
 		str: branch name
 	"""
 	# view branch
-	branch_list = subprocess.run(["git", "branch"], capture_output=True, text=True)
+	branch_list = run_subprocess(["git", "branch"])
 	selection = ""
 	if action == 0:
 		# list branches
@@ -708,13 +706,13 @@ def create_or_switch_branch(branch_name: str=None, new_branch_name: str=None):
 	"""
 	if new_branch_name:
 		# creates new branch
-		create = subprocess.run(["git", "branch", new_branch_name], capture_output=True, text=True)
+		create = run_subprocess(["git", "branch", new_branch_name])
 		# if create.stdout:
 		# 	print_stdout(create.stdout)
 		# elif create.stderr:
 		# 	print_stdout(create.stderr)
 		print_stdout(f"{create.stdout if create.stdout else create.stderr}")
-		setup_branch = subprocess.run(["git", "push", "-u", "origin", new_branch_name], capture_output=True, text=True)
+		setup_branch = run_subprocess(["git", "push", "-u", "origin", new_branch_name])
 		print_stdout(setup_branch.stdout)
 		print_stdout(setup_branch.stderr)
 		branch_name = new_branch_name
@@ -726,7 +724,7 @@ def create_or_switch_branch(branch_name: str=None, new_branch_name: str=None):
 	# add_commit_all(type="all", commit_message=commit_message)
 	
 	# switch to next/new branch
-	switch_branch = subprocess.run(["git", "checkout", branch_name], capture_output=True, text=True)
+	switch_branch = run_subprocess(["git", "checkout", branch_name])
 	# if switch_branch.stderr:
 	# 	print_stdout(switch_branch.stderr)
 	# else:
@@ -738,7 +736,7 @@ def auto_apply_stash():
 		branch
 	"""
 	# auto apply stashed updates
-	auto_stash = subprocess.run(["git", "stash", "apply"], capture_output=True, text=True)
+	auto_stash = run_subprocess(["git", "stash", "apply"])
 	# if auto_stash.stdout:
 	# 	print_stdout(auto_stash.stdout)
 	# elif auto_stash.stderr:
@@ -811,7 +809,7 @@ def stash(action: int=0):
 		if resp.lower() == "c" and message:
 			add_commit_all("all", message)
 		elif resp.lower() == "s":
-			to_stash = subprocess.run(["git", "stash", "save", message], capture_output=True, text=True)
+			to_stash = run_subprocess(["git", "stash", "save", message])
 			if to_stash.stdout:
 				print_stdout(to_stash.stdout, index=1)
 				print_stdout(to_stash.stderr)
@@ -824,7 +822,7 @@ def list_stashes():
 		selected stash to the current branch
 	"""
 	# displays list of stashes
-	stash = subprocess.run(["git", "stash", "list"], capture_output=True, text=True)
+	stash = run_subprocess(["git", "stash", "list"])
 	if stash.stdout:
 		num, returned_list = print_stdout(stash.stdout, serial_numbered=1)
 		item = collect_input(num, "stash")
@@ -832,11 +830,11 @@ def list_stashes():
 		selection = (((returned_list[item]).split(":"))[0]).strip()
 		paths_list = entry_point(action="extraction")
 		for item in paths_list:
-			untrack = subprocess.run(["git", "rm", "-rf", item], capture_output=True, text=True)
+			untrack = run_subprocess(["git", "rm", "-rf", item])
 			print_stdout(untrack.stdout)
 			print_stdout(untrack.stderr)
 		# apply stash
-		stashed = subprocess.run(["git", "stash", "apply", selection], capture_output=True, text=True)
+		stashed = run_subprocess(["git", "stash", "apply", selection])
 		if stashed.stdout:
 			num, returned_list = print_stdout(stashed.stdout, index=1)
 			print_stdout(stashed.stderr)
@@ -896,13 +894,13 @@ def merge_to_main_master():
 	create_or_switch_branch(main)
 	pull()
 	create_or_switch_branch(current_branch_name)
-	rebase = subprocess.run(["git", "rebase", main], capture_output=True, text=True)
+	rebase = run_subprocess(["git", "rebase", main])
 	if rebase.stdout:
 		print_stdout(rebase.stdout)
 	elif rebase.stderr:
 		print_stdout(rebase.stderr)
 	create_or_switch_branch(main)
-	merge = subprocess.run(["git", "merge", current_branch_name], capture_output=True, text=True)
+	merge = run_subprocess(["git", "merge", current_branch_name])
 	if merge.stdout:
 		print_stdout(merge.stdout)
 	elif merge.stderr:
@@ -919,7 +917,7 @@ def diff(action: int=0):
 	Args:
 		action (int, optional): Defaults to 0.
 	"""
-	diff_res = subprocess.run(["git", "diff"], capture_output=True, text=True)
+	diff_res = run_subprocess(["git", "diff"])
 	if diff_res.returncode == 0 and diff_res.stdout:
 		print_stdout(diff_res.stdout)
 	elif diff_res.stderr:
@@ -948,7 +946,7 @@ def search_repo(repo_dir: list, delimiter: str, dir_path: str=None, repeat: int=
 	Returns:
 		list: list of selected paths
 	"""
-	subprocess.run(['clear'])
+	run_subprocess_cmd_alone(['clear'])
 	try:
 		dir = (os.sep).join((repo_dir[0]).split(os.sep)[:-1])
 	except:
@@ -1026,7 +1024,7 @@ def repo_details():
 	"""
 	root = backward_search()
 	path = f'{root}{os.sep}.git{os.sep}config'
-	config = subprocess.run(['cat', path], capture_output=True, text=True)
+	config = run_subprocess(['cat', path])
 	github_url = [(url.split(os.sep)) for url in (config.stdout).split("\n") if "url =" in url]
 	user_name = github_url[0][-2]
 	repo_name = github_url[0][-1].split(".")[0]
@@ -1046,7 +1044,7 @@ def Update_github_token(token: str, my_token: str):
 	root = backward_search()
 	# path = f'{root}{os.sep}.git{os.sep}config_test'
 	path = f'{root}{os.sep}.git{os.sep}config'
-	config = subprocess.run(['cat', path], capture_output=True, text=True)
+	config = run_subprocess(['cat', path])
 	github_url = [(url.split(os.sep)) for url in (config.stdout).split("\n") if "url =" in url]
 	# print(github_url)
 	append_github = '@github.com'
@@ -1077,15 +1075,15 @@ def Update_github_token(token: str, my_token: str):
 	# print('replacement:', replacement)
 	copy_of_config = f'{(os.sep).join(path.split(os.sep)[:-1] + ["config_copy"])}'
 	if not os.path.exists(copy_of_config):
-		make_copy = subprocess.run(['cp', path, copy_of_config], capture_output=True, text=True)
-	add_token = subprocess.run(['sed', '-i', f's|{search_word}|{replacement}|g', path ], capture_output=True, text=True)
+		make_copy = run_subprocess(['cp', path, copy_of_config])
+	add_token = run_subprocess(['sed', '-i', f's|{search_word}|{replacement}|g', path ])
 	True and print(add_token.stderr, done)
 
 	if token != my_token:
 		save = prompt_1ch(f'\nSave "{BRIGHT_MAGENTA}{token[:8]}...{token[32:]}{RESET}" for future use? [y/N] >>> ')
 		if save.lower() == 'y' or save == '':
 			command_path = f"{os.path.join(os.path.expanduser('~'), '.xbin', 'pyfiles', 'git_codes.py')}"
-			save_token = subprocess.run(['sed', '-i', f's|{my_token}|{token}|g', command_path ], capture_output=True, text=True)
+			save_token = run_subprocess(['sed', '-i', f's|{my_token}|{token}|g', command_path ])
 			True and print(save_token.stderr, done)
 		else:
 			print('Token not saved.')
@@ -1118,7 +1116,7 @@ def update_token_command():
 # def print_stashes():
 # 	"""This function prints the list of stashes in the repository
 # 	"""
-# 	stashList = subprocess.run(["git", "stash", "list"], capture_output=True, text=True)
+# 	stashList = run_subprocess(["git", "stash", "list"])
 # 	if stashList.stdout:
 # 		print_stdout(f'$$$$$ {stashList.stdout} fxn')
 # 	elif stashList.stderr:
@@ -1143,7 +1141,7 @@ def pull_from_main_or_master():
 		quit("q")
 
 	# stash changes, if any
-	stashChanges = subprocess.run(["git", "stash"], capture_output=True, text=True)
+	stashChanges = run_subprocess(["git", "stash"])
 	stashedOutput = stashChanges.stdout.strip()
 	if "No local changes" not in stashedOutput:
 		print_norm(stashedOutput)
@@ -1152,13 +1150,13 @@ def pull_from_main_or_master():
 		print_norm("No local changes to stash. Proceeding with rebase...")
 
 	# fetch changes from origin
-	fetchChangesFromOrigin = subprocess.run(["git", "fetch", "origin"], capture_output=True, text=True)
+	fetchChangesFromOrigin = run_subprocess(["git", "fetch", "origin"])
 	if fetchChangesFromOrigin.stderr:
 		print_norm(fetchChangesFromOrigin.stderr)
 		quit("q")
 
 	# rebase from main/master branch
-	rebaseFromMain = subprocess.run(["git", "rebase", f"origin/{main}"], capture_output=True, text=True)
+	rebaseFromMain = run_subprocess(["git", "rebase", f"origin/{main}"])
 	if rebaseFromMain.stdout:
 		print_norm(rebaseFromMain.stdout)
 	elif rebaseFromMain.stderr:
@@ -1168,7 +1166,7 @@ def pull_from_main_or_master():
 
 	# pop stash if one was created
 	if stashCreated:
-		popStash = subprocess.run(["git", "stash", "pop"], capture_output=True, text=True)
+		popStash = run_subprocess(["git", "stash", "pop"])
 		if popStash.stdout:
 			print_norm(popStash.stdout)
 		elif popStash.stderr:

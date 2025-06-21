@@ -74,7 +74,7 @@ def add_commit(file, arg="arg"):
 #			pass  # xnorm
 		commit_message = "Updated README.md" # xmodification
 		set_default = "auto" # xmodification
-	file_status = subprocess.run(["git", "status"], capture_output=True, text=True)
+	file_status = run_subprocess(["git", "status"])
 	# print_stdout(file_status.stdout)
 	if arg == "arg" and file not in file_status.stdout:
 		time.sleep(.04)
@@ -102,7 +102,7 @@ def add_commit(file, arg="arg"):
 		print("You must provide a commit message for {}. Try again".format(displayed_filename))
 		return 2
 		
-	add = subprocess.run(["git", "add", file], capture_output=True, text=True)
+	add = run_subprocess(["git", "add", file])
 	if add.returncode != 0:
 		print("Oops! I got {}. When trying to stage {}".format(add.stderr, displayed_filename))
 		sys.exit()
@@ -121,7 +121,7 @@ def add_commit(file, arg="arg"):
 	############################################################################################################
 	############################################################################################################
 	############################################################################################################
-	commit = subprocess.run(["git", "commit", "-m", commit_message], capture_output=True, text=True)
+	commit = run_subprocess(["git", "commit", "-m", commit_message])
 	if commit.returncode == 0:
 		print_stdout(commit.stdout)
 		print('"{}" successfully committed to {} in the repository.'.format(commit_message, displayed_filename))
@@ -172,7 +172,7 @@ def set_default_commit_msg(par: str):
 
 	cur_dir = os.getcwd() # for bar
 	os.chdir(file_path) # for bar
-	shell_return = subprocess.run(["wc", source_file_name], capture_output=True, text=True) # for bar
+	shell_return = run_subprocess(["wc", source_file_name]) # for bar
 	total_iterations = int((shell_return.stdout.strip().split())[0]) # for bar
 	os.chdir(cur_dir) # for bar
 
