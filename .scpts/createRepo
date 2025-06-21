@@ -13,7 +13,7 @@ function exiting ()
 function git_check()
 {
 	echo "....................................................."
-	if [ $exit_status -eq 0 ]; then
+	if [ "$exit_status" -eq 0 ]; then
 		echo "Repository cloned successfully."
 		echo "....................................................."
 	else
@@ -28,14 +28,14 @@ function git_check()
 curl_check()
 {
     echo "....................................................."
-    if [ $exit_status -eq 0 ]; then
+    if [ "$exit_status" -eq 0 ]; then
         echo "Repository created successfully."
 		echo -e "..........................................................."
 		echo -e ""
 		echo -e "Preparing to clone the repo \"$REPONAME\" in the directory $(pwd)..."
 		echo -e "......................Cloning repo........................"
 		git clone https://ghp_$GTOKEN@github.com/$GUSERNAME/$REPONAME.git
-		exit_status=$?
+		exit_status="$?"
 		git_check
 		echo -e ""
 		cd "$REPONAME"
