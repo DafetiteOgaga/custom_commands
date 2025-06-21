@@ -2,6 +2,7 @@
 
 import subprocess, sys
 from pyfiles.django_codes import *
+from pyfiles.subprocessfxn import run_subprocess
 
 error_check()
 code, response = error_check()
@@ -17,7 +18,7 @@ if len(sys.argv) == 2:
 	sys.argv[1] = 'show'
 command = output_func()
 print()
-output = subprocess.run(command.split(), capture_output=True, text=True)
+output = run_subprocess(command.split())
 if output.stderr:
 	moduleNotFound_in_settings(output.stderr)
 if output.stdout:
