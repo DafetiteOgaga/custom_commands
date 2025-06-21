@@ -196,7 +196,7 @@ if [ $existence_check -eq 200 ]; then
 	    elif [[ ${#RESP} =~ 1 && ("$RESP" =~ "y" || "$RESP" =~ "Y") ]]; then
 
             response=$(curl -s -o /dev/null -w "%{http_code}:%{response_code}" -u "$GUSERNAME:$GTOKEN" -X DELETE $EXISTENCE_CHECK_URL)
-            status=$?
+            status="$?"
 
             if [ $status -eq 0 ]; then
                 if [[ "$response" == "204:204" ]]; then
