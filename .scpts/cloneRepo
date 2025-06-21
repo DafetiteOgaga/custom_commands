@@ -202,10 +202,10 @@ cloning()
 	echo -e "......................Cloning repo........................"
 	if [ -z "$TOKEN" ]; then
 		git clone https://github.com/$AUSERNAME/$REPONAME.git
-		exit_status=$?
+		exit_status="$?"
 	else
 		git clone https://$TOKEN@github.com/$AUSERNAME/$REPONAME.git
-		exit_status=$?
+		exit_status="$?"
 	fi
 	if [[ $exit_status != 0 ]]; then
 		echo "....................................................."
@@ -320,7 +320,7 @@ if [[ "$CHK" == "no" ]]; then
 
 		NUM2=${#TOKEN}
 		
-		if [[ $NUM2 != $NUM1 ]]; then
+		if [[ "$NUM2" != "$NUM1" ]]; then
 			lines
 			echo -e "The TOKEN: $TOKEN which you supplied is not the classic TOKEN I expected.\n"
 			exiting
