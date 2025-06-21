@@ -2,6 +2,7 @@
 
 import subprocess, os, time, sys
 from .colors import *
+from pyfiles.subprocessfxn import run_subprocess
 
 def create_gitignore(list_dict: dict, current_directory, action: str=None):
 	"""_summary_
@@ -95,7 +96,7 @@ def scan_dir(dir, num_items: int, repo, verify_repo: int=0):
 		else:
 			git = True
 			path_c = f"{repo}/config"
-			cat_content = subprocess.run(["cat", path_c], capture_output=True, text=True)
+			cat_content = run_subprocess(["cat", path_c])
 			time.sleep(.5)
 			print()
 			print("verfying ...")
