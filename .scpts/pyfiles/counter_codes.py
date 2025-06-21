@@ -2,6 +2,7 @@
 
 import time, subprocess, os, sys
 from .colors import *
+from pyfiles.subprocessfxn import run_subprocess
 
 def check_arg(files):
 	"""checks that atleast a file(argument) is
@@ -70,8 +71,7 @@ def lines_words_chars_file(files):
 		check = os.path.join((files[0].split(os.path.sep))[0], files[file])
 		if os.path.isdir(check):
 			continue
-		shell_return = subprocess.run(["wc", files[file]], capture_output=True,
-				text=True)
+		shell_return = run_subprocess(["wc", files[file]])
 		lines, words, chars, name = shell_return.stdout.strip().split()
 		print("lines: {}, words: {}, characters: {}".format(lines, words, chars))
 	
