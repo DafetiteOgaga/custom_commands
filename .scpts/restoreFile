@@ -2,24 +2,22 @@
 
 operation_entries()
 {
-    local ARGS=$1
+    local args=("$@")
     echo ""
-    for argument in $ARGS ; do
-		git restore "$argument"
-        echo "$argument restored the same state as last commit ... "
-	done
+    for argument in "${args[@]}"; do
+        git restore "$argument"
+        echo "$argument restored to the same state as last commit ..."
+    done
 }
 
 RESP="$1"
 if [[ -n "$RESP" ]]; then
-    ARGS=$@
-    operation_entries "$ARGS"
+    operation_entries "$@"
 else
-    read -p "Enter the path to file/directory name(s). [q] - quit >>> " ARGS
-    if [[ "$ARGS" =~ [qQ] ]]; then
-        echo ""
-        echo "Cheers."
+    read -rp "Enter the path to file/directory name(s). [q] - quit >>> " -a ARGS
+    if [[ "${ARGS[0]}" =~ ^[qQ]$ ]]; then
+        echo -e "\nCheers."
         exit 0
     fi
-    operation_entries "$ARGS"
+    operation_entries "${ARGS[@]}"
 fi
