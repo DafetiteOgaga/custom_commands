@@ -7,6 +7,7 @@ from pyfiles.check_MySQLdb import check_mysqldb
 from pyfiles import check_MySQLdb
 from pyfiles.configure_settings_py import find_settings_py as settings
 from pyfiles.print import print_norm as print_stdout
+from pyfiles.subprocessfxn import run_subprocess, run_subprocess_cmd_alone
 
 def exit(option: str):
 	"""Exits the program
@@ -191,9 +192,9 @@ def error_check():
 	"""
 
 	django = ['python3', '-m', 'django', '--version']
-	check1 = subprocess.run(django, capture_output=True,text=True)
+	check1 = run_subprocess(django)
 	ls = ['ls']
-	check2 = subprocess.run(ls, capture_output=True, text=True)
+	check2 = run_subprocess(ls)
 	if 'No module named django' in check1.stderr:
 		return check1.returncode, 'django_not_installed'
 	# if "manage.py" not in check2.stdout and "runserver" not in sys.argv[0]:
@@ -331,7 +332,7 @@ def django_migrate():
 	command = output_func()
 	print()
 	# check_database_type()
-	output = subprocess.run(command.split(), capture_output=True, text=True)
+	output = run_subprocess(command.split())
 	if output.stderr:
 		moduleNotFound_in_settings(output.stderr)
 	if output.stdout:
@@ -365,7 +366,7 @@ def runserver_func():
 	# 	check_database_type(drf=True)
 	check_database_type()
 	try:
-		ctrl_c = subprocess.run(command2.split())
+		ctrl_c = run_subprocess_cmd_alone(command2.split())
 	except KeyboardInterrupt:
 		print()
 		print_stdout('Development Server exited.')
@@ -388,7 +389,7 @@ def sqlmigrate_func():
 	command = output_func()
 	print()
 	check_database_type()
-	output = subprocess.run(command.split(), capture_output=True, text=True)
+	output = run_subprocess(command.split())
 	if output.stderr:
 		moduleNotFound_in_settings(output.stderr)
 	if output.stdout:
@@ -409,7 +410,7 @@ def requirements_func():
 		output_func()
 
 	requirement = 'requirements.txt'
-	check_req = subprocess.run(['ls'], capture_output=True, text=True)
+	check_req = run_subprocess(['ls'])
 	found = False
 	for i in check_req.stdout.split():
 		if i == requirement:
@@ -426,4 +427,4 @@ def requirements_func():
 			print_stdout('Success.')
 	else:
 		command = command + [requirement]
-		subprocess.run(command)
+		run_subprocess_cmd_alone(command)
