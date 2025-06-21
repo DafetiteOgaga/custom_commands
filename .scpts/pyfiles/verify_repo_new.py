@@ -154,7 +154,6 @@ def entry_point(action: str=None, verify_repo: int=0):
 		return [ i.strip() for i in paths_list ]
 	else:
 		create_gitignore(returned_dict, current_directory)
-		# print(f"create_gitignore else clause")
 		return 1
 
 # if __name__ == "__main__":
