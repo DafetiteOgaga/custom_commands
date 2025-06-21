@@ -51,7 +51,7 @@ check4UpdateFunc() {
 			echo -e "\nPulling update...\n"
 			if is_repo; then
 				gitOp=$(git pull origin master 2>&1)
-				if [[ $? -eq 0 ]]; then
+				if [[ "$?" -eq 0 ]]; then
 					echo -e "$gitOp"
 					update_script
 					echo -e "\nUpdate pulled successfully."
