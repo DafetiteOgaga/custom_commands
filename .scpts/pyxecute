@@ -38,7 +38,7 @@ for argument in "$@" ; do
 	count=$((count + 1))
 done
 
-if [[ $nopycount == $count ]]; then
+if [[ "$nopycount" == "$count" ]]; then
 echo -e ""
 	echo -e "No python file found."
 fi
