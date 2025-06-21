@@ -56,10 +56,10 @@ echo -n "Enter output name (blank to use filename) >>> "
 read PREFNAME
 
 echo ""
-if [[ -n $PREFNAME ]]; then
-	FINNAME=$PREFNAME
+if [[ -n "$PREFNAME" ]]; then
+	FINNAME="$PREFNAME"
 else
-	FINNAME=$NOEXT
+	FINNAME="$NOEXT"
 fi
 
 echo ""
@@ -69,37 +69,37 @@ echo ""
 if [[ "$OPTION" =~ [aA] ]]; then
 	echo -e "Preprocessing..."
 	echo ""
-	gcc -E $FILE -o preprocessed_$FINNAME
+	gcc -E "$FILE" -o "preprocessed_$FINNAME"
 	echo -e "$OUT preprocessed_$FINNAME"
 
 elif [[ "$OPTION" =~ [bB] ]]; then
 	echo -e "Compilating without linking..."
 	echo ""
-	gcc -c $FILE -o compiled_unlinked_$FINNAME.o
+	gcc -c "$FILE" -o "compiled_unlinked_$FINNAME.o"
 	echo -e "$OUT compiled_unlinked_$FINNAME.o"
 
 elif [[ "$OPTION" =~ [cC] ]]; then
 	echo -e "Compilation to assembly stage..."
 	echo ""
-	gcc -S $FILE -o assembly_$FINNAME.s
+	gcc -S "$FILE" -o "assembly_$FINNAME.s"
 	echo -e "$OUT assembly_$FINNAME.s"
 
 elif [[ "$OPTION" =~ [dD] ]]; then
 	echo -e "Normal compilation..."
 	echo ""
-	gcc $FILE -o $FINNAME
+	gcc "$FILE"-o "$FINNAME"
 	echo -e "$OUT $FINNAME"
 
 elif [[ "$OPTION" =~ [eE] ]]; then
 	echo -e "Compilation but turns WARNINGS to ERRORS..."
 	echo ""
-	gcc -Wall -Werror -Wextra -pedantic $FILE -o $FINNAME
+	gcc -Wall -Werror -Wextra -pedantic "$FILE" -o "$FINNAME"
 	echo -e "$OUT $FINNAME"
 
 else
 	echo -e "Default compilation (c89 standard)..."
 	echo ""
-	gcc -Wall -Werror -Wextra -pedantic -std=gnu89 $FILE -o $FINNAME
+	gcc -Wall -Werror -Wextra -pedantic -std=gnu89 "$FILE" -o "$FINNAME"
 	echo -e "$OUT $FINNAME"
 fi
 
