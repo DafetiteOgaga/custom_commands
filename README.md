@@ -377,7 +377,7 @@ Depending on the command, the usage instruction for that command is provided aft
 We welcome contributions!
 Check out our [Contributing Guide](.github/CONTRIBUTING.md) to get started.
 
-[![Contribute badge](https://img.shields.io/badge/Contribute-Guide-blue.svg)](.github/CONTRIBUTING.md)
+[![Contribute badge](https://img.shields.io/badge/Contributing-Guide-blue.svg)](.github/CONTRIBUTING.md)
 
 
 ## New
