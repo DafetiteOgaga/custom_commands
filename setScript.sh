@@ -46,6 +46,60 @@ quit() {
 	fi
 }
 
+check_for_python() {
+	# check for python (gitbash) or python3 (unix-like)
+	PYTHON="python3" # for unix-like
+	# echo "Checking if python is installed"
+	if is_git_bash; then
+		PYTHON="python" # for gitbash
+		is_python_installed=$("$PYTHON" --version 2>&1)
+	else
+		if ! command -v "$PYTHON" &> /dev/null; then
+			is_python_installed="Python was not found"
+		else
+			is_python_installed=$("$PYTHON" --version 2>&1)
+		fi
+	fi
+
+
+	# echo "is_python_installed: $is_python_installed" # comment out this line when done
+
+	if [[ "$is_python_installed" == *"Python was not found"* ]]; then
+		if is_git_bash; then
+			# if os is windows (running git bash)
+			echo ""
+			echo "You have to install python."
+			echo "Remember to tick ✅ the checkboxes:"
+			echo "  1. \"Use admin privilages when installing py.exe\" (if not already ticked)"
+			echo "  2. \"Add python.exe to PATH\""
+			echo "Visit https://www.python.org/downloads/ to download and install it."
+			echo "Note 📝: You may need to logout/login or just restart your pc after installing python"
+			echo ""
+			exit 1
+		else
+			# other unix-like os
+			# Attempt to install Python3
+			echo "Python3 not installed."
+			echo "Installing it..."
+			sleep 0.1
+			# other package managers command
+			
+			if [[ "$WHICH" =~ [p] ]]; then
+				# for phone
+				pkg update
+				pkg install python
+			elif [[ "$WHICH" =~ [c] ]]; then
+				# for pc
+				sudo apt-get update
+				sudo apt-get install -y python3
+			fi
+		fi
+	# else # remove this else block when done
+	# 	echo "... $PYTHON is installed"
+	# 	# sleep 0.1
+	fi
+}
+
 is_git_bash() {
     [[ "$OSTYPE" == "msys" || "$MSYSTEM" == MINGW* ]]
 }
@@ -89,17 +143,35 @@ dafetite() {
 auth() {
 	# initiates sudo authentication
 	local var="$WHICH"
-	# echo "VARX: $var"
-	# echo "WHICHX: $WHICH"
 
 	if [[ ${#var} == 1 ]]; then
 		if [[ "$var" =~ [cC] ]]; then
 			rep="PC"
 			name=$(get_username)
+			greet_sudo_user="\nHi $name 😊 ..."
 			if is_git_bash; then
-				echo -e "\nHi $name  😊 ..."
+				echo -e "$greet_sudo_user"
 			else
-				sudo -E echo -e "\nHi $name  😊 ..."
+				sudo -v # to refresh sudo timestamp (if user has been authenticated before)
+				sudo_response="$?"
+
+				# If sudo failed
+				if [[ "$sudo_response" -ne 0 ]]; then
+					echo ""
+					echo "You have to authenticate to proceed."
+					# Retry sudo
+					sudo -E echo -e "$greet_sudo_user"
+					sudo_response="$?"
+
+					if [[ "$sudo_response" -ne 0 ]]; then
+						echo ""
+						echo "Authentication failed. Please try again."
+						exit 1
+					fi
+				else
+					# If first sudo worked, proceed
+					sudo -E echo -e "$greet_sudo_user"
+				fi
 			fi
 		elif [[ "$var" =~ [pP] ]]; then
 			rep="Phone"
@@ -116,9 +188,9 @@ intro() {
 	device_type=""
 	if [[ "$CHECKER_PC_PH" =~ [hH]ome|[uU]sers ]]; then
 		device_type="pc"
-		if [[ "$whch" =~ "0" ]]; then
+		if [[ "$whch" =~ [0] ]]; then
 			if is_wsl; then echo -e "Machine: Windows subsystem for linux (WSL)"
-			elif is_macos; then echo -e "Machine: macOs"
+			elif is_macos; then echo -e "Machine: macOS"
 			elif is_linux; then echo -e "Machine: linux"
 			# echo -e "I can see that this is a PC"
 			fi
@@ -127,7 +199,7 @@ intro() {
 		fi
 	elif [[ "$CHECKER_PC_PH" == "data" ]]; then
 		device_type="phone"
-		if [[ "$whch" =~ "0" ]]; then
+		if [[ "$whch" =~ [0] ]]; then
 			echo -e "Device: Phone"
 		else
 			echo -e "$rep"
@@ -135,7 +207,7 @@ intro() {
 	elif is_git_bash; then
 		echo -e "Machine: Windows (Git Bash)."
 	else
-		if [[ "$whch" =~ "0" ]]; then
+		if [[ "$whch" =~ [0] ]]; then
 			echo -e "I can't figure out your device type."
 		else
 			echo -e "Oh! Great. Configuring for a $rep"
@@ -296,9 +368,9 @@ cpfunc() {
 			;;
 		"cfile")
 			# copies the content
-			if [[ "$WHICH" =~ 'p' ]]; then
+			if [[ "$WHICH" =~ [p] ]]; then
 				cp "$SCPTS/phone/$DFILENAME" "$XBIN/$DFILENAME"
-			elif [[ "$WHICH" =~ 'c' ]]; then
+			elif [[ "$WHICH" =~ [c] ]]; then
 				cp "$SCPTS/pc/$DFILENAME" "$XBIN/$DFILENAME"
 			fi
 		;;
@@ -956,7 +1028,7 @@ scptcpy() {
 		fi
 		# echo "end making xbin dir ..."
 	fi
-	if [[ ! -d "$XBIN/pyfiles/expoDefaults" && "$DFILENAME"=~"createExpoApp" ]]; then
+	if [[ ! -d "$XBIN/pyfiles/expoDefaults" && "$DFILENAME"=="createExpoApp" ]]; then
 		mkdir -p "$XBIN/pyfiles/expoDefaults"
 		cp -r "$SCPTS/pyfiles/expoDefaults" "$XBIN/pyfiles/"
 	fi
@@ -969,47 +1041,12 @@ scptcpy() {
 	# for pyscripts/pycodemore/pycode command installation
 	elif [[ "$DFILENAME" == "pycode" || "$DFILENAME" == "pycodemore" || "$FILETYPE" == "pyscript" ]]; then
 		cpfunc
-		PYTHON="python3"
-		if is_git_bash; then
-			PYTHON="python"
-		fi
-		# Check if Python3 is installed
-		# echo "Checking if $PYTHON is installed"
-		if command -v "$PYTHON" &> /dev/null; then
-			# echo "... $PYTHON is installed"
-			sleep 0.1
-		else
-			if is_git_bash; then
-				# if os is windows (running git bash)
-				echo "Python not found."
-				echo "Visit https://www.python.org/downloads/ to download and install it."
-				echo ""
-				exit 1
-			else
-				# other unix-like os
-				# Attempt to install Python3
-				echo "Python3 not installed."
-				echo "Installing it..."
-				sleep 0.1
-				# other package managers command
-				
-				if [[ "$WHICH" =~ 'p' ]]; then
-					# for phone
-					pkg update
-					pkg install python
-				elif [[ "$WHICH" =~ 'c' ]]; then
-					# for pc
-					sudo apt-get update
-					sudo apt-get install -y python3
-				fi
-			fi
-		fi
 
 		if [[ "$DFILENAME" == "pycode" || "$DFILENAME" == "pycodemore" ]]; then
-			if [[ "$WHICH" =~ 'c' ]]; then
+			if [[ "$WHICH" =~ [c] ]]; then
 				# installation for pc
 				sudo apt install pycodestyle
-			elif [[ "$WHICH" =~ 'p' ]]; then
+			elif [[ "$WHICH" =~ [p] ]]; then
 				# installation for phone
 				pip install pycodestyle
 			fi
@@ -1034,7 +1071,7 @@ bLinter() {
 
 	git clone https://github.com/alx-tools/Betty.git
 
-	if [[ "$WHICH" =~ 'p' ]]; then
+	if [[ "$WHICH" =~ [p] ]]; then
 		echo -e ""
 		git clone https://github.com/DafetiteOgaga/betty_wrapper.git
 		cp betty_wrapper/phone-betty.sh betty_wrapper/phone-install.sh Betty
@@ -1043,7 +1080,7 @@ bLinter() {
 
 		./phone-install.sh
 
-	elif [[ "$WHICH" =~ 'c' ]]; then
+	elif [[ "$WHICH" =~ [c] ]]; then
 		echo -e ""
 		cd Betty
 		sudo ./install.sh
@@ -1309,22 +1346,19 @@ instructn() {
 }
 
 
-#........ start .......................... #
 
-#........ intro .......................... #
+#...Entry point.................. #
 
-# note: the intro function is called to display the introduction message
-# but this has been automated except for when script cannot detect the
-# type of device
-
-# this sets/keeps the line endings consistent across different systems
+# this sets/keeps the line endings consistent across different platforms
 git config --global core.autocrlf input
 
+# this sets/resets the tracker setup every 24 hours
 if [[ -f "$UPDATEPATH" ]];
 	then
+		# updates the tracker setup
 		bash "$UPDATEPATH"
 else
-	#...creating check4Update commands always check and update this program.................. #
+	# creates the tracker setup
 	mkdir -p "$XBIN"
 	echo "custom commands" > "$XBIN/check4Update"
 	cp "$SCPTS/pyfiles/check4Update" "$XBIN/check4Update"
@@ -1340,24 +1374,26 @@ launch=(
 )
 
 CHECKERPCPH=$(echo "$XBIN" | cut -d '/' -f 2)
+echo ""
+config_type="OS:"
 if is_wsl || is_macos || is_linux || is_git_bash; then
 	if is_wsl;
 		then
-			echo -e "Windows subsystem for linux (WSL)."
+			echo -e "$config_type Windows (WSL - Windows subsystem for linux)."
 	elif is_macos;
 		then
-			echo -e "macOs."
+			echo -e "$config_type macOs."
 	elif is_linux;
 		then
-			echo -e "linux."
+			echo -e "$config_type linux."
 	elif is_git_bash;
 		then
-			echo -e "Git bash."
+			echo -e "$config_type Windows (Git bash)."
 	fi
 	WHICH="c"
 elif [[ "$CHECKERPCPH" == "data" ]]; then
-	echo -e "p"
-	WHICH="phone"
+	# echo -e "p"
+	WHICH="p"
 else
 	while true; do
 		clear
@@ -1375,18 +1411,9 @@ else
 		fi
 	done
 fi
-
-# echo -e "WHICH: $WHICH"
-#...main operation.................. #
-#...Entry point.................. #
-
-# bash "$SCPTS/pyfiles/convertLineEndings"
-# bash "$SCPTS/pyfiles/convertLineEndings" "$DBIN"
+check_for_python # checks if python is installed
 
 #...options display.................. #
-
-# #...1.................. #
-
 count=0
 default_option='0'
 while [[ "$UINPUT" != [nN] ]]; do
@@ -1400,6 +1427,7 @@ while [[ "$UINPUT" != [nN] ]]; do
 			echo "Pls wait..."
 		fi
 		sleep 0.1
+		# echo "clearing ..."
         clear
         auth "$WHICH"
         intro "0"
