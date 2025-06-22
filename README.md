@@ -3,6 +3,7 @@
 </p>
 
 # Custom Commands
+[![Title badge](https://img.shields.io/badge/Type-CLI-green.svg)](#installation)
 
 ![Device check Image](.images/intro.jpg)
 ![Main menu page 1](.images/main_menu.jpg)
@@ -14,7 +15,9 @@
 * Unix, Linux, Windows Subsystem for Linux, Git Bash (Windows)
 <br><br>
 
-# Installation
+## Installation
+[![Installation badge](https://img.shields.io/badge/Installation-CLI-blueviolet.svg)](########)
+
 
 1. ### **Clone the repository:**
    ```bash
@@ -29,9 +32,17 @@
    ./setScript.sh
    ```
 <br>
-<hr>
 
-### **After installation you can access various commands on your computer/phone such as:**
+
+## Usage
+[![Usage badge](https://img.shields.io/badge/Usage-Instructions-lightgrey.svg)](##########)
+
+Depending on the command, the usage instruction for that command is provided after its successful installation.
+
+
+### **After installation, you can access various commands on your computer or phone such as:**
+[![Commands badge](https://img.shields.io/badge/Available%20Commands-Click%20for%20more-blue.svg)](.more/commands.md)
+
 
 <br>
 
@@ -358,14 +369,15 @@
 
 </table>
 
-#### Note: For more details about the each commands. [click me](.more/commands.md)
+#### Note: For more details about the each commands.
+[![More commands badge](https://img.shields.io/badge/More%20commands-Click%20here-orange.svg)](.more/commands.md)
 
-<hr>
 
-### Usage
+## Contributing
+We welcome contributions!
+Check out our [Contributing Guide](.github/CONTRIBUTING.md) to get started.
 
-#### Depending on the command, the usage instruction for that command is provided after its successful installation.
-<hr>
+[![Contribute badge](https://img.shields.io/badge/Contribute-Guide-blue.svg)](.github/CONTRIBUTING.md)
 
 
 ## New
@@ -402,25 +414,18 @@
   - [More](.more/fixes.md)
 
 
-## Contributing
 
-We welcome contributions!
-Check out our [Contributing Guide](.github/CONTRIBUTING.md) to get started.
+## License
+[![License: MIT badge](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-[![Contribute](https://img.shields.io/badge/Contribute-Guide-blue.svg)](.github/CONTRIBUTING.md)
+This project is licensed under the [MIT License](LICENSE).
+
 
 ## Community
-
-[![Contributor Covenant](https://img.shields.io/badge/Code%20of%20Conduct-Contributor%20Covenant-ff69b4.svg)](.github/CODE_OF_CONDUCT.md)
+[![Contributor Covenant badge](https://img.shields.io/badge/Code%20of%20Conduct-Contributor%20Covenant-ff69b4.svg)](.github/CODE_OF_CONDUCT.md)
 
 This project follows the [Contributor Covenant Code of Conduct](.github/CODE_OF_CONDUCT.md).
 By participating, you are expected to uphold this code.
-
-## License
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-This project is licensed under the [MIT License](LICENSE).
-
 
 
 ###### *We Rise by Lifting Others.*
