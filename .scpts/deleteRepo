@@ -181,19 +181,19 @@ existence_check=$(curl -s -o /dev/null -w "%{http_code}" -u "$GUSERNAME:$GTOKEN"
 if [ $existence_check -eq 200 ]; then
     if [[ -z "$RESP" ]]; then
         echo "NOTE: THIS ACTION IS NOT REVERSIBLE."
-	    echo -n "Are you sure you want to DELETE the repository \"$REPONAME\" from \"https://github.com/$GUSERNAME\"?... (y/n) >>> "
+        echo -n "Are you sure you want to DELETE the repository \"$REPONAME\" from \"https://github.com/$GUSERNAME\"?... (y/n) >>> "
         read -n 1 -s -r RESP
-	    echo -e ""
+        echo -e ""
 
         if [[ -z "$RESP" ]]; then
-		    echo -e "You did not answer the question."
-		    exiting
+            echo -e "You did not answer the question."
+            exiting
 
-	    elif [[ ${#RESP} != 1 ]]; then
-		    echo -e "Invalid response."
-		    exiting
+        elif [[ ${#RESP} != 1 ]]; then
+            echo -e "Invalid response."
+            exiting
 
-	    elif [[ ${#RESP} =~ 1 && ("$RESP" =~ "y" || "$RESP" =~ "Y") ]]; then
+        elif [[ ${#RESP} =~ 1 && ("$RESP" =~ [Yy]) ]]; then
 
             response=$(curl -s -o /dev/null -w "%{http_code}:%{response_code}" -u "$GUSERNAME:$GTOKEN" -X DELETE $EXISTENCE_CHECK_URL)
             status="$?"
@@ -213,10 +213,10 @@ if [ $existence_check -eq 200 ]; then
                 echo "Unknown error: $response"
                 exiting
             fi
-	    else
-		    echo "Operation cancelled. Repository not deleted."
+        else
+            echo "Operation cancelled. Repository not deleted."
             exiting
-	    fi
+        fi
     fi
 else
     echo -e "\nRepository \"$REPONAME\" may not exist on \"https://github.com/$GUSERNAME\", or you don't have permission to access it."
@@ -234,10 +234,10 @@ if [ -d "$REPONAME" ]; then
 		exiting
 
 	elif [[ ${#CONFIRM} != 1 ]]; then
-	    echo -e "Invalid response."
-		exiting
+        echo -e "Invalid response."
+        exiting
 
-	elif [[ ${#CONFIRM} =~ 1 && ("$CONFIRM" =~ "y" || "CONFIRM" =~ "Y") ]]; then
+	elif [[ ${#CONFIRM} =~ 1 && ("$CONFIRM" =~ [Yy]) ]]; then
         rm -rf "$REPONAME"
         echo -e "Local repository \"$REPONAME/\" deleted successfully."
     else
