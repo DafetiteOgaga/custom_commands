@@ -4,9 +4,9 @@
 
 # Custom Commands
 
-![Device check Image](.intro.jpg)
-![Main menu page 1](.main_menu.jpg)
-![Main menu page 2](.main_menu2.jpg)
+![Device check Image](.images/intro.jpg)
+![Main menu page 1](.images/main_menu.jpg)
+![Main menu page 2](.images/main_menu2.jpg)
 
 ### Note: **You can view all your custom commands by running `custom_commands` on your terminal**
 
@@ -358,7 +358,7 @@
 
 </table>
 
-#### Note: For more details about the each commands. [click me](https://github.com/DafetiteOgaga/custom_commands/blob/master/commands.md)
+#### Note: For more details about the each commands. [click me](.more/commands.md)
 
 <hr>
 
@@ -367,13 +367,6 @@
 #### Depending on the command, the usage instruction for that command is provided after its successful installation.
 <hr>
 
-### Contributing
-#### I welcome contributions from the community! If you'd like to contribute to Custom commands, please follow these steps:
-
-- Fork this repository.
-- Create a new branch for your feature or bug fix.
-- Commit your changes and push to your fork.
-- Submit a pull request to this repository.
 
 ## New
   - pullFromMain
@@ -398,7 +391,7 @@
    creating a new commit for this revert. Hence, history is not lost or
    discarded
   - Added (New) createExpoApp - uses backed up app config setup to create apps after the initial (first downloaded) setup and spins up the local server automatically.
-  - [More](https://github.com/DafetiteOgaga/custom_commands/blob/master/changes.md)
+  - [More](.more/changes.md)
 
 
 ## Fixes
@@ -406,9 +399,29 @@
   - fixed base code to dynamically handle merge conflict for operations involving pull (from current branch), using rebase instead of merge resolution
   - Added checks to mongoOp command to check if mongodb is installed before proceeding with its operations
   - fixed all commands to be gitbash compartible
-  - [More](https://github.com/DafetiteOgaga/custom_commands/blob/master/fixes.md)
+  - [More](.more/fixes.md)
 
+
+## Contributing
+
+We welcome contributions!
+Check out our [Contributing Guide](.github/CONTRIBUTING.md) to get started.
+
+[![Contribute](https://img.shields.io/badge/Contribute-Guide-blue.svg)](.github/CONTRIBUTING.md)
+
+## Community
+
+[![Contributor Covenant](https://img.shields.io/badge/Code%20of%20Conduct-Contributor%20Covenant-ff69b4.svg)](.github/CODE_OF_CONDUCT.md)
+
+This project follows the [Contributor Covenant Code of Conduct](.github/CODE_OF_CONDUCT.md).
+By participating, you are expected to uphold this code.
+
+## License
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+This project is licensed under the [MIT License](LICENSE).
 
 
 
 ###### *We Rise by Lifting Others.*
+
