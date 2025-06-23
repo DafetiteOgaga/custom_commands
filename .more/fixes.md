@@ -1,4 +1,5 @@
 ## Fixes
+   - fixed createRepo command to use a more robust template for its README.md file, verify repo name to be created that it complice with the github requirements i.e whitespace, symbols, etc will prevent creation of new repository
    - fixed curfol command to now work across multiple platforms such as linux, wsl, gitbash, mac, etc
    - fixed base code to dynamically handle merge conflict for operations involving pull (from current branch), using rebase instead of merge resolution
    - Added checks to mongoOp command to check if mongodb is installed before proceeding with its operations
