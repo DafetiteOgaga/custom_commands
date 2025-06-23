@@ -2,16 +2,79 @@
 
 #...functions.................. #
 
+SCRIPT_PATH="$(readlink -f "$0")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+
 function exiting ()
 {
 	echo -e "\nOperation aborted!!!....................."
 	exit 1
 }
 
+edit_in_place() {
+	# replaces user details fields with user details
+	local var1="$1" # what to find
+	local var2="$2" # what to replace with
+	# $XBIN/$DFILENAME is the path to the file
+	sed -i "s|$var1|$var2|g" "$(pwd)/README.md"
+}
+
+setup_local_config() {
+	local username="$1"
+	local email="$2"
+	echo -e "Setting up the local user(i.e commit author) for this repo"
+	echo -e "..........................................................."
+	echo -e "User: $username"
+	echo -e "Email: $email"
+	echo -e "..........................................................."
+	echo -e ""
+	git config user.name "$username"
+	git config user.email "$email"
+}
+
+create_readme() {
+	local reponame="$1"
+	cp "$SCRIPT_DIR/pyfiles/createRepoReadme.md" "$(pwd)/README.md"
+	edit_in_place "REPONAME" "$reponame"
+	git add .
+	git commit -m "$reponame auto created"
+	git push
+}
+
+repo_created_successfully() {
+	local reponame="$1"
+	local username="$2"
+	echo -e ".........................................................."
+	echo -e "Successful."
+	echo "\"$reponame\" has been created."
+	echo "This repo now reside in the Github Account \"$username\"."
+	echo "It has also been cloned into this directory."
+	echo "A Default Readme file has equally been created, staged and pushed to $username/$reponame for you."
+	echo -e "........................................................."
+}
+
+is_valid_repo_name() {
+    local name="$1"
+    if [[ "$name" =~ [^a-zA-Z0-9._-] ]]; then
+        echo "Invalid repository name. It should only contain alphanumeric characters, dots, underscores, and hyphens."
+		exiting
+    # else
+    #     echo "Valid repository name: $REPONAME"
+    fi
+}
+
+is_repo_name_too_long() {
+    local name="$1"
+		if (( ${#name} > 100 )); then
+		echo "Repo name is too long (max 100 characters)."
+		exiting
+	fi
+}
 
 #... chk.................. #
 function git_check()
 {
+	local exit_status="$1"
 	echo "....................................................."
 	if [ "$exit_status" -eq 0 ]; then
 		echo "Repository cloned successfully."
@@ -36,36 +99,12 @@ curl_check()
 		echo -e "......................Cloning repo........................"
 		git clone https://ghp_$GTOKEN@github.com/$GUSERNAME/$REPONAME.git
 		exit_status="$?"
-		git_check
+		git_check "$exit_status"
 		echo -e ""
 		cd "$REPONAME"
-
-		echo -e "Setting up the local user(i.e commit author) for this repo"
-		echo -e "..........................................................."
-		echo -e "User: $GUSERNAME"
-		echo -e "Email: $GEMAIL"
-		echo -e "..........................................................."
-		echo -e ""
-		git config user.name "$GUSERNAME"
-		git config user.email "$GEMAIL"
-
-		echo -e "<p align="end">
-		\t<img src="https://raw.githubusercontent.com/DafetiteOgaga/dafetite_logo/main/dafetite-ogaga-logo.png" alt="Dafetite Ogaga" width="100" />
-		</p>
-		\n### $REPONAME and README.md were auto created using createRepo command in [*Custom Commands*](https://github.com/DafetiteOgaga/custom_commands)
-		\n\n\n\n\n###### *We Rise by Lifting Others.*" > README.md
-		git add .
-		git commit -m "$REPONAME auto created"
-		git push
-
-		echo -e ".........................................................."
-		echo -e "Successful."
-		echo "\"$REPONAME\" has been created."
-		echo "This repo now reside in the Github Account \"$GUSERNAME\"."
-		echo "It has also been cloned into this directory."
-		echo "A Default Readme file has equally been created, staged and pushed to $GUSERNAME/$REPONAME for you."
-		echo -e "........................................................."
-
+		setup_local_config "$GUSERNAME" "$GEMAIL"
+		create_readme "$REPONAME"
+		repo_created_successfully "$REPONAME" "$GUSERNAME"
     else
         echo "Oops! something went wrong. Error creating repository."
 		echo "Exit status code: $exit_status_code"
@@ -129,6 +168,8 @@ if [[ -z "$REPONAME" ]]; then
 		echo -e "\nYou can't create a repo without a name..."
 			exiting
 	fi
+	is_valid_repo_name "$REPONAME"
+	is_repo_name_too_long "$REPONAME"
 fi
 echo ""
 
@@ -145,10 +186,7 @@ echo -n "Do you want the repository to be private? [Y/N] >>> "
 read -n 1 -s -r PRIVATE_OPTION
 # echo -e "$PRIVATE_OPTION"
 
-if [[ -z "$PRIVATE_OPTION" ]]; then
-	echo -e "You did not answer the question."
-	exiting
-elif [[ ${#PRIVATE_OPTION} != 1 ]]; then
+if [[ ${#PRIVATE_OPTION} != 1 ]]; then
 	echo -e "Invalid response."
 	exiting
 
@@ -159,6 +197,9 @@ elif [[ ${#PRIVATE_OPTION} =~ 1 && ("$PRIVATE_OPTION" =~ [yY]) ]]; then
 elif [[ ${#PRIVATE_OPTION} =~ 1 && ("$PRIVATE_OPTION" =~ [nN]) ]]; then
 	echo "no, public Repo pls"
 	PRIVATE_OPTION="false"
+else
+	echo -e "Invalid response."
+	exiting
 fi
 echo ""
 
@@ -205,3 +246,9 @@ if [[ -z "$RESP" ]]; then
 	fi
 fi
 echo -e ""
+# SCRIPT_PATH="$(readlink -f "$0")"
+# SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+# SCRIPT_NAME="$(basename "$SCRIPT_PATH")"
+# echo -e "Script Path: $SCRIPT_PATH"
+# echo -e "Script Directory: $SCRIPT_DIR"
+# echo -e "Script Name: $SCRIPT_NAME"

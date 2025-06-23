@@ -2,7 +2,7 @@
   <img src="https://raw.githubusercontent.com/DafetiteOgaga/dafetite_logo/main/dafetite-ogaga-logo.png" alt="Dafetite Ogaga" width="100" />
 </p>
 
-# Custom Commands
+# Custom Commands [![Title badge](https://img.shields.io/badge/Status-Active-brightgreen.svg)](##)
 [![Title badge](https://img.shields.io/badge/Type-CLI-green.svg)](#installation)
 
 ![Device check Image](.images/intro.jpg)
@@ -12,6 +12,8 @@
 ### Note: **You can view all your custom commands by running `custom_commands` on your terminal**
 
 ## Platforms
+[![Platform Badge](https://img.shields.io/badge/Platform-Linux%20%7C%20WSL%20%7C%20Git%20Bash-blue)](####)
+
 * Unix, Linux, Windows Subsystem for Linux, Git Bash (Windows)
 <br><br>
 
@@ -407,6 +409,7 @@ Check out our [Contributing Guide](.github/CONTRIBUTING.md) to get started.
 
 
 ## Fixes
+  - fixed createRepo command to use a more robust template for its README.md file, verify repo name to comply with the github requirements.
   - fixed curfol command to now work across multiple platforms such as linux, wsl, gitbash, mac, etc
   - fixed base code to dynamically handle merge conflict for operations involving pull (from current branch), using rebase instead of merge resolution
   - Added checks to mongoOp command to check if mongodb is installed before proceeding with its operations
