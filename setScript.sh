@@ -271,7 +271,7 @@ unametokenmaill2() {
 		read NTOKEN
 		quit "$NTOKEN"
 		NUM2=${#NTOKEN}
-		echo -e "$NUM2"
+		# echo -e "$NUM2"
 		if [[ "$NUM2" -ne 36 ]] && [[ "$NUM2" -ne 40 ]]; then
 			echo -e ""
 			echo -e "TOKEN: $NTOKEN which you supplied is not a classic token."
