@@ -4,5 +4,5 @@ DBIN="$HOME/.xbin"
 
 echo ""
 echo "............All of your custom commands.................."
-ls "$HOME/.xbin" | grep -v -e "^pyfiles" -e "^check4Update" -e "^pymanage" | column
+ls "$HOME/.xbin" | grep -v -e "^pyfiles" -e "^check4Update" -e "^pymanage" -e "^C_template." | column
 echo -e "......................................................\n"
