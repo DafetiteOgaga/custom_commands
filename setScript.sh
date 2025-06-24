@@ -408,7 +408,7 @@ dOptions=(
 	"  ${BOLD}${BRIGHT_YELLOW}status command${RESET} - displays updates in the branch"
 	#...bash script files.................. #
 	"  ${BOLD}${BRIGHT_YELLOW}setEnv command${RESET} - sets a permanent environment variable"
-	"  ${BOLD}${BRIGHT_YELLOW}curfol command${RESET} - opens cwd using file explorer"
+	"  ${BOLD}${BRIGHT_YELLOW}currfol command${RESET} - opens cwd using file explorer"
 	"  ${BOLD}${BRIGHT_YELLOW}pyxecute${RESET} - appends shebang and makes your python scripts executable"
 	"  ${BOLD}${BRIGHT_YELLOW}shxecute${RESET} - appends shebang and makes your bash scripts executable"
 	"  ${BOLD}${BRIGHT_YELLOW}jsxecute${RESET} - appends shebang and makes your js scripts executable"
@@ -419,7 +419,7 @@ dOptions=(
 	"  ${BOLD}${BRIGHT_YELLOW}authorID${RESET} - configures your Github Identity(Global and Local)"
 	"  ${BOLD}${BRIGHT_YELLOW}commitree command${RESET} - displays a tree of your commit history"
 	#...py script files....................... #
-	"  ${BOLD}${BRIGHT_YELLOW}compareChange command${RESET} - displays detailed content of updates"
+	"  ${BOLD}${BRIGHT_YELLOW}showDiff command${RESET} - displays detailed content of updates"
 	"  ${BOLD}${BRIGHT_YELLOW}commitdir command${RESET} - commits all the changes in the current dir"
 	"  ${BOLD}${BRIGHT_YELLOW}commitall command${RESET} - commits all the changes in the working tree"
 	"  ${BOLD}${BRIGHT_YELLOW}getRepoUserName command${RESET} - prints the username of the current repo"
@@ -591,7 +591,7 @@ options() {
 			category b "$converted_selection"
 			;;
 		16)
-			DFILENAME="curfol"
+			DFILENAME="currfol"
 			category b "$converted_selection"
 			check_device_type
 			;;
@@ -633,7 +633,7 @@ options() {
 			;;
 	# ...py script files..................................... #
 		26)
-			DFILENAME="compareChange"
+			DFILENAME="showDiff"
 			category p "$converted_selection"
 			;;
 		27)
@@ -1138,7 +1138,7 @@ instructn() {
 		"pycompile")
 			echo -e "$STRT compile your python scripts to a .pyc $EFFT $ANYWHERE: $DFILENAME <filename(s)>"
 			;;
-		"curfol")
+		"currfol")
 			echo -e "$STRT open your current working directory $EFFT $ANYWHERE: $DFILENAME"
 			;;
 	# ............................................................ #
@@ -1194,7 +1194,7 @@ instructn() {
 		"commitree")
 			echo -e "$STRT view a graphical commit history $EFFT $ANYWHERE: $DFILENAME"
 			;;
-		"compareChange")
+		"showDiff")
 			echo -e "$STRT view uncommitted changes in the working tree compared to the repository $EFFT $ANYWHERE: $DFILENAME"
 			;;
 		"commitdir")
