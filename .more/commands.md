@@ -23,7 +23,7 @@
    * revert2commit command - safely reverts the current branch to an older commit instance but with a new revert commit without disrupting the commit history
    * authorID - configures your Github Identity (Globally and Locally) on your local machine
    * commitree command - displays a tree of your commit history
-   * compareChange command - displays the content of uncommited changes on the working tree of the current branch
+   * showDiff command - displays the content of uncommited changes on the working tree of the current branch
    * commitdir command - commits all the changes in the working directory to the repository
    * commitall command - just like commitdir but commits all the changes in the working tree instead
    * stash command - saves uncommitted changes in the working tree for the curent branch
@@ -72,7 +72,7 @@
    * pyxecute - prepends the python3 shebang line to your script and gives it the execute permission
    * shxecute - works just like pyxecute but for bash scripts
    * jsxecute - works just like pyxecute but for javascripts
-   * curfol command - opens current working directory in the file explorer
+   * currfol command - opens current working directory in the file explorer
    * cls command - clears your screen
    * wcount command - counts the lines, words and chars in files and prints it to display
    * createPatch command - creates a .patch file

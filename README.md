@@ -97,7 +97,7 @@ Depending on the command, the usage instruction for that command is provided aft
     <td>pushall</td>
     <td>makemigrations</td>
     <td>updateReactPackagez</td>
-    <td>curfol</td>
+    <td>currfol</td>
     <td></td>
     <td></td>
     <td>pycompile</td>
@@ -237,7 +237,7 @@ Depending on the command, the usage instruction for that command is provided aft
     <td></td>
   </tr>
   <tr>
-    <td>compareChange</td>
+    <td>showDiff</td>
     <td>djangoUrls</td>
     <td></td>
     <td></td>
@@ -410,7 +410,7 @@ Check out our [Contributing Guide](.github/CONTRIBUTING.md) to get started.
 
 ## Fixes
   - fixed createRepo command to use a more robust template for its README.md file, verify repo name to comply with the github requirements.
-  - fixed curfol command to now work across multiple platforms such as linux, wsl, gitbash, mac, etc
+  - fixed currfol command to now work across multiple platforms such as linux, wsl, gitbash, mac, etc
   - fixed base code to dynamically handle merge conflict for operations involving pull (from current branch), using rebase instead of merge resolution
   - Added checks to mongoOp command to check if mongodb is installed before proceeding with its operations
   - fixed all commands to be gitbash compartible
