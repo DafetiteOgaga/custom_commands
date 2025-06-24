@@ -2,6 +2,7 @@
 
 import time
 from pyfiles.subprocessfxn import run_subprocess
+from pathlib import Path
 try:
 	from .colors import *
 except ImportError:
@@ -245,43 +246,68 @@ def write_to_file(ignore_list, delimiter: str, read: bool=False, empty: bool=Fal
 			f.write(filename + '\n')
 
 def backward_search(path=None):
-	"""Uses recursion to generate the path to the root of the
-		repository in the parent directories.
+	# """Uses recursion to generate the path to the root of the
+	# 	repository in the parent directories.
+
+	# Args:
+	# 	path (str or Path): Starting directory. If None, uses current working directory.
+
+	# Returns:
+	# 	Path or None: Path to the root Git repository or None if not found.
+	# """
+	# add_safe_dir = run_subprocess(['git', 'config', '--global', '--add', 'safe.directory', '*'])
+	# root_repo = run_subprocess(['git', 'rev-parse', '--show-toplevel'])
+
+	# # print('using subprocess to find root repository...')
+	# if root_repo.returncode == 0:
+	# 	path = root_repo.stdout.strip()
+	# 	# print(f'Found root repository at: {path}')
+	# 	return path
+	# else:
+	# 	print()
+	# 	print_norm(f'Error: {root_repo.stderr.strip()}')
+	# 	print_norm("You don't seem to be in a git repository")
+	# 	print_norm('Change into a repository and try again')
+	# 	print()
+	# 	return True
+	"""
+	Recursively searches parent directories for a .git folder,
+	indicating the root of a Git repository.
 
 	Args:
-		path (str or Path): Starting directory. If None, uses current working directory.
+		path (str or Path): Starting path. Defaults to current working directory.
 
 	Returns:
 		Path or None: Path to the root Git repository or None if not found.
 	"""
-	# def delayed_print():
-	# 	print("Checking if you are in a repository...")
+	path = Path(path or Path.cwd()).resolve()
 
-	# # Set a timer to print after 5 seconds, unless canceled
-	# timer = threading.Timer(2.0, delayed_print)
-	# timer.start()
-	# start = time.time()
+	for depth, parent in enumerate([path] + list(path.parents)):
+		if (parent / '.git').exists():
+			# print(f"Found root repository at: {parent}")
+			# print(f"Depth to reach root: {depth} folder(s) up")
+			print(f'«{depth}')
+			# print(f'←{depth}')
+			reponame = parent.name
+			# print(f"Repository name: {reponame}")
+			with open(parent / '.git' / 'config', 'r') as config_file:
+				config_content = config_file.readlines()
+			configRepoName = [line for line in config_content
+                    if 'url' in line and 'https://' in line]
+			if not configRepoName:
+				print_norm("This repository wasn't cloned using https")
+				return True
+			configRepoName = configRepoName[0].strip().split('/')[-1].split('.')[0]
+			# print(f'configRepoName: {configRepoName}')
+			if reponame != configRepoName:
+				print(f"Warning: Seems you have a repository inside another repository.")
+				print(f"You need to separate them to be independent.")
+				return True
+			return parent
 
-	add_safe_dir = run_subprocess(['git', 'config', '--global', '--add', 'safe.directory', '*'])
-	# print(f'add_safe_dir.stdout: {add_safe_dir.stdout}')
-	# print(f'add_safe_dir.stderr: {add_safe_dir.stderr}')
-
-	root_repo = run_subprocess(['git', 'rev-parse', '--show-toplevel'])
-	# print_norm('Searching for root repository...')
-
-	# duration = time.time() - start
-	# print_norm(f'Search completed in {duration:.2f} seconds.')
-	# timer.cancel()  # Cancel the timer if the process completes in time
-
-	# print('using subprocess to find root repository...')
-	if root_repo.returncode == 0:
-		path = root_repo.stdout.strip()
-		# print(f'Found root repository at: {path}')
-		return path
-	else:
-		print()
-		print_norm(f'Error: {root_repo.stderr.strip()}')
-		print_norm("You don't seem to be in a git repository")
-		print_norm('Change into a repository and try again')
-		print()
-		return True
+	# Not found
+	print()
+	print_norm("You don't seem to be in a git repository")
+	print_norm('Change into a repository and try again')
+	print()
+	return True

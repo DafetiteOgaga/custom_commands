@@ -32,6 +32,7 @@ try:
 	# print(f'current_dir_var: {current_dir_var}')
 	root_repo = backward_search()
 	# print(f'root_repo: {root_repo}')
+	# pycache=True;sys.exit()
 
 	pycache, venv = compile_dir_list(root_repo, venv=True)
 	# print(f'pycache: {pycache}')
@@ -1143,35 +1144,34 @@ def pull_from_main_or_master():
 	# stash changes, if any
 	stashChanges = run_subprocess(["git", "stash"])
 	stashedOutput = stashChanges.stdout.strip()
-	if "No local changes" not in stashedOutput:
+	if "No local changes" in stashedOutput:
+		print_norm("No local changes to stash. Proceeding with rebase...")
+	else:
 		print_norm(stashedOutput)
 		stashCreated = True
-	else:
-		print_norm("No local changes to stash. Proceeding with rebase...")
 
 	# fetch changes from origin
 	fetchChangesFromOrigin = run_subprocess(["git", "fetch", "origin"])
-	if fetchChangesFromOrigin.stderr:
-		print_norm(fetchChangesFromOrigin.stderr)
-		quit("q")
+	if fetchChangesFromOrigin.stdout:
+		print_norm(f'{fetchChangesFromOrigin.stdout}:stdout')
+	elif fetchChangesFromOrigin.stderr:
+		print_norm(f'{fetchChangesFromOrigin.stderr}:stderr')
+		# quit("q")
 
 	# rebase from main/master branch
 	rebaseFromMain = run_subprocess(["git", "rebase", f"origin/{main}"])
 	if rebaseFromMain.stdout:
-		print_norm(rebaseFromMain.stdout)
+		print_norm(f'{rebaseFromMain.stdout}:stdout')
 	elif rebaseFromMain.stderr:
-		print_norm('Rebase failed.')
-		print_norm(rebaseFromMain.stderr)
-		quit("q")
+		print_norm(f'{rebaseFromMain.stderr}:stderr')
 
 	# pop stash if one was created
 	if stashCreated:
 		popStash = run_subprocess(["git", "stash", "pop"])
 		if popStash.stdout:
-			print_norm(popStash.stdout)
+			print_norm(f'{popStash.stdout}:stdout')
 		elif popStash.stderr:
-			print_norm(popStash.stderr)
-			quit("q")
+			print_norm(f'{popStash.stderr}:stderr')
 
 def getCurrentAccessToken():
 	"""This function fetches the users access token from the repository.
