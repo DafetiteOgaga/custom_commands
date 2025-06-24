@@ -920,9 +920,9 @@ def diff(action: int=0):
 	"""
 	diff_res = run_subprocess(["git", "diff"])
 	if diff_res.returncode == 0 and diff_res.stdout:
-		print_stdout(diff_res.stdout)
+		print_stdout(diff_res.stdout, status=1)
 	elif diff_res.stderr:
-		print_stdout(diff_res.stderr)
+		print_stdout(diff_res.stderr, status=1)
 	elif diff_res.stderr == "" and diff_res.stderr == "" and diff_res.returncode == 0:
 		print()
 		print_norm("Nothing to show.")
