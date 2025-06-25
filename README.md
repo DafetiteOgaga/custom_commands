@@ -314,7 +314,7 @@ Depending on the command, the usage instruction for that command is provided aft
     <td></td>
   </tr>
   <tr>
-    <td>show</td>
+    <td>showCommitHistory</td>
     <td></td>
     <td></td>
     <td></td>
