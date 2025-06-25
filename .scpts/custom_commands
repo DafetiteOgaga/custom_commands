@@ -2,7 +2,20 @@
 
 DBIN="$HOME/.xbin"
 
+pyfiles="pyfiles"
+check4Update="check4Update"
+pymanage="pymanage"
+C_template="C_template"
+
+dash_line="......................................................"
+
+ls_output=$(ls "$HOME/.xbin" | grep -v -e "^$pyfiles" -e "^$check4Update" -e "^$pymanage" -e "^$C_template.")
+list_items="$(echo "$ls_output" | column)"
+total_items="$(echo "$ls_output" | wc -l)"
+
 echo ""
 echo "............All of your custom commands.................."
-ls "$HOME/.xbin" | grep -v -e "^pyfiles" -e "^check4Update" -e "^pymanage" -e "^C_template." | column
-echo -e "......................................................\n"
+echo -e "$list_items"
+echo -e "$dash_line"
+echo -e "total: $total_items"
+echo -e "$dash_line"
