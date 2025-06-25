@@ -33,7 +33,7 @@ try:
 	current_dir_var = os.getcwd()
 	# print(f'current_dir_var: {current_dir_var}')
 	root_repo = backward_search()
-	delimiter = root_repo + os.sep
+	delimiter = root_repo + os.sep if isinstance(root_repo, str) else os.sep
 	# print(f'root_repo: {root_repo}')
 	# pycache=True;sys.exit()
 
@@ -79,6 +79,8 @@ except:
 	# py = None
 	exit2(leave=root_repo)
 
+if root_repo == True:
+    exit2(leave=True)
 print('...')
 # print(f'py: {py} 73')
 # print(f'pycache: {pycache}')
@@ -641,7 +643,7 @@ def git_status(action: int=0):
 				return 1
 			else:
 				return 0
-	elif status.stderr:
+	elif "not a git repository" not in status.stderr.strip():
 		print_stdout(status.stderr)
 
 
