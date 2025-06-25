@@ -88,7 +88,7 @@ def scan_dir(dir, num_items: int, repo, verify_repo: int=0):
 	Returns:
 		_type_: _description_
 	"""
-	time.sleep(.03)
+	time.sleep(.02)
 	git = False
 	for num in range(num_items):
 		if dir[num] != repo:
@@ -129,24 +129,27 @@ def entry_point(action: str=None, verify_repo: int=0):
 	print()
 	time.sleep(.05)
 
-	print("Scanning directory(ies) ...")
+	print("Scanning ...")
 
 	current_dir_list = []
 	count=0
 	while res is False:
 		time.sleep(.05)
-		print(f"Checking: {BLACK}{os.getcwd()}{RESET}")
-		current_dir_list.append(os.getcwd())
+		current_dir = run_subprocess(["pwd"]).stdout.strip()
+		# print(f"Current directory: {current_dir}")
+		print(f"Checking in {os.path.basename(current_dir)}")
+		current_dir_list.append(current_dir)
 		num, res = scan_dir(directory, num_of_items_in_dir, repository, verify_repo)
 		directory = os.chdir("..")
 		directory = os.listdir()
 		num_of_items_in_dir = len(directory)
-		if count == 10:
+		if current_dir == "/":
 			# time.sleep(1)
 			print("Not a git repository.")
 			print()
 			sys.exit(1)
 		count += 1
+		# print(f"Current directory: {current_dir}")
 	returned_dict = ignore__pycache(current_dir_list)
 	if action:
 		paths_list = create_gitignore(returned_dict, current_directory, action=action)

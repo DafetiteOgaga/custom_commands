@@ -323,7 +323,7 @@ def backward_search(path=None):
 				print(f"Warning: Seems you have a repository inside another repository.")
 				print(f"You need to separate them.")
 				return True
-			return parent
+			return str(parent)
 
 	# Not found
 	print()

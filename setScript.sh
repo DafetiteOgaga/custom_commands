@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250625.0815"
+VERSIONNUMBER="20250625.2250"
 
 # colors and styles
 RESET="\033[0m"
@@ -340,7 +340,8 @@ unametokenmaill() {
 		fi
 	done
 
-	echo ""
+	echo -n "$ANS"
+	echo -e ""
 	if [[ "$ANS" =~ [yY] ]]; then
 		scptcpy
 		streamedit "$DUSERNAME" "$NUSERNAME"

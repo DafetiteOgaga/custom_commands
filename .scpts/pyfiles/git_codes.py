@@ -26,24 +26,72 @@ def exit2(leave: bool = False):
 		sys.exit(0)
 
 root_repo = True
+delimiter = ''
 try:
+	# print(f'try block')
 	# print('starting ... ####################')
 	current_dir_var = os.getcwd()
 	# print(f'current_dir_var: {current_dir_var}')
 	root_repo = backward_search()
+	delimiter = root_repo + os.sep
 	# print(f'root_repo: {root_repo}')
 	# pycache=True;sys.exit()
 
+	#################################################
+	#################################################
+	# pycache, venv = compile_dir_list(root_repo, venv=True)
+	# # print(f'pycache: {pycache}')
+	# # delimiter = root_repo + os.sep
+	# # print(f'delimiter: {delimiter}')
+	# # print('..........................')
+	# # print('returned: #################')
+	# # for d in pycache:
+	# # 	print(':::::', f'{os.sep}'.join(d.split(os.sep)[6:]))
+	# # print('..........................')
+	# # # sys.exit(0)
+
+	# py = any(True for _ in pycache if '__pycache__' in _)
+	# nodeModules = any(True for _ in pycache if 'node_modules' in _)
+	# # print('nodeModules:', nodeModules)
+	# if py or nodeModules:
+	# 	py = '__pycache__' if py else 'node_modules'
+	# 	# py = '__pycache__' if py else 'src'
+
+	# pycache = [i for i in pycache if not os.path.isfile(i) and i.split(os.sep).pop() == py]
+	# if py == 'node_modules':
+	# 	# py = 'node_modules'
+	# # if py == 'src':
+	# # 	py = 'node_modules'
+	# 	pycache = [
+	# 		(f'{os.sep}'.join(i.split(os.sep)[:-1] + ['node_modules'])).split(delimiter).pop()
+	# 		for i in pycache
+	# 		if (os.path.exists(i) and os.path.isdir(i))]
+	# 	# print('pycache4:', pycache)
+
+	# gitignore_content = write_to_file([], '', read=True)
+	# pycache = [file for file in pycache if file.split(delimiter).pop() not in gitignore_content]
+	# venv = [dir for dir in venv if dir.split(delimiter)[-1] not in gitignore_content]
+	#################################################
+	#################################################
+except:
+	print('..ħ̉̉..')
+	# print(f'except block')
+	# py = None
+	exit2(leave=root_repo)
+
+print('...')
+# print(f'py: {py} 73')
+# print(f'pycache: {pycache}')
+# print(f'delimiter: {delimiter}')
+# print(f'nodeModules: {nodeModules}')
+# print(f'gitignore_content: {gitignore_content}')
+# print(f'venv: {venv}')
+# print(f'py: {py}')
+def gitignore():
+	"""Initiates the gitignore operation
+	"""
 	pycache, venv = compile_dir_list(root_repo, venv=True)
-	# print(f'pycache: {pycache}')
-	delimiter = root_repo + os.sep
-	# print(f'delimiter: {delimiter}')
-	# print('..........................')
-	# print('returned: #################')
-	# for d in pycache:
-	# 	print(':::::', f'{os.sep}'.join(d.split(os.sep)[6:]))
-	# print('..........................')
-	# # sys.exit(0)
+	# delimiter = root_repo + os.sep
 
 	py = any(True for _ in pycache if '__pycache__' in _)
 	nodeModules = any(True for _ in pycache if 'node_modules' in _)
@@ -66,16 +114,11 @@ try:
 	gitignore_content = write_to_file([], '', read=True)
 	pycache = [file for file in pycache if file.split(delimiter).pop() not in gitignore_content]
 	venv = [dir for dir in venv if dir.split(delimiter)[-1] not in gitignore_content]
-except:
-	print('...')
-	exit2(leave=root_repo)
 
-def gitignore():
-	"""Initiates the gitignore operation
-	"""
+
 	# print('Setting up .gitignore file ...')
 	# print(f'py: {py}')
-	auto_set_pycache1 = setup_gitignore(py=py)
+	auto_set_pycache1 = setup_gitignore(pycache=pycache, py=py)
 	# print(f'auto_set_pycache1: {auto_set_pycache1}')
 	ret = gitignore_resp(auto_set_pycache1, pycache)
 	# print(f'ret: {ret}')
@@ -89,7 +132,7 @@ def gitignore():
 	print_norm('Check the root of your repository for the newly created/updated .gitignore file')
 
 
-def setup_gitignore(pycache: list=pycache, envFile: bool=False, py: str=None):
+def setup_gitignore(pycache, envFile: bool=False, py: str=None):
 	"""display the list of files/directories paths to append to the .gitignore file.
 
 	Args:
@@ -99,7 +142,7 @@ def setup_gitignore(pycache: list=pycache, envFile: bool=False, py: str=None):
 	Returns:
 		str: user's selection
 	"""
-	delimiter = backward_search() + f'{os.sep}'
+	# delimiter = root_repo + f'{os.sep}'
 	# print('delimiter: %s' % delimiter)
 	# print('envFile: %s' % envFile)
 	var = py
@@ -138,7 +181,7 @@ def gitignore_resp(auto_set_pycache: str, pycache: list):
 
 	Returns: str
 	"""
-	delimiter = backward_search() + f'{os.sep}'
+	# delimiter = root_repo + f'{os.sep}'
 	# print('delimiter: %s' % delimiter)
 	root_list = []
 	if auto_set_pycache.lower() == 'q':
@@ -159,6 +202,7 @@ def browse_files():
 	for file in os.listdir(root_repo):
 		root_list.append(f'{root_repo}{os.sep}{file}')
 	# print(f'root_list: {root_list}')
+	# delimiter = root_repo + f'{os.sep}'
 	search_repo(root_list, delimiter=delimiter)
 
 def print_set_commit(var: str):
@@ -1023,7 +1067,7 @@ def search_repo(repo_dir: list, delimiter: str, dir_path: str=None, repeat: int=
 def repo_details():
 	"""pints the username of the current repository
 	"""
-	root = backward_search()
+	root = root_repo
 	path = f'{root}{os.sep}.git{os.sep}config'
 	config = run_subprocess(['cat', path])
 	github_url = [(url.split(os.sep)) for url in (config.stdout).split("\n") if "url =" in url]
@@ -1042,7 +1086,7 @@ def Update_github_token(token: str, my_token: str):
 		sys.exit(1)
 	if len(token) == 36:
 		token = f'ghp_{token}'
-	root = backward_search()
+	root = root_repo
 	# path = f'{root}{os.sep}.git{os.sep}config_test'
 	path = f'{root}{os.sep}.git{os.sep}config'
 	config = run_subprocess(['cat', path])
