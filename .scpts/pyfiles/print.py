@@ -3,6 +3,7 @@
 import time
 from pyfiles.subprocessfxn import run_subprocess
 from pathlib import Path
+from pyfiles.verify_repo_new import entry_point
 try:
 	from .colors import *
 except ImportError:
@@ -263,30 +264,6 @@ def write_to_file(ignore_list, delimiter: str, read: bool=False, empty: bool=Fal
 			f.write(filename + '\n')
 
 def backward_search(path=None):
-	# """Uses recursion to generate the path to the root of the
-	# 	repository in the parent directories.
-
-	# Args:
-	# 	path (str or Path): Starting directory. If None, uses current working directory.
-
-	# Returns:
-	# 	Path or None: Path to the root Git repository or None if not found.
-	# """
-	# add_safe_dir = run_subprocess(['git', 'config', '--global', '--add', 'safe.directory', '*'])
-	# root_repo = run_subprocess(['git', 'rev-parse', '--show-toplevel'])
-
-	# # print('using subprocess to find root repository...')
-	# if root_repo.returncode == 0:
-	# 	path = root_repo.stdout.strip()
-	# 	# print(f'Found root repository at: {path}')
-	# 	return path
-	# else:
-	# 	print()
-	# 	print_norm(f'Error: {root_repo.stderr.strip()}')
-	# 	print_norm("You don't seem to be in a git repository")
-	# 	print_norm('Change into a repository and try again')
-	# 	print()
-	# 	return True
 	"""
 	Recursively searches parent directories for a .git folder,
 	indicating the root of a Git repository.
