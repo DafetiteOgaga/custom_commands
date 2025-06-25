@@ -427,8 +427,8 @@ dOptions=(
 	"  ${BOLD}${BRIGHT_YELLOW}wcount command${RESET} - counts the lines, words and chars in files"
 	"  ${BOLD}${BRIGHT_YELLOW}stash command${RESET} - saves uncommitted changes in the working tree"
 	"  ${BOLD}${BRIGHT_YELLOW}viewStash command${RESET} - displays a list of applyable stashes"
-	"  ${BOLD}${BRIGHT_YELLOW}logit command${RESET} - displays a detailed commit logs"
 	#...bash script files.................. #
+	"  ${BOLD}${BRIGHT_YELLOW}logit command${RESET} - displays a detailed commit logs"
 	"  ${BOLD}${BRIGHT_YELLOW}createReactApp command${RESET} - creates a React application, dependencies"
 	"  ${BOLD}${BRIGHT_YELLOW}createExpoApp command${RESET} - creates an Expo mobile application, dependencies"
 	"  ${BOLD}${BRIGHT_YELLOW}dependenciesReact command${RESET} - installs various React packages"
@@ -472,7 +472,9 @@ dOptions=(
 	"  ${BOLD}${BRIGHT_YELLOW}pycode command${RESET} a \"pycodestyle (PEP 8)\" linter"
 	#...py script files....................... #
 	"  ${BOLD}${BRIGHT_YELLOW}printmyEnv command${RESET} - prints a list of your env paths"
+	#...bash script files.................. #
 	"  ${BOLD}${BRIGHT_YELLOW}showCommitHistory command${RESET} - displays a list of all commits made to the repository"
+	#...py script files....................... #
 	"  ${BOLD}${BRIGHT_YELLOW}verifyRepo command${RESET} - checkes if the current dir is a repository or not"
 	#...bash script files.................. #
 	"  ${BOLD}${BRIGHT_YELLOW}mycompile command${RESET} - compile C source files (with options)"
