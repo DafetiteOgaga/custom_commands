@@ -321,7 +321,7 @@ def backward_search(path=None):
 			# print(f'configRepoName: {configRepoName}')
 			if reponame != configRepoName:
 				print(f"Warning: Seems you have a repository inside another repository.")
-				print(f"You need to separate them to be independent.")
+				print(f"You need to separate them.")
 				return True
 			return parent
 

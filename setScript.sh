@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250625.0043"
+VERSIONNUMBER="20250625.0815"
 
 # colors and styles
 RESET="\033[0m"
@@ -471,7 +471,7 @@ dOptions=(
 	"  ${BOLD}${BRIGHT_YELLOW}pycode command${RESET} a \"pycodestyle (PEP 8)\" linter"
 	#...py script files....................... #
 	"  ${BOLD}${BRIGHT_YELLOW}printmyEnv command${RESET} - prints a list of your env paths"
-	"  ${BOLD}${BRIGHT_YELLOW}show command${RESET} - displays a list of all commits made to the repository"
+	"  ${BOLD}${BRIGHT_YELLOW}showCommitHistory command${RESET} - displays a list of all commits made to the repository"
 	"  ${BOLD}${BRIGHT_YELLOW}verifyRepo command${RESET} - checkes if the current dir is a repository or not"
 	#...bash script files.................. #
 	"  ${BOLD}${BRIGHT_YELLOW}mycompile command${RESET} - compile C source files (with options)"
@@ -810,7 +810,7 @@ options() {
 			category p "$converted_selection"
 			;;
 		68)
-			DFILENAME="show"
+			DFILENAME="showCommitHistory"
 			category p "$converted_selection"
 			;;
 		69)
@@ -1215,7 +1215,7 @@ instructn() {
 		"printmyEnv")
 			echo -e "$STRT view a list of your env paths $EFFT $ANYWHERE: $DFILENAME"
 			;;
-		"show")
+		"showCommitHistory")
 			echo -e "$STRT view your commit history $EFFT $ANYWHERE: $DFILENAME"
 			;;
 		"verifyRepo")

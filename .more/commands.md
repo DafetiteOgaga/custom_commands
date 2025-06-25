@@ -30,7 +30,7 @@
    * viewStash command - displays a list of all the stash in all branches and can be applied to the current branch
    * logit command - displays a detailed log of your commits with their branches
    * clear_commit command - restores your working tree to the same state as your remote
-   * show command - displays a list of all commits made to the selected repository
+   * showCommitHistory command - displays a list of all commits made to the selected repository
    * verifyRepo command - checkes if the current dir is a repository or not
    * viewRepos command - displays the list of repositories from any account right from the command line. Bringing the information to you on the go!
    * getRepoUserName command - prints the username of the current repository
