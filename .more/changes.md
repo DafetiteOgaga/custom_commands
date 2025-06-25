@@ -18,7 +18,6 @@ This file contains the notable changes made to the Custom Commands project.
    - Added collectstatic command - collects static files in django for production.
    - Added support for urls display to startproject command when creating a new django project. install and run djangoUrls command to see the list and details of all configured urls.
    - Added the list of endpoints created by drf, jwtDjango and djoser to the the displayed text after installation
-   - changed showDiff command to showDiff command
    - django config commands now display the specific changes made to the settings and urls files
    - added support for DRF-xml rednderer configuration, separated DRF-auth configuration from DRF config in DRF command
    - implemented app-level urls.py auto creation and urls configuration were added in startapp command
