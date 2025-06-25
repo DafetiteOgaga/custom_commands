@@ -1,0 +1,170 @@
+#!/usr/bin/env bash
+
+# colors and styles
+BOLD="\033[1m"
+RESET="\033[0m"
+BLUE='\033[0;34m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+MAGENTA='\033[0;35m'
+BRIGHT_GREY='\033[90m'
+
+disp()
+{
+    page_size=9
+    total_repos=${#entries_arr[@]}
+    num_pages=$(( (total_repos + page_size - 1) / page_size ))
+
+    page=1
+    while true; do
+        clear
+        echo "Available commit history in: $repo_name Repo"
+        echo "Page $page of $num_pages:"
+        
+        serial_number=0
+        for ((i = (page - 1) * page_size; i < page * page_size && i < total_repos; i++)); do
+            ((serial_number++))
+            echo -e "$serial_number. ${entries_arr[i]}"
+            sleep 0.05
+        done
+
+        echo -e ""
+        if (( $page > 1 )); then
+            echo "[p] - Previous Page"
+        fi
+
+        if (( $page < $num_pages )); then
+            echo "[n] - Next Page"
+        fi
+		echo "[q] - quit"
+
+		selection=""
+        echo -e ""
+        read -n 1 -s -r -p "Enter the number corresponding to the repository you want to clone >>> " selection
+        echo -e "$selection"
+
+        if [[ "$selection" =~ [qQ] ]]; then
+			echo ""
+			echo "Cheers"
+			exit 0
+		elif [[ "$selection" =~ [nN] && "$page" -lt "$num_pages" ]]; then
+            ((page++))
+        elif [[ "$selection" =~ [pP] && "$page" -gt 1 ]]; then
+            ((page--))
+        elif [[ "$selection" =~ ^[1-9]|[1-9][0-9]|[1-9][0-9][0-9]*$ && "$selection" -le "$serial_number" ]]; then
+            converted_selection="$(( ($page - 1) * $page_size + $((selection-1)) ))"
+            selected_commit_id=${hash_entries[$converted_selection]}
+            selected_commit_message=${subject_entries[$converted_selection]}
+            selected_commit_date=${extracted_dates[$converted_selection]}
+            selected_commit_author=${extracted_authors[$converted_selection]}
+			echo -e ""
+            echo -e "Commit info:\n${GREEN}${BOLD}$selected_commit_message${RESET}\n\nWith the commit ID:\n${YELLOW}${BOLD}$selected_commit_id${RESET}\n\nMade on ${GREEN}${BOLD}$selected_commit_date${RESET}\nBy: ${MAGENTA}${BOLD}$selected_commit_author${RESET}"
+            break
+        else
+            echo "Invalid selection."
+        fi
+    done
+}
+
+# ...............
+
+repo_name=$(git config -l | grep -oP '(?<=\/)[^\/]+(?=\.git)')
+monthArray=(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec)
+entries_arr=()
+hash_entries=()
+subject_entries=()
+extracted_dates=()
+extracted_authors=()
+while read -r line;
+    do
+    fields=($line)
+    commit_hash_complete="${fields[0]}"
+    commit_hash="${commit_hash_complete:0:10}"
+    author="${fields[1]}"
+    email="${fields[2]}"
+    raw_date="${fields[@]:3:6}"
+    new_raw_date=($raw_date)
+    new_raw_date_length="${#new_raw_date}"
+    day="${new_raw_date[0]}"
+    month="${new_raw_date[1]}"
+    date="${new_raw_date[2]}"
+    time=(${new_raw_date[3]})
+    year="${new_raw_date[4]}"
+    if [[ "$new_raw_date_length" -gt 3 ]]; then
+        day="${new_raw_date[1]}"
+        month="${new_raw_date[2]}"
+        date="${new_raw_date[3]}"
+        time=(${new_raw_date[4]})
+        year="${new_raw_date[5]}"
+    fi
+    processed_time="${time%:*}"
+    # echo "author: $author"
+    # echo "email: $email"
+    # echo "raw_date: $raw_date"
+    # echo "new_raw_date: #${new_raw_date}#"
+    # echo "new_raw_date_length: $new_raw_date_length"
+
+    # echo "day: $day"
+    # echo "month: $month"
+    # echo "date: $date"
+    # echo "month_num: $month_num"
+    # echo "year: $year"
+    # echo "time: ${time}"
+    # echo "processed_time: $processed_time"
+    month_num=""
+    if [[ " ${monthArray[*]} " == *" $month "* ]]; then
+        for i in "${!monthArray[@]}"; do
+            if [[ "${monthArray[$i]}" == "$month" ]]; then
+                index=$((i + 1))
+                # Format to 2 digits (e.g., 04 for Apr)
+                month_num=$(printf "%02d" "$index")
+                break
+            fi
+        done
+    else
+        echo "Unrecognized month: '$month' — possibly due to locale"
+        month_num=""
+    fi
+
+    formatted_date="$year-$month_num-$date $processed_time"
+    # echo "formatted_date: $formatted_date"
+    # echo -e "\n"
+
+    subject_complete="${fields[@]:9}"
+    subject=$(echo "$subject_complete" | awk '{ s = ""; for (i=1; i<=NF; i++) { s = s $i " "; if (length(s) > 30) { s = substr(s, 1, 30) "... "; break; } } print s }')
+
+    colored_commit_hash="${BLUE}$commit_hash\033[0m"
+    colored_author="${YELLOW}$author\033[0m"
+    colored_email="${GREEN}$email\033[0m"
+    colored_subject="${MAGENTA}$subject\033[0m"
+
+	colored_line="[$colored_commit_hash] $colored_author $formatted_date $colored_subject"
+
+    entries_arr+=("$colored_line")
+    hash_entries+=("$commit_hash_complete")
+    subject_entries+=("$subject_complete")
+    extracted_dates+=("$raw_date")
+    extracted_authors+=("$author")
+done < <(git log --format="%H %an %ae %ad %s")
+
+count=0
+while true; do
+    if [[ "$count" -eq 0 ]]; then
+        selection="y"
+    else
+        echo ""
+        read -n 1 -s -r -p "Look up another commit? [y/N] >>> " selection
+        echo "$selection"
+    fi
+    if [[ "$selection" =~ [nqNQ] ]]; then
+        echo ""
+        echo "Cheers."
+        exit 0
+    elif [[ "$selection" =~ [yY] ]]; then
+        disp
+    else
+        echo "Invalid selection. Please enter 'y' to continue or 'n' to quit."
+    fi
+    ((count++))
+done
+
