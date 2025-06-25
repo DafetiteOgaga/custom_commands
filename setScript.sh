@@ -340,7 +340,8 @@ unametokenmaill() {
 		fi
 	done
 
-	echo ""
+	echo -n "$ANS"
+	echo -e ""
 	if [[ "$ANS" =~ [yY] ]]; then
 		scptcpy
 		streamedit "$DUSERNAME" "$NUSERNAME"
