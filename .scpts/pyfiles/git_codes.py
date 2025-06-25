@@ -27,6 +27,7 @@ def exit2(leave: bool = False):
 
 root_repo = True
 try:
+	print(f'try block')
 	# print('starting ... ####################')
 	current_dir_var = os.getcwd()
 	# print(f'current_dir_var: {current_dir_var}')
@@ -68,8 +69,11 @@ try:
 	venv = [dir for dir in venv if dir.split(delimiter)[-1] not in gitignore_content]
 except:
 	print('...')
+	print(f'except block')
+	py = None
 	exit2(leave=root_repo)
 
+# print(f'py: {py} 73')
 def gitignore():
 	"""Initiates the gitignore operation
 	"""
@@ -99,7 +103,10 @@ def setup_gitignore(pycache: list=pycache, envFile: bool=False, py: str=None):
 	Returns:
 		str: user's selection
 	"""
-	delimiter = backward_search() + f'{os.sep}'
+	bsearch = str(backward_search())
+	print(f'bsearch: {bsearch}')
+	print(f'os.sep: {os.sep}')
+	delimiter = bsearch + f'{os.sep}'
 	# print('delimiter: %s' % delimiter)
 	# print('envFile: %s' % envFile)
 	var = py
