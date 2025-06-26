@@ -1007,6 +1007,12 @@ update_changes() {
             source="$SCPTS/$filename"
 			destination="$XBIN/$filename"
 			cp "$source" "$destination"
+			if grep -q "IGITHUBUSERNAME" "$destination"; then
+				echo "destination: $destination"
+				tokenKey="$(grep "IGITHUBUSERNAME" "$destination")"
+				sed -i "s|^IGITHUBUSERNAME=.*|$tokenKey|" "$destination"
+				# sed -i "s|$var1|$var2|g" "$destination"
+			fi
 			if is_git_bash; then
 				converPyShebang4gitbash "$destination"
 			fi
