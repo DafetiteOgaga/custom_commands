@@ -229,6 +229,10 @@ streamedit() {
 	# replaces user details fields with user details
 	local var1="$1" # what to find
 	local var2="$2" # what to replace with
+	echo "in streamedit fxn"
+	echo "var1: $var1"
+	echo "var2: $var2"
+	echo "XBIN/DFILENAME: $XBIN/$DFILENAME"
 	# $XBIN/$DFILENAME is the path to the file
 
 	sed -i "s/$var1/$var2/g" "$XBIN/$DFILENAME"
@@ -344,6 +348,10 @@ unametokenmaill() {
 	echo -e ""
 	if [[ "$ANS" =~ [yY] ]]; then
 		scptcpy
+		echo "NUSERNAME: $NUSERNAME"
+		echo "NTOKEN: $NTOKEN"
+		echo "NEMAIL: $NEMAIL"
+		
 		streamedit "$DUSERNAME" "$NUSERNAME"
 		streamedit "$DTOKEN" "$NTOKEN"
 		streamedit "$DEMAIL" "$NEMAIL"
@@ -996,6 +1004,13 @@ pyfiles() {
     done
 	update_changes
 }
+
+
+# Kindly supply your Github Username and Personal Access token(without the "ghp_").
+GUSERNAME="YOUR_GITHUB_USERNAME"
+GTOKEN="YOUR_PERSONAL_ACCESS_TOKEN"
+GEMAIL="YOUR_REGISTERED_GITHUB_EMAIL"
+
 
 update_changes() {
 	# updates any command that has already been installed
