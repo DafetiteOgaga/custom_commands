@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 import time
-from pyfiles.subprocessfxn import run_subprocess
+# from pyfiles.subprocessfxn import run_subprocess
 from pathlib import Path
-from pyfiles.verify_repo_new import entry_point
+# from pyfiles.verify_repo_new import entry_point
 try:
 	from .colors import *
 except ImportError:
@@ -222,6 +222,7 @@ def write_to_file(ignore_list, delimiter: str, read: bool=False, empty: bool=Fal
 	"""
 	# set the file name to .gitignore
 	filename = delimiter + '.gitignore'
+	# print(f'delimiter: {delimiter}')
 	# print('filename:', filename)
 	# print('ignore_list:', ignore_list)
 	ignore_file = 1
