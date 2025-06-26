@@ -1099,14 +1099,14 @@ def Update_github_token(token: str, my_token: str):
 	add_token = run_subprocess(['sed', '-i', f's|{search_word}|{replacement}|g', path ])
 	True and print(add_token.stderr, done)
 
-	if token != my_token:
-		save = prompt_1ch(f'\nSave "{BRIGHT_MAGENTA}{token[:8]}...{token[32:]}{RESET}" for future use? [y/N] >>> ')
-		if save.lower() == 'y' or save == '':
-			command_path = f"{os.path.join(os.path.expanduser('~'), '.xbin', 'pyfiles', 'git_codes.py')}"
-			save_token = run_subprocess(['sed', '-i', f's|{my_token}|{token}|g', command_path ])
-			True and print(save_token.stderr, done)
-		else:
-			print('Token not saved.')
+	# if token != my_token:
+	# 	save = prompt_1ch(f'\nSave "{BRIGHT_MAGENTA}{token[:8]}...{token[32:]}{RESET}" for future use? [y/N] >>> ')
+	# 	if save.lower() == 'y' or save == '':
+	# 		command_path = f"{os.path.join(os.path.expanduser('~'), '.xbin', 'pyfiles', 'git_codes.py')}"
+	# 		save_token = run_subprocess(['sed', '-i', f's|{my_token}|{token}|g', command_path ])
+	# 		True and print(save_token.stderr, done)
+	# 	else:
+	# 		print('Token not saved.')
 
 def incorrect_args():
 	if len(sys.argv) != 2:
