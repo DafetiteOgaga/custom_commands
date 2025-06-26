@@ -6,6 +6,19 @@ try:
 except ImportError:
 	from print import print_norm as print_stdout
 
+def check_for_venv_or_node_modules(directory_path):
+	venv = ['pyvenv.cfg', 'include', 'lib']
+	node_modules = ['@adobe', '@alloc', '@babel']
+	current_dir_of_files = os.listdir(directory_path)
+	line = '............................................'
+	list_dirs = node_modules if ('node_modules' in current_dir_of_files) else venv
+	
+	resp = [True for dir in list_dirs if dir in current_dir_of_files]
+	if all(resp) and resp != [] and len(resp) == 3:
+		# print('resp ###**### %s' % resp, list_dirs)
+		return True, list_dirs, directory_path
+	return False, list_dirs, directory_path
+
 def skip_venv_dir(dir_check: list=None):
 	"""Checks if the current working directory is a venv or
 		node_modules directory and returns True if it is,
@@ -14,72 +27,26 @@ def skip_venv_dir(dir_check: list=None):
 	Returns:
 		bool: boolean
 	"""
-	# print("in use 11111 ")
 	current_dir_of_files = os.listdir()
 	venv = ['pyvenv.cfg', 'include', 'lib']
 	node_modules = ['@adobe', '@alloc', '@babel']
 	line = '............................................'
-	# print('START', line)
-	# print('current directory %s' % current_dir_of_files)
-	# time.sleep(.5)
 	list_dirs = node_modules if ('node_modules' in current_dir_of_files) else venv
 	if dir_check != None:
 		list_dirs = dir_check
 	resp = [True for dir in list_dirs if dir in current_dir_of_files]
-	# resp_tuple = [(True, f'{os.path.join(os.getcwd(), dir)}') for dir in list_dirs if dir in current_dir_of_files]
-	# resp = [item[0] for item in resp_tuple]
- 
- 
-	# print('resp:', resp)
-	# print('list dir:', list_dirs)
-	# print('END', line)
-
-	# print('the list:', resp)
-	# sys.exit(0)
-	# resp = [True for dir in venv if dir in current_dir_of_files]
-	# print('current dir:', current_dir_of_files)
-	# list_dirs = node_modules if ('node_modules' in current_dir_of_files) else venv
-	# # resp = [True for dir in list_dirs if dir in current_dir_of_files]
-	# resp = []
-	# for dir in list_dirs:
-	# 	if dir in current_dir_of_files:
-	# 		# print('list var:', list_dirs, '#####')
-	# 		# print(f'{os.path.join(os.getcwd(), list(filter(lambda x: dir in x, current_dir_of_files))[0])}')
-	# 		# if dir == 'node_modules':
-	# 		# 	val = [True, True, True]
-	# 		# 	resp.extend(val)
-	# 		# else:
-	# 		resp.append(True)
-			# break
-	# resp = []
-	# resp_dict = {}
-	# for dir in venv:
-	# 	if dir in current_dir_files:
-	# 		resp_dict[dir] = True
-	# 		resp.append(True)
-	# if len(resp_dict) == 3:
-	# 	if resp_dict['pyvenv.cfg'] and resp_dict['include'] and resp_dict['lib']:
-	# 		if resp_dict['pyvenv.cfg'] == resp_dict['include'] == resp_dict['lib'] == True:
-	# 			return True
 	if all(resp) and resp != [] and len(resp) == 3:
-		# print(line)
 		# print('resp ###**### %s' % resp, list_dirs)
-		# # print('item:', resp_tuple)
-		# for el in resp_tuple:
-		# 	print(f'::::: {el[1]}')
-		# print('LINE2', line)
-		# print('..........')
-		# if resp_dict['pyvenv.cfg'] and resp_dict['include'] and resp_dict['lib']:
-		# 	if resp_dict['pyvenv.cfg'] == resp_dict['include'] == resp_dict['lib'] == True:
 		return True, list_dirs
 	return False, list_dirs
 
 def directory_checker(venv: bool=False):
 	# print("in use 22222 ")
+	# print(f'where am i: {os.getcwd()}')
 	_, get_list = skip_venv_dir()
 	# print('get list of directory: %s' % get_list)
 	return dir_checker(venv=venv, get_list=get_list)
-	
+
 def dir_checker(get_list: list, venv: bool=False):
 	"""Generates a list of subdirectories that ascertain the current working
 		directory is a virtual environment
@@ -92,23 +59,12 @@ def dir_checker(get_list: list, venv: bool=False):
 	Returns:
 		list: list of venv subdirectories
 	"""
-	# print("in use 33333 ")
 	final_list = []
-	# temp = 'temp_dir'
-	# if 'node_modules' in os.listdir():
-	# 	print('breaking ##########################')
-	# 	return [os.getcwd()]
 	venv_check, _ = skip_venv_dir(get_list)
 	if venv_check:
 		final_list.append(os.getcwd())
 	for item in os.listdir():
 		if not os.path.isfile(item):
-			
-			# 	print('cwd:', os.getcwd())
-			# 	current_dir = os.getcwd()
-			# 	os.makedirs(current_dir + os.sep + temp, exist_ok=True)
-			# 	os.chdir(os.path.join(current_dir, temp))
-			# else:
 			current_dir = os.getcwd()
 			if current_dir.split(os.sep).pop() == 'node_modules':
 				# write_to_file([current_dir], backward_search())
@@ -122,44 +78,13 @@ def dir_checker(get_list: list, venv: bool=False):
 					# print('skipping', os.path.join(current_dir, item))
 				# print(f'venv bool: {venv_check2}')
 			final_list.append(os.getcwd()) if venv_check2 else (final_list.extend(dir_checker(get_list=get_list, venv=True)) if venv else final_list.extend(dir_checker(get_list=get_list, )))
-				# if venv_check2:
-				# 	# print('skipping:', os.getcwd())
-				# 	final_list.append(os.getcwd())
-				# else:
-				# 	final_list.extend(dir_checker(venv=True)) if venv else final_list.extend(dir_checker())
-					# if venv:
-					# 	final_list.extend(dir_checker(venv=True))
-					# else:
-					# 	final_list.extend(dir_checker())
 			os.chdir(current_dir)
 	
 	# make this return the venv dir instead of its subdirs
 	set_list = [i.split(os.sep)[-1] for i in final_list] + ['.git']
-	# line = '.......................................'
-	# print(line)
-	# print('second:')
-	# for f in final_list:
-	# 	if f.count('node_modules') > 1:
-	# 		continue
-	# 	if 'node_modules' in f and f.split(os.sep).pop() != 'node_modules':
-	# 		continue			
-	# 	print(':::::', f)
-	# print('check set:', list(set(set_list)))
-	# print(line)
-	# print('check list:', final_list)
-	# print(line)
-	# print(f'the list2: {final_list if venv else list(set(set_list))}')
-	# print(line)
-	# sys.exit(0)
-
-	# return final_list
-	return final_list if venv else list(set(set_list))
-
-	# if venv:
-	# 	return final_list
-	# else:
-	# 	final_list = [i.split('/')[-1] for i in final_list] + ['.git']
-	# 	return list(set(final_list))
+	final_response = final_list if venv else list(set(set_list))
+	# print(f'final response: {final_response}')
+	return final_response
 
 
 # FILE_COUNT_THRESHOLD = 1000  # Adjust this threshold as needed
@@ -172,15 +97,7 @@ def should_skip_directory(dir_path):
 	Returns:
 		bool: boolean
 	"""
-	# print("in use 44444 ")
-	# if len(os.listdir(dir_path)) > FILE_COUNT_THRESHOLD:
-	#     return True
-	# print(f'{dir_path if dir_path.split(os.sep)[-1] in dir_checker() else 'nothing to show'}')
-	# sys.exit(1)
 	return True if (dir_path.split(os.sep)[-1] in directory_checker()) else False
-	# if dir_path.split('/')[-1] in dir_checker():
-	# 	return True
-	# return False
 
 
 def compile_dir_list(directory, venv: bool=False):
@@ -196,7 +113,6 @@ def compile_dir_list(directory, venv: bool=False):
 	Returns:
 		list: list of subdirectories
 	"""
-	# print("in use 55555 ")
 	final_list = []
 	# rejects = []
 	for item in os.listdir(directory):
@@ -206,26 +122,6 @@ def compile_dir_list(directory, venv: bool=False):
 		if os.path.isdir(item_path):
 			if not should_skip_directory(item_path):
 				final_list.extend(compile_dir_list(item_path))
-			# else:
-			# 	rejects.extend(compile_dir_list(item_path))
-			# rejects.append(item_path)
-
-	# if venv:
-	# 	print(f'venv fin list: {final_list}')
-	# 	print(f'set venv fin list: {list(set(dir_checker(venv=True)))}')
-	# 	return final_list, list(set(dir_checker(venv=True)))
-	# 	# print(f'venv reject list: {rejects}')
-	# else:
-	# 	# print('#####*****#####the length of the file is:', len(final_list))
-	# 	# for r in final_list:
-	# 	# 	print('::::', f'{os.sep}'.join(r.split(os.sep)[6:]))
-	# 	print(f'just fin list:', final_list)
-	# 	return final_list
-	# 	# print(f'just fin list:', [file for file in final_list if (os.path.isdir(file) and file.split(os.sep).pop() == 'node_modules' and file.count('node_modules') == 1)])
-	# 	# return [file for file in final_list if (os.path.isdir(file) and file.split(os.sep).pop() == 'node_modules' and file.count('node_modules') == 1)]
-
-	# print(f'the list {(final_list, list(set(dir_checker(venv=True)))) if venv else final_list}')
-	# sys.exit(1)
 	return (final_list, list(set(directory_checker(venv=True)))) if venv else final_list
 
 def list_filter(root_repo: str):
@@ -324,25 +220,13 @@ def find_settings_py():
 	Returns:
 		list: list of settings.py and views.py files
 	"""
+	print('finding settings.py and views.py files ...')
 	settings = compile_dir_list(os.getcwd())
 	settings = [file for file in settings if file.endswith('settings.py') or file.endswith('views.py')]
 	ret = set(settings)
 	return list(ret)
 
-try:
-	# lines = '................................'
-	settings_path = find_settings_py()
-	# print(lines)
-	# for d, s in enumerate(settings_path):
-	# 	print(f'{d+1}. {s}')
-	# print(lines)
-	# file_path = [k for k in settings_path if k.endswith('settings.py')][0]
-	file_path = list(filter(lambda k: k.endswith('settings.py'), settings_path))[0]
-	# print('file_path global: {}'.format(file_path))
-	# sys.exit(0)
-except IndexError:
-	file_path = ''
-	print('....')
+print('......')
 
 def check_if_insert_exist(data: list, line: str):
 	print(f'looking out for: {line.strip()}')
@@ -372,6 +256,7 @@ def scan_file(dict_arg: dict):
 
 def read_and_write_file_to_dict(file_path: str, data: list=None, mode: str=None):
 	print('reading file - from read fxn ...')
+	print(f'file_path: {file_path}')
 	with open(file_path) as file:
 		file_dict = file.readlines()
 	if data:
@@ -391,7 +276,7 @@ def add_dependency_to_installed_apps(project_dict: dict):
 	append_variable(file_path=project_dict['path'], variable=project_dict['content'], no_append=project_dict['append'], index=project_dict["index"], temp=True)
 	print('After appending variable')
 
-def install_entity(entity: str, settings_path: list=settings_path, djoser: bool=False,):# variable: str=None):
+def install_entity(entity: str, djoser: bool=False,):# variable: str=None):
 	"""Configures the settings.py and project's urls.py files for django apps,
 		DRF, DRF auth token, djoser, jwt, django toolbar, xml renderer and static files
 
@@ -402,6 +287,9 @@ def install_entity(entity: str, settings_path: list=settings_path, djoser: bool=
 		djoser (bool, optional): indicates that the function is called
 		with a djoser command. Defaults to False.
 	"""
+	settings_path = find_settings_py()
+	file_path = list(filter(lambda k: k.endswith('settings.py'), settings_path))[0]
+	print(f'settings_path arg: {settings_path}')
 	temp_settings = settings_path
 	# print("in use aaaaa ")
 	# file_path = f"{os.sep}".join(file_path.split('/')[:-1])
@@ -429,6 +317,7 @@ def install_entity(entity: str, settings_path: list=settings_path, djoser: bool=
 		print(f'the content of settins path: {settings_path}')
 		length = len(settings_path)
 		print(f'length: {length}')
+		project_urls_path = ''
 		try:
 			settings_path = [path for path in settings_path if 'settings' in path][0]
 			project_urls_path = os.path.join(f"{os.sep}".join(settings_path.split('/')[:-1]), "urls.py")
@@ -459,6 +348,7 @@ def install_entity(entity: str, settings_path: list=settings_path, djoser: bool=
 			case "django_extensions":
 				# .........................................................
 				# add django_extensions to INSTALLED APPS list
+				print(f'settings_path: {settings_path}')
 				file_data = read_and_write_file_to_dict(settings_path)
 				scan_args = {
 					'entity': entity,
@@ -487,6 +377,7 @@ def install_entity(entity: str, settings_path: list=settings_path, djoser: bool=
 			case "startapp":
 				# .........................................................
 				# add the app to INSTALLED APPS list
+				print(f'settings_path: {settings_path}')
 				file_data = read_and_write_file_to_dict(settings_path)
 				# appname, entity = entity.split()
 				# entity = entity.split(os.sep).pop()
@@ -554,6 +445,7 @@ def install_entity(entity: str, settings_path: list=settings_path, djoser: bool=
 							with open(app_file_path, 'w') as new_file:
 								new_file.write(content)
 
+					print(f'project_urls_path: {project_urls_path}')
 					project_url_file_data = read_and_write_file_to_dict(project_urls_path)
 					print(f'xoxoxoxoxoxoxo ended xoxoxoxoxoxoxoxoxoxoxoxoxo')
 
@@ -652,6 +544,7 @@ def install_entity(entity: str, settings_path: list=settings_path, djoser: bool=
 						break
 				# for line in project_url_file_data:
 				# 	print(line)
+				print(f'project_urls_path: {project_urls_path}')
 				read_and_write_file_to_dict(project_urls_path, project_url_file_data, 'w')
 				print('***********###################*************')
 
@@ -1235,6 +1128,8 @@ def check_existence(entity: str):
 	# pass the settings.py and urls.py files to scan if theyve been pre-set
 	rm_RF = False
 	found_line = False
+	settings_path = find_settings_py()
+	file_path = list(filter(lambda k: k.endswith('settings.py'), settings_path))[0]
 	with open(file_path) as f:
 		data = f.readlines()
 	for i in data:
@@ -1259,6 +1154,8 @@ def entry_point():
 	# print()
 	
 
+	settings_path = find_settings_py()
+	file_path = list(filter(lambda k: k.endswith('settings.py'), settings_path))[0]
 	# sys.exit(0)
 	settings_path = [file_path]
 	if len(settings_path) > 2:
@@ -1270,6 +1167,8 @@ def entry_point():
 	# if entity == "djoser":
 	# 	djoser = True
 	djoser = True if (entity == 'djoser') else False
+	print(f'djoser: {djoser} and entity: {entity}')
+	print(f'settings_path entry: {settings_path}')
 	install_entity(entity, djoser=djoser)
 
 
