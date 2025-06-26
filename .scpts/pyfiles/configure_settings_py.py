@@ -220,7 +220,7 @@ def find_settings_py():
 	Returns:
 		list: list of settings.py and views.py files
 	"""
-	print('finding settings.py and views.py files ...')
+	# print('finding settings.py and views.py files ...')
 	settings = compile_dir_list(os.getcwd())
 	settings = [file for file in settings if file.endswith('settings.py') or file.endswith('views.py')]
 	ret = set(settings)
@@ -256,7 +256,7 @@ def scan_file(dict_arg: dict):
 
 def read_and_write_file_to_dict(file_path: str, data: list=None, mode: str=None):
 	print('reading file - from read fxn ...')
-	print(f'file_path: {file_path}')
+	# print(f'file_path: {file_path}')
 	with open(file_path) as file:
 		file_dict = file.readlines()
 	if data:
@@ -348,7 +348,7 @@ def install_entity(entity: str, djoser: bool=False,):# variable: str=None):
 			case "django_extensions":
 				# .........................................................
 				# add django_extensions to INSTALLED APPS list
-				print(f'settings_path: {settings_path}')
+				# print(f'settings_path: {settings_path}')
 				file_data = read_and_write_file_to_dict(settings_path)
 				scan_args = {
 					'entity': entity,
@@ -377,7 +377,7 @@ def install_entity(entity: str, djoser: bool=False,):# variable: str=None):
 			case "startapp":
 				# .........................................................
 				# add the app to INSTALLED APPS list
-				print(f'settings_path: {settings_path}')
+				# print(f'settings_path: {settings_path}')
 				file_data = read_and_write_file_to_dict(settings_path)
 				# appname, entity = entity.split()
 				# entity = entity.split(os.sep).pop()
@@ -445,7 +445,7 @@ def install_entity(entity: str, djoser: bool=False,):# variable: str=None):
 							with open(app_file_path, 'w') as new_file:
 								new_file.write(content)
 
-					print(f'project_urls_path: {project_urls_path}')
+					# print(f'project_urls_path: {project_urls_path}')
 					project_url_file_data = read_and_write_file_to_dict(project_urls_path)
 					print(f'xoxoxoxoxoxoxo ended xoxoxoxoxoxoxoxoxoxoxoxoxo')
 
@@ -544,7 +544,7 @@ def install_entity(entity: str, djoser: bool=False,):# variable: str=None):
 						break
 				# for line in project_url_file_data:
 				# 	print(line)
-				print(f'project_urls_path: {project_urls_path}')
+				# print(f'project_urls_path: {project_urls_path}')
 				read_and_write_file_to_dict(project_urls_path, project_url_file_data, 'w')
 				print('***********###################*************')
 
