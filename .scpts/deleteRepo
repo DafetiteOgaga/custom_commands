@@ -149,7 +149,7 @@ get_repo_name()
 
 # ENTRY-POINT
 
-# Kindly supply your Github Username and Personal Access token(without the "ghp_").
+# Kindly supply your Github Username and Personal Access token(without the "ghp_")..
 GUSERNAME="YOUR_GITHUB_USERNAME"
 GTOKEN="YOUR_PERSONAL_ACCESS_TOKEN"
 GEMAIL="YOUR_REGISTERED_GITHUB_EMAIL"
