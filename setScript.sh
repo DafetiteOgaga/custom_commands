@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250625.2342"
+VERSIONNUMBER="20250626.2358"
 
 # colors and styles
 RESET="\033[0m"
@@ -1006,18 +1006,40 @@ update_changes() {
             filename=$(basename "$file")
             source="$SCPTS/$filename"
 			destination="$XBIN/$filename"
-			cp "$source" "$destination"
-			if grep -q "IGITHUBUSERNAME" "$destination"; then
-				echo "destination: $destination"
-				tokenKey="$(grep "IGITHUBUSERNAME" "$destination")"
-				sed -i "s|^IGITHUBUSERNAME=.*|$tokenKey|" "$destination"
-				# sed -i "s|$var1|$var2|g" "$destination"
+
+			# Extract auth info in files that has one BEFORE overwriting
+			if grep -q "IGITHUBUSERNAME=" "$destination"; then
+				# echo "destination: $destination"
+				# echo "found tokenKey in $(basename $destination)"
+				keyUNAME="$(grep "IGITHUBUSERNAME=" "$destination")"
+				keyUTOKEN="$(grep "IGITHUBACCESSTOKEN=" "$destination")"
+				keyUEMAIL="$(grep "IGITHUBEMAIL=" "$destination")"
+				tokenKey="1"
+				# echo "keyUNAME: $keyUNAME"
+				# echo "keyUTOKEN: $keyUTOKEN"
+				# echo "keyUEMAIL: $keyUEMAIL"
 			fi
+			# echo "tokenkey: $tokenKey"
+
+			# Copy the file
+			cp "$source" "$destination"
+
+			# Reinsert the tokenKey into the file after copy
+			if [[ -n "$tokenKey" ]]; then
+				sed -i "s|^IGITHUBUSERNAME=.*|$keyUNAME|" "$destination"
+				sed -i "s|^IGITHUBACCESSTOKEN=.*|$keyUTOKEN|" "$destination"
+				sed -i "s|^IGITHUBEMAIL=.*|$keyUEMAIL|" "$destination"
+				# echo "Reinserted tokenKey into $(basename $destination)"
+				tokenKey=""
+				# rm "$XBIN"/sed*
+			fi
+
 			if is_git_bash; then
 				converPyShebang4gitbash "$destination"
 			fi
         fi
     done
+	# find "$XBIN" -maxdepth 1 -name "sed*" -type f -delete
 }
 
 #...5.................. #

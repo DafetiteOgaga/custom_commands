@@ -6,7 +6,7 @@ from pyfiles.verify_repo_new import entry_point
 from pyfiles.my_prompt import main as prompt_1ch
 from pyfiles.print import print_stdout, write_to_file, backward_search
 from pyfiles.print import print_norm
-from pyfiles.configure_settings_py import compile_dir_list, list_filter
+from pyfiles.configure_settings_py import compile_dir_list, list_filter, check_for_venv_or_node_modules
 from pyfiles.colors import *
 from pyfiles.subprocessfxn import run_subprocess, run_subprocess_cmd_alone
 try:
@@ -34,47 +34,8 @@ try:
 	# print(f'current_dir_var: {current_dir_var}')
 	root_repo = backward_search()
 	delimiter = root_repo + os.sep if isinstance(root_repo, str) else os.sep
-	# print(f'root_repo: {root_repo}')
-	# pycache=True;sys.exit()
-
-	#################################################
-	#################################################
-	# pycache, venv = compile_dir_list(root_repo, venv=True)
-	# # print(f'pycache: {pycache}')
-	# # delimiter = root_repo + os.sep
-	# # print(f'delimiter: {delimiter}')
-	# # print('..........................')
-	# # print('returned: #################')
-	# # for d in pycache:
-	# # 	print(':::::', f'{os.sep}'.join(d.split(os.sep)[6:]))
-	# # print('..........................')
-	# # # sys.exit(0)
-
-	# py = any(True for _ in pycache if '__pycache__' in _)
-	# nodeModules = any(True for _ in pycache if 'node_modules' in _)
-	# # print('nodeModules:', nodeModules)
-	# if py or nodeModules:
-	# 	py = '__pycache__' if py else 'node_modules'
-	# 	# py = '__pycache__' if py else 'src'
-
-	# pycache = [i for i in pycache if not os.path.isfile(i) and i.split(os.sep).pop() == py]
-	# if py == 'node_modules':
-	# 	# py = 'node_modules'
-	# # if py == 'src':
-	# # 	py = 'node_modules'
-	# 	pycache = [
-	# 		(f'{os.sep}'.join(i.split(os.sep)[:-1] + ['node_modules'])).split(delimiter).pop()
-	# 		for i in pycache
-	# 		if (os.path.exists(i) and os.path.isdir(i))]
-	# 	# print('pycache4:', pycache)
-
-	# gitignore_content = write_to_file([], '', read=True)
-	# pycache = [file for file in pycache if file.split(delimiter).pop() not in gitignore_content]
-	# venv = [dir for dir in venv if dir.split(delimiter)[-1] not in gitignore_content]
-	#################################################
-	#################################################
 except:
-	print('..ħ̉̉..')
+	print('.....')
 	# print(f'except block')
 	# py = None
 	exit2(leave=root_repo)
@@ -82,40 +43,52 @@ except:
 if root_repo == True:
     exit2(leave=True)
 print('...')
-# print(f'py: {py} 73')
-# print(f'pycache: {pycache}')
-# print(f'delimiter: {delimiter}')
-# print(f'nodeModules: {nodeModules}')
-# print(f'gitignore_content: {gitignore_content}')
-# print(f'venv: {venv}')
-# print(f'py: {py}')
 def gitignore():
 	"""Initiates the gitignore operation
 	"""
 	pycache, venv = compile_dir_list(root_repo, venv=True)
-	# delimiter = root_repo + os.sep
-
-	py = any(True for _ in pycache if '__pycache__' in _)
+	# print(f'type of pycache: {type(pycache)}')
+	# print(f'type of venv: {type(venv)}')
+	for file_or_dir in pycache:
+		# print(f'in - {file_or_dir.split(os.sep).pop()}')
+		if os.path.isdir(file_or_dir):
+			boolVal, listVal, venv_dir = check_for_venv_or_node_modules(file_or_dir)
+			if boolVal:
+				venv.append(venv_dir)
+	
+	# watches for __pycache__ directories
+	py = any(True for _ in pycache if '__pycache__' in _ and 'node_modules' not in _)
+	# watches for node_modules directories
 	nodeModules = any(True for _ in pycache if 'node_modules' in _)
-	# print('nodeModules:', nodeModules)
 	if py or nodeModules:
 		py = '__pycache__' if py else 'node_modules'
 		# py = '__pycache__' if py else 'src'
-
+	# print(f'py: {py} 74')
+	# gets the absolute paths of the directories (__pycache__ or node_modules)
 	pycache = [i for i in pycache if not os.path.isfile(i) and i.split(os.sep).pop() == py]
+	# print(f'pycache 1st: {pycache}')
 	if py == 'node_modules':
+		# print('py == node_modules')
 		# py = 'node_modules'
 	# if py == 'src':
 	# 	py = 'node_modules'
+		# reduces the absolute path of the node_modules directories to that of the root repo
 		pycache = [
 			(f'{os.sep}'.join(i.split(os.sep)[:-1] + ['node_modules'])).split(delimiter).pop()
 			for i in pycache
-			if (os.path.exists(i) and os.path.isdir(i))]
-		# print('pycache4:', pycache)
+			if (os.path.exists(i) and os.path.isdir(i)) and i.split(delimiter).pop().count('node_modules') == 1]
+		# print('pycache for node_module:', pycache)
 
-	gitignore_content = write_to_file([], '', read=True)
-	pycache = [file for file in pycache if file.split(delimiter).pop() not in gitignore_content]
-	venv = [dir for dir in venv if dir.split(delimiter)[-1] not in gitignore_content]
+	gitignore_content = write_to_file([], delimiter, read=True)
+	# print(f'gitignore_content: {gitignore_content}')
+	venv = list(set([dir for dir in venv if dir.split(delimiter)[-1] not in gitignore_content and
+                not any(dir.startswith(v) for v in gitignore_content)]))
+	# print(f'venv after gitignore_content: {venv}')
+	pycache = [file for file in pycache
+            if file.split(delimiter).pop() not in gitignore_content and
+            not any(file.startswith(v) for v in venv) and
+            not any(file.startswith(f'{delimiter}{v}') for v in gitignore_content)]
+	# print(f'pycache after gitignore_content: {pycache[:3]}')
 
 
 	# print('Setting up .gitignore file ...')
@@ -1003,7 +976,7 @@ def search_repo(repo_dir: list, delimiter: str, dir_path: str=None, repeat: int=
 	if child_dir:
 		dir = repo_dir[0]
 		repo_dir = os.listdir(repo_dir[0])
-	gitignore_content = write_to_file([], '', read=True)
+	gitignore_content = write_to_file([], delimiter, read=True)
 	gitignore_content = [file.split(delimiter)[-1] for file in gitignore_content]
 	repo_dir = [dir+f'{os.sep}'+file.split(delimiter)[-1] for file in repo_dir]
 	repo_dir = [file for file in repo_dir if file.split(delimiter)[-1] not in gitignore_content]
@@ -1126,14 +1099,14 @@ def Update_github_token(token: str, my_token: str):
 	add_token = run_subprocess(['sed', '-i', f's|{search_word}|{replacement}|g', path ])
 	True and print(add_token.stderr, done)
 
-	if token != my_token:
-		save = prompt_1ch(f'\nSave "{BRIGHT_MAGENTA}{token[:8]}...{token[32:]}{RESET}" for future use? [y/N] >>> ')
-		if save.lower() == 'y' or save == '':
-			command_path = f"{os.path.join(os.path.expanduser('~'), '.xbin', 'pyfiles', 'git_codes.py')}"
-			save_token = run_subprocess(['sed', '-i', f's|{my_token}|{token}|g', command_path ])
-			True and print(save_token.stderr, done)
-		else:
-			print('Token not saved.')
+	# if token != my_token:
+	# 	save = prompt_1ch(f'\nSave "{BRIGHT_MAGENTA}{token[:8]}...{token[32:]}{RESET}" for future use? [y/N] >>> ')
+	# 	if save.lower() == 'y' or save == '':
+	# 		command_path = f"{os.path.join(os.path.expanduser('~'), '.xbin', 'pyfiles', 'git_codes.py')}"
+	# 		save_token = run_subprocess(['sed', '-i', f's|{my_token}|{token}|g', command_path ])
+	# 		True and print(save_token.stderr, done)
+	# 	else:
+	# 		print('Token not saved.')
 
 def incorrect_args():
 	if len(sys.argv) != 2:

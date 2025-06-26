@@ -153,9 +153,255 @@ get_repo_name()
 IGITHUBUSERNAME="YOUR_GITHUB_USERNAME"
 IGITHUBACCESSTOKEN="YOUR_PERSONAL_ACCESS_TOKEN"
 IGITHUBEMAIL="YOUR_REGISTERED_GITHUB_EMAIL"
-GUSERNAME="IGITHUBUSERNAME"
-GTOKEN="IGITHUBACCESSTOKEN"
-GEMAIL="IGITHUBEMAIL"
+GUSERNAME="$IGITHUBUSERNAME"
+GTOKEN="$IGITHUBACCESSTOKEN"
+GEMAIL="$IGITHUBEMAIL"
+
+REPONAME="$1"
+RESP="$2"
+exit_status=0
+
+if [[ -z "$GUSERNAME" ]]; then
+	get_git_details
+fi
+
+get_repo_name
+
+# if [[ -z "$REPONAME" ]]; then
+#     echo -ne "\nPlease provide a repository name to delete in \"$GUSERNAME\" >>> "
+#     read REPONAME
+
+#     if [[ -z "$REPONAME" ]]; then
+# 	    echo -ne "\nYou can't delete a repo without a name..."
+#         exiting
+#     fi
+# fi
+# REPONAME=$(echo "$REPONAME" | sed 's/\/$//') #used to remove trailing "/" if user adds it
+
+EXISTENCE_CHECK_URL="https://api.github.com/repos/$GUSERNAME/$REPONAME"
+
+existence_check=$(curl -s -o /dev/null -w "%{http_code}" -u "$GUSERNAME:$GTOKEN" $EXISTENCE_CHECK_URL)
+if [ $existence_check -eq 200 ]; then
+    if [[ -z "$RESP" ]]; then
+        echo "NOTE: THIS ACTION IS NOT REVERSIBLE."
+        echo -n "Are you sure you want to DELETE the repository \"$REPONAME\" from \"https://github.com/$GUSERNAME\"?... (y/n) >>> "
+        read -n 1 -s -r RESP
+        echo -e ""
+
+        if [[ -z "$RESP" ]]; then
+            echo -e "You did not answer the question."
+            exiting
+
+        elif [[ ${#RESP} != 1 ]]; then
+            echo -e "Invalid response."
+            exiting
+
+        elif [[ ${#RESP} =~ 1 && ("$RESP" =~ [Yy]) ]]; then
+
+            response=$(curl -s -o /dev/null -w "%{http_code}:%{response_code}" -u "$GUSERNAME:$GTOKEN" -X DELETE $EXISTENCE_CHECK_URL)
+            status="$?"
+
+            if [ $status -eq 0 ]; then
+                if [[ "$response" == "204:204" ]]; then
+                    echo "Repository \"$REPONAME\" deleted successfully."
+
+                elif [[ "$response" == "401:401" || "$response" == "403:403" ]]; then
+                    echo -e "Error deleting repository: Authentication or permission issue.\nCheck your GitHub credentials or ensure you have the necessary permissions for repository deletion."
+                    exiting
+                else
+                    echo "Error deleting repository: Unexpected response code $response"
+                    exiting
+                fi
+            else
+                echo "Unknown error: $response"
+                exiting
+            fi
+        else
+            echo "Operation cancelled. Repository not deleted."
+            exiting
+        fi
+    fi
+else
+    echo -e "\nRepository \"$REPONAME\" may not exist on \"https://github.com/$GUSERNAME\", or you don't have permission to access it."
+    exiting
+fi
+
+
+echo ""
+if [ -d "$REPONAME" ]; then
+    echo -n "Do you want to DELETE the local repository \"$REPONAME/\" from \"$PWD\"? (y/n) >>> "
+    read -n 1 -s -r CONFIRM
+    echo -e "\n"
+    if [[ -z "$CONFIRM" ]]; then
+        echo -e "You did not answer the question."
+		exiting
+
+	elif [[ ${#CONFIRM} != 1 ]]; then
+        echo -e "Invalid response."
+        exiting
+
+	elif [[ ${#CONFIRM} =~ 1 && ("$CONFIRM" =~ [Yy]) ]]; then
+        rm -rf "$REPONAME"
+        echo -e "Local repository \"$REPONAME/\" deleted successfully."
+    else
+        echo "Deletion aborted."
+    fi
+else
+    echo "Directory \"$REPONAME/\" does not exist in the current directory."
+fi
+
+#!/usr/bin/env bash
+
+function exiting ()
+{
+	echo -e "\nOperation aborted!!!....................."
+	exit 1
+}
+
+function get_git_details()
+{
+	read -p "Enter GitHub username >>> " GUSERNAME
+	if [[ -z "$GUSERNAME" ]]; then
+		echo -e "You did not answer the question."
+		exiting
+	fi
+
+	RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "https://api.github.com/users/$GUSERNAME")
+	if [ "$RESPONSE" -ne 200 ]; then
+		echo "Username \"$GUSERNAME\" does not exist on GitHub or there was an issue confirming the existence of the username."
+		exiting
+	fi
+
+	read -p "Enter your GitHub personal access token (without the \"ghp_\") >>> " GTOKEN
+    GTOKEN="${GTOKEN#ghp_}" #used to remove "ghp_" if user adds it
+	if [[ -z "$GTOKEN" ]]; then
+		echo -e "You did not answer the question."
+		exiting
+	fi
+}
+
+disp()
+{
+    page_size=9
+    total_repos=${#repo_names[@]}
+    num_pages=$(( (total_repos + page_size - 1) / page_size ))
+
+    page=1
+    while true; do
+        clear
+        echo "Available repositories in $GUSERNAME:"
+        echo "Page $page of $num_pages:"
+        
+        serial_number=0
+        for ((i = (page - 1) * page_size; i < page * page_size && i < total_repos; i++)); do
+            ((serial_number++))
+            echo "$serial_number. ${repo_names[i]}"
+            sleep 0.05
+        done
+
+        echo -e ""
+        if (( $page > 1 )); then
+            echo "[p] - Previous Page"
+        fi
+
+        if (( $page < $num_pages )); then
+            echo "[n] - Next Page"
+        fi
+		echo "[q] - quit"
+
+		selection=""
+        echo -e ""
+        read -n 1 -s -r -p "Enter the number corresponding to the repository you want to delete >>> " selection
+        echo -e "$selection"
+
+        if [[ "$selection" =~ [qQ] ]]; then
+			exiting
+		elif [[ "$selection" =~ [nN] && "$page" -lt "$num_pages" ]]; then
+            ((page++))
+        elif [[ "$selection" =~ [pP] && "$page" -gt 1 ]]; then
+            ((page--))
+        elif [[ "$selection" =~ ^[1-9]|[1-9][0-9]|[1-9][0-9][0-9]*$ && "$selection" -le "$serial_number" ]]; then
+            converted_selection="$(( ($page - 1) * $page_size + $((selection-1)) ))"
+            selected_repo=${repo_names_cleaned[$converted_selection]}
+            
+			echo -e ""
+            echo "You selected: $selected_repo"
+            echo -e ""
+            break
+        else
+            echo "Invalid selection."
+        fi
+    done
+}
+
+get_repo_name()
+{
+	echo ""
+	echo "Hold on ..."
+	echo ""
+    # users repo
+    if [[ "$GTOKEN" == *"ghp_"* ]]; then
+        echo -e ""
+    else
+        GTOKEN="ghp_$GTOKEN"
+    fi
+
+    public_response=$(curl -s "https://api.github.com/users/$GUSERNAME/repos?type=public&per_page=100")
+
+    private_response=$(curl -s -H "Authorization: token $GTOKEN" \
+    "https://api.github.com/user/repos?visibility=private")
+
+    if [[ "$public_response" == *"message"* && "$public_response" == *"Not Found"* ]]; then
+        echo "User $GUSERNAME not found on GitHub."
+        exit 1
+    fi
+
+    if [[ "$private_response" == *"message"* && "$private_response" == *"Bad credentials"* ]]; then
+        echo "Bad credentials. Make sure your GitHub token is valid and has the required permissions."
+        exit 1
+    fi
+
+    if [[ "$public_response" == "" || "$private_response" == "" ]]; then
+        echo -e "Could not connect to https://github.com/$GUSERNAME"
+        echo -e "Check your internet connection."
+        echo -e ""
+        exit 1
+    fi
+
+    public_resp=$(echo "$public_response" | grep -oP '"full_name": "\K[^"]+' | awk -F'/' '{print $2}')
+
+    private_resp=$(echo "$private_response" | grep -oP '"full_name": "\K[^"]+' | awk -F'/' '{print $2}')
+		
+    pub_arr=($public_resp)
+    pri_arr=($private_resp)
+
+    repo_names_cleaned=("${pub_arr[@]}" "${pri_arr[@]}")
+
+    for ((i=0; i<${#pub_arr[@]}; i++)); do
+        pub_arr[$i]="${pub_arr[$i]} (pub)"
+    done
+
+    for ((i=0; i<${#pri_arr[@]}; i++)); do
+        pri_arr[$i]="${pri_arr[$i]} (priv)"
+    done
+
+    repo_names=("${pub_arr[@]}" "${pri_arr[@]}")
+    disp
+    REPONAME="$selected_repo"
+
+	if [[ -z "$REPONAME" ]]; then
+		lines
+		echo -e "You can't clone a repo without a name..."
+		exiting
+	fi
+}
+
+
+
+
+# ENTRY-POINT
+
+# Kindly supply your Github Username and Personal Access token(without the "ghp_")..
 
 REPONAME="$1"
 RESP="$2"
