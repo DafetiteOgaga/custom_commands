@@ -123,6 +123,7 @@ def entry_point(action: str=None, verify_repo: int=0):
 	"""
 	current_directory = os.getcwd()
 	repository = ".git"
+	notAGitRepo = 'Not a git repository.'
 	directory = os.listdir()
 	num_of_items_in_dir = len(directory)
 	res = False
@@ -141,11 +142,17 @@ def entry_point(action: str=None, verify_repo: int=0):
 		current_dir_list.append(current_dir)
 		num, res = scan_dir(directory, num_of_items_in_dir, repository, verify_repo)
 		directory = os.chdir("..")
+		tempCurrDir = os.getcwd()
+		if not os.access(tempCurrDir, os.R_OK):
+			print('permission denied: probably reached system files')
+			print(f'tried accessing: {tempCurrDir}')
+			print(notAGitRepo)
+			sys.exit()
 		directory = os.listdir()
 		num_of_items_in_dir = len(directory)
 		if current_dir == "/":
 			# time.sleep(1)
-			print("Not a git repository.")
+			print(notAGitRepo)
 			print()
 			sys.exit(1)
 		count += 1
