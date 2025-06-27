@@ -238,7 +238,7 @@ if [[ -z "$RESP" ]]; then
 		response=$(curl -u "$GUSERNAME:ghp_$GTOKEN" -X POST "https://api.github.com/user/repos" -d '{"name":"'$REPONAME'", "private":'"$PRIVATE_OPTION"'}' 2>&1)
 		exit_status_code=$?
 
-		# echo "................................................"
+		# echo "..............................................."
 
 		if [[ $response == *"\"name\": \"$REPONAME\""* ]]; then
 			exit_status=0

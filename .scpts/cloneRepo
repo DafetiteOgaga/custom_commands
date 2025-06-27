@@ -126,8 +126,8 @@ get_repo_name()
 
 		public_resp=$(echo "$public_response" | grep -oP '"full_name": "\K[^"]+' | awk -F'/' '{print $2}')
 
-    	private_resp=$(echo "$private_response" | grep -oP '"full_name": "\K[^"]+' | awk -F'/' '{print $2}')
-		
+		private_resp=$(echo "$private_response" | grep -oP '"full_name": "\K[^"]+' | awk -F'/' '{print $2}')
+
 		pub_arr=($public_resp)
 		pri_arr=($private_resp)
 
