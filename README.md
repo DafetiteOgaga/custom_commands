@@ -368,6 +368,17 @@ Depending on the command, the usage instruction for that command is provided aft
     <td></td>
     <td></td>
   </tr>
+  <tr>
+    <td>showDiffOnMain</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
 
 </table>
 
@@ -383,16 +394,15 @@ Check out our [Contributing Guide](.github/CONTRIBUTING.md) to get started.
 
 
 ## New
+  - showDiffOnMain
   - pullFromMain
   - mongoOp
   - mongoVersion
   - revert2commit
   - createExpoApp
   - createReactApp
-  - setEnv
   - djangoUrls
   - updateToken
-  - drf
 
 ## Changes
   - fixed pushfile command to now execute without argument, parsing through all the directories and subdirectories in the given repository and listing the modified, changed, new, deleted, etc files in-turns for staging and commiting before pushing only the committed changes to remote
