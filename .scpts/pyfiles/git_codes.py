@@ -942,7 +942,7 @@ def diff(action: int=0):
 		print_stdout(diff_res.stdout, status=1)
 	elif diff_res.stderr:
 		print_stdout(diff_res.stderr, status=1)
-	elif diff_res.stderr == "" and diff_res.stderr == "" and diff_res.returncode == 0:
+	elif diff_res.stderr == "" and diff_res.stdout == "" and diff_res.returncode == 0:
 		print()
 		print_norm("Nothing to show.")
 		print_norm("Your working directory is in the same state as your last commit.")
@@ -1149,7 +1149,7 @@ def update_token_command():
 
 # entry point for pull_from_main_or_master command
 def pull_from_main_or_master():
-	"""pulls changes from the main/master branch into the current branch
+	"""pulls changes from the remote main/master branch into the current branch
 	"""
 	stashCreated = False
 	main = view_branch(new_branch="main", action=-2)
@@ -1191,6 +1191,36 @@ def pull_from_main_or_master():
 			print_norm(f'{popStash.stdout}:stdout')
 		elif popStash.stderr:
 			print_norm(f'{popStash.stderr}:stderr')
+
+
+# entry point for show_diff_from_main_or_master command
+def show_diff_from_main_or_master():
+	"""shows all the changes on the remote main/master branch compared to the current branch
+	"""
+	main = view_branch(new_branch="main", action=-2)
+	print_norm(f'current branch: {current_branch_name}')
+
+	# fetch changes from origin
+	fetchChangesFromOrigin = run_subprocess(["git", "fetch", "origin"])
+	if fetchChangesFromOrigin.stdout:
+		print_norm(f'{fetchChangesFromOrigin.stdout}:stdout')
+	elif fetchChangesFromOrigin.stderr:
+		print_norm(f'{fetchChangesFromOrigin.stderr}:stderr')
+
+	# diff changes from main/master branch
+	diffComparedToMain = run_subprocess(["git", "diff", f"HEAD..origin/{main}"])
+	if diffComparedToMain.returncode == 0:
+		if diffComparedToMain.stdout:
+			print_stdout(f'{diffComparedToMain.stdout}:stdout', status=1)
+		elif diffComparedToMain.stderr:
+			print_stdout(f'{diffComparedToMain.stderr}:stderr', status=1)
+		else:
+			print()
+			print_norm("No changes found on the remote main/master branch.")
+			print_norm("Your working directory is in the same state as your last commit.")
+	elif diffComparedToMain.returncode > 0:
+		print_norm("Oops! I got:")
+		print_norm("{}".format(print_stdout(diffComparedToMain.stderr)))
 
 def getCurrentAccessToken():
 	"""This function fetches the users access token from the repository.
