@@ -30,3 +30,5 @@
 # 📄 Docs (allow OS-native line endings)
 *.md text
 *.txt text
+
+# ...
