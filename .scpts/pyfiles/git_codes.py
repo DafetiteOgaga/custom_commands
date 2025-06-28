@@ -636,6 +636,9 @@ def collect_input(num: int, string: str):
 		if string == "branch_list":
 			item = prompt_1ch('Select a branch to switch to. [q] to quit >>> ')
 			quit(item)
+		elif string == "delete_branch":
+			item = prompt_1ch('Select the branch to delete. [q] to quit >>> ')
+			quit(item)
 		elif string == "stash":
 			print_norm(F"{RED}NOTE: IF YOU QUIT. YOUR STASH WILL NOT BE APPLIED TO THIS BRANCH.{RESET}")
 			item = prompt_1ch('Select the stash you wish to apply. [q] to quit >>> ')
@@ -644,14 +647,14 @@ def collect_input(num: int, string: str):
 			item = int(item)
 			break
 		print()
-		if string == "branch_list":
+		if string == "branch_list" or string == "delete_branch":
 			print_norm("You should enter the number corresponding to the branch name.")
 		elif string == "stash":
 			print_norm("You should enter the number corresponding to the stash you want to apply.")
 	return item
 
 
-def view_branch(action: int=0, new_branch=""):
+def view_branch(action: int=0, new_branch="", remove_current_and_main_and_master_branch: bool=False):
 	"""This function:
 		1. displays a list of available branches in the repository
 		2. extracts the main or master branch depending on what the repository uses
@@ -671,9 +674,21 @@ def view_branch(action: int=0, new_branch=""):
 	branch_list = run_subprocess(["git", "branch"])
 	selection = ""
 	if action == 0:
-		# list branches
-		num, returned_list = print_stdout(branch_list.stdout, serial_numbered=1)
-		item = collect_input(num, "branch_list")
+		input_str_type = "branch_list"
+		# list branches for selection and return the selected branch
+		branch_listlist = branch_list.stdout
+		# print(f"branch_list.stdout (initial):\n{branch_listlist}")
+		if remove_current_and_main_and_master_branch:
+			# remove current, main, master branch from the list
+			input_str_type = "delete_branch"
+			branch_listlist = "\n".join(line for line in branch_listlist.split("\n")
+											if not line.startswith("*") and
+											("main" not in line) and
+											("master" not in line))
+			# print(f"branch_list.stdout (after removing current branch):\n{branch_listlist}")
+		# print(f"branch_list.stdout (updated):\n{branch_listlist}")
+		num, returned_list = print_stdout(branch_listlist, serial_numbered=1)
+		item = collect_input(num, input_str_type)
 		item = item - 1
 		selection = (returned_list[item]).strip()
 		return  selection
@@ -688,6 +703,7 @@ def view_branch(action: int=0, new_branch=""):
 				main = (line.strip("*")).strip() if line.startswith("*") else line.strip()
 		return main
 	elif new_branch:
+		# check if the branch already exists or if you are already on this branch
 		for line in (branch_list.stdout).split("\n"):
 			if line.strip() == new_branch.strip():
 				print_norm(f"The branch {new_branch} already exist.")
@@ -697,20 +713,17 @@ def view_branch(action: int=0, new_branch=""):
 					print_norm(f"You are currently on this branch({new_branch}).")
 					quit("q")
 	elif action == 100:
+		# get current branch name
 		for line in (branch_list.stdout).split("\n"):
 			if line.startswith("*"):
 				current_branch = (line.strip("*")).strip()
 				return  current_branch
 	elif action > 0:
+		# check if you are not on the main or master branch before proceeding to stash your changes
 		for line in (branch_list.stdout).split("\n"):
 			if line.startswith("*") and (("master" not in line) or ("main" not in line)):
 				stash(action)
 				break
-
-try:
-	current_branch_name = view_branch(action=100)
-except:
-	print('...')
 
 
 def create_or_switch_branch(branch_name: str=None, new_branch_name: str=None):
@@ -777,7 +790,7 @@ def stash(action: int=0):
 	# formatted_date_time = now.strftime("%H:%M:%S on %a %b %Y")
 
 	# stash changes
-	# current_branch_name = view_branch(action=100)
+	current_branch_name = view_branch(action=100)
 	default_commit_message = f"commit for {BRIGHT_MAGENTA}{current_branch_name}{RESET} at {formatted_date_time}"
 	default_stash_message = f"stashed at {formatted_date_time}"
 	resp = ""
@@ -891,12 +904,54 @@ def create_or_view_branches():
 		view_branch(action=1)
 		create_or_switch_branch("branch", new_branch)
 
+def delete_branch():
+	"""deletes branches locally and the corresponding remote branch.
+	"""
+	args = sys.argv
+	len_args = len(args)
+	# print(f'args: {args}')
+	# print(f'len_args: {len_args}')
+	if len_args > 1:
+		print_norm("This command takes no argument.")
+		print_norm("Try again.")
+		quit("q")
+	# if len_args == 1:
+	selection = view_branch(remove_current_and_main_and_master_branch=True)
+	print()
+	print(f'selection: {selection}')
+	currentBranch = run_subprocess(["git", "branch", "--show-current"])
+	print(f'currentBranch.stdout: {currentBranch.stdout.strip()}')
+	print(f'currentBranch.stderr: {currentBranch.stderr.strip()}')
+	print_norm(f"This process will delete the branch locally and remotely.")
+	print_norm(f"{BOLD}{RED}NOTE: It's not REVERSIBLE.{RESET}")
+	print()
+	deleteBrnch = prompt_1ch(f'Are you sure you want to delete the branch {BOLD}{RED}{selection}{RESET}? [y/N] [q] to quit >>> ')
+	quit(deleteBrnch)
+	if deleteBrnch.lower() == "y":
+		# delete local branch
+		delete_local = run_subprocess(["git", "branch", "-D", selection])
+		if delete_local.stdout:
+			print_stdout(delete_local.stdout)
+		elif delete_local.stderr:
+			print_stdout(delete_local.stderr)
+		# delete remote branch
+		delete_remote = run_subprocess(["git", "push", "origin", "--delete", selection])
+		if delete_remote.stdout:
+			print_stdout(delete_remote.stdout)
+		elif delete_remote.stderr:
+			print_stdout(delete_remote.stderr)
+		print()
+	else:
+		print()
+		print_norm("Branch deletion aborted.")
+		quit("q")
+
 
 # entry point for merge command
 def merge_to_main_master():
 	"""merge the current branch to the main/master branch
 	"""
-	# current_branch_name = view_branch(action=100)
+	current_branch_name = view_branch(action=100)
 	if current_branch_name == "main" or current_branch_name == "master":
 		print_norm(f"You are in {current_branch_name} branch.")
 		print_norm(f"Switch to the desired branch you want to merge to {current_branch_name}.")
@@ -1154,6 +1209,7 @@ def pull_from_main_or_master():
 	stashCreated = False
 	main = view_branch(new_branch="main", action=-2)
 
+	current_branch_name = view_branch(action=100)
 	print_norm(f'current branch: {current_branch_name}')
 	if current_branch_name in ["main", "master"]:
 		print_norm(f"You are on {main} branch.")
@@ -1197,6 +1253,7 @@ def pull_from_main_or_master():
 def show_diff_from_main_or_master():
 	"""shows all the changes on the remote main/master branch compared to the current branch
 	"""
+	current_branch_name = view_branch(action=100)
 	main = view_branch(new_branch="main", action=-2)
 	print_norm(f'current branch: {current_branch_name}')
 

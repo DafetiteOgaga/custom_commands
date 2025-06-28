@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+
+COMMAND_DIR=".scpts"
+py_scripts=(
+	"push" "pull" "pushfile" "pushall" "pullFromMain" "showDiff"
+	"showDiffOnMain" "updateToken" "gitignore" "branch" "deleteBranch" "merge"
+	"status" "wcount" "logit" "verifyRepo" "showCommitHistory" "printmyEnv"
+	"commitdir" "commitall" "getRepoUserName" "stash" "viewStash"
+	"requirement_txt" "runserver" "migrate" "showmigrations" "sqlmigrate"
+	"clear_commit"
+)
+bash_scripts=(
+	"createRepo:cr" "deleteRepo:dr" "cloneRepo:cl" "viewRepos:vr" "revert2commit"
+	"pyxecute" "shxecute" "jsxecute" "restoreFile" "currfol" "cls" "authorID"
+	"createPatch" "createReactApp" "createExpoApp" "dependenciesReact"
+	"updateReactPackagez" "dependencyDevReact" "py3venv" "startproject" "startapp"
+	"djangoUrls" "makemigrations" "django" "djshell" "mkandmigrate" "collectstatic"
+	"djangoToolbar" "drf" "djoser" "jwtDjango" "static4django" "mongoOp"
+	"mongoVersion" "mysqlOp" "mysqlversion" "mysqlshell" "ctemp:ct" "betty"
+	"pycode" "mycompile" "pycompile" "setEnv" "pycodemore" "commitree"
+)
+c_scripts=(
+	"myascii" "rot13" "rot47" "guessGame"
+)
+personal_commands=(
+	"getAccessToken" "xbin" "distributeApk:da" "updateResumeCV"
+)
+
+expected_files_arr="${py_scripts[*]} ${bash_scripts[*]} ${c_scripts[*]} ${personal_commands[*]}"
+expected_files=()
+for cleaned in ${expected_files_arr}; do
+	# Remove any trailing colons or spaces
+	# echo "before - cleaned: $cleaned"
+	cleaned="${cleaned%%:*}"
+	cleaned="${cleaned%% }"
+	# echo "after - cleaned: $cleaned"
+	expected_files+=("$cleaned")
+done
+# echo "Expected files: ${expected_files[*]}"
+
+# Collect actual files (strip extension)
+actual_files=()
+for file in "./$COMMAND_DIR/"*; do
+	# echo "Processing file: $file"
+	basenameFIle="$(basename "$file")"
+	# echo "File basename: $basenameFIle"
+	filename="${file##*/}"
+	# 2) if there's at least one dot and it's not the very first char,
+	#    strip only the last ".ext"; otherwise leave it alone
+	if [[ "$filename" == *.* && "$filename" != .* ]]; then
+		name="${filename%.*}"
+	else
+		name="$filename"
+	fi
+	# echo "File name without extension: $name"
+	actual_files+=("$name")
+done
+# echo "pwd: $(pwd)/.scpts"
+# echo "Actual files: ${actual_files[*]}"
+
+# Compare without associative arrays
+existing_files=()
+missing_files=()
+
+for expected in "${expected_files[@]}"; do
+	found=false
+	for actual in "${actual_files[@]}"; do
+		if [[ "$expected" == "$actual" ]]; then
+			found=true
+			break
+		fi
+	done
+	if $found; then
+		existing_files+=("$expected")
+	else
+		missing_files+=("$expected")
+	fi
+done
+
+# Get extra files (not in expected)
+extra_files=()
+for actual in "${actual_files[@]}"; do
+	found=false
+	for expected in "${expected_files[@]}"; do
+		if [[ "$actual" == "$expected" ]]; then
+			found=true
+			break
+		fi
+	done
+	if ! $found; then
+		extra_files+=("$actual")
+	fi
+done
+
+CHECK=$'\u2713'
+CROSS=$'\u2717'
+FOLDER=$'\U1F4C1'
+MEMO=$'\U1F4DD'
+SMILEY=$'\u263A'
+# Display results
+echo -e "\n$CHECK Existing Scripts in $COMMAND_DIR:"
+printf '  - %s\n' "${#existing_files[@]}"
+
+echo -e "\n$CROSS Missing Scripts in $COMMAND_DIR:"
+printf '  - %s\n' "${missing_files[@]}"
+
+echo -e "\n$FOLDER Extra Files/Dirs in $COMMAND_DIR:"
+printf '  - %s\n' "${extra_files[@]}"

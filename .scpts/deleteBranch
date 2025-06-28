@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+
+from pyfiles.git_codes import delete_branch
+
+delete_branch()
