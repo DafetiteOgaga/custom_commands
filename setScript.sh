@@ -702,7 +702,7 @@ opertn() {
 		fi
 
 		echo ""
-		# echo -e "Creating $DFILENAME command..."
+		echo -e "Creating $DFILENAME command..."
 		# echo "DFILENAME1: $DFILENAME"
 		# echo "SUCCESSFUL_FILE1: $SUCCESSFUL_FILE"
 		[[ -n "$DFILENAME" ]] && SUCCESSFUL_FILE="$DFILENAME$CHECK"
