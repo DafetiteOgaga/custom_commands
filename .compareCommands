@@ -10,7 +10,7 @@ py_scripts=(
 	"clear_commit"
 )
 bash_scripts=(
-	"createRepo:cr" "deleteRepo:dr" "cloneRepo:cl" "revert2commit" "viewRepos:vr"
+	"createRepo:cr" "deleteRepo:dr" "cloneRepo:cl" "viewRepos:vr" "revert2commit"
 	"pyxecute" "shxecute" "jsxecute" "restoreFile" "currfol" "cls" "authorID"
 	"createPatch" "createReactApp" "createExpoApp" "dependenciesReact"
 	"updateReactPackagez" "dependencyDevReact" "py3venv" "startproject" "startapp"
@@ -23,7 +23,7 @@ c_scripts=(
 	"myascii" "rot13" "rot47" "guessGame"
 )
 personal_commands=(
-	"getAccessToken" "distributeApk:da" "updateResumeCV" "xbin"
+	"getAccessToken" "xbin" "distributeApk:da" "updateResumeCV"
 )
 
 expected_files_arr="${py_scripts[*]} ${bash_scripts[*]} ${c_scripts[*]} ${personal_commands[*]}"
