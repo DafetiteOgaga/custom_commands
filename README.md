@@ -379,6 +379,17 @@ Depending on the command, the usage instruction for that command is provided aft
     <td></td>
     <td></td>
   </tr>
+  <tr>
+    <td>deleteBranch</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
 
 </table>
 
@@ -394,6 +405,7 @@ Check out our [Contributing Guide](.github/CONTRIBUTING.md) to get started.
 
 
 ## New
+  - deleteBranch
   - showDiffOnMain
   - pullFromMain
   - mongoOp
@@ -401,7 +413,6 @@ Check out our [Contributing Guide](.github/CONTRIBUTING.md) to get started.
   - revert2commit
   - createExpoApp
   - createReactApp
-  - djangoUrls
   - updateToken
 
 ## Changes
