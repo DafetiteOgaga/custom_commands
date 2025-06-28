@@ -702,7 +702,12 @@ opertn() {
 		fi
 
 		echo ""
-		echo -e "Creating $DFILENAME command..."
+		# echo -e "Creating $DFILENAME command..."
+		# echo "DFILENAME1: $DFILENAME"
+		# echo "SUCCESSFUL_FILE1: $SUCCESSFUL_FILE"
+		[[ -n "$DFILENAME" ]] && SUCCESSFUL_FILE="$DFILENAME$CHECK"
+		# echo "DFILENAME2: $DFILENAME"
+		# echo "SUCCESSFUL_FILE2: $SUCCESSFUL_FILE"
 
 		# copies the command code into .xbin/ and based on the
 		# new value index, copies the command script accordingly
@@ -1153,7 +1158,7 @@ while [[ "$UINPUT" != [nN] ]]; do
                 instructn
             fi
             echo -e ""
-            echo -e "Last command created: ${UNDERLINE}${ITALIC}${BOLD}${BRIGHT_GREEN}$DFILENAME${RESET}"
+            echo -e "Last command created: ${UNDERLINE}${ITALIC}${BOLD}${BRIGHT_GREEN}$SUCCESSFUL_FILE${RESET}"
             sleep 0.1
             echo -e ""
 			invalid_selection
