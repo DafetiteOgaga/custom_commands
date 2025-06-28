@@ -67,7 +67,10 @@ disp()
 }
 
 # ...............
-
+# Entry point
+# ...............
+echo ""
+echo -e "Fetching data. PLease, wait..."
 repo_name=$(git config -l | grep -oP '(?<=\/)[^\/]+(?=\.git)')
 monthArray=(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec)
 entries_arr=()
