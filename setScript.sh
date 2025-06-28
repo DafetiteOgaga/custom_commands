@@ -37,11 +37,7 @@ BRIGHT_CYAN="\033[96m"
 BRIGHT_WHITE="\033[97m"
 
 # emogi unicode (monochrome)
-CHECK=$'\u2713'
-CROSS=$'\u2717'
-FOLDER=$'\U1F4C1'
-MEMO=$'\U1F4DD'
-SMILEY=$'\u263A'
+# CHECK=$'\u2713'
 
 quit() {
 	# exit
@@ -80,7 +76,7 @@ check_for_python() {
 			echo "  1. \"Use admin privilages when installing py.exe\" (if not already ticked)"
 			echo "  2. \"Add python.exe to PATH\""
 			echo "Visit https://www.python.org/downloads/ to download and install it."
-			echo "Note $MEMO: You may need to logout/login or just restart your pc after installing python"
+			echo "Note 📝: You may need to logout/login or just restart your pc after installing python"
 			echo ""
 			exit 1
 		else
@@ -159,7 +155,7 @@ auth() {
 		if [[ "$var" =~ [cC] ]]; then
 			rep="PC"
 			name=$(get_username)
-			greet_sudo_user="\nHi $name $SMILEY  ..."
+			greet_sudo_user="\nHi $name 😎 ..."
 			if is_git_bash; then
 				echo -e "$greet_sudo_user"
 			else
