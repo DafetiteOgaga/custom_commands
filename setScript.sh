@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250628.0916"
+VERSIONNUMBER="20250628.0943"
 
 # colors and styles
 RESET="\033[0m"
@@ -186,7 +186,7 @@ auth() {
 			fi
 		elif [[ "$var" =~ [pP] ]]; then
 			rep="Phone"
-			echo -e "\nHi USER $SMILEY  ..."
+			echo -e "\nHi USER 😎 ..."
 		fi
 	fi
 }
@@ -705,7 +705,7 @@ opertn() {
 		echo -e "Creating $DFILENAME command..."
 		# echo "DFILENAME1: $DFILENAME"
 		# echo "SUCCESSFUL_FILE1: $SUCCESSFUL_FILE"
-		[[ -n "$DFILENAME" ]] && SUCCESSFUL_FILE="$DFILENAME$CHECK"
+		[[ -n "$DFILENAME" ]] && SUCCESSFUL_FILE="$DFILENAME $CHECK"
 		# echo "DFILENAME2: $DFILENAME"
 		# echo "SUCCESSFUL_FILE2: $SUCCESSFUL_FILE"
 
