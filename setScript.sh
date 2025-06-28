@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250628.0943"
+VERSIONNUMBER="20250628.1707"
 
 # colors and styles
 RESET="\033[0m"
@@ -37,7 +37,7 @@ BRIGHT_CYAN="\033[96m"
 BRIGHT_WHITE="\033[97m"
 
 # emogi unicode (monochrome)
-# CHECK=$'\u2713'
+CHECK=$'\u2713'
 
 quit() {
 	# exit
@@ -72,7 +72,7 @@ check_for_python() {
 			# if os is windows (running git bash)
 			echo ""
 			echo "You have to install python."
-			echo "Remember to tick $CHECK the checkboxes:"
+			echo "Remember to tick ✅ the checkboxes:"
 			echo "  1. \"Use admin privilages when installing py.exe\" (if not already ticked)"
 			echo "  2. \"Add python.exe to PATH\""
 			echo "Visit https://www.python.org/downloads/ to download and install it."
