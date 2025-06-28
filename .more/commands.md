@@ -8,7 +8,7 @@
    * pushfile command - similar to "push" command but it stages and commits files individually then updates the remote. To skip a file from being staged and committed type "pass".<br>
    Note: you can set and remove "Update README.md" as your default commit message for all README.md files
    * pullFromMain - this command pulls (rebase) changes from main/master branch and plays it in from of the changes from main/master into the current branch the
-   * pullFromMain - this command logs the changes made to the main/master branch as compared to the current local branch"
+   * showDiffOnMain - this command logs the changes made to the main/master branch as compared to the current local branch
    * pushall command - similar to "push" command but it stages and commits all changes in the working in one operation
    * createRepo command - creates a github repository right from the command line without having to enter your details everytime
    * cloneRepo command - displays the list of repositories and clone them from any account right from the command line. Collaboration has never been more interesting!
@@ -18,6 +18,7 @@
    * gitignore command - creates/updates your .gitignore file by navigating to any file/directory to select and/or update them to your .gitignore file.<br>
    Note: This command auto detect \_\_pycache\_\_ and virtual environment directories
    * branch command - creates and setup new branches on the remote and switch between them locally
+   * deleteBranch command - deletes branches locally and their corresponding remote branches
    * merge command - merges changes in the current branch to main/master branch.<br>
    Note: keeps commit history linear, preventing 3way merge
    * status command - displays information about tracked, untracked, committed and uncommitted changes in the branch
