@@ -106,3 +106,5 @@ printf '  - %s\n' "${missing_files[@]}"
 
 echo -e "\n$FOLDER Extra Files/Dirs in $COMMAND_DIR:"
 printf '  - %s\n' "${extra_files[@]}"
+
+# echo "remote1"
