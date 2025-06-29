@@ -694,9 +694,9 @@ def view_branch(action: int=0, new_branch="", remove_current_and_main_and_master
 			getMainBranch = view_branch(new_branch="main", action=3)
 			# print(f'getCurrentBranchName: {getCurrentBranchName}')
 			# print(f'getMainBranch: {getMainBranch}')
-			unifiedBranch = f"{getMainBranch} branch" if getMainBranch == getCurrentBranchName else f"{getCurrentBranchName} and {getMainBranch} branches"
+			unifiedBranch = f"'{getMainBranch}' branch" if getMainBranch == getCurrentBranchName else f"your current '{getCurrentBranchName}' branch and '{getMainBranch}' branch"
 			# final_string = f"There are no branches to delete except your {unifiedBranch if }) and/or {getMainBranch} branch."
-			print_norm(f"There are no branches to delete except your {unifiedBranch}.")
+			print_norm(f"There are no branches to delete except {unifiedBranch}.")
 			quit("q")
 		num, returned_list = print_stdout(branch_listlist, serial_numbered=1)
 		item = collect_input(num, input_str_type)
