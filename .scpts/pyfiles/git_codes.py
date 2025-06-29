@@ -448,8 +448,9 @@ def pull():
 		unmerged_text = pull.stderr.replace('\n', ' ')
 		# print_norm(f"HHHHH{unmerged_text}HHHHHH")
 		if 'you have unmerged files' in unmerged_text:
-			# print_norm("&&&&&&&&&&&&&&&&&&&")
-			print_norm(pull.stderr)
+			print(f'pull.stdout: {pull.stdout}')
+			print(f'pull.stderr: {pull.stderr}')
+			# print_norm(pull.stderr)
 			check_for_conflicts()
 			pop_stash()
 			is_stashed = False
@@ -465,9 +466,9 @@ def pull():
 		# print_norm(f"GGGGG{unmerged_pop_text}GGGGG")
 		
 		if 'CONFLICT' in unmerged_pop_text:
-			# print_norm("|||||||||||||||||||||")
-			# print('111111111')
-			print_norm(stash_pop.stderr)
+			print(f'stash_pop.stdout: {stash_pop.stdout}')
+			print(f'stash_pop.stderr: {stash_pop.stderr}')
+			# print_norm(stash_pop.stderr)
 			check_for_conflicts(rebase_in_progress=False)
 			pop_stash(stash_resp=stash_pop)
 		# else: # consider removing
@@ -1271,8 +1272,9 @@ def pull_from_main_or_master():
 	rErr = rebaseFromMain.stderr.replace('\n', ' ')
 	chechForMergeConflicts = f"{rOut} {rErr}"
 	if 'you have unmerged files' in chechForMergeConflicts:
-		# print('Found=> you have unmerged files :::::in stdout and stderr (rebase)')
-		print_norm(rebaseFromMain.stderr)
+		print(f'rebaseFromMain.stdout: {rebaseFromMain.stdout}')
+		print(f'rebaseFromMain.stderr: {rebaseFromMain.stderr}')
+		# print_norm(rebaseFromMain.stderr)
 		check_for_conflicts()
 		pop_stash()
 		stashCreated = False
@@ -1287,8 +1289,10 @@ def pull_from_main_or_master():
 		pErr = popStash.stderr.replace('\n', ' ')
 		pchechForMergeConflicts = f"{pOut} {pErr}"
 		if 'CONFLICT' in pchechForMergeConflicts:
+			print(f'popStash.stdout: {popStash.stdout}')
+			print(f'popStash.stderr: {popStash.stderr}')
 			# print('Found=> CONFLICT :::::in stdout and stderr (stash)')
-			print_norm(popStash.stdout)
+			# print_norm(popStash.stderr)
 			check_for_conflicts(rebase_in_progress=False)
 			pop_stash(stash_resp=popStash)
 			# addition from phone ends 2 here
