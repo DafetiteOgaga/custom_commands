@@ -304,12 +304,15 @@ def pop_stash(stash_resp=None):
 		# print_norm(f"CCCCC{stash_pop.stdout}CCCCC")
 		# if stash_pop.stderr:
 		# 	print_norm(f"DDDDD{stash_pop.stderr}DDDDD")
-		print_stdout(f"{stash_pop.stdout.strip() or stash_pop.stderr.strip()}")
+		stderr_clean = stash_pop.stderr.replace('\n', ' ') if 'CONFLICT' not in stash_pop.stderr.strip() else ''
+		stdout_clean = stash_pop.stdout.replace('\n', ' ') if 'CONFLICT' not in stash_pop.stdout.strip() else ''
+		stash_output = stdout_clean or stderr_clean
+		print_stdout(stash_output)
 	# print(f'{print_stashes(88888)}')
 	# Clean up stash if it still exists after popping
 	cleanup = run_subprocess(['git', 'stash', 'list'])
 	if cleanup.stdout.strip():
-		print_norm("Cleaning up...")
+		# print_norm("Cleaning up...")
 		run_subprocess(['git', 'stash', 'drop'])  # drops top stash (stas
 
 def is_rebase_in_progress():
@@ -390,9 +393,14 @@ def check_for_conflicts(rebase_in_progress=is_rebase_in_progress()):
 	# Continue rebase after resolving
 	# print(f'{print_stashes(44444)}')
 	cont = run_subprocess(['git', 'rebase', '--continue'])
-	# print_norm(f"cont stdout: {cont.stdout}")
-	# print_norm(f"cont returncode: {cont.returncode}")
-	if cont.returncode != 0 and 'No rebase in progress' not in cont.stderr.strip():
+	# print_norm(f"rebase continue stdout: {cont.stdout}")
+	# print_norm(f"rebase continue stderr: {cont.stderr}")
+	# print_norm(f"rebase continue returncode: {cont.returncode}")
+	# print(f"returncode type: {type(cont.returncode)}")
+	# print(f"check returncode with int 0: {cont.returncode != 0}")
+	# print(f"check stderr type: {type(cont.stderr)}")
+	# print(f"check stderr with str: {'no rebase in progress'.lower() not in cont.stderr.strip().lower()}")
+	if cont.returncode != 0 and 'no rebase in progress'.lower() not in cont.stderr.strip().lower():
 		print_norm("Rebase continue failed. You may need to fix manually.")
 		print_norm(f"Rebase unsuccessful. {cont.stderr}")
 		quit()
@@ -1217,6 +1225,7 @@ def update_token_command():
 def pull_from_main_or_master():
 	"""pulls changes from the remote main/master branch into the current branch
 	"""
+	# print('in pull_from_main_or_master()')
 	stashCreated = False
 	main = view_branch(new_branch="main", action=-2)
 
@@ -1226,18 +1235,22 @@ def pull_from_main_or_master():
 		print_norm(f"You are on {main} branch.")
 		print_norm(f"Switch to the desired branch you want to pull {main} into.")
 		quit("q")
+	# print("Exiting early...");sys.exit()
 
 	# stash changes, if any
-	stashChanges = run_subprocess(["git", "stash"])
-	stashedOutput = stashChanges.stdout.strip()
-	if "No local changes" in stashedOutput:
-		print_norm("No local changes to stash. Proceeding with rebase...")
-	else:
-		print_norm(stashedOutput)
+	stashChanges = run_subprocess(['git', 'status', '--porcelain'])
+	if stashChanges.stdout.strip():
+		run_subprocess(['git', 'stash', '--include-untracked'])
 		stashCreated = True
+		# print_norm("Stashed local changes...")
+	else: # consider removing
+		print_norm("No local changes to stash. Proceeding with rebase...")
 
 	# fetch changes from origin
 	fetchChangesFromOrigin = run_subprocess(["git", "fetch", "origin"])
+	# print("for: fetchChangesFromOrigin")
+	# print(f">>>> stdout-start:\n{fetchChangesFromOrigin.stdout}\n<<<<")
+	# print(f"♧♧♧♧ stderr-start:\n{fetchChangesFromOrigin.stderr}\n♧♧♧♧")
 	if fetchChangesFromOrigin.stdout:
 		print_norm(f'{fetchChangesFromOrigin.stdout}:stdout')
 	elif fetchChangesFromOrigin.stderr:
@@ -1246,18 +1259,47 @@ def pull_from_main_or_master():
 
 	# rebase from main/master branch
 	rebaseFromMain = run_subprocess(["git", "rebase", f"origin/{main}"])
+	# print("for: rebaseFromMain")
+	# print(f">>>> stdout-start:\n{rebaseFromMain.stdout}\n<<<<")
+	# print(f"♧♧♧♧ stderr-start:\n{rebaseFromMain.stderr}\n♧♧♧♧")
 	if rebaseFromMain.stdout:
 		print_norm(f'{rebaseFromMain.stdout}:stdout')
 	elif rebaseFromMain.stderr:
 		print_norm(f'{rebaseFromMain.stderr}:stderr')
 
+	# addition from phone starts 1 here
+	rOut = rebaseFromMain.stdout.replace('\n', ' ')
+	rErr = rebaseFromMain.stderr.replace('\n', ' ')
+	chechForMergeConflicts = f"{rOut} {rErr}"
+	if 'you have unmerged files' in chechForMergeConflicts:
+		# print('Found=> you have unmerged files :::::in stdout and stderr (rebase)')
+		check_for_conflicts()
+		pop_stash()
+		stashCreated = False
+		# addition from phone ends 1 here
+
 	# pop stash if one was created
 	if stashCreated:
+		# addition from phone starts 2 here
 		popStash = run_subprocess(["git", "stash", "pop"])
-		if popStash.stdout:
-			print_norm(f'{popStash.stdout}:stdout')
-		elif popStash.stderr:
-			print_norm(f'{popStash.stderr}:stderr')
+		pOut = popStash.stdout.replace('\n', ' ')
+		pErr = popStash.stderr.replace('\n', ' ')
+		pchechForMergeConflicts = f"{pOut} {pErr}"
+		if 'CONFLICT' in pchechForMergeConflicts:
+			# print('Found=> CONFLICT :::::in stdout and stderr (stash)')
+			check_for_conflicts(rebase_in_progress=False)
+			pop_stash(stash_resp=popStash)
+			# addition from phone ends 2 here
+
+		# if popStash.stdout:
+		# 	print_norm(f'{popStash.stdout}:stdout')
+		# elif popStash.stderr:
+		# 	print_norm(f'{popStash.stderr}:stderr')
+	# cleanup = run_subprocess(['git', 'stash', 'list'])
+	# print(f"stashes:\n{cleanup.stdout}")
+	# if cleanup.stdout.strip():
+	# 	print_norm("Cleaning up...")
+	# 	run_subprocess(['git', 'stash', 'drop'])  # drops top stash (stas
 
 
 # entry point for show_diff_from_main_or_master command
