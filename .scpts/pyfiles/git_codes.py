@@ -447,7 +447,7 @@ def pull():
 		# print(pull.stderr.replace('\n', ' '))
 		unmerged_text = pull.stderr.replace('\n', ' ')
 		# print_norm(f"HHHHH{unmerged_text}HHHHHH")
-		if 'you have unmerged files' in unmerged_text:
+		if 'you have unmerged files'.lower() in unmerged_text.lower() or 'Resolve all conflicts manually'.lower() in unmerged_text.lower():
 			print_stdout(f'{pull.stdout}\n:pull.stdout')
 			print_stdout(f'{pull.stderr}\n:pull.stderr')
 			# print_norm(pull.stderr)
