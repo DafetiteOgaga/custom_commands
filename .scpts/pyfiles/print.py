@@ -221,12 +221,14 @@ def write_to_file(ignore_list, delimiter: str, read: bool=False, empty: bool=Fal
 		list: content of .gitignore file
 	"""
 	# set the file name to .gitignore
-	filename = delimiter + '.gitignore'
+	filename = delimiter + '.gitignore' # set the filename to .gitignore
 	# print(f'delimiter: {delimiter}')
 	# print('filename:', filename)
 	# print('ignore_list:', ignore_list)
-	ignore_file = 1
+	ignore_file = 1 # assumes that .gitignore file exists
 	file_list = []
+
+	# reads and returns the content of .gitignore file
 	try:
 		with open(filename) as g:
 			for line in g:
@@ -234,35 +236,45 @@ def write_to_file(ignore_list, delimiter: str, read: bool=False, empty: bool=Fal
 		if read:
 			# print('Reading...:', file_list)
 			return file_list
-	except FileNotFoundError:
-		if not read: # and not empty:
+	except FileNotFoundError: # if .gitignore file doesn't exist
+		if not read: # creates .gitignore file if it doesn't exist
 			open(filename, 'w').close()
 		else:
 			return file_list
+
+	# tracks .gitignore file
 	try:
 		if filename.split(delimiter)[-1] not in file_list:
 			# print('filename:', filename, 'in file_list:', file_list)
-			ignore_file = 0
-	except ValueError:
-		ignore_file = 0
-		if not read: # and not empty:
+			ignore_file = 0 # meaning that .gitignore file does not exist in the file_list
+	except ValueError: # .gitignore file doesn't exist in the file_list
+		ignore_file = 0 # meaning that .gitignore file does not exist in the file_list
+		if not read: # creates .gitignore file if it doesn't exist
 			open(filename, 'w').close()
 		else:
 			return file_list
+
+	# .gitignore file exists, so we append the lines to it
 	with open(filename, 'a') as f:
 		for k in ignore_list:
-			# print('delimiter: %s' % k.split(delimiter))
+			# extracting lines to append to .gitignore file
 			try:
 				k = k.split(delimiter)[1]
 			except IndexError:
 				k = k.split(delimiter)[0]
+
+			# skip the .gitignore file itself in the list since it is already exists
 			if k == '.gitignore':
 				continue
+
+			# if the line is not in the file_list, append it
 			if k not in file_list:
 				f.write(k + '\n')
-		if not ignore_file:
-			filename = (filename.split(delimiter)[-1]) if delimiter else filename
-			f.write(filename + '\n')
+
+		# # if .gitignore file is not in the file_list, append it
+		# if not ignore_file:
+		# 	filename = (filename.split(delimiter)[-1]) if delimiter else filename
+		# 	f.write(filename + '\n')
 
 def backward_search(path=None):
 	"""
