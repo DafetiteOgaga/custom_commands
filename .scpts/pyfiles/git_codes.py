@@ -13,6 +13,8 @@ try:
 	from .colors import *
 except ImportError:
 	from colors import *
+env = os.environ.copy()
+env["GIT_EDITOR"] = "true"
 
 home_dir = os.path.join(os.path.expanduser("~"), '.xbin')  # Expands "~" to "/home/your-username"
 bumpAppJsonVersionScript = os.path.join(home_dir, "pyfiles")  # location to bumpAppJsonVersion
@@ -356,7 +358,7 @@ def resolve_conflict(file_path, keep='local', rebase_in_progress=None):
 	# 	print(f"Warning: Conflict markers might still exist in the file: {file_path}")
 	# 	print(f"Please check the file manually to ensure all conflicts are resolved.")
 
-def check_for_conflicts(rebase_in_progress=is_rebase_in_progress()):
+def check_for_conflicts(rebase_in_progress=True):
 	# if 'CONFLICT' in conflictText or 'you have unmerged files' in conflictText:
 	print()
 	print_norm("Oopsi! Merge conflicts detected...")
@@ -399,7 +401,7 @@ def check_for_conflicts(rebase_in_progress=is_rebase_in_progress()):
 	# print(f'{print_stashes(44444)}')
 	cont = 0
 	if rebase_in_progress:
-		cont = run_subprocess(['git', 'rebase', '--continue'])
+		cont = run_subprocess(['git', 'rebase', '--continue'], env=env)
 		print_norm(f"rebase continue stdout: {cont.stdout}")
 		print_norm(f"rebase continue stderr: {cont.stderr}")
 		print_norm(f"rebase continue returncode: {cont.returncode}")
