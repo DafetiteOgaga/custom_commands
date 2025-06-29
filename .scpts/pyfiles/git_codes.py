@@ -60,6 +60,8 @@ def gitignore():
 	py = any(True for _ in pycache if '__pycache__' in _ and 'node_modules' not in _)
 	# watches for node_modules directories
 	nodeModules = any(True for _ in pycache if 'node_modules' in _)
+	# print(f'py: {py} 63')
+	# print(f'nodeModules: {nodeModules} 64')
 	if py or nodeModules:
 		py = '__pycache__' if py else 'node_modules'
 		# py = '__pycache__' if py else 'src'
@@ -126,10 +128,10 @@ def setup_gitignore(pycache, envFile: bool=False, py: str=None):
 	# print(f'var: {var}')
 	# print(f'pycache: {pycache}')
 	if pycache == []:
-		print()
-		print_norm(f'==> .gitignore file is upto date with "{var}" directories')
-		time.sleep(.5)
-		input('Press Enter to continue...')
+		# print()
+		# print_norm(f'==> .gitignore file is upto date with "{var}" directories')
+		# time.sleep(.5)
+		# input('Press Enter to continue...')
 		return 'n'
 	mainVar = 'Setting up and/or Updating .gitignore file (For'
 	print()
