@@ -420,9 +420,6 @@ def pull():
 	# print(f'{print_stashes(11111)}')
 
 	# Stash everything
-	# print_norm("Stashing changes...")
-	# stash_result = run_subprocess(['git', 'stash', '--include-untracked'])
-	# resolved = False
 	is_stashed = None
 	status = run_subprocess(['git', 'status', '--porcelain'])
 	if status.stdout.strip():
