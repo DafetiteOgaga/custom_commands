@@ -688,7 +688,16 @@ def view_branch(action: int=0, new_branch="", remove_current_and_main_and_master
 											("main" not in line) and
 											("master" not in line))
 			# print(f"branch_list.stdout (after removing current branch):\n{branch_listlist}")
-		# print(f"branch_list.stdout (updated):\n{branch_listlist}")
+		# print(f"branch_list.stdout (updated):\ns#{branch_listlist}#f")
+		if not branch_listlist.strip():
+			getCurrentBranchName = view_branch(action=100)
+			getMainBranch = view_branch(new_branch="main", action=3)
+			# print(f'getCurrentBranchName: {getCurrentBranchName}')
+			# print(f'getMainBranch: {getMainBranch}')
+			unifiedBranch = f"{getMainBranch} branch" if getMainBranch == getCurrentBranchName else f"{getCurrentBranchName} and {getMainBranch} branches"
+			# final_string = f"There are no branches to delete except your {unifiedBranch if }) and/or {getMainBranch} branch."
+			print_norm(f"There are no branches to delete except your {unifiedBranch}.")
+			quit("q")
 		num, returned_list = print_stdout(branch_listlist, serial_numbered=1)
 		item = collect_input(num, input_str_type)
 		item = item - 1
