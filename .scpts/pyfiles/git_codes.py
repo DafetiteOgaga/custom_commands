@@ -448,8 +448,8 @@ def pull():
 		unmerged_text = pull.stderr.replace('\n', ' ')
 		# print_norm(f"HHHHH{unmerged_text}HHHHHH")
 		if 'you have unmerged files' in unmerged_text:
-			print(f'pull.stdout: {pull.stdout}')
-			print(f'pull.stderr: {pull.stderr}')
+			print_stdout(f'{pull.stdout}\n:pull.stdout')
+			print_stdout(f'{pull.stderr}\n:pull.stderr')
 			# print_norm(pull.stderr)
 			check_for_conflicts()
 			pop_stash()
@@ -466,8 +466,8 @@ def pull():
 		# print_norm(f"GGGGG{unmerged_pop_text}GGGGG")
 		
 		if 'CONFLICT' in unmerged_pop_text:
-			print(f'stash_pop.stdout: {stash_pop.stdout}')
-			print(f'stash_pop.stderr: {stash_pop.stderr}')
+			print_stdout(f'{stash_pop.stdout}\n:stash_pop.stdout')
+			print_stdout(f'{stash_pop.stderr}\n:stash_pop.stderr')
 			# print_norm(stash_pop.stderr)
 			check_for_conflicts(rebase_in_progress=False)
 			pop_stash(stash_resp=stash_pop)
@@ -1272,8 +1272,8 @@ def pull_from_main_or_master():
 	rErr = rebaseFromMain.stderr.replace('\n', ' ')
 	chechForMergeConflicts = f"{rOut} {rErr}"
 	if 'you have unmerged files' in chechForMergeConflicts:
-		print(f'rebaseFromMain.stdout: {rebaseFromMain.stdout}')
-		print(f'rebaseFromMain.stderr: {rebaseFromMain.stderr}')
+		print_stdout(f'{rebaseFromMain.stdout}\n:rebFrmMain.stdout')
+		print_stdout(f'{rebaseFromMain.stderr}\n:rebFrmMain.stderr')
 		# print_norm(rebaseFromMain.stderr)
 		check_for_conflicts()
 		pop_stash()
@@ -1289,8 +1289,8 @@ def pull_from_main_or_master():
 		pErr = popStash.stderr.replace('\n', ' ')
 		pchechForMergeConflicts = f"{pOut} {pErr}"
 		if 'CONFLICT' in pchechForMergeConflicts:
-			print(f'popStash.stdout: {popStash.stdout}')
-			print(f'popStash.stderr: {popStash.stderr}')
+			print_stdout(f'{popStash.stdout}\n:popStash.stdout')
+			print_stdout(f'{popStash.stderr}\n:popStash.stderr')
 			# print('Found=> CONFLICT :::::in stdout and stderr (stash)')
 			# print_norm(popStash.stderr)
 			check_for_conflicts(rebase_in_progress=False)
