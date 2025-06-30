@@ -521,7 +521,7 @@ def pull():
 		# print(pull.stderr.replace('\n', ' '))
 		unmerged_text = pull.stderr.replace('\n', ' ')
 		# print_norm(f"HHHHH{unmerged_text}HHHHHH")
-		if 'you have unmerged files'.lower() in unmerged_text.lower() or 'Resolve all conflicts manually'.lower() in unmerged_text.lower():
+		if 'you have unmerged files'.lower() in unmerged_text.lower() or 'CONFLICT' in unmerged_text or 'Resolve all conflicts manually'.lower() in unmerged_text.lower():
 			print_norm(f'{pull.stdout}\n:pull.stdout')
 			print_norm(f'{pull.stderr}\n:pull.stderr')
 			# print_norm(pull.stderr)
@@ -539,8 +539,9 @@ def pull():
 		stdout_clean = stash_pop.stdout.replace('\n', ' ')
 		unmerged_pop_text = f"{stderr_clean} {stdout_clean}"
 		# print_norm(f"GGGGG{unmerged_pop_text}GGGGG")
-		
-		if 'CONFLICT' in unmerged_pop_text:
+
+		if 'you have unmerged files'.lower() in unmerged_pop_text.lower() or 'CONFLICT' in unmerged_pop_text or 'Resolve all conflicts manually'.lower() in unmerged_pop_text.lower():
+		# if 'CONFLICT' in unmerged_pop_text:
 			print_norm(f'{stash_pop.stdout}\n:stash_pop.stdout')
 			print_norm(f'{stash_pop.stderr}\n:stash_pop.stderr')
 			# print_norm(stash_pop.stderr)
@@ -1346,7 +1347,8 @@ def pull_from_main_or_master():
 	rOut = rebaseFromMain.stdout.replace('\n', ' ')
 	rErr = rebaseFromMain.stderr.replace('\n', ' ')
 	chechForMergeConflicts = f"{rOut} {rErr}"
-	if 'you have unmerged files'.lower() in chechForMergeConflicts.lower() or 'Resolve all conflicts manually'.lower() in chechForMergeConflicts.lower():
+	if 'you have unmerged files'.lower() in chechForMergeConflicts.lower() or 'CONFLICT' in chechForMergeConflicts or 'Resolve all conflicts manually'.lower() in chechForMergeConflicts.lower():
+	# if 'you have unmerged files'.lower() in chechForMergeConflicts.lower() or 'Resolve all conflicts manually'.lower() in chechForMergeConflicts.lower():
 	# if 'you have unmerged files' in chechForMergeConflicts:
 		print_norm(f'{rebaseFromMain.stdout}\n:rebFrmMain.stdout')
 		print_norm(f'{rebaseFromMain.stderr}\n:rebFrmMain.stderr')
@@ -1364,7 +1366,8 @@ def pull_from_main_or_master():
 		pOut = popStash.stdout.replace('\n', ' ')
 		pErr = popStash.stderr.replace('\n', ' ')
 		pchechForMergeConflicts = f"{pOut} {pErr}"
-		if 'you have unmerged files'.lower() in pchechForMergeConflicts.lower():
+		if 'you have unmerged files'.lower() in pchechForMergeConflicts.lower() or 'CONFLICT' in pchechForMergeConflicts or 'Resolve all conflicts manually'.lower() in pchechForMergeConflicts.lower():
+		# if 'you have unmerged files'.lower() in pchechForMergeConflicts.lower():
 		# if 'CONFLICT' in pchechForMergeConflicts:
 			print_norm(f'{popStash.stdout}\n:popStash.stdout')
 			print_norm(f'{popStash.stderr}\n:popStash.stderr')
