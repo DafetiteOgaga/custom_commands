@@ -45,7 +45,7 @@ except:
 	exit2(leave=root_repo)
 
 if root_repo == True:
-    exit2(leave=True)
+	exit2(leave=True)
 print('...')
 def gitignore():
 	"""Initiates the gitignore operation
@@ -88,12 +88,12 @@ def gitignore():
 	gitignore_content = write_to_file([], delimiter, read=True)
 	# print(f'gitignore_content: {gitignore_content}')
 	venv = list(set([dir for dir in venv if dir.split(delimiter)[-1] not in gitignore_content and
-                not any(dir.startswith(v) for v in gitignore_content)]))
+				not any(dir.startswith(v) for v in gitignore_content)]))
 	# print(f'venv after gitignore_content: {venv}')
 	pycache = [file for file in pycache
-            if file.split(delimiter).pop() not in gitignore_content and
-            not any(file.startswith(v) for v in venv) and
-            not any(file.startswith(f'{delimiter}{v}') for v in gitignore_content)]
+			if file.split(delimiter).pop() not in gitignore_content and
+			not any(file.startswith(v) for v in venv) and
+			not any(file.startswith(f'{delimiter}{v}') for v in gitignore_content)]
 	# print(f'pycache after gitignore_content: {pycache[:3]}')
 
 
@@ -346,11 +346,23 @@ def resolve_conflict(file_path, keep='local', rebase_in_progress=None):
 
 	oursOrTheirs = '--ours' if keep == 'remote' else '--theirs'
 	print(f'Using git checkout {oursOrTheirs} for {file_path}')
-	run_subprocess(['git', 'checkout', oursOrTheirs, file_path])
+	checkout_result = run_subprocess(['git', 'checkout', oursOrTheirs, file_path])
+	if checkout_result.returncode != 0:
+		print(f'Failed to resolve conflict for {file_path}')
+		print(f'Error: {checkout_result.stderr}')
+		return False
+	else:
+		print(f'Successfully resolved conflict for {file_path}')
 	# if resoleve_conflict_result.returncode != 0:
 	print(f'failed to resolve conflict for {file_path}')
-	run_subprocess(['git', 'add', file_path])
-	print(f'Added {file_path} to staging area.')
+
+	add_result = run_subprocess(['git', 'add', file_path])
+	if add_result.returncode != 0:
+		print(f'Failed to add {file_path} to staging area')
+		print(f'Error: {add_result.stderr}')
+		return False
+	else:
+		print(f'Added {file_path} to staging area.')
 	# else:
 	# 	run_subprocess(['git', 'checkout', '--theirs', file_path])
 	# run_subprocess(['git', 'add', file_path])
@@ -359,6 +371,7 @@ def resolve_conflict(file_path, keep='local', rebase_in_progress=None):
 	# if check_result.returncode != 0:
 	# 	print(f"Warning: Conflict markers might still exist in the file: {file_path}")
 	# 	print(f"Please check the file manually to ensure all conflicts are resolved.")
+	return True
 
 def check_for_conflicts(rebase_in_progress=True):
 	print()
