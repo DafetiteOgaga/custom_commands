@@ -13,6 +13,8 @@ try:
 	from .colors import *
 except ImportError:
 	from colors import *
+env = os.environ.copy()
+env["GIT_EDITOR"] = "true"
 
 home_dir = os.path.join(os.path.expanduser("~"), '.xbin')  # Expands "~" to "/home/your-username"
 bumpAppJsonVersionScript = os.path.join(home_dir, "pyfiles")  # location to bumpAppJsonVersion
@@ -293,14 +295,14 @@ def pop_stash(stash_resp=None):
 	# if not stash_resp:
 	# 	stash_pop = run_subprocess(['git', 'stash', 'pop'])
 	# else:
-	
+	print_norm("Popping stash...")
 	if stash_resp:
 		stash_pop = stash_resp
 		# print_norm(f"EEEEE{stash_pop.stdout}EEEEE")
 		# print_norm(f"FFFFF{stash_pop.stderr}FFFFF")
 		# print(f'{print_stashes(77777)}')
 		
-			# print('2222222222')
+		print('2222222222')
 		# print_norm(f"CCCCC{stash_pop.stdout}CCCCC")
 		# if stash_pop.stderr:
 		# 	print_norm(f"DDDDD{stash_pop.stderr}DDDDD")
@@ -308,12 +310,15 @@ def pop_stash(stash_resp=None):
 		stdout_clean = stash_pop.stdout.replace('\n', ' ') if 'CONFLICT' not in stash_pop.stdout.strip() else ''
 		stash_output = stdout_clean or stderr_clean
 		print_stdout(stash_output)
+	print_norm("Stash popped successfully.")
 	# print(f'{print_stashes(88888)}')
 	# Clean up stash if it still exists after popping
 	cleanup = run_subprocess(['git', 'stash', 'list'])
+	print(f'cleanup.stdout: {cleanup.stdout}')
 	if cleanup.stdout.strip():
-		# print_norm("Cleaning up...")
-		run_subprocess(['git', 'stash', 'drop'])  # drops top stash (stas
+		print_norm("Cleaning up...")
+		dropStash = run_subprocess(['git', 'stash', 'drop'])  # drops top stash (stas
+		print(f'dropStash.stdout: {dropStash.stdout}')
 
 def is_rebase_in_progress():
 	result = run_subprocess(['git', 'rev-parse', '--git-dir'])
@@ -324,12 +329,12 @@ def is_rebase_in_progress():
 	return response
 
 def resolve_conflict(file_path, keep='local', rebase_in_progress=None):
-	# print(f"keep arg received: {keep}")
+	print(f"keep arg received: {keep}")
 	# print(f"file_path: {file_path}")
 
 	# if rebase_in_progress is None:
 	rebase_in_progress = is_rebase_in_progress()
-	# print(f'rebase_in_progress: {rebase_in_progress} ##########')
+	print(f'rebase_in_progress: {rebase_in_progress} ##########')
 	# if rebase_in_progress:
 	# 	# During rebase: --ours = remote (upstream), --theirs = local
 	# 	oursOrTheirs = '--ours' if keep == 'remote' else '--theirs'
@@ -338,21 +343,22 @@ def resolve_conflict(file_path, keep='local', rebase_in_progress=None):
 	# 	oursOrTheirs = '--theirs' if keep == 'remote' else '--ours'
 
 	oursOrTheirs = '--ours' if keep == 'remote' else '--theirs'
-	# print(f'Using git checkout {oursOrTheirs} for {file_path}')
+	print(f'Using git checkout {oursOrTheirs} for {file_path}')
 	run_subprocess(['git', 'checkout', oursOrTheirs, file_path])
 	# if resoleve_conflict_result.returncode != 0:
-	# 	print(f'failed to resolve conflict for {file_path}')
+	print(f'failed to resolve conflict for {file_path}')
 	run_subprocess(['git', 'add', file_path])
+	print(f'Added {file_path} to staging area.')
 	# else:
 	# 	run_subprocess(['git', 'checkout', '--theirs', file_path])
 	# run_subprocess(['git', 'add', file_path])
-	check_result = run_subprocess(['git', 'diff', '--check'])
+	# check_result = run_subprocess(['git', 'diff', '--check'])
 	# print(f'return code from git diff check: {check_result.returncode}')
 	# if check_result.returncode != 0:
 	# 	print(f"Warning: Conflict markers might still exist in the file: {file_path}")
 	# 	print(f"Please check the file manually to ensure all conflicts are resolved.")
 
-def check_for_conflicts(rebase_in_progress=is_rebase_in_progress()):
+def check_for_conflicts(rebase_in_progress=True):
 	# if 'CONFLICT' in conflictText or 'you have unmerged files' in conflictText:
 	print()
 	print_norm("Oopsi! Merge conflicts detected...")
@@ -378,8 +384,9 @@ def check_for_conflicts(rebase_in_progress=is_rebase_in_progress()):
 		choice = getUserInput(promptText, allowedEntryArray=['l', 'r'], invalidText=invalidText)
 		# print(f"choice: X{choice}X #####")
 		# print(f'file: {file}')
-		# print(f'choice: {choice}')
+		print(f'choice: {choice}')
 		resolve_conflict(file, keep='local' if choice == 'l' else 'remote', rebase_in_progress=rebase_in_progress)
+		print(f"Resolved conflict in {filename} by keeping {'local' if choice == 'l' else 'remote'} changes.")
 		# resolve_conflict(file, keep='local' if choice == 'l' else 'remote')
 		# else:
 			
@@ -388,27 +395,27 @@ def check_for_conflicts(rebase_in_progress=is_rebase_in_progress()):
 
 	print()
 	conflictSuccess = 'Successful! conflicts resolved.'
-	# print(f'rebase_in_progress: {rebase_in_progress} #####XXXXX#####')
+	print(f'rebase_in_progress: {rebase_in_progress} #####XXXXX#####')
 	# if rebase_in_progress:
 	# Continue rebase after resolving
 	# print(f'{print_stashes(44444)}')
-	cont = run_subprocess(['git', 'rebase', '--continue'])
-	# print_norm(f"rebase continue stdout: {cont.stdout}")
-	# print_norm(f"rebase continue stderr: {cont.stderr}")
-	# print_norm(f"rebase continue returncode: {cont.returncode}")
-	# print(f"returncode type: {type(cont.returncode)}")
-	# print(f"check returncode with int 0: {cont.returncode != 0}")
-	# print(f"check stderr type: {type(cont.stderr)}")
-	# print(f"check stderr with str: {'no rebase in progress'.lower() not in cont.stderr.strip().lower()}")
-	if cont.returncode != 0 and 'no rebase in progress'.lower() not in cont.stderr.strip().lower():
-		print_norm("Rebase continue failed. You may need to fix manually.")
-		print_norm(f"Rebase unsuccessful. {cont.stderr}")
-		quit()
-	print_norm(f"{conflictSuccess} {cont.stdout}")
-	# else:
-	# 	# print(f'{print_stashes(55555)}')
-	# 	print_norm(f"{conflictSuccess}")
-	# return rebase_in_progress
+	cont = 0
+	if rebase_in_progress:
+		cont = run_subprocess(['git', 'rebase', '--continue'], env=env)
+		print_norm(f"rebase continue stdout: {cont.stdout}")
+		print_norm(f"rebase continue stderr: {cont.stderr}")
+		print_norm(f"rebase continue returncode: {cont.returncode}")
+		print(f"returncode type: {type(cont.returncode)}")
+		print(f"check returncode with int 0: {cont.returncode != 0}")
+		print(f"check stderr type: {type(cont.stderr)}")
+		print(f"check stderr with str: {'no rebase in progress'.lower() not in cont.stderr.strip().lower()}")
+	else: print("Not in rebase mode, continuing with merge...")
+	if not isinstance(cont, int):
+		if cont.returncode != 0 and 'no rebase in progress'.lower() not in cont.stderr.strip().lower():
+			print_norm("Rebase continue failed. You may need to fix manually.")
+			print_norm(f"Rebase unsuccessful. {cont.stderr}")
+			quit()
+	print_norm(f"{conflictSuccess}")
 
 def pull():
 	"""This function pulls and merges updates from the remote to the local branch
@@ -448,10 +455,11 @@ def pull():
 		unmerged_text = pull.stderr.replace('\n', ' ')
 		# print_norm(f"HHHHH{unmerged_text}HHHHHH")
 		if 'you have unmerged files'.lower() in unmerged_text.lower() or 'Resolve all conflicts manually'.lower() in unmerged_text.lower():
-			print_stdout(f'{pull.stdout}\n:pull.stdout')
-			print_stdout(f'{pull.stderr}\n:pull.stderr')
+			print_norm(f'{pull.stdout}\n:pull.stdout')
+			print_norm(f'{pull.stderr}\n:pull.stderr')
 			# print_norm(pull.stderr)
 			check_for_conflicts()
+			print_norm("Unmerged files found. Please resolve conflicts before proceeding.")
 			pop_stash()
 			is_stashed = False
 		else:
@@ -466,8 +474,8 @@ def pull():
 		# print_norm(f"GGGGG{unmerged_pop_text}GGGGG")
 		
 		if 'CONFLICT' in unmerged_pop_text:
-			print_stdout(f'{stash_pop.stdout}\n:stash_pop.stdout')
-			print_stdout(f'{stash_pop.stderr}\n:stash_pop.stderr')
+			print_norm(f'{stash_pop.stdout}\n:stash_pop.stdout')
+			print_norm(f'{stash_pop.stderr}\n:stash_pop.stderr')
 			# print_norm(stash_pop.stderr)
 			check_for_conflicts(rebase_in_progress=False)
 			pop_stash(stash_resp=stash_pop)
@@ -1272,8 +1280,8 @@ def pull_from_main_or_master():
 	rErr = rebaseFromMain.stderr.replace('\n', ' ')
 	chechForMergeConflicts = f"{rOut} {rErr}"
 	if 'you have unmerged files' in chechForMergeConflicts:
-		print_stdout(f'{rebaseFromMain.stdout}\n:rebFrmMain.stdout')
-		print_stdout(f'{rebaseFromMain.stderr}\n:rebFrmMain.stderr')
+		print_norm(f'{rebaseFromMain.stdout}\n:rebFrmMain.stdout')
+		print_norm(f'{rebaseFromMain.stderr}\n:rebFrmMain.stderr')
 		# print_norm(rebaseFromMain.stderr)
 		check_for_conflicts()
 		pop_stash()
@@ -1289,8 +1297,8 @@ def pull_from_main_or_master():
 		pErr = popStash.stderr.replace('\n', ' ')
 		pchechForMergeConflicts = f"{pOut} {pErr}"
 		if 'CONFLICT' in pchechForMergeConflicts:
-			print_stdout(f'{popStash.stdout}\n:popStash.stdout')
-			print_stdout(f'{popStash.stderr}\n:popStash.stderr')
+			print_norm(f'{popStash.stdout}\n:popStash.stdout')
+			print_norm(f'{popStash.stderr}\n:popStash.stderr')
 			# print('Found=> CONFLICT :::::in stdout and stderr (stash)')
 			# print_norm(popStash.stderr)
 			check_for_conflicts(rebase_in_progress=False)
