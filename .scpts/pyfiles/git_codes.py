@@ -1278,9 +1278,9 @@ def pull_from_main_or_master():
 	# print(f">>>> stdout-start:\n{fetchChangesFromOrigin.stdout}\n<<<<")
 	# print(f"♧♧♧♧ stderr-start:\n{fetchChangesFromOrigin.stderr}\n♧♧♧♧")
 	if fetchChangesFromOrigin.stdout:
-		print_norm(f'{fetchChangesFromOrigin.stdout}:stdout')
+		print_norm(f'{fetchChangesFromOrigin.stdout}:fetch_stdout')
 	elif fetchChangesFromOrigin.stderr:
-		print_norm(f'{fetchChangesFromOrigin.stderr}:stderr')
+		print_norm(f'{fetchChangesFromOrigin.stderr}:fetch_stderr')
 		# quit("q")
 
 	# rebase from main/master branch
@@ -1289,9 +1289,9 @@ def pull_from_main_or_master():
 	# print(f">>>> stdout-start:\n{rebaseFromMain.stdout}\n<<<<")
 	# print(f"♧♧♧♧ stderr-start:\n{rebaseFromMain.stderr}\n♧♧♧♧")
 	if rebaseFromMain.stdout:
-		print_norm(f'{rebaseFromMain.stdout}:stdout')
+		print_norm(f'{rebaseFromMain.stdout}:rbaseM_stdout')
 	elif rebaseFromMain.stderr:
-		print_norm(f'{rebaseFromMain.stderr}:stderr')
+		print_norm(f'{rebaseFromMain.stderr}:rbaseM_stderr')
 
 	# addition from phone starts 1 here
 	rOut = rebaseFromMain.stdout.replace('\n', ' ')
