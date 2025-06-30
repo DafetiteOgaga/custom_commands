@@ -293,13 +293,13 @@ def show_conflict_lines(file_path):
 	except FileNotFoundError:
 		print(f"File not found: {file_path}")
 
-def pop_stash(stash_resp=None):
+def pop_stash(stash_resp=None, stash_status=False):
 	# if not stash_resp:
 	# 	stash_pop = run_subprocess(['git', 'stash', 'pop'])
 	# else:
-	print_norm("Popping stash...")
+	print_norm("Popping stash fxn...")
 	if stash_resp:
-		stash_pop = stash_resp
+		# stash_pop = stash_resp
 		# print_norm(f"EEEEE{stash_pop.stdout}EEEEE")
 		# print_norm(f"FFFFF{stash_pop.stderr}FFFFF")
 		# print(f'{print_stashes(77777)}')
@@ -308,19 +308,25 @@ def pop_stash(stash_resp=None):
 		# print_norm(f"CCCCC{stash_pop.stdout}CCCCC")
 		# if stash_pop.stderr:
 		# 	print_norm(f"DDDDD{stash_pop.stderr}DDDDD")
-		stderr_clean = stash_pop.stderr.replace('\n', ' ') if 'CONFLICT' not in stash_pop.stderr.strip() else ''
-		stdout_clean = stash_pop.stdout.replace('\n', ' ') if 'CONFLICT' not in stash_pop.stdout.strip() else ''
+		stderr_clean = stash_resp.stderr.replace('\n', ' ') if 'CONFLICT' not in stash_resp.stderr.strip() else ''
+		stdout_clean = stash_resp.stdout.replace('\n', ' ') if 'CONFLICT' not in stash_resp.stdout.strip() else ''
 		stash_output = stdout_clean or stderr_clean
 		print_stdout(stash_output)
-	print_norm("Stash popped successfully.")
+	# print_norm("Stash popped successfully.")
 	# print(f'{print_stashes(88888)}')
+	# if stash_status:
+	# 	pop_top_stash = run_subprocess(['git', 'stash', 'pop'])
+	# 	print(f'pop_top_stash: {pop_top_stash}')
 	# Clean up stash if it still exists after popping
-	cleanup = run_subprocess(['git', 'stash', 'list'])
-	print(f'cleanup.stdout: {cleanup.stdout}')
-	if cleanup.stdout.strip():
-		print_norm("Cleaning up...")
-		dropStash = run_subprocess(['git', 'stash', 'drop'])  # drops top stash (stas
-		print(f'dropStash.stdout: {dropStash.stdout}')
+	# cleanup = run_subprocess(['git', 'stash', 'list'])
+	# print(f'cleanup.stdout: {cleanup.stdout}')
+	if stash_resp or stash_status:
+		print_norm("Popping the stash...")
+		pop_top_stash = run_subprocess(['git', 'stash', 'pop'])
+		print(f'pop_top_stash: {pop_top_stash}')
+		# print_norm("Cleaning up...")
+		# dropStash = run_subprocess(['git', 'stash', 'drop'])  # drops top stash (stas
+		# print(f'dropStash.stdout: {dropStash.stdout}')
 
 def is_rebase_in_progress():
 	result = run_subprocess(['git', 'rev-parse', '--git-dir'])
@@ -478,7 +484,7 @@ def pull():
 			# print_norm(pull.stderr)
 			check_for_conflicts()
 			print_norm("Unmerged files found. Please resolve conflicts before proceeding.")
-			pop_stash()
+			pop_stash(stash_status=is_stashed)
 			is_stashed = False
 		else:
 			print_norm("Oops! I got {}".format(pull.stderr))
@@ -1303,7 +1309,7 @@ def pull_from_main_or_master():
 		print_norm(f'{rebaseFromMain.stderr}\n:rebFrmMain.stderr')
 		# print_norm(rebaseFromMain.stderr)
 		check_for_conflicts()
-		pop_stash()
+		pop_stash(stash_status=stashCreated)
 		stashCreated = False
 		# addition from phone ends 1 here
 
