@@ -361,7 +361,6 @@ def resolve_conflict(file_path, keep='local', rebase_in_progress=None):
 	# 	print(f"Please check the file manually to ensure all conflicts are resolved.")
 
 def check_for_conflicts(rebase_in_progress=True):
-	# if 'CONFLICT' in conflictText or 'you have unmerged files' in conflictText:
 	print()
 	print_norm("Oopsi! Merge conflicts detected...")
 	# print_norm(f"Pull unsuccessful. YYYYY{conflictText}YYYYY")
@@ -1285,7 +1284,8 @@ def pull_from_main_or_master():
 	rOut = rebaseFromMain.stdout.replace('\n', ' ')
 	rErr = rebaseFromMain.stderr.replace('\n', ' ')
 	chechForMergeConflicts = f"{rOut} {rErr}"
-	if 'you have unmerged files' in chechForMergeConflicts:
+	if 'you have unmerged files'.lower() in chechForMergeConflicts.lower() or 'Resolve all conflicts manually'.lower() in chechForMergeConflicts.lower():
+	# if 'you have unmerged files' in chechForMergeConflicts:
 		print_norm(f'{rebaseFromMain.stdout}\n:rebFrmMain.stdout')
 		print_norm(f'{rebaseFromMain.stderr}\n:rebFrmMain.stderr')
 		# print_norm(rebaseFromMain.stderr)
