@@ -15,6 +15,8 @@ except ImportError:
 	from colors import *
 env = os.environ.copy()
 env["GIT_EDITOR"] = "true"
+env["GIT_COMMITTER_NAME"] = "Automatic Committer"
+env["GIT_COMMITTER_EMAIL"] = "auto@example.com"
 
 home_dir = os.path.join(os.path.expanduser("~"), '.xbin')  # Expands "~" to "/home/your-username"
 bumpAppJsonVersionScript = os.path.join(home_dir, "pyfiles")  # location to bumpAppJsonVersion
@@ -400,6 +402,10 @@ def check_for_conflicts(rebase_in_progress=True):
 	# Continue rebase after resolving
 	# print(f'{print_stashes(44444)}')
 	cont = 0
+	# silent_commit = run_subprocess(['git', 'commit', '--no-edit'], env=env)
+	# print(f'silent_commit: {silent_commit}')
+	skipEditorInThisSession = run_subprocess(['git', 'config', 'core.editor', 'true'])
+	print(f'skipEditorInThisSession: {skipEditorInThisSession}')
 	if rebase_in_progress:
 		cont = run_subprocess(['git', 'rebase', '--continue'], env=env)
 		print_norm(f"rebase continue stdout: {cont.stdout}")
