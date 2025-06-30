@@ -336,47 +336,78 @@ def is_rebase_in_progress():
 	# print(f'is_rebase_in_progress: {response}')
 	return response
 
+def clean_conflict_markers(file_path, keep='local'):
+	"""
+	Removes Git conflict markers and keeps either 'local' or 'remote' changes.
+	"""
+	print(f"Cleaning conflict markers in {file_path}, keeping: {keep}")
+	try:
+		with open(file_path, 'r') as f:
+			lines = f.readlines()
+
+		new_lines = []
+		inside_conflict = False
+		keep_local = (keep == 'local')
+		buffer = {'local': [], 'remote': []}
+		current = None
+
+		for line in lines:
+			if line.startswith('<<<<<<<'):
+				inside_conflict = True
+				current = 'local'
+				buffer = {'local': [], 'remote': []}
+			elif line.startswith('=======') and inside_conflict:
+				current = 'remote'
+			elif line.startswith('>>>>>>>') and inside_conflict:
+				inside_conflict = False
+				part_to_keep = buffer['local'] if keep_local else buffer['remote']
+				print(f'part_to_keep: {part_to_keep}')
+				new_lines.extend(part_to_keep)
+				current = None
+			elif inside_conflict and current:
+				buffer[current].append(line)
+			else:
+				new_lines.append(line)
+
+		with open(file_path, 'w') as f:
+			f.writelines(new_lines)
+
+		print(f"✅ Conflict markers removed and '{keep}' version kept.")
+		return True
+	except Exception as e:
+		print(f"❌ Failed to clean conflict markers: {e}")
+		return False
+
+def check_for_marker_in_file(file_path):
+	"""Check if conflict markers are present in the file."""
+	try:
+		with open(file_path, 'r') as f:
+			content = f.read()
+		if any(marker in content for marker in ['<<<<<<<', '=======', '>>>>>>>']):
+			return True
+		return False
+	except Exception as e:
+		print(f"Error reading file {file_path}: {e}")
+		return False
+
 def resolve_conflict(file_path, keep='local', rebase_in_progress=None):
 	print(f"keep arg received: {keep}")
 	# print(f"file_path: {file_path}")
-
-	# if rebase_in_progress is None:
-	rebase_in_progress = is_rebase_in_progress()
-	print(f'rebase_in_progress: {rebase_in_progress} ##########')
-	# if rebase_in_progress:
-	# 	# During rebase: --ours = remote (upstream), --theirs = local
-	# 	oursOrTheirs = '--ours' if keep == 'remote' else '--theirs'
-	# else:
-	# 	# During merge: --ours = local, --theirs = remote
-	# 	oursOrTheirs = '--theirs' if keep == 'remote' else '--ours'
-
-	oursOrTheirs = '--ours' if keep == 'remote' else '--theirs'
-	print(f'Using git checkout {oursOrTheirs} for {file_path}')
-	checkout_result = run_subprocess(['git', 'checkout', oursOrTheirs, file_path])
-	if checkout_result.returncode != 0:
-		print(f'Failed to resolve conflict for {file_path}')
-		print(f'Error: {checkout_result.stderr}')
-		return False
-	else:
-		print(f'Successfully resolved conflict for {file_path}')
-	# if resoleve_conflict_result.returncode != 0:
-	print(f'failed to resolve conflict for {file_path}')
-
-	add_result = run_subprocess(['git', 'add', file_path])
-	if add_result.returncode != 0:
-		print(f'Failed to add {file_path} to staging area')
-		print(f'Error: {add_result.stderr}')
-		return False
-	else:
-		print(f'Added {file_path} to staging area.')
-	# else:
-	# 	run_subprocess(['git', 'checkout', '--theirs', file_path])
-	# run_subprocess(['git', 'add', file_path])
-	# check_result = run_subprocess(['git', 'diff', '--check'])
-	# print(f'return code from git diff check: {check_result.returncode}')
-	# if check_result.returncode != 0:
-	# 	print(f"Warning: Conflict markers might still exist in the file: {file_path}")
-	# 	print(f"Please check the file manually to ensure all conflicts are resolved.")
+	marker = check_for_marker_in_file(file_path)
+	print(f"marker: {marker}")
+	if marker:
+		print("❗ Conflict markers still in file — fallback to manual cleaning.")
+		success = clean_conflict_markers(file_path, keep=keep)
+		if success:
+			add_result = run_subprocess(['git', 'add', file_path])
+			if add_result.returncode != 0:
+				print(f'Failed to add {file_path} to staging area')
+				print(f'Error: {add_result.stderr}')
+				return False
+			else:
+				print(f'Added {file_path} to staging area.')
+		else:
+			return False
 	return True
 
 def check_for_conflicts(rebase_in_progress=True):
@@ -391,7 +422,9 @@ def check_for_conflicts(rebase_in_progress=True):
 	append_s = 's' if number_of_conflicted_files > 1 else ''
 	print_norm(f"Found {number_of_conflicted_files} conflicted file{append_s}.")
 	# print()
+	comfile = None
 	for file in conflicted_files:
+		comfile = file
 		# if file.endswith('.png') or file.endswith('.jpg') or file.endswith('.jpeg') or file.endswith('.pdf') or file.endswith('.docx'):
 		# 	# binary file — prompt user
 		# 	choice = input(f"Binary conflict in {file}. Keep (l)ocal or (r)emote? ").strip().lower()
@@ -412,6 +445,9 @@ def check_for_conflicts(rebase_in_progress=True):
 			
 		# 	choice = getUserInput(promptText, allowedEntryArray=['l', 'r'], invalidText=invalidText)
 		# 	resolve_conflict(file, keep='local' if choice == 'l' else 'remote')
+	print(f'comfile: {comfile}')
+	checkMarker1 = check_for_marker_in_file(comfile)
+	print(f"checkMarker1: {checkMarker1}")
 
 	print()
 	conflictSuccess = 'Successful! conflicts resolved.'
@@ -424,21 +460,27 @@ def check_for_conflicts(rebase_in_progress=True):
 	# print(f'silent_commit: {silent_commit}')
 	skipEditorInThisSession = run_subprocess(['git', 'config', 'core.editor', 'true'])
 	print(f'skipEditorInThisSession: {skipEditorInThisSession}')
-	if rebase_in_progress:
-		cont = run_subprocess(['git', 'rebase', '--continue'], env=env)
-		print_norm(f"rebase continue stdout: {cont.stdout}")
-		print_norm(f"rebase continue stderr: {cont.stderr}")
-		print_norm(f"rebase continue returncode: {cont.returncode}")
-		print(f"returncode type: {type(cont.returncode)}")
-		print(f"check returncode with int 0: {cont.returncode != 0}")
-		print(f"check stderr type: {type(cont.stderr)}")
-		print(f"check stderr with str: {'no rebase in progress'.lower() not in cont.stderr.strip().lower()}")
-	else: print("Not in rebase mode, continuing with merge...")
-	if not isinstance(cont, int):
-		if cont.returncode != 0 and 'no rebase in progress'.lower() not in cont.stderr.strip().lower():
-			print_norm("Rebase continue failed. You may need to fix manually.")
-			print_norm(f"Rebase unsuccessful. {cont.stderr}")
-			quit()
+	checkMarker2 = check_for_marker_in_file(comfile)
+	print(f"checkMarker2: {checkMarker2}")
+	# if rebase_in_progress:
+	# 	cont = run_subprocess(['git', 'rebase', '--continue'], env=env)
+	# 	print_norm(f"rebase continue stdout: {cont.stdout}")
+	# 	print_norm(f"rebase continue stderr: {cont.stderr}")
+	# 	print_norm(f"rebase continue returncode: {cont.returncode}")
+	# 	print(f"returncode type: {type(cont.returncode)}")
+	# 	print(f"check returncode with int 0: {cont.returncode != 0}")
+	# 	print(f"check stderr type: {type(cont.stderr)}")
+	# 	print(f"check stderr with str: {'no rebase in progress'.lower() not in cont.stderr.strip().lower()}")
+	# 	checkMarker3 = check_for_marker_in_file(comfile)
+	# 	print(f"checkMarker3: {checkMarker3}")
+	# else: print("Not in rebase mode, continuing with merge...")
+	# if not isinstance(cont, int):
+	# 	if cont.returncode != 0 and 'no rebase in progress'.lower() not in cont.stderr.strip().lower():
+	# 		print_norm("Rebase continue failed. You may need to fix manually.")
+	# 		print_norm(f"Rebase unsuccessful. {cont.stderr}")
+	# 		quit()
+	checkMarker4 = check_for_marker_in_file(comfile)
+	print(f"checkMarker4: {checkMarker4}")
 	print_norm(f"{conflictSuccess}")
 
 def pull():
@@ -466,7 +508,8 @@ def pull():
 	# print(f'{print_stashes(22222)}')
 
 	# Pull with rebase
-	pull = run_subprocess(["git", "pull", "--rebase"])
+	# pull = run_subprocess(["git", "pull", "--rebase"])
+	pull = run_subprocess(["git", "pull"])
 	# print_norm(f"stdout: {pull.stdout}")
 	# print_norm(f"stderr: {pull.stderr}")
 	is_stashed and print_norm("adding local changes ontop of remote...")
@@ -478,7 +521,7 @@ def pull():
 		# print(pull.stderr.replace('\n', ' '))
 		unmerged_text = pull.stderr.replace('\n', ' ')
 		# print_norm(f"HHHHH{unmerged_text}HHHHHH")
-		if 'you have unmerged files'.lower() in unmerged_text.lower() or 'Resolve all conflicts manually'.lower() in unmerged_text.lower():
+		if 'you have unmerged files'.lower() in unmerged_text.lower() or 'CONFLICT' in unmerged_text or 'Resolve all conflicts manually'.lower() in unmerged_text.lower():
 			print_norm(f'{pull.stdout}\n:pull.stdout')
 			print_norm(f'{pull.stderr}\n:pull.stderr')
 			# print_norm(pull.stderr)
@@ -496,8 +539,9 @@ def pull():
 		stdout_clean = stash_pop.stdout.replace('\n', ' ')
 		unmerged_pop_text = f"{stderr_clean} {stdout_clean}"
 		# print_norm(f"GGGGG{unmerged_pop_text}GGGGG")
-		
-		if 'CONFLICT' in unmerged_pop_text:
+
+		if 'you have unmerged files'.lower() in unmerged_pop_text.lower() or 'CONFLICT' in unmerged_pop_text or 'Resolve all conflicts manually'.lower() in unmerged_pop_text.lower():
+		# if 'CONFLICT' in unmerged_pop_text:
 			print_norm(f'{stash_pop.stdout}\n:stash_pop.stdout')
 			print_norm(f'{stash_pop.stderr}\n:stash_pop.stderr')
 			# print_norm(stash_pop.stderr)
@@ -1290,7 +1334,7 @@ def pull_from_main_or_master():
 		# quit("q")
 
 	# rebase from main/master branch
-	rebaseFromMain = run_subprocess(["git", "rebase", f"origin/{main}"])
+	rebaseFromMain = run_subprocess(["git", "merge", f"origin/{main}"])
 	# print("for: rebaseFromMain")
 	# print(f">>>> stdout-start:\n{rebaseFromMain.stdout}\n<<<<")
 	# print(f"♧♧♧♧ stderr-start:\n{rebaseFromMain.stderr}\n♧♧♧♧")
@@ -1303,7 +1347,8 @@ def pull_from_main_or_master():
 	rOut = rebaseFromMain.stdout.replace('\n', ' ')
 	rErr = rebaseFromMain.stderr.replace('\n', ' ')
 	chechForMergeConflicts = f"{rOut} {rErr}"
-	if 'you have unmerged files'.lower() in chechForMergeConflicts.lower() or 'Resolve all conflicts manually'.lower() in chechForMergeConflicts.lower():
+	if 'you have unmerged files'.lower() in chechForMergeConflicts.lower() or 'CONFLICT' in chechForMergeConflicts or 'Resolve all conflicts manually'.lower() in chechForMergeConflicts.lower():
+	# if 'you have unmerged files'.lower() in chechForMergeConflicts.lower() or 'Resolve all conflicts manually'.lower() in chechForMergeConflicts.lower():
 	# if 'you have unmerged files' in chechForMergeConflicts:
 		print_norm(f'{rebaseFromMain.stdout}\n:rebFrmMain.stdout')
 		print_norm(f'{rebaseFromMain.stderr}\n:rebFrmMain.stderr')
@@ -1321,7 +1366,9 @@ def pull_from_main_or_master():
 		pOut = popStash.stdout.replace('\n', ' ')
 		pErr = popStash.stderr.replace('\n', ' ')
 		pchechForMergeConflicts = f"{pOut} {pErr}"
-		if 'CONFLICT' in pchechForMergeConflicts:
+		if 'you have unmerged files'.lower() in pchechForMergeConflicts.lower() or 'CONFLICT' in pchechForMergeConflicts or 'Resolve all conflicts manually'.lower() in pchechForMergeConflicts.lower():
+		# if 'you have unmerged files'.lower() in pchechForMergeConflicts.lower():
+		# if 'CONFLICT' in pchechForMergeConflicts:
 			print_norm(f'{popStash.stdout}\n:popStash.stdout')
 			print_norm(f'{popStash.stderr}\n:popStash.stderr')
 			# print('Found=> CONFLICT :::::in stdout and stderr (stash)')
