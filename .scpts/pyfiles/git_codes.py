@@ -298,32 +298,26 @@ def pop_stash(stash_resp=None, stash_status=False):
 	# 	stash_pop = run_subprocess(['git', 'stash', 'pop'])
 	# else:
 	print_norm("Popping stash fxn...")
-	if stash_resp:
-		# stash_pop = stash_resp
-		# print_norm(f"EEEEE{stash_pop.stdout}EEEEE")
-		# print_norm(f"FFFFF{stash_pop.stderr}FFFFF")
-		# print(f'{print_stashes(77777)}')
+	# if stash_resp:
+	# 	# stash_pop = stash_resp
+	# 	# print_norm(f"EEEEE{stash_pop.stdout}EEEEE")
+	# 	# print_norm(f"FFFFF{stash_pop.stderr}FFFFF")
+	# 	# print(f'{print_stashes(77777)}')
 		
-		print('2222222222')
-		# print_norm(f"CCCCC{stash_pop.stdout}CCCCC")
-		# if stash_pop.stderr:
-		# 	print_norm(f"DDDDD{stash_pop.stderr}DDDDD")
-		stderr_clean = stash_resp.stderr.replace('\n', ' ') if 'CONFLICT' not in stash_resp.stderr.strip() else ''
-		stdout_clean = stash_resp.stdout.replace('\n', ' ') if 'CONFLICT' not in stash_resp.stdout.strip() else ''
-		stash_output = stdout_clean or stderr_clean
-		print_stdout(stash_output)
-	# print_norm("Stash popped successfully.")
-	# print(f'{print_stashes(88888)}')
-	# if stash_status:
-	# 	pop_top_stash = run_subprocess(['git', 'stash', 'pop'])
-	# 	print(f'pop_top_stash: {pop_top_stash}')
-	# Clean up stash if it still exists after popping
-	# cleanup = run_subprocess(['git', 'stash', 'list'])
-	# print(f'cleanup.stdout: {cleanup.stdout}')
-	if stash_resp or stash_status:
+	# 	print('2222222222')
+	# 	# print_norm(f"CCCCC{stash_pop.stdout}CCCCC")
+	# 	# if stash_pop.stderr:
+	# 	# 	print_norm(f"DDDDD{stash_pop.stderr}DDDDD")
+	# 	stderr_clean = stash_resp.stderr.replace('\n', ' ') if 'CONFLICT' not in stash_resp.stderr.strip() else ''
+	# 	stdout_clean = stash_resp.stdout.replace('\n', ' ') if 'CONFLICT' not in stash_resp.stdout.strip() else ''
+	# 	stash_output = stdout_clean or stderr_clean
+	# 	print_stdout(stash_output)
+	if stash_status:
 		print_norm("Popping the stash...")
-		pop_top_stash = run_subprocess(['git', 'stash', 'pop'])
-		print(f'pop_top_stash: {pop_top_stash}')
+		# pop_top_stash = run_subprocess(['git', 'stash', 'pop'])
+		# print(f'pop_top_stash: {pop_top_stash}')
+		drop_top_stash = run_subprocess(['git', 'stash', 'drop'])
+		print(f'drop_top_stash: {drop_top_stash}')
 		# print_norm("Cleaning up...")
 		# dropStash = run_subprocess(['git', 'stash', 'drop'])  # drops top stash (stas
 		# print(f'dropStash.stdout: {dropStash.stdout}')
@@ -483,7 +477,7 @@ def check_for_conflicts(rebase_in_progress=True):
 	print(f"checkMarker4: {checkMarker4}")
 	print_norm(f"{conflictSuccess}")
 
-def pull():
+def pull(is_main_branch=False):
 	"""This function pulls and merges updates from the remote to the local branch
 	"""
 
@@ -494,6 +488,7 @@ def pull():
 
 	# Stash everything
 	is_stashed = None
+	print(f'is_main_branch: {is_main_branch}')
 	status = run_subprocess(['git', 'status', '--porcelain'])
 	if status.stdout.strip():
 		run_subprocess(['git', 'stash', '--include-untracked'])
@@ -509,10 +504,13 @@ def pull():
 
 	# Pull with rebase
 	# pull = run_subprocess(["git", "pull", "--rebase"])
-	pull = run_subprocess(["git", "pull"])
+	# pulls from corresponding remote branch but if is_main_branch is true, it pulls from that main/master branch
+	if is_main_branch:
+		main = view_branch(new_branch="main", action=-2)
+	pull = run_subprocess(["git", "pull"] if not is_main_branch else ["git", "pull", "origin", main])
 	# print_norm(f"stdout: {pull.stdout}")
 	# print_norm(f"stderr: {pull.stderr}")
-	is_stashed and print_norm("adding local changes ontop of remote...")
+	is_stashed and print_norm("adding local changes ontop of update...")
 	if pull.returncode == 0:
 		print_stdout(pull.stdout)
 	else:
@@ -527,6 +525,7 @@ def pull():
 			# print_norm(pull.stderr)
 			check_for_conflicts()
 			print_norm("Unmerged files found. Please resolve conflicts before proceeding.")
+			print(f'is_stashed pull: {is_stashed}')
 			pop_stash(stash_status=is_stashed)
 			is_stashed = False
 		else:
@@ -546,7 +545,10 @@ def pull():
 			print_norm(f'{stash_pop.stderr}\n:stash_pop.stderr')
 			# print_norm(stash_pop.stderr)
 			check_for_conflicts(rebase_in_progress=False)
-			pop_stash(stash_resp=stash_pop)
+			print(f'is_stashed stash: {is_stashed}')
+			pop_stash(stash_status=is_stashed)
+			is_stashed = False
+	print(f'is_stashed final: {is_stashed}')
 		# else: # consider removing
 		# 	_ = ''
 	# Apply stash back
@@ -556,7 +558,7 @@ def pull():
 	# print_norm(f"BBBBB{pull.stderr}BBBBB")
 	# print(f'{print_stashes(99999)}')
 	print()
-	print_norm("Pull successful...")
+	print_norm("Done...")
 	print()
 
 def push(file_list: list=None):
@@ -1298,94 +1300,96 @@ def update_token_command():
 
 
 # entry point for pull_from_main_or_master command
-def pull_from_main_or_master():
-	"""pulls changes from the remote main/master branch into the current branch
-	"""
-	# print('in pull_from_main_or_master()')
-	stashCreated = False
-	main = view_branch(new_branch="main", action=-2)
+# def pull_from_main_or_master():
+# 	"""pulls changes from the remote main/master branch into the current branch
+# 	"""
+# 	# print('in pull_from_main_or_master()')
+# 	stashCreated = False
+# 	main = view_branch(new_branch="main", action=-2)
 
-	current_branch_name = view_branch(action=100)
-	print_norm(f'current branch: {current_branch_name}')
-	if current_branch_name in ["main", "master"]:
-		print_norm(f"You are on {main} branch.")
-		print_norm(f"Switch to the desired branch you want to pull {main} into.")
-		quit("q")
-	# print("Exiting early...");sys.exit()
+# 	current_branch_name = view_branch(action=100)
+# 	print_norm(f'current branch: {current_branch_name}')
+# 	if current_branch_name in ["main", "master"]:
+# 		print_norm(f"You are on {main} branch.")
+# 		print_norm(f"Switch to the desired branch you want to pull {main} into.")
+# 		quit("q")
+# 	# print("Exiting early...");sys.exit()
 
-	# stash changes, if any
-	stashChanges = run_subprocess(['git', 'status', '--porcelain'])
-	if stashChanges.stdout.strip():
-		run_subprocess(['git', 'stash', '--include-untracked'])
-		stashCreated = True
-		# print_norm("Stashed local changes...")
-	else: # consider removing
-		print_norm("No local changes to stash. Proceeding with rebase...")
+# 	# stash changes, if any
+# 	stashChanges = run_subprocess(['git', 'status', '--porcelain'])
+# 	if stashChanges.stdout.strip():
+# 		run_subprocess(['git', 'stash', '--include-untracked'])
+# 		stashCreated = True
+# 		# print_norm("Stashed local changes...")
+# 	else: # consider removing
+# 		print_norm("No local changes to stash. Proceeding with rebase...")
 
-	# fetch changes from origin
-	fetchChangesFromOrigin = run_subprocess(["git", "fetch", "origin"])
-	# print("for: fetchChangesFromOrigin")
-	# print(f">>>> stdout-start:\n{fetchChangesFromOrigin.stdout}\n<<<<")
-	# print(f"♧♧♧♧ stderr-start:\n{fetchChangesFromOrigin.stderr}\n♧♧♧♧")
-	if fetchChangesFromOrigin.stdout:
-		print_norm(f'{fetchChangesFromOrigin.stdout}:fetch_stdout')
-	elif fetchChangesFromOrigin.stderr:
-		print_norm(f'{fetchChangesFromOrigin.stderr}:fetch_stderr')
-		# quit("q")
+# 	# fetch changes from origin
+# 	fetchChangesFromOrigin = run_subprocess(["git", "fetch", "origin"])
+# 	# print("for: fetchChangesFromOrigin")
+# 	# print(f">>>> stdout-start:\n{fetchChangesFromOrigin.stdout}\n<<<<")
+# 	# print(f"♧♧♧♧ stderr-start:\n{fetchChangesFromOrigin.stderr}\n♧♧♧♧")
+# 	if fetchChangesFromOrigin.stdout:
+# 		print_norm(f'{fetchChangesFromOrigin.stdout}:fetch_stdout')
+# 	elif fetchChangesFromOrigin.stderr:
+# 		print_norm(f'{fetchChangesFromOrigin.stderr}:fetch_stderr')
+# 		# quit("q")
 
-	# rebase from main/master branch
-	rebaseFromMain = run_subprocess(["git", "merge", f"origin/{main}"])
-	# print("for: rebaseFromMain")
-	# print(f">>>> stdout-start:\n{rebaseFromMain.stdout}\n<<<<")
-	# print(f"♧♧♧♧ stderr-start:\n{rebaseFromMain.stderr}\n♧♧♧♧")
-	if rebaseFromMain.stdout:
-		print_norm(f'{rebaseFromMain.stdout}:rbaseM_stdout')
-	elif rebaseFromMain.stderr:
-		print_norm(f'{rebaseFromMain.stderr}:rbaseM_stderr')
+# 	# rebase from main/master branch
+# 	rebaseFromMain = run_subprocess(["git", "merge", f"origin/{main}"])
+# 	# print("for: rebaseFromMain")
+# 	# print(f">>>> stdout-start:\n{rebaseFromMain.stdout}\n<<<<")
+# 	# print(f"♧♧♧♧ stderr-start:\n{rebaseFromMain.stderr}\n♧♧♧♧")
+# 	if rebaseFromMain.stdout:
+# 		print_norm(f'{rebaseFromMain.stdout}:rbaseM_stdout')
+# 	elif rebaseFromMain.stderr:
+# 		print_norm(f'{rebaseFromMain.stderr}:rbaseM_stderr')
 
-	# addition from phone starts 1 here
-	rOut = rebaseFromMain.stdout.replace('\n', ' ')
-	rErr = rebaseFromMain.stderr.replace('\n', ' ')
-	chechForMergeConflicts = f"{rOut} {rErr}"
-	if 'you have unmerged files'.lower() in chechForMergeConflicts.lower() or 'CONFLICT' in chechForMergeConflicts or 'Resolve all conflicts manually'.lower() in chechForMergeConflicts.lower():
-	# if 'you have unmerged files'.lower() in chechForMergeConflicts.lower() or 'Resolve all conflicts manually'.lower() in chechForMergeConflicts.lower():
-	# if 'you have unmerged files' in chechForMergeConflicts:
-		print_norm(f'{rebaseFromMain.stdout}\n:rebFrmMain.stdout')
-		print_norm(f'{rebaseFromMain.stderr}\n:rebFrmMain.stderr')
-		# print_norm(rebaseFromMain.stderr)
-		check_for_conflicts()
-		pop_stash(stash_status=stashCreated)
-		stashCreated = False
-		# addition from phone ends 1 here
+# 	# addition from phone starts 1 here
+# 	rOut = rebaseFromMain.stdout.replace('\n', ' ')
+# 	rErr = rebaseFromMain.stderr.replace('\n', ' ')
+# 	chechForMergeConflicts = f"{rOut} {rErr}"
+# 	stashCreated and print_norm("adding local changes ontop of update...")
+# 	if 'you have unmerged files'.lower() in chechForMergeConflicts.lower() or 'CONFLICT' in chechForMergeConflicts or 'Resolve all conflicts manually'.lower() in chechForMergeConflicts.lower():
+# 	# if 'you have unmerged files'.lower() in chechForMergeConflicts.lower() or 'Resolve all conflicts manually'.lower() in chechForMergeConflicts.lower():
+# 	# if 'you have unmerged files' in chechForMergeConflicts:
+# 		print_norm(f'{rebaseFromMain.stdout}\n:rebFrmMain.stdout')
+# 		print_norm(f'{rebaseFromMain.stderr}\n:rebFrmMain.stderr')
+# 		# print_norm(rebaseFromMain.stderr)
+# 		check_for_conflicts()
+# 		pop_stash(stash_status=stashCreated)
+# 		stashCreated = False
+# 		# addition from phone ends 1 here
 
-	# pop stash if one was created
-	if stashCreated:
-		# addition from phone starts 2 here
-		popStash = run_subprocess(["git", "stash", "pop"])
-		# print(f'popStash: {popStash}')
-		pOut = popStash.stdout.replace('\n', ' ')
-		pErr = popStash.stderr.replace('\n', ' ')
-		pchechForMergeConflicts = f"{pOut} {pErr}"
-		if 'you have unmerged files'.lower() in pchechForMergeConflicts.lower() or 'CONFLICT' in pchechForMergeConflicts or 'Resolve all conflicts manually'.lower() in pchechForMergeConflicts.lower():
-		# if 'you have unmerged files'.lower() in pchechForMergeConflicts.lower():
-		# if 'CONFLICT' in pchechForMergeConflicts:
-			print_norm(f'{popStash.stdout}\n:popStash.stdout')
-			print_norm(f'{popStash.stderr}\n:popStash.stderr')
-			# print('Found=> CONFLICT :::::in stdout and stderr (stash)')
-			# print_norm(popStash.stderr)
-			check_for_conflicts(rebase_in_progress=False)
-			pop_stash(stash_resp=popStash)
-			# addition from phone ends 2 here
+# 	# pop stash if one was created
+# 	if stashCreated:
+# 		# addition from phone starts 2 here
+# 		popStash = run_subprocess(["git", "stash", "pop"])
+# 		# print(f'popStash: {popStash}')
+# 		pOut = popStash.stdout.replace('\n', ' ')
+# 		pErr = popStash.stderr.replace('\n', ' ')
+# 		pchechForMergeConflicts = f"{pOut} {pErr}"
+# 		if 'you have unmerged files'.lower() in pchechForMergeConflicts.lower() or 'CONFLICT' in pchechForMergeConflicts or 'Resolve all conflicts manually'.lower() in pchechForMergeConflicts.lower():
+# 		# if 'you have unmerged files'.lower() in pchechForMergeConflicts.lower():
+# 		# if 'CONFLICT' in pchechForMergeConflicts:
+# 			print_norm(f'{popStash.stdout}\n:popStash.stdout')
+# 			print_norm(f'{popStash.stderr}\n:popStash.stderr')
+# 			# print('Found=> CONFLICT :::::in stdout and stderr (stash)')
+# 			# print_norm(popStash.stderr)
+# 			check_for_conflicts(rebase_in_progress=False)
+# 			pop_stash(stash_status=stashCreated)
+# 			stashCreated = False
+# 			# addition from phone ends 2 here
 
-		# if popStash.stdout:
-		# 	print_norm(f'{popStash.stdout}:stdout')
-		# elif popStash.stderr:
-		# 	print_norm(f'{popStash.stderr}:stderr')
-	# cleanup = run_subprocess(['git', 'stash', 'list'])
-	# print(f"stashes:\n{cleanup.stdout}")
-	# if cleanup.stdout.strip():
-	# 	print_norm("Cleaning up...")
-	# 	run_subprocess(['git', 'stash', 'drop'])  # drops top stash (stas
+# 		# if popStash.stdout:
+# 		# 	print_norm(f'{popStash.stdout}:stdout')
+# 		# elif popStash.stderr:
+# 		# 	print_norm(f'{popStash.stderr}:stderr')
+# 	# cleanup = run_subprocess(['git', 'stash', 'list'])
+# 	# print(f"stashes:\n{cleanup.stdout}")
+# 	# if cleanup.stdout.strip():
+# 	# 	print_norm("Cleaning up...")
+# 	# 	run_subprocess(['git', 'stash', 'drop'])  # drops top stash (stas
 
 
 # entry point for show_diff_from_main_or_master command
