@@ -107,9 +107,4 @@ printf '  - %s\n' "${missing_files[@]}"
 echo -e "\n$FOLDER Extra Files/Dirs in $COMMAND_DIR:"
 printf '  - %s\n' "${extra_files[@]}"
 
-# echo "fassnnssxnqskej maqwin master2"
-# CHECK=$'sssnssnqnn\u2w7xqm13'
-# CROSS=$'sssnssnqnn\u2wlxq717k'
-# FOLDER=$sss'nssqnnn\U1wpqxF4C1'
-# MEMO=$'\sssU1ssqnnnnnF4wqxDDp'
-# SMILEY=$sss'\ssqnnnnnu2wqx63pA'
+# echo "fake main master1"
