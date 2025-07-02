@@ -7,3 +7,6 @@ def run_subprocess(cmd, capture=True, env=None):
 
 def run_subprocess_cmd_alone(cmd):
 	return subprocess.run(cmd)
+
+def run_interactive_subprocess(cmd, env=None):
+	return subprocess.run(cmd, env=env)
