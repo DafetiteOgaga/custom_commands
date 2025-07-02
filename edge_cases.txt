@@ -1,0 +1,176 @@
+solution: git pull --rebase
+::::: #### pulling ...################################################
+::::: No local changes found.
+current_branch_name: main
+::::: Oops! I got From https://github.com/MiriamAsu/sharedLearning
+:::::    d55ae56..151095c  main       -> origin/main
+::::: hint: You have divergent branches and need to specify how to reconcile them.
+::::: hint: You can do so by running one of the following commands sometime before
+::::: hint: your next pull:
+::::: hint: 
+::::: hint:   git config pull.rebase false  # merge (the default strategy)
+::::: hint:   git config pull.rebase true   # rebase
+::::: hint:   git config pull.ff only       # fast-forward only
+::::: hint: 
+::::: hint: You can replace "git config" with "git config --global" to set a default
+::::: hint: preference for all repositories. You can also pass --rebase, --no-rebase,
+::::: hint: or --ff-only on the command line to override the configured default per
+::::: hint: invocation.
+::::: fatal: Need to specify how to reconcile divergent branches.
+::::: 
+
+
+
+potential solution to handle all cases
+#!/bin/bash
+set -e  # Exit on errors except during merge and stash pop
+
+# Fetch latest changes from origin
+git fetch origin
+
+# Check if there's anything to stash (tracked, staged, or untracked)
+if ! git diff-index --quiet HEAD -- || ! git diff-index --quiet --cached HEAD -- || [ -n "$(git ls-files --others --exclude-standard)" ]; then
+    echo "🔒 Changes detected. Stashing before merge..."
+    STASH_MSG="temp-stash-before-merge-$(date +%s)"
+    git stash push -u -m "$STASH_MSG"  # -u includes untracked files
+    STASHED=true
+else
+    STASHED=false
+fi
+
+# Try to merge safely and track merge status
+echo "🔁 Merging with origin/main..."
+set +e
+git merge origin/main
+MERGE_EXIT_CODE=$?
+set -e
+
+if [ $MERGE_EXIT_CODE -eq 0 ]; then
+    MERGE_SUCCESS=true
+    echo "✅ Merge successful!"
+else
+    MERGE_SUCCESS=false
+    echo "❌ Merge conflict occurred. Please resolve it manually."
+fi
+
+# If we stashed and the merge succeeded, safely restore the stash
+if [ "$STASHED" = true ] && [ "$MERGE_SUCCESS" = true ]; then
+    echo "🔓 Restoring stashed changes..."
+    STASH_ID=$(git stash list | grep -F "$STASH_MSG" | head -n1 | cut -d: -f1)
+    if [ -n "$STASH_ID" ]; then
+        set +e  # Don't exit if stash pop fails
+        if git stash pop "$STASH_ID"; then
+            echo "✅ Stash restored successfully!"
+        else
+            echo "⚠️ Stash pop failed due to conflicts. Your changes are still in:"
+            echo "    $STASH_ID"
+            echo "Resolve conflicts manually and clean up the stash."
+        fi
+    else
+        echo "⚠️ Expected stash not found. You may need to restore it manually."
+    fi
+fi
+
+# If merge failed and stash was made, warn user
+if [ "$STASHED" = true ] && [ "$MERGE_SUCCESS" = false ]; then
+    echo "⚠️ Merge failed. Your changes were stashed as:"
+    echo "    $STASH_MSG"
+    echo "You can recover them with:"
+    echo "    git stash list"
+    echo "    git stash pop <stash@{N}>"
+fi, does this handle all of untracked, tracked, uncommitted, committed and conflict cases?
+
+
+
+
+
+
+import subprocess
+import sys
+import shlex
+import datetime
+
+def run(cmd, **kwargs):
+    """Run a shell command and return (returncode, stdout, stderr)"""
+    result = subprocess.run(shlex.split(cmd), capture_output=True, text=True, **kwargs)
+    return result.returncode, result.stdout.strip(), result.stderr.strip()
+
+def check_unstaged_or_untracked():
+    # Check for unstaged changes
+    unstaged = subprocess.run(['git', 'diff-index', '--quiet', 'HEAD', '--'])
+    # Check for staged changes
+    staged = subprocess.run(['git', 'diff-index', '--quiet', '--cached', 'HEAD', '--'])
+    # Check for untracked files
+    untracked_code, untracked_out, _ = run('git ls-files --others --exclude-standard')
+    has_untracked = bool(untracked_out.strip())
+
+    return unstaged.returncode != 0 or staged.returncode != 0 or has_untracked
+
+def main():
+    # Ensure script exits on unhandled error
+    try:
+        # Fetch from origin
+        subprocess.run(['git', 'fetch', 'origin'], check=True)
+
+        # Determine if we need to stash
+        if check_unstaged_or_untracked():
+            print("🔒 Changes detected. Stashing before merge...")
+            stash_msg = f"temp-stash-before-merge-{int(datetime.datetime.now().timestamp())}"
+            subprocess.run(['git', 'stash', 'push', '-u', '-m', stash_msg], check=True)
+            stashed = True
+        else:
+            stashed = False
+            stash_msg = ""
+
+        # Merge (do not raise exception on failure)
+        print("🔁 Merging with origin/main...")
+        merge_result = subprocess.run(['git', 'merge', 'origin/main'])
+        merge_success = merge_result.returncode == 0
+
+        if merge_success:
+            print("✅ Merge successful!")
+        else:
+            print("❌ Merge conflict occurred. Please resolve it manually.")
+
+        # Restore stash only if merge was successful
+        if stashed and merge_success:
+            print("🔓 Restoring stashed changes...")
+            _, stash_list_out, _ = run('git stash list')
+            stash_id = None
+            for line in stash_list_out.splitlines():
+                if stash_msg in line:
+                    stash_id = line.split(':')[0]
+                    break
+            if stash_id:
+                try:
+                    result = subprocess.run(['git', 'stash', 'pop', stash_id])
+                    if result.returncode == 0:
+                        print("✅ Stash restored successfully!")
+                    else:
+                        print("⚠️ Stash pop failed due to conflicts. Your changes are still in:")
+                        print(f"    {stash_id}")
+                        print("Resolve conflicts manually and clean up the stash.")
+                except Exception:
+                    print("⚠️ Stash pop failed. Please recover manually.")
+            else:
+                print("⚠️ Expected stash not found. You may need to restore it manually.")
+
+        # Inform user about stash if merge failed
+        if stashed and not merge_success:
+            print("⚠️ Merge failed. Your changes were stashed as:")
+            print(f"    {stash_msg}")
+            print("You can recover them with:")
+            print("    git stash list")
+            print("    git stash pop <stash@{{N}}>")
+    except KeyboardInterrupt:
+        print("\n🚫 Interrupted by user")
+        sys.exit(1)
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Command failed: {e.cmd}")
+        sys.exit(e.returncode)
+
+if __name__ == "__main__":
+    main()
+
+
+
