@@ -15,3 +15,5 @@ def subprocess_for_pull_command(cmd, **kwargs):
     """Run a shell command and return (returncode, stdout, stderr)"""
     result = subprocess.run(shlex.split(cmd), capture_output=True, text=True, **kwargs)
     return result.returncode, result.stdout.strip(), result.stderr.strip()
+
+# getUserInputgetUserInput
