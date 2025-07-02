@@ -430,7 +430,7 @@ def set_editor():
 
 	# Editor commands to attempt setting, in preferred order
 	preferred_commands = [
-		# 'code --wait',
+		'code --wait',
 		'nano',
 		'vi',
 		'emacs',
@@ -491,8 +491,9 @@ def merge_operation():
 		print_norm("Opening default editor for merge commit...")
 		editor = set_editor()
 		if editor:
+			print(f"Using editor: {editor}")
 			env['GIT_EDITOR'] = editor
-			run_subprocess(['git', 'commit'], env=env)
+			run_interactive_subprocess(['git', 'commit'], env=env)
 		# if manual_commit.returncode != 0:
 		# 	print(f'Failed to open default editor for merge commit.')
 		# 	print("Commit the changes manually.")
