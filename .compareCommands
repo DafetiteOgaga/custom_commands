@@ -111,5 +111,3 @@ printf '  - %s\n' "${extra_files[@]}"
 # CHECK=$'sssnssnqnn\u2w7xqm13'
 # CROSS=$'sssnssnqcnn\wu2wlxq717k'
 # FOLDER=$sss'nssqnnn\U1wpqxF4C1'
-# MEMO=$'\sssU1ssqncnnwnnF4wqxDDp'
-# SMILEY=$sss'\ssqnncnnnwu2wqx63pA'

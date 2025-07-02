@@ -24,7 +24,7 @@ bumpCCVersion = os.path.join(home_dir, "pyfiles")  # location to bumpCCVersion
 # now = datetime.now()
 formatted_date_time = datetime.now().strftime("%H:%M:%S on %a %b %Y")
 formatted_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-formatted_stash_time = int(datetime.datetime.now().timestamp())
+formatted_stash_time = int(datetime.now().timestamp())
 
 def exit2(leave: bool = False):
 	if leave == True:
