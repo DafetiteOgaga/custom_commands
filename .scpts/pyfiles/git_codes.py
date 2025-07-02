@@ -255,8 +255,8 @@ def getUserInput(promptText='Select a choice', allowedEntryArray=None, invalidTe
 			continue  # Skip the rest of the loop and reprompt
 
 		choice = first.lower()
-		print(f'length of choice: {len(choice)}')
-		print(f'choice: {choice}')
+		# print(f'length of choice: {len(choice)}')
+		# print(f'choice: {choice}')
 		if choice == 'q':
 			quit()
 		# elif len(choice) == 0:
@@ -282,12 +282,12 @@ def check_for_marker_in_file(file_path):
 
 def get_conflicted_files():
 	result = run_subprocess(['git', 'diff', '--name-only', '--diff-filter=U'])
-	print(f'result.stdout: {result.stdout.strip()} xxxxxxxxx')
+	# print(f'result.stdout: {result.stdout.strip()} xxxxxxxxx')
 	list_of_conflicted_files = result.stdout.strip().splitlines()
 	cleaned_list_of_conflicted_files = []
 	for check_file in list_of_conflicted_files:
 		checkForMarker = check_for_marker_in_file(check_file)
-		print(f"check for Marker in {check_file}. is marker: {checkForMarker}")
+		# print(f"check for Marker in {check_file}. is marker: {checkForMarker}")
 		if not checkForMarker:
 			run_subprocess(['git', 'add', check_file])
 			merge_operation()
@@ -349,7 +349,7 @@ def show_conflict_lines(file_path):
 				in_conflict = False
 			elif in_conflict:
 				print(f"line: {i+1} {stripped_line}")
-		print(f"mid_index: {mid_index}")
+		# print(f"mid_index: {mid_index}")
 		return first, second
 	except FileNotFoundError:
 		print(f"File not found: {file_path}")
@@ -358,8 +358,8 @@ def pop_stash(stash_resp=None, stash_status=False):
 	# if not stash_resp:
 	# 	stash_pop = run_subprocess(['git', 'stash', 'pop'])
 	# else:
-	print_norm("Popping stash fxn...")
-	checkBranch()
+	# print_norm("Popping stash fxn...")
+	# checkBranch()
 	# if stash_resp:
 	# 	# stash_pop = stash_resp
 	# 	# print_norm(f"EEEEE{stash_pop.stdout}EEEEE")
@@ -375,15 +375,15 @@ def pop_stash(stash_resp=None, stash_status=False):
 	# 	stash_output = stdout_clean or stderr_clean
 	# 	print_stdout(stash_output)
 	if stash_status:
-		print_norm("Popping the stash...")
-		checkBranch()
+		# print_norm("Popping the stash...")
+		# checkBranch()
 		pop_top_stash = run_subprocess(['git', 'stash', 'pop'])
-		print(f'pop_top_stash.returncode: {pop_top_stash.returncode}')
-		print(f'pop_top_stash.stdout: {pop_top_stash.stdout}')
-		print(f'pop_top_stash.stderr: {pop_top_stash.stderr}')
-		print()
+		# print(f'pop_top_stash.returncode: {pop_top_stash.returncode}')
+		# print(f'pop_top_stash.stdout: {pop_top_stash.stdout}')
+		# print(f'pop_top_stash.stderr: {pop_top_stash.stderr}')
+		# print()
 		stashList = run_subprocess(['git', 'stash', 'list'])
-		print(f'stashList.stdout:\n{stashList.stdout.strip()}')
+		# print(f'stashList.stdout:\n{stashList.stdout.strip()}')
 		# print(f"stash entry is kept'.lower() in pop_top_stash.stdout.strip().lower(): {'stash entry is kept'.lower() in pop_top_stash.stdout.strip().lower()}")
 		# if pop_top_stash.returncode != 0 and 'stash entry is kept'.lower() in pop_top_stash.stdout.strip().lower():
 		# 	drop_top_stash = run_subprocess(['git', 'stash', 'drop'])
@@ -391,7 +391,7 @@ def pop_stash(stash_resp=None, stash_status=False):
 		# print_norm("Cleaning up...")
 		# dropStash = run_subprocess(['git', 'stash', 'drop'])  # drops top stash (stas
 		# print(f'dropStash.stdout: {dropStash.stdout}')
-		checkBranch()
+		# checkBranch()
 
 def is_rebase_in_progress():
 	result = run_subprocess(['git', 'rev-parse', '--git-dir'])
@@ -483,7 +483,7 @@ def merge_operation():
 			print("Commit the changes manually.")
 			print(f'Error: {commit_merges.stderr}')
 		else:
-			checkBranch()
+			# checkBranch()
 			print(f'Auto commit successful.')
 	else:
 		# env["GIT_EDITOR"] = "true"
@@ -499,7 +499,7 @@ def merge_operation():
 		# 	print("Commit the changes manually.")
 		# 	print(f'Error: {manual_commit.stderr}')
 		else:
-			checkBranch()
+			# checkBranch()
 			print(f'Manual commit successful.')
 
 def merge_or_rebase_in_progress():
@@ -508,14 +508,15 @@ def merge_or_rebase_in_progress():
 	elif is_merge_in_progress():
 		merge_operation()
 	else:
-		print_norm("No rebase or merge in progress.")
+		pass
+		# print_norm("No rebase or merge in progress.")
 		# return True
 
 def clean_conflict_markers(file_path, keep='a'):
 	"""
 	Removes Git conflict markers and keeps either 'a' or 'b' changes.
 	"""
-	print(f"Cleaning conflict markers in {file_path}, keeping: {keep}")
+	# print(f"Cleaning conflict markers in {file_path}, keeping: {keep}")
 	try:
 		with open(file_path, 'r') as f:
 			lines = f.readlines()
@@ -536,7 +537,7 @@ def clean_conflict_markers(file_path, keep='a'):
 			elif line.startswith('>>>>>>>') and inside_conflict:
 				inside_conflict = False
 				part_to_keep = buffer['a'] if keep_local else buffer['b']
-				print(f'part_to_keep: {part_to_keep}')
+				# print(f'part_to_keep: {part_to_keep}')
 				new_lines.extend(part_to_keep)
 				current = None
 			elif inside_conflict and current:
@@ -547,7 +548,7 @@ def clean_conflict_markers(file_path, keep='a'):
 		with open(file_path, 'w') as f:
 			f.writelines(new_lines)
 
-		print(f"✅ Conflict markers removed and '{keep}' version kept.")
+		# print(f"✅ Conflict markers removed and '{keep}' version kept.")
 		return True
 	except Exception as e:
 		print(f"❌ Failed to clean conflict markers: {e}")
@@ -561,41 +562,42 @@ def checkBranch():
 	print(f"you are currently in {current_branch.stdout or current_branch.stderr} branch")
 
 def resolve_conflict(file_path, keep='a'):
-	print(f"keep arg received: {keep}")
-	checkBranch()
-	print(f'is_rebase_in_progress3: {is_rebase_in_progress()}')
+	# print(f"keep arg received: {keep}")
+	# checkBranch()
+	# print(f'is_rebase_in_progress3: {is_rebase_in_progress()}')
 	# print(f"file_path: {file_path}")
 	marker = check_for_marker_in_file(file_path)
-	print(f"marker: {marker}")
+	# print(f"marker: {marker}")
 	if marker:
-		print("❗ Conflict markers in file — cleaning.")
+		# print("❗ Conflict markers in file — cleaning.")
 		success = clean_conflict_markers(file_path, keep=keep)
 		if success:
-			checkBranch()
-			print("staging file after cleaning conflict markers...")
+			# checkBranch()
+			# print("staging file after cleaning conflict markers...")
 			add_result = run_subprocess(['git', 'add', file_path])
 			if add_result.returncode != 0:
 				print(f'Failed to add {file_path} to staging area')
 				print(f'Error: {add_result.stderr}')
 				return False
 			else:
-				checkBranch()
-				print(f'Added {file_path} to staging area.')
+				pass
+				# checkBranch()
+				# print(f'Added {file_path} to staging area.')
 		else:
 			return False
-	checkBranch()
+	# checkBranch()
 	return True
 
 def check_for_conflicts():
 	conflicted_files = get_conflicted_files()
-	print(f'conflicted_files: {conflicted_files}')
+	# print(f'conflicted_files: {conflicted_files}')
 	if conflicted_files:
 		print()
 		print_norm("Oopsi! Merge conflicts detected...")
 		# print_norm(f"Pull unsuccessful. YYYYY{conflictText}YYYYY")
 
 		# print(f'{print_stashes(33333)}')
-		checkBranch()
+		# checkBranch()
 
 		number_of_conflicted_files = len(conflicted_files)
 		append_s = 's' if number_of_conflicted_files > 1 else ''
@@ -609,33 +611,33 @@ def check_for_conflicts():
 			# 	# binary file — prompt user
 			# 	choice = input(f"Binary conflict in {file}. Keep (l)ocal or (r)emote? ").strip().lower()
 			# 	resolve_conflict(file, 'local' if choice == 'l' else 'remote')
-			print(f'file: {file}')
+			# print(f'file: {file}')
 			filename = f"{('/').join(file.split('/')[:-1])}/{BOLD}{BLUE}{file.split('/')[-1]}{RESET}" if '/' in file else f'{BOLD}{BLUE}{file.split(".")[-1]}{RESET}'
-			print(f'filename: {filename}')
+			# print(f'filename: {filename}')
 			if not is_binary(file):
 				first, second = show_conflict_lines(file)
-			promptText = f"How do you want to resolve the conflict\nKeep A-({first}) or B-({second}) [q - quit]\nHow do you wish to proceed [a/b]? >>> "
+			promptText = f"How do you want to resolve the conflict:\nKeep A-({first}) or B-({second}) [q - quit]\nHow do you wish to proceed [a/b]? >>> "
 			invalidText = "Invalid choice. Please enter 'a' or 'b' [q to quit]."
 			choice = getUserInput(promptText, allowedEntryArray=['a', 'b'], invalidText=invalidText)
 			# print(f"choice: X{choice}X #####")
 			# print(f'file: {file}')
-			checkBranch()
-			print(f'choice: {choice}')
-			print(f'is_rebase_in_progress2: {is_rebase_in_progress()}')
+			# checkBranch()
+			# print(f'choice: {choice}')
+			# print(f'is_rebase_in_progress2: {is_rebase_in_progress()}')
 			is_conflict_resolved = resolve_conflict(file, keep='a' if choice == 'a' else 'b')
 			
-			print(f'is_conflict_resolved: {is_conflict_resolved}')
+			# print(f'is_conflict_resolved: {is_conflict_resolved}')
 			print(f"Resolved conflict in {filename} by keeping {'local' if choice == 'l' else 'remote'} changes.")
 			# resolve_conflict(file, keep='local' if choice == 'l' else 'remote')
 			# else:
-			checkBranch()
+			# checkBranch()
 			is_conflicts_resolved.append(is_conflict_resolved)
 			# 	choice = getUserInput(promptText, allowedEntryArray=['l', 'r'], invalidText=invalidText)
 			# 	resolve_conflict(file, keep='local' if choice == 'l' else 'remote')
-		print("out of the loop...")
+		# print("out of the loop...")
 		if all(is_conflicts_resolved) == True:
-			print_norm("All conflicts resolved successfully.")
-			print_norm("continuing with the rebase or merge process.")
+			print_norm("All conflicts resolved.")
+			# print_norm("continuing with the rebase or merge process.")
 			merge_or_rebase_in_progress()
 
 		else:
@@ -661,7 +663,7 @@ def pull(is_main_branch=False):
 
 	# Stash everything
 	is_stashed = None
-	print(f'is_main_branch: {is_main_branch}')
+	# print(f'is_main_branch: {is_main_branch}')
 	status = run_subprocess(['git', 'status', '--porcelain'])
 	if status.stdout.strip():
 		run_subprocess(['git', 'stash', '--include-untracked'])
@@ -688,8 +690,8 @@ def pull(is_main_branch=False):
 			print_norm(f"Switch to the desired branch you want to pull {main} into.")
 			quit("q")
 
-	# pull = run_subprocess(["git", "pull"] if not is_main_branch else ["git", "pull", "origin", main])
-	pull = run_subprocess(["git", "pull"] if not is_main_branch else ["git", "pull", "origin", "fake_main_branch"],)
+	pull = run_subprocess(["git", "pull"] if not is_main_branch else ["git", "pull", "origin", main])
+	# pull = run_subprocess(["git", "pull"] if not is_main_branch else ["git", "pull", "origin", "fake_main_branch"],)
 
 
 	# print_norm(f"stdout: {pull.stdout}")
@@ -700,7 +702,7 @@ def pull(is_main_branch=False):
 	resolve_manually = "Resolve all conflicts manually".lower()
 
 	is_stashed and print_norm("adding local changes ontop of update...")
-	checkBranch()
+	# checkBranch()
 	if pull.returncode == 0:
 		print_stdout(pull.stdout)
 	else:
@@ -708,27 +710,27 @@ def pull(is_main_branch=False):
 		# print('type of stderr:', type(pull.stderr))
 		# print(pull.stderr.replace('\n', ' '))
 		unmerged_text = "{} {}".format(pull.stderr.replace('\n', ' '), pull.stdout.replace('\n', ' '))
-		print(f"".rjust(40, 'P'))
+		# print(f"".rjust(40, 'P'))
 		if any(any_str in unmerged_text.lower() for any_str in [conflict_str, unmerged_files, resolve_manually]):
 			print_norm(f'{pull.stdout}\n:pull.stdout')
 			print_norm(f'{pull.stderr}\n:pull.stderr')
-			print(f'is_rebase_in_progress1: {is_rebase_in_progress()}')
+			# print(f'is_rebase_in_progress1: {is_rebase_in_progress()}')
 			# print_norm(pull.stderr)
-			checkBranch()
+			# checkBranch()
 			check_for_conflicts()
-			checkBranch()
-			print(f'is_rebase_in_progress5: {is_rebase_in_progress()}')
+			# checkBranch()
+			# print(f'is_rebase_in_progress5: {is_rebase_in_progress()}')
 			# print_norm("Unmerged files found. Please resolve conflicts before proceeding.")
-			print(f'is_stashed pull: {is_stashed}')
+			# print(f'is_stashed pull: {is_stashed}')
 			pop_stash(stash_status=is_stashed)
 			is_stashed = False
-			checkBranch()
+			# checkBranch()
 		else:
 			print_norm("Oops! I got {}".format(pull.stderr))
 			quit()
 
 	if is_stashed:
-		checkBranch()
+		# checkBranch()
 		stash_pop = run_subprocess(['git', 'stash', 'pop'])
 		stderr_clean = stash_pop.stderr.replace('\n', ' ')
 		stdout_clean = stash_pop.stdout.replace('\n', ' ')
@@ -737,20 +739,20 @@ def pull(is_main_branch=False):
 
 		if any(any_str in unmerged_pop_text.lower() for any_str in [conflict_str, unmerged_files, resolve_manually]):
 		# if 'CONFLICT' in unmerged_pop_text:
-			checkBranch()
+			# checkBranch()
 			print_norm(f'{stash_pop.stdout}\n:stash_pop.stdout')
 			print_norm(f'{stash_pop.stderr}\n:stash_pop.stderr')
 			# print_norm(stash_pop.stderr)
-			print(f'is_rebase_in_progress6: {is_rebase_in_progress()}')
-			print(f"".rjust(40, 'S'))
+			# print(f'is_rebase_in_progress6: {is_rebase_in_progress()}')
+			# print(f"".rjust(40, 'S'))
 			check_for_conflicts()
-			print(f'is_rebase_in_progress7: {is_rebase_in_progress()}')
-			print(f'is_stashed stash: {is_stashed}')
-			checkBranch()
+			# print(f'is_rebase_in_progress7: {is_rebase_in_progress()}')
+			# print(f'is_stashed stash: {is_stashed}')
+			# checkBranch()
 			pop_stash(stash_status=is_stashed)
 			is_stashed = False
-	print(f'is_stashed final: {is_stashed}')
-	checkBranch()
+	# print(f'is_stashed final: {is_stashed}')
+	# checkBranch()
 
 	print()
 	print_norm("Done...")
@@ -1297,8 +1299,8 @@ def diff(is_main_branch=False):
 		elif fetchChangesFromOrigin.stderr:
 			print_norm(f'{fetchChangesFromOrigin.stderr}:stderr')
 
-	# diff_res = run_subprocess(["git", "diff"] if is_main_branch else ["git", "diff", f"HEAD..origin/{main}"])
-	diff_res = run_subprocess(["git", "diff"] if is_main_branch else ["git", "diff", f"HEAD..origin/fake_main_branch"])
+	diff_res = run_subprocess(["git", "diff"] if is_main_branch else ["git", "diff", f"HEAD..origin/{main}"])
+	# diff_res = run_subprocess(["git", "diff"] if is_main_branch else ["git", "diff", f"HEAD..origin/fake_main_branch"])
 	if diff_res.returncode == 0:
 		if diff_res.stdout:
 			print_stdout(f'{diff_res.stdout}:stdout', status=1)
