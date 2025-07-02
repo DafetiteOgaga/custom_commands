@@ -24,6 +24,7 @@ bumpCCVersion = os.path.join(home_dir, "pyfiles")  # location to bumpCCVersion
 
 # now = datetime.now()
 formatted_date_time = datetime.now().strftime("%H:%M:%S on %a %b %Y")
+formatted_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 def exit2(leave: bool = False):
 	if leave == True:
@@ -244,10 +245,23 @@ def print_stashes(arg=''):
 
 def getUserInput(promptText='Select a choice', allowedEntryArray=None, invalidText='Invalid choice.'):
 	while True:
-		choice = prompt_1ch(promptText).strip().lower()
+		# choice = prompt_1ch(promptText).strip().lower()
+		first = prompt_1ch(promptText).strip()
+
+		# Start of escape sequence (e.g., arrow key)
+		if first == '\x1b':
+			second = prompt_1ch('')  # expected to be '['
+			third = prompt_1ch('')   # expected to be 'A', 'B', 'C', or 'D'
+			print_norm(invalidText)
+			continue  # Skip the rest of the loop and reprompt
+
+		choice = first.lower()
+		print(f'length of choice: {len(choice)}')
+		print(f'choice: {choice}')
 		if choice == 'q':
 			quit()
-		elif allowedEntryArray:
+		# elif len(choice) == 0:
+		if allowedEntryArray:
 			if choice in allowedEntryArray:
 				return choice
 		else:
@@ -257,39 +271,64 @@ def getUserInput(promptText='Select a choice', allowedEntryArray=None, invalidTe
 
 def get_conflicted_files():
 	result = run_subprocess(['git', 'diff', '--name-only', '--diff-filter=U'])
+	print(f'result.stdout: {result.stdout.strip()} xxxxxxxxxx')
 	return result.stdout.strip().splitlines()
 
 def is_binary(file_path):
 	result = run_subprocess(["git", "check-attr", "binary", file_path])
 	return "binary: set" in result.stdout
 
+def get_conflict_label(lines, marker):
+	conflict_label = ''
+	for index, line in enumerate(lines):
+		if line.startswith(marker):
+			# first_conflict_line = line
+			conflict_label = line[len(marker):].strip()  # gets text after marker
+			break
+	return conflict_label
 def show_conflict_lines(file_path):
 	conflict_start = '<<<<<<<'
 	conflict_middle = '======='
 	conflict_end = '>>>>>>>'
 
 	try:
+		mid_index = -1
+		strt_index = -1
 		with open(file_path, 'r', errors='ignore') as f:
 			lines = f.readlines()
 
+		first = get_conflict_label(lines, conflict_start) + ' '
+		second = get_conflict_label(lines, conflict_end) + ' '
+		# last = ''
+
 		filename = f"{('/').join(file_path.split('/')[:-1])}/{BOLD}{MAGENTA}{file_path.split('/')[-1]}{RESET}" if '/' in file_path else f'{BOLD}{MAGENTA}{file_path}{RESET}'
-		print(f"\nConflicts in: {filename}")
+		print(f"\nWhat to do in {filename}")
 
 		in_conflict = False
 		for i, line in enumerate(lines):
 			stripped_line = line.strip()
 
-			if stripped_line.startswith(conflict_start):
-				in_conflict = "remote"
-				print(f"line: {i+1} {stripped_line}	{BOLD}{YELLOW} - changes from {UNDERLINE}{in_conflict.upper()}{RESET}{BOLD}{YELLOW} starts here{RESET}")
+			if i == strt_index:
+				print(f"line: {i+1} {stripped_line}	{BOLD}{YELLOW} - {UNDERLINE}{in_conflict.upper()} {first}starts here{RESET}")
+			elif i == mid_index:
+				print(f"line: {i+1} {stripped_line}	{BOLD}{GREEN} - {UNDERLINE}{in_conflict.upper()} {second}starts here{RESET}")
+			elif stripped_line.startswith(conflict_start):
+				in_conflict = "A"
+				# first = line.split(conflict_start)[-1].strip()
+				strt_index = i + 1
+				print(f"line: {i+1} {stripped_line}")
 			elif stripped_line.startswith(conflict_middle):
-				in_conflict = "local"
-				print(f"line: {i+1} {stripped_line}			{BOLD}{GREEN} - your {UNDERLINE}{in_conflict.upper()}{RESET}{BOLD}{GREEN} changes starts here{RESET}")
+				in_conflict = "B"
+				mid_index = i + 1
+				print(f"line: {i+1} {stripped_line}")
 			elif stripped_line.startswith(conflict_end):
+				# second = line.split(conflict_end)[-1].strip()
 				print(f"line: {i+1} {stripped_line}	{BOLD}{WHITE} - end of conflict{RESET}\n")
 				in_conflict = False
 			elif in_conflict:
 				print(f"line: {i+1} {stripped_line}")
+		print(f"mid_index: {mid_index}")
+		return first, second
 	except FileNotFoundError:
 		print(f"File not found: {file_path}")
 
@@ -338,9 +377,46 @@ def is_rebase_in_progress():
 	# print(f'is_rebase_in_progress: {response}')
 	return response
 
-def clean_conflict_markers(file_path, keep='local'):
+def is_merge_in_progress():
+	result = run_subprocess(['git', 'rev-parse', '--git-dir'])
+	git_dir = result.stdout.strip()
+	response = os.path.exists(os.path.join(git_dir, 'MERGE_HEAD'))
+	return response
+
+def merge_or_rebase_in_progress():
+	if is_rebase_in_progress():
+		run_subprocess(['git', 'rebase', '--continue'])
+	elif is_merge_in_progress():
+		mergePromptText = "(a)uto commit the merges or open your (d)efault editor\nWhat do you want to do? [a/d] >>> "
+		mergeInvalidText = "Invalid choice. Please enter 'a' or 'd' [q to quit]."
+		auto_commit_merge = getUserInput(mergePromptText, allowedEntryArray=['a', 'd'], invalidText=mergeInvalidText)
+		if auto_commit_merge == 'a':
+			print_norm("Auto committing the merges...")
+			commit_merges = run_subprocess(['git', 'commit', '-m', f"Merge resolved on {formatted_now}"])
+			if commit_merges.returncode != 0:
+				print(f'Failed to auto commit changes.')
+				print("Commit the changes manually.")
+				print(f'Error: {commit_merges.stderr}')
+			else:
+				checkBranch()
+				print(f'Auto commit successful.')
+		else:
+			print_norm("Opening default editor for merge commit...")
+			manual_commit = run_subprocess(['git', 'commit'])
+			if manual_commit.returncode != 0:
+				print(f'Failed to open default editor for merge commit.')
+				print("Commit the changes manually.")
+				print(f'Error: {manual_commit.stderr}')
+			else:
+				checkBranch()
+				print(f'Manual commit successful.')
+	else:
+		print_norm("No rebase or merge in progress.")
+		# return True
+
+def clean_conflict_markers(file_path, keep='a'):
 	"""
-	Removes Git conflict markers and keeps either 'local' or 'remote' changes.
+	Removes Git conflict markers and keeps either 'a' or 'b' changes.
 	"""
 	print(f"Cleaning conflict markers in {file_path}, keeping: {keep}")
 	try:
@@ -349,20 +425,20 @@ def clean_conflict_markers(file_path, keep='local'):
 
 		new_lines = []
 		inside_conflict = False
-		keep_local = (keep == 'local')
-		buffer = {'local': [], 'remote': []}
+		keep_local = (keep == 'a')
+		buffer = {'a': [], 'b': []}
 		current = None
 
 		for line in lines:
 			if line.startswith('<<<<<<<'):
 				inside_conflict = True
-				current = 'local'
-				buffer = {'local': [], 'remote': []}
+				current = 'a'
+				buffer = {'a': [], 'b': []}
 			elif line.startswith('=======') and inside_conflict:
-				current = 'remote'
+				current = 'b'
 			elif line.startswith('>>>>>>>') and inside_conflict:
 				inside_conflict = False
-				part_to_keep = buffer['local'] if keep_local else buffer['remote']
+				part_to_keep = buffer['a'] if keep_local else buffer['b']
 				print(f'part_to_keep: {part_to_keep}')
 				new_lines.extend(part_to_keep)
 				current = None
@@ -397,9 +473,9 @@ def checkBranch():
 		It returns True if it is, otherwise False.
 	"""
 	current_branch = run_subprocess(["git", "branch", "--show-current"])
-	return f"you are currently in {current_branch.stdout.strip()} branch"
+	print(f"you are currently in {current_branch.stdout or current_branch.stderr} branch")
 
-def resolve_conflict(file_path, keep='local', rebase_in_progress=None):
+def resolve_conflict(file_path, keep='a'):
 	print(f"keep arg received: {keep}")
 	checkBranch()
 	print(f'is_rebase_in_progress3: {is_rebase_in_progress()}')
@@ -407,10 +483,11 @@ def resolve_conflict(file_path, keep='local', rebase_in_progress=None):
 	marker = check_for_marker_in_file(file_path)
 	print(f"marker: {marker}")
 	if marker:
-		print("❗ Conflict markers still in file — fallback to manual cleaning.")
+		print("❗ Conflict markers in file — cleaning.")
 		success = clean_conflict_markers(file_path, keep=keep)
 		if success:
 			checkBranch()
+			print("staging file after cleaning conflict markers...")
 			add_result = run_subprocess(['git', 'add', file_path])
 			if add_result.returncode != 0:
 				print(f'Failed to add {file_path} to staging area')
@@ -424,13 +501,14 @@ def resolve_conflict(file_path, keep='local', rebase_in_progress=None):
 	checkBranch()
 	return True
 
-def check_for_conflicts(branch=None, rebase_in_progress=True):
+def check_for_conflicts():
 	print()
 	print_norm("Oopsi! Merge conflicts detected...")
 	# print_norm(f"Pull unsuccessful. YYYYY{conflictText}YYYYY")
 
 	# print(f'{print_stashes(33333)}')
 	conflicted_files = get_conflicted_files()
+	print(f'conflicted_files: {conflicted_files}')
 	checkBranch()
 
 	number_of_conflicted_files = len(conflicted_files)
@@ -445,18 +523,21 @@ def check_for_conflicts(branch=None, rebase_in_progress=True):
 		# 	# binary file — prompt user
 		# 	choice = input(f"Binary conflict in {file}. Keep (l)ocal or (r)emote? ").strip().lower()
 		# 	resolve_conflict(file, 'local' if choice == 'l' else 'remote')
+		print(f'file: {file}')
 		filename = f"{('/').join(file.split('/')[:-1])}/{BOLD}{BLUE}{file.split('/')[-1]}{RESET}" if '/' in file else f'{BOLD}{BLUE}{file}{RESET}'
-		promptText = f"Conflict in {filename}.\nKeep (l)ocal or (r)emote\nq - quit\nWhat do you want to do? >>> "
-		invalidText = "Invalid choice. Please enter 'l' for local or 'r' for remote or q to quit."
+		print(f'filename: {filename}')
 		if not is_binary(file):
-			show_conflict_lines(file)
-		choice = getUserInput(promptText, allowedEntryArray=['l', 'r'], invalidText=invalidText)
+			first, second = show_conflict_lines(file)
+		promptText = f"Conflict in {filename}. Keep A({first}) or B({second})\nq - quit\nWhat do you want to do [a/b]? >>> "
+		invalidText = "Invalid choice. Please enter 'a' or 'b' [q to quit]."
+		choice = getUserInput(promptText, allowedEntryArray=['a', 'b'], invalidText=invalidText)
 		# print(f"choice: X{choice}X #####")
 		# print(f'file: {file}')
 		checkBranch()
 		print(f'choice: {choice}')
 		print(f'is_rebase_in_progress2: {is_rebase_in_progress()}')
-		is_conflict_resolved = resolve_conflict(file, keep='local' if choice == 'l' else 'remote', rebase_in_progress=rebase_in_progress)
+		is_conflict_resolved = resolve_conflict(file, keep='a' if choice == 'a' else 'b')
+		
 		print(f'is_conflict_resolved: {is_conflict_resolved}')
 		print(f"Resolved conflict in {filename} by keeping {'local' if choice == 'l' else 'remote'} changes.")
 		# resolve_conflict(file, keep='local' if choice == 'l' else 'remote')
@@ -465,7 +546,18 @@ def check_for_conflicts(branch=None, rebase_in_progress=True):
 		is_conflicts_resolved.append(is_conflict_resolved)
 		# 	choice = getUserInput(promptText, allowedEntryArray=['l', 'r'], invalidText=invalidText)
 		# 	resolve_conflict(file, keep='local' if choice == 'l' else 'remote')
-	# if all(is_conflicts_resolved) == True:
+	print("out of the loop...")
+	if all(is_conflicts_resolved) == True:
+		print_norm("All conflicts resolved successfully.")
+		print_norm("continuing with the rebase or merge process.")
+		merge_or_rebase_in_progress()
+
+	else:
+		print_norm("Some conflicts were not resolved successfully. Please check the files manually.")
+		print_norm("You can try running 'git status' to see the current state of your repository.")
+		print_norm("Exiting...")
+		quit("q")
+	print("exiting..."); sys.exit()
 	# 	checkBranch()
 	# 	run_subprocess(["rm", "-fr", f"{root_repo}/.git/rebase-merge"])
 	# 	checkoutBranch = run_subprocess(["git", "checkout", branch])
@@ -499,20 +591,18 @@ def check_for_conflicts(branch=None, rebase_in_progress=True):
 
 	print()
 	conflictSuccess = 'Successful! conflicts resolved.'
-	print(f'rebase_in_progress: {rebase_in_progress} #####XXXXX#####')
+	print(f'rebase_in_progress: {is_rebase_in_progress()} #####XXXXX#####')
 	# if rebase_in_progress:
 	# Continue rebase after resolving
 	# print(f'{print_stashes(44444)}')
 	cont = 0
-	# silent_commit = run_subprocess(['git', 'commit', '--no-edit'], env=env)
-	# print(f'silent_commit: {silent_commit}')
-	skipEditorInThisSession = run_subprocess(['git', 'config', 'core.editor', 'true'])
-	print(f'skipEditorInThisSession: {skipEditorInThisSession}')
+	# skipEditorInThisSession = run_subprocess(['git', 'config', 'core.editor', 'true'])
+	# print(f'skipEditorInThisSession: {skipEditorInThisSession}')
 	checkMarker2 = check_for_marker_in_file(comfile)
 	print(f"checkMarker2: {checkMarker2}")
 	if is_rebase_in_progress():
 		checkBranch()
-		cont = run_subprocess(['git', 'rebase', '--continue'], env=env)
+		cont = run_subprocess(['git', 'rebase', '--continue'])
 		print_norm(f"rebase continue stdout: {cont.stdout}")
 		print_norm(f"rebase continue stderr: {cont.stderr}")
 		print_norm(f"rebase continue returncode: {cont.returncode}")
@@ -577,6 +667,9 @@ def pull(is_main_branch=False):
 	# print_norm(f"stdout: {pull.stdout}")
 	# print_norm(f"stderr: {pull.stderr}")
 
+	conflict_str = "CONFLICT (content)".lower()
+	unmerged_files = "you have unmerged files".lower()
+	resolve_manually = "Resolve all conflicts manually".lower()
 
 	is_stashed and print_norm("adding local changes ontop of update...")
 	checkBranch()
@@ -586,22 +679,22 @@ def pull(is_main_branch=False):
 		# stderr_content = map(lambda x: x, pull.stderr)
 		# print('type of stderr:', type(pull.stderr))
 		# print(pull.stderr.replace('\n', ' '))
-		unmerged_text = pull.stderr.replace('\n', ' ')
-		print(f"".rjust(30, 'P'))
-		if 'you have unmerged files'.lower() in unmerged_text.lower() or 'CONFLICT' in unmerged_text or 'Resolve all conflicts manually'.lower() in unmerged_text.lower():
+		unmerged_text = "{} {}".format(pull.stderr.replace('\n', ' '), pull.stdout.replace('\n', ' '))
+		print(f"".rjust(40, 'P'))
+		if any(any_str in unmerged_text.lower() for any_str in [conflict_str, unmerged_files, resolve_manually]):
 			print_norm(f'{pull.stdout}\n:pull.stdout')
 			print_norm(f'{pull.stderr}\n:pull.stderr')
 			print(f'is_rebase_in_progress1: {is_rebase_in_progress()}')
 			# print_norm(pull.stderr)
-			# checkBranch()
-			# check_for_conflicts(branch=current_branch_name)
-			# checkBranch()
-			# print(f'is_rebase_in_progress5: {is_rebase_in_progress()}')
+			checkBranch()
+			check_for_conflicts()
+			checkBranch()
+			print(f'is_rebase_in_progress5: {is_rebase_in_progress()}')
 			# print_norm("Unmerged files found. Please resolve conflicts before proceeding.")
-			# print(f'is_stashed pull: {is_stashed}')
-			# pop_stash(stash_status=is_stashed)
-			# is_stashed = False
-			# checkBranch()
+			print(f'is_stashed pull: {is_stashed}')
+			pop_stash(stash_status=is_stashed)
+			is_stashed = False
+			checkBranch()
 		else:
 			print_norm("Oops! I got {}".format(pull.stderr))
 			quit()
@@ -614,20 +707,20 @@ def pull(is_main_branch=False):
 		unmerged_pop_text = f"{stderr_clean} {stdout_clean}"
 		# print_norm(f"GGGGG{unmerged_pop_text}GGGGG")
 
-		if 'you have unmerged files'.lower() in unmerged_pop_text.lower() or 'CONFLICT' in unmerged_pop_text or 'Resolve all conflicts manually'.lower() in unmerged_pop_text.lower():
+		if any(any_str in unmerged_pop_text.lower() for any_str in [conflict_str, unmerged_files, resolve_manually]):
 		# if 'CONFLICT' in unmerged_pop_text:
 			checkBranch()
 			print_norm(f'{stash_pop.stdout}\n:stash_pop.stdout')
 			print_norm(f'{stash_pop.stderr}\n:stash_pop.stderr')
 			# print_norm(stash_pop.stderr)
 			print(f'is_rebase_in_progress6: {is_rebase_in_progress()}')
-			print(f"".rjust(30, 'S'))
-			# check_for_conflicts(branch=current_branch_name, rebase_in_progress=False)
-			# print(f'is_rebase_in_progress7: {is_rebase_in_progress()}')
-			# print(f'is_stashed stash: {is_stashed}')
-			# checkBranch()
-			# pop_stash(stash_status=is_stashed)
-			# is_stashed = False
+			print(f"".rjust(40, 'S'))
+			check_for_conflicts()
+			print(f'is_rebase_in_progress7: {is_rebase_in_progress()}')
+			print(f'is_stashed stash: {is_stashed}')
+			checkBranch()
+			pop_stash(stash_status=is_stashed)
+			is_stashed = False
 	print(f'is_stashed final: {is_stashed}')
 	checkBranch()
 
