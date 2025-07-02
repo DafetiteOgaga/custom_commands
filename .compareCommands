@@ -108,3 +108,8 @@ echo -e "\n$FOLDER Extra Files/Dirs in $COMMAND_DIR:"
 printf '  - %s\n' "${extra_files[@]}"
 
 # echo "fake main master2"
+# CHECK=$'\u2713'
+# CROSS=$'\u2717'
+# FOLDER=$'\U1F4C1'
+# MEMO=$'\U1F4DD'
+# SMILEY=$'\u263A'
