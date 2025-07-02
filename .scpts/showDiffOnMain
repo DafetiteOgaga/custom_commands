@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
-from pyfiles.git_codes import show_diff_from_main_or_master
+from pyfiles.git_codes import diff
 
-show_diff_from_main_or_master()
+diff(is_main_branch=True)
+# from pyfiles.git_codes import show_diff_from_main_or_master
+
+# show_diff_from_main_or_master()
 
