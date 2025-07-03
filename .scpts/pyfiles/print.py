@@ -27,7 +27,8 @@ def print_stdout(stdout: str, index: int=0, serial_numbered: int=0, status: int=
 	# 	std_list = []
 	# else:
 	# 	std_list = (stdout.split("\n"))[:-1]
-	std_list = std_list = [] if stdout == None else (stdout.split("\n"))[:-1]
+	# std_list = std_list = [] if stdout == None else (stdout.split("\n"))[:-1]
+	std_list = [] if stdout == None else stdout.strip().split("\n")
 	i = 0
 	for_untrack = 0
 	status_line = None
