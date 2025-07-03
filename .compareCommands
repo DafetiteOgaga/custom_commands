@@ -107,5 +107,5 @@ printf '  - %s\n' "${missing_files[@]}"
 echo -e "\n$FOLDER Extra Files/Dirs in $COMMAND_DIR:"
 printf '  - %s\n' "${extra_files[@]}"
 
-# echo "fassnnssxcnqskewj maqwin master2"
+# echo "fassnnssxcneeeqskewj maqwin master2"
 # CHECK=$'sssnssnqnn\u2w7xqm13'
