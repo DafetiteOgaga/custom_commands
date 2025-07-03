@@ -8,7 +8,7 @@ from pyfiles.print import print_stdout, write_to_file, backward_search
 from pyfiles.print import print_norm
 from pyfiles.configure_settings_py import compile_dir_list, list_filter, check_for_venv_or_node_modules
 from pyfiles.colors import *
-from pyfiles.subprocessfxn import run_subprocess, run_subprocess_cmd_alone, run_interactive_subprocess, subprocess_for_pull_command
+from pyfiles.subprocessfxn import run_subprocess, run_subprocess_cmd_alone, run_interactive_subprocess, subprocess_for_pull_command, run_subprocess_live
 try:
 	from .colors import *
 except ImportError:
@@ -268,18 +268,19 @@ def getUserInput(promptText='Select a choice', allowedEntryArray=None, invalidTe
 			if choice:
 				return choice
 		print_norm(invalidText)
+		print()
 
-def check_for_marker_in_file(file_path):
-	"""Check if conflict markers are present in the file."""
-	try:
-		with open(file_path, 'r') as f:
-			content = f.read()
-		if any(marker in content for marker in ['<<<<<<<', '=======', '>>>>>>>']):
-			return True
-		return False
-	except Exception as e:
-		print(f"Error reading file {file_path}: {e}")
-		return False
+# def check_for_marker_in_file(file_path):
+# 	"""Check if conflict markers are present in the file."""
+# 	try:
+# 		with open(file_path, 'r') as f:
+# 			content = f.read()
+# 		if any(marker in content for marker in ['<<<<<<<', '=======', '>>>>>>>']):
+# 			return True
+# 		return False
+# 	except Exception as e:
+# 		print(f"Error reading file {file_path}: {e}")
+# 		return False
 ############################################################################
 def get_conflicted_files():
 	code, out, _ = subprocess_for_pull_command("git diff --name-only --diff-filter=U")
@@ -300,28 +301,37 @@ def get_conflicted_files():
 	# return cleaned_list_of_conflicted_files
 
 def resolve_conflict(filepath):
+	conflict_start = '<<<<<<<'
+	conflict_middle = '======='
+	conflict_end = '>>>>>>>'
+
 	with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
 		lines = f.readlines()
 
+	a_line = get_conflict_label(lines, conflict_start) + ' '
+	b_line = get_conflict_label(lines, conflict_end) + ' '
 	resolved = []
 	i = 0
 	while i < len(lines):
-		if lines[i].startswith("<<<<<<<"):
+		if lines[i].startswith(conflict_start):
 			version_a = []
 			version_b = []
 			i += 1
-			while i < len(lines) and not lines[i].startswith("======="):
+			while i < len(lines) and not lines[i].startswith(conflict_middle):
 				version_a.append(lines[i])
 				i += 1
 			i += 1  # Skip the =======
-			while i < len(lines) and not lines[i].startswith(">>>>>>>"):
+			while i < len(lines) and not lines[i].startswith(conflict_end):
 				version_b.append(lines[i])
 				i += 1
 			i += 1  # Skip the >>>>>>>
-			print("\nConflict detected in file:", filepath)
-			print("A) Your version:\n", "".join(version_a))
-			print("B) Incoming version:\n", "".join(version_b))
-			choice = input("Choose version to keep (A/B): ").strip().lower()
+			# print("\nConflict detected in file:", filepath)
+			print(f"{a_line} (A) or {b_line} (B)?")
+			# print(f"B ({b_line}) version:")
+			promptText = "Choose version to keep (A/B) >>> "
+			choice_options = ['a', 'b']
+			invalidText = "Invalid choice. Please enter 'A' or 'B', [q to quit]."
+			choice = getUserInput(promptText=promptText, allowedEntryArray=choice_options, invalidText=invalidText)
 			if choice == 'b':
 				resolved.extend(version_b)
 			else:
@@ -332,7 +342,7 @@ def resolve_conflict(filepath):
 
 	with open(filepath, 'w', encoding='utf-8') as f:
 		f.writelines(resolved)
-	subprocess.run(['git', 'add', filepath])
+	run_subprocess(['git', 'add', filepath])
 
 
 # def resolve_conflict(file_path, keep='a'):
@@ -360,62 +370,6 @@ def resolve_conflict(filepath):
 
 
 def show_conflict_blocks(filepath):
-	print(f"\n📝 Conflict in {filepath}:")
-	with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
-		lines = f.readlines()
-
-	i = 0
-	while i < len(lines):
-		if lines[i].startswith("<<<<<<<"):
-			print("======= BEGIN CONFLICT =======")
-			while i < len(lines) and not lines[i].startswith("======="):
-				print(lines[i].rstrip())
-				i += 1
-			print("======= VS =======")
-			while i < len(lines) and not lines[i].startswith(">>>>>>>"):
-				print(lines[i].rstrip())
-				i += 1
-			print("======== END CONFLICT ========")
-		i += 1
-
-def check_and_resolve_conflicts():
-	conflicted_files = get_conflicted_files()
-	if not conflicted_files:
-		print("✅ No merge conflicts detected.")
-		return
-
-	print("\n⚠️ Merge conflicts found in the following files:")
-	for f in conflicted_files:
-		print(f" - {f}")
-		show_conflict_blocks(f)
-
-	for f in conflicted_files:
-		resolve_conflict(f)
-
-	print("\n✅ All conflicts resolved and staged.")
-	if os.path.exists(".git/MERGE_HEAD"):
-		subprocess.run(["git", "commit"], check=True)
-		print("✅ Merge commit completed.")
-	elif os.path.exists(".git/rebase-merge") or os.path.exists(".git/rebase-apply"):
-		subprocess.run(["git", "rebase", "--continue"], check=True)
-		print("✅ Rebase continued.")
-
-############################################################################
-
-def is_binary(file_path):
-	result = run_subprocess(["git", "check-attr", "binary", file_path])
-	return "binary: set" in result.stdout
-
-def get_conflict_label(lines, marker):
-	conflict_label = ''
-	for index, line in enumerate(lines):
-		if line.startswith(marker):
-			# first_conflict_line = line
-			conflict_label = line[len(marker):].strip()  # gets text after marker
-			break
-	return conflict_label
-
-def show_conflict_lines(file_path):
 	conflict_start = '<<<<<<<'
 	conflict_middle = '======='
 	conflict_end = '>>>>>>>'
@@ -423,14 +377,15 @@ def show_conflict_lines(file_path):
 	try:
 		mid_index = -1
 		strt_index = -1
-		with open(file_path, 'r', errors='ignore') as f:
+		with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
 			lines = f.readlines()
 
 		first = get_conflict_label(lines, conflict_start) + ' '
 		second = get_conflict_label(lines, conflict_end) + ' '
 		# last = ''
 
-		filename = f"{('/').join(file_path.split('/')[:-1])}/{BOLD}{MAGENTA}{file_path.split('/')[-1]}{RESET}" if '/' in file_path else f'{BOLD}{MAGENTA}{file_path.split(".")[-1]}{RESET}'
+		# print(f'filepath: {filepath}')
+		filename = f"{('/').join(filepath.split('/')[:-1])}/{BOLD}{MAGENTA}{filepath.split('/')[-1]}{RESET}" if '/' in filepath else f'{BOLD}{MAGENTA}{filepath.split(".")[-1] if filepath.startswith(".") else filepath}{RESET}'
 		print(f"\nDetails of conflict in {filename}:")
 
 		in_conflict = False
@@ -438,9 +393,9 @@ def show_conflict_lines(file_path):
 			stripped_line = line.strip()
 
 			if i == strt_index:
-				print(f"line: {i+1} {stripped_line}	{BOLD}{YELLOW} <- {UNDERLINE}{in_conflict.upper()} {first}starts here{RESET}")
+				print(f"line: {i+1} {stripped_line}	{BOLD}{YELLOW} <- {UNDERLINE}{first}starts here{RESET}")
 			elif i == mid_index:
-				print(f"line: {i+1} {stripped_line}	{BOLD}{GREEN} <- {UNDERLINE}{in_conflict.upper()} {second}starts here{RESET}")
+				print(f"line: {i+1} {stripped_line}	{BOLD}{GREEN} <- {UNDERLINE}{second}starts here{RESET}")
 			elif stripped_line.startswith(conflict_start):
 				in_conflict = "A"
 				# first = line.split(conflict_start)[-1].strip()
@@ -457,14 +412,120 @@ def show_conflict_lines(file_path):
 			elif in_conflict:
 				print(f"line: {i+1} {stripped_line}")
 		# print(f"mid_index: {mid_index}")
-		return first, second
-	except FileNotFoundError:
-		print(f"File not found: {file_path}")
+		# return first, second
 
-def pop_stash(stash_resp=None, stash_status=False):
-	if stash_status:
-		pop_top_stash = run_subprocess(['git', 'stash', 'pop'])
-		stashList = run_subprocess(['git', 'stash', 'list'])
+	# print(f"\n📝 Conflict in {filepath}:")
+	# with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+	# 	lines = f.readlines()
+
+	# i = 0
+	# while i < len(lines):
+	# 	if lines[i].startswith("<<<<<<<"):
+	# 		print("======= BEGIN CONFLICT =======")
+	# 		while i < len(lines) and not lines[i].startswith("======="):
+	# 			print(lines[i].rstrip())
+	# 			i += 1
+	# 		print("======= VS =======")
+	# 		while i < len(lines) and not lines[i].startswith(">>>>>>>"):
+	# 			print(lines[i].rstrip())
+	# 			i += 1
+	# 		print("======== END CONFLICT ========")
+	# 	i += 1
+	except FileNotFoundError:
+		print(f"File not found: {filepath}")
+
+def check_and_resolve_conflicts():
+	conflicted_files = get_conflicted_files()
+	if not conflicted_files:
+		print("No merge conflicts detected.")
+		return
+	length_of_conflicted_files = len(conflicted_files)
+	add_s = 's' if length_of_conflicted_files > 1 else ''
+	print(f"\nFound {length_of_conflicted_files} conflicted file{add_s}:")
+	for f in conflicted_files:
+		if is_binary(f):
+			print(f"Skipping binary file: {f} (cannot resolve textually)")
+			continue
+
+		# print(f" - {f}")
+		show_conflict_blocks(f)
+
+	# for f in conflicted_files:
+		resolve_conflict(f)
+
+	print("\nAll conflicts resolved and staged.")
+	if os.path.exists(".git/MERGE_HEAD"):
+		run_subprocess(["git", "commit"], check=True)
+		print("Merge commit completed.")
+	elif os.path.exists(".git/rebase-merge") or os.path.exists(".git/rebase-apply"):
+		run_subprocess(["git", "rebase", "--continue"], check=True)
+		print("Rebase continued.")
+
+def get_conflict_label(lines, marker):
+	conflict_label = ''
+	for index, line in enumerate(lines):
+		if line.startswith(marker):
+			# first_conflict_line = line
+			conflict_label = line[len(marker):].strip()  # gets text after marker
+			break
+	return conflict_label
+
+def is_binary(file_path):
+	result = run_subprocess(["git", "check-attr", "binary", file_path])
+	return "binary: set" in result.stdout
+############################################################################
+
+
+# def show_conflict_lines(file_path):
+# 	conflict_start = '<<<<<<<'
+# 	conflict_middle = '======='
+# 	conflict_end = '>>>>>>>'
+
+# 	try:
+# 		mid_index = -1
+# 		strt_index = -1
+# 		with open(file_path, 'r', errors='ignore') as f:
+# 			lines = f.readlines()
+
+# 		first = get_conflict_label(lines, conflict_start) + ' '
+# 		second = get_conflict_label(lines, conflict_end) + ' '
+# 		# last = ''
+
+# 		filename = f"{('/').join(file_path.split('/')[:-1])}/{BOLD}{MAGENTA}{file_path.split('/')[-1]}{RESET}" if '/' in file_path else f'{BOLD}{MAGENTA}{file_path.split(".")[-1]}{RESET}'
+# 		print(f"\nDetails of conflict in {filename}:")
+
+# 		in_conflict = False
+# 		for i, line in enumerate(lines):
+# 			stripped_line = line.strip()
+
+# 			if i == strt_index:
+# 				print(f"line: {i+1} {stripped_line}	{BOLD}{YELLOW} <- {UNDERLINE}{in_conflict.upper()} {first}starts here{RESET}")
+# 			elif i == mid_index:
+# 				print(f"line: {i+1} {stripped_line}	{BOLD}{GREEN} <- {UNDERLINE}{in_conflict.upper()} {second}starts here{RESET}")
+# 			elif stripped_line.startswith(conflict_start):
+# 				in_conflict = "A"
+# 				# first = line.split(conflict_start)[-1].strip()
+# 				strt_index = i + 1
+# 				print(f"line: {i+1} {stripped_line}")
+# 			elif stripped_line.startswith(conflict_middle):
+# 				in_conflict = "B"
+# 				mid_index = i + 1
+# 				print(f"line: {i+1} {stripped_line}")
+# 			elif stripped_line.startswith(conflict_end):
+# 				# second = line.split(conflict_end)[-1].strip()
+# 				print(f"line: {i+1} {stripped_line}	{BOLD}{WHITE} <- end of conflict{RESET}\n")
+# 				in_conflict = False
+# 			elif in_conflict:
+# 				print(f"line: {i+1} {stripped_line}")
+# 		# print(f"mid_index: {mid_index}")
+# 		return first, second
+# 	except FileNotFoundError:
+# 		print(f"File not found: {file_path}")
+
+# def pop_stash(stash_resp=None, stash_status=False):
+# 	if stash_status:
+# 		pop_top_stash = run_subprocess(['git', 'stash', 'pop'])
+# 		stashList = run_subprocess(['git', 'stash', 'list'])
 
 def is_rebase_in_progress():
 	result = run_subprocess(['git', 'rev-parse', '--git-dir'])
@@ -585,118 +646,118 @@ def merge_or_rebase_in_progress():
 		# print_norm("No rebase or merge in progress.")
 		# return True
 
-def clean_conflict_markers(file_path, keep='a'):
-	"""
-	Removes Git conflict markers and keeps either 'a' or 'b' changes.
-	"""
-	# print(f"Cleaning conflict markers in {file_path}, keeping: {keep}")
-	try:
-		with open(file_path, 'r') as f:
-			lines = f.readlines()
+# def clean_conflict_markers(file_path, keep='a'):
+# 	"""
+# 	Removes Git conflict markers and keeps either 'a' or 'b' changes.
+# 	"""
+# 	# print(f"Cleaning conflict markers in {file_path}, keeping: {keep}")
+# 	try:
+# 		with open(file_path, 'r') as f:
+# 			lines = f.readlines()
 
-		new_lines = []
-		inside_conflict = False
-		keep_local = (keep == 'a')
-		buffer = {'a': [], 'b': []}
-		current = None
+# 		new_lines = []
+# 		inside_conflict = False
+# 		keep_local = (keep == 'a')
+# 		buffer = {'a': [], 'b': []}
+# 		current = None
 
-		for line in lines:
-			if line.startswith('<<<<<<<'):
-				inside_conflict = True
-				current = 'a'
-				buffer = {'a': [], 'b': []}
-			elif line.startswith('=======') and inside_conflict:
-				current = 'b'
-			elif line.startswith('>>>>>>>') and inside_conflict:
-				inside_conflict = False
-				part_to_keep = buffer['a'] if keep_local else buffer['b']
-				# print(f'part_to_keep: {part_to_keep}')
-				new_lines.extend(part_to_keep)
-				current = None
-			elif inside_conflict and current:
-				buffer[current].append(line)
-			else:
-				new_lines.append(line)
+# 		for line in lines:
+# 			if line.startswith('<<<<<<<'):
+# 				inside_conflict = True
+# 				current = 'a'
+# 				buffer = {'a': [], 'b': []}
+# 			elif line.startswith('=======') and inside_conflict:
+# 				current = 'b'
+# 			elif line.startswith('>>>>>>>') and inside_conflict:
+# 				inside_conflict = False
+# 				part_to_keep = buffer['a'] if keep_local else buffer['b']
+# 				# print(f'part_to_keep: {part_to_keep}')
+# 				new_lines.extend(part_to_keep)
+# 				current = None
+# 			elif inside_conflict and current:
+# 				buffer[current].append(line)
+# 			else:
+# 				new_lines.append(line)
 
-		with open(file_path, 'w') as f:
-			f.writelines(new_lines)
+# 		with open(file_path, 'w') as f:
+# 			f.writelines(new_lines)
 
-		# print(f"✅ Conflict markers removed and '{keep}' version kept.")
-		return True
-	except Exception as e:
-		print(f"❌ Failed to clean conflict markers: {e}")
-		return False
+# 		# print(f"✅ Conflict markers removed and '{keep}' version kept.")
+# 		return True
+# 	except Exception as e:
+# 		print(f"❌ Failed to clean conflict markers: {e}")
+# 		return False
 
-def checkBranch():
-	"""This function checks if the current branch is main or master.
-		It returns True if it is, otherwise False.
-	"""
-	current_branch = run_subprocess(["git", "branch", "--show-current"])
-	print(f"you are currently in {current_branch.stdout or current_branch.stderr} branch")
+# def checkBranch():
+# 	"""This function checks if the current branch is main or master.
+# 		It returns True if it is, otherwise False.
+# 	"""
+# 	current_branch = run_subprocess(["git", "branch", "--show-current"])
+# 	print(f"you are currently in {current_branch.stdout or current_branch.stderr} branch")
 
-def check_for_conflicts():
-	conflicted_files = get_conflicted_files()
-	# print(f'conflicted_files: {conflicted_files}')
-	if conflicted_files:
-		print()
-		print_norm("Oopsi! Merge conflicts detected...")
-		# print_norm(f"Pull unsuccessful. YYYYY{conflictText}YYYYY")
+# def check_for_conflicts():
+# 	conflicted_files = get_conflicted_files()
+# 	# print(f'conflicted_files: {conflicted_files}')
+# 	if conflicted_files:
+# 		print()
+# 		print_norm("Oopsi! Merge conflicts detected...")
+# 		# print_norm(f"Pull unsuccessful. YYYYY{conflictText}YYYYY")
 
-		# print(f'{print_stashes(33333)}')
-		# checkBranch()
+# 		# print(f'{print_stashes(33333)}')
+# 		# checkBranch()
 
-		number_of_conflicted_files = len(conflicted_files)
-		append_s = 's' if number_of_conflicted_files > 1 else ''
-		print_norm(f"Found {number_of_conflicted_files} conflicted file{append_s}.")
-		# print()
-		comfile = None
-		is_conflicts_resolved = []
-		for file in conflicted_files:
-			comfile = file
-			# if file.endswith('.png') or file.endswith('.jpg') or file.endswith('.jpeg') or file.endswith('.pdf') or file.endswith('.docx'):
-			# 	# binary file — prompt user
-			# 	choice = input(f"Binary conflict in {file}. Keep (l)ocal or (r)emote? ").strip().lower()
-			# 	resolve_conflict(file, 'local' if choice == 'l' else 'remote')
-			# print(f'file: {file}')
-			filename = f"{('/').join(file.split('/')[:-1])}/{BOLD}{BLUE}{file.split('/')[-1]}{RESET}" if '/' in file else f'{BOLD}{BLUE}{file.split(".")[-1]}{RESET}'
-			# print(f'filename: {filename}')
-			if not is_binary(file):
-				first, second = show_conflict_lines(file)
-			promptText = f"How do you want to resolve the conflict:\nKeep A-({first}) or B-({second}) [q - quit]\nHow do you wish to proceed [a/b]? >>> "
-			invalidText = "Invalid choice. Please enter 'a' or 'b' [q to quit]."
-			choice = getUserInput(promptText, allowedEntryArray=['a', 'b'], invalidText=invalidText)
-			# print(f"choice: X{choice}X #####")
-			# print(f'file: {file}')
-			# checkBranch()
-			# print(f'choice: {choice}')
-			# print(f'is_rebase_in_progress2: {is_rebase_in_progress()}')
-			is_conflict_resolved = resolve_conflict(file, keep='a' if choice == 'a' else 'b')
+# 		number_of_conflicted_files = len(conflicted_files)
+# 		append_s = 's' if number_of_conflicted_files > 1 else ''
+# 		print_norm(f"Found {number_of_conflicted_files} conflicted file{append_s}.")
+# 		# print()
+# 		comfile = None
+# 		is_conflicts_resolved = []
+# 		for file in conflicted_files:
+# 			comfile = file
+# 			# if file.endswith('.png') or file.endswith('.jpg') or file.endswith('.jpeg') or file.endswith('.pdf') or file.endswith('.docx'):
+# 			# 	# binary file — prompt user
+# 			# 	choice = input(f"Binary conflict in {file}. Keep (l)ocal or (r)emote? ").strip().lower()
+# 			# 	resolve_conflict(file, 'local' if choice == 'l' else 'remote')
+# 			# print(f'file: {file}')
+# 			filename = f"{('/').join(file.split('/')[:-1])}/{BOLD}{BLUE}{file.split('/')[-1]}{RESET}" if '/' in file else f'{BOLD}{BLUE}{file.split(".")[-1]}{RESET}'
+# 			# print(f'filename: {filename}')
+# 			if not is_binary(file):
+# 				first, second = show_conflict_lines(file)
+# 			promptText = f"How do you want to resolve the conflict:\nKeep A-({first}) or B-({second}) [q - quit]\nHow do you wish to proceed [a/b]? >>> "
+# 			invalidText = "Invalid choice. Please enter 'a' or 'b' [q to quit]."
+# 			choice = getUserInput(promptText, allowedEntryArray=['a', 'b'], invalidText=invalidText)
+# 			# print(f"choice: X{choice}X #####")
+# 			# print(f'file: {file}')
+# 			# checkBranch()
+# 			# print(f'choice: {choice}')
+# 			# print(f'is_rebase_in_progress2: {is_rebase_in_progress()}')
+# 			is_conflict_resolved = resolve_conflict(file, keep='a' if choice == 'a' else 'b')
 			
-			# print(f'is_conflict_resolved: {is_conflict_resolved}')
-			print(f"Resolved conflict in {filename} by keeping {'local' if choice == 'l' else 'remote'} changes.")
-			# resolve_conflict(file, keep='local' if choice == 'l' else 'remote')
-			# else:
-			# checkBranch()
-			is_conflicts_resolved.append(is_conflict_resolved)
-			# 	choice = getUserInput(promptText, allowedEntryArray=['l', 'r'], invalidText=invalidText)
-			# 	resolve_conflict(file, keep='local' if choice == 'l' else 'remote')
-		# print("out of the loop...")
-		if all(is_conflicts_resolved) == True:
-			print_norm("All conflicts resolved.")
-			# print_norm("continuing with the rebase or merge process.")
-			merge_or_rebase_in_progress()
+# 			# print(f'is_conflict_resolved: {is_conflict_resolved}')
+# 			print(f"Resolved conflict in {filename} by keeping {'local' if choice == 'l' else 'remote'} changes.")
+# 			# resolve_conflict(file, keep='local' if choice == 'l' else 'remote')
+# 			# else:
+# 			# checkBranch()
+# 			is_conflicts_resolved.append(is_conflict_resolved)
+# 			# 	choice = getUserInput(promptText, allowedEntryArray=['l', 'r'], invalidText=invalidText)
+# 			# 	resolve_conflict(file, keep='local' if choice == 'l' else 'remote')
+# 		# print("out of the loop...")
+# 		if all(is_conflicts_resolved) == True:
+# 			print_norm("All conflicts resolved.")
+# 			# print_norm("continuing with the rebase or merge process.")
+# 			merge_or_rebase_in_progress()
 
-		else:
-			print_norm("Some conflicts were not resolved successfully. Please check the files manually.")
-			print_norm("You can try running 'git status' to see the current state of your repository.")
-			print_norm("Exiting...")
-			quit("q")
-		# print("exiting..."); sys.exit()
-		print()
-		conflictSuccess = 'Successful! conflicts resolved.'
-		print_norm(f"{conflictSuccess}")
-	else:
-		print_norm("Conflicts resolved. Continuing with the process...")
+# 		else:
+# 			print_norm("Some conflicts were not resolved successfully. Please check the files manually.")
+# 			print_norm("You can try running 'git status' to see the current state of your repository.")
+# 			print_norm("Exiting...")
+# 			quit("q")
+# 		# print("exiting..."); sys.exit()
+# 		print()
+# 		conflictSuccess = 'Successful! conflicts resolved.'
+# 		print_norm(f"{conflictSuccess}")
+# 	else:
+# 		print_norm("Conflicts resolved. Continuing with the process...")
 
 #######################################################################
 def check_unstaged_or_untracked():
@@ -724,7 +785,8 @@ def pull(is_main_branch=False):
 
 		# Determine if we need to stash
 		if check_unstaged_or_untracked():
-			print("🔒 Changes detected. Stashing before merge...")
+			print("Local changes detected. Stashing...")
+			print()
 			stash_msg = f"temp-stash-before-merge-{formatted_stash_time}"
 			run_subprocess(['git', 'stash', 'push', '-u', '-m', stash_msg], check=True)
 			stashed = True
@@ -734,20 +796,26 @@ def pull(is_main_branch=False):
 			# stash_msg = ""
 
 		# Merge (do not raise exception on failure)
-		print("🔁 Merging with origin/main...")
-		merge_result = run_subprocess(['git', 'merge', f'origin/{use_branch}'])
+		print(f"Synchronizing origin/{use_branch}...")
+		print()
+		merge_result = run_subprocess_live(['git', 'merge', f'origin/{use_branch}'],
+											stdout=sys.stdout,
+											stderr=sys.stderr)
 		merge_success = merge_result.returncode == 0
 
+		print()
 		if merge_success:
-			print("✅ Merge successful!")
+			print("Successful!")
 		else:
-			print("❌ Merge conflict occurred. Attempting to resolve interactively...")
+			print("Merge conflict occurred. Attempting to resolve interactively...")
 			check_and_resolve_conflicts()
 			merge_success = True  # After successful resolution
 
+		print()
+
 		# Restore stash only if merge was successful
 		if stashed and merge_success:
-			print("🔓 Restoring stashed changes...")
+			print("Restoring stashed changes...")
 			_, stash_list_out, _ = subprocess_for_pull_command('git stash list')
 			stash_id = None
 			for line in stash_list_out.splitlines():
@@ -758,30 +826,28 @@ def pull(is_main_branch=False):
 				try:
 					result = run_subprocess(['git', 'stash', 'pop', stash_id])
 					if result.returncode == 0:
-						print("✅ Stash restored successfully!")
+						print("Restore successful!")
 					else:
-						print("⚠️ Stash pop failed due to conflicts. Your changes are still in:")
-						print(f"    {stash_id}")
-						print("Attempting to help you resolve stash conflicts interactively...")
+						print(f"Restore failed due to conflicts. Your changes are still in: {stash_id}")
+						print("Attempting to help resolve stash conflicts interactively...")
 						check_and_resolve_conflicts()
-						print("✅ Conflict resolution complete for stashed changes.")
+						print("Conflict resolution complete for stashed changes.")
 				except Exception:
-					print("⚠️ Stash pop failed. Please recover manually.")
+					print("Restore failed. Please recover manually in stashes.")
 			else:
-				print("⚠️ Expected stash not found. You may need to restore it manually.")
+				print("Expected stash not found. You may need to restore it manually.")
 
 		# Inform user about stash if merge failed
 		if stashed and not merge_success:
-			print("⚠️ Merge failed. Your changes were stashed as:")
-			print(f"    {stash_msg}")
+			print(f"Operation failed. Your changes were stashed as: {stash_msg}")
 			print("You can recover them with:")
 			print("    git stash list")
 			print("    git stash pop <stash@{{N}}>")
 	except KeyboardInterrupt:
-		print("\n🚫 Interrupted by user")
+		print("\nInterrupted by user")
 		sys.exit(1)
 	except subprocess.CalledProcessError as e:
-		print(f"❌ Command failed: {e.cmd}")
+		print(f"Command failed: {e.cmd}")
 		sys.exit(e.returncode)
 
 #######################################################################
@@ -1420,20 +1486,25 @@ def diff(is_main_branch=False):
 	Args:
 		is_main_branch (bool, optional): Defaults to False.
 	"""
-	if is_main_branch == 1:
-		current_branch_name = view_branch(action=100)
-		main = view_branch(new_branch="main", action=-2)
+	current_branch_name = view_branch(action=100)
+	main = view_branch(new_branch="main", action=-2)
+	use_branch = main if is_main_branch else current_branch_name
+	git_command = ["git", "diff"] if not is_main_branch else ["git", "diff", f"HEAD..origin/{main}"]
+	if is_main_branch:
 		print_norm(f'current branch: {current_branch_name}')
 		print()
 
 		# fetch changes from origin
-		fetchChangesFromOrigin = run_subprocess(["git", "fetch", "origin"])
+		fetchChangesFromOrigin = run_subprocess(["git", "fetch", "origin", use_branch])
 		if fetchChangesFromOrigin.stdout:
 			print_norm(f'{fetchChangesFromOrigin.stdout}:stdout')
 		elif fetchChangesFromOrigin.stderr:
 			print_norm(f'{fetchChangesFromOrigin.stderr}:stderr')
 
-	diff_res = run_subprocess(["git", "diff"] if is_main_branch else ["git", "diff", f"HEAD..origin/{main}"])
+	# print(f'is_main_branch: {is_main_branch}')
+	# print(f'git_command: {git_command}')
+	
+	diff_res = run_subprocess(git_command)
 	# diff_res = run_subprocess(["git", "diff"] if is_main_branch else ["git", "diff", f"HEAD..origin/fake_main_branch"])
 	if diff_res.returncode == 0:
 		if diff_res.stdout:
