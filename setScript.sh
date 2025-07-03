@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250703.0129"
+VERSIONNUMBER="20250703.1533"
 
 # colors and styles
 RESET="\033[0m"
@@ -38,6 +38,19 @@ BRIGHT_WHITE="\033[97m"
 
 # emogi unicode (monochrome)
 CHECK=$'\u2713'
+
+# Define on interruptions and quit
+keyboardInterruption() {
+	local var="$1"
+    echo -e "\n$var"
+    exit 1
+}
+ctrl_c() {
+	echo -e "\nInterrupted by user (Ctrl+C)"
+    exit 1
+}
+# Trap Ctrl+C (SIGINT)
+trap ctrl_c SIGINT
 
 quit() {
 	# exit
@@ -1167,9 +1180,11 @@ while [[ "$UINPUT" != [nN] ]]; do
         fi
 
         read -n 1 -s -r OPTION
-		if [[ "$OPTION" =~ [nNpPqQXx] ]]; then
+		if [[ "$OPTION" == $'\e' ]]; then
+			keyboardInterruption "Arrow keys not allowed."
+		elif [[ "$OPTION" =~ [nNpPqQXx] ]]; then
 			converted_selection="$OPTION"
-		elif [[ "$OPTION" =~ [a-mor-wyzA-MOR-WYZ] ]]; then
+		elif [[ "$OPTION" =~ [^0-9] ]]; then
 			OPTION="z"
 			continue
 		else
@@ -1205,6 +1220,9 @@ while [[ "$UINPUT" != [nN] ]]; do
 				echo -e "Cheers!"
                 exit 0
                 ;;
+			*)
+				keyboardInterruption "Invalid input."
+				;;
         esac
     done
     ((count++))
