@@ -772,6 +772,8 @@ def check_unstaged_or_untracked():
 
 def pull(is_main_branch=False):
 	# Ensure script exits on unhandled error
+	print()
+	print_norm("#### pulling ...################################################")
 	try:
 		current_branch_name = view_branch(action=100)
 		# set back the main branch from fake_main_branch when test is completed
