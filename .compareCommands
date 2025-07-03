@@ -108,4 +108,4 @@ echo -e "\n$FOLDER Extra Files/Dirs in $COMMAND_DIR:"
 printf '  - %s\n' "${extra_files[@]}"
 
 # echo "fassnnssxcneeeqskewj maqwin master2"
-# CHECK=$'sssnssnqnn\u2w7xqm13'
+# CHECK=$'sssnssnqnn\udd2w7xqm13'
