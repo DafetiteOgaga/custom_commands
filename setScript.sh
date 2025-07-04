@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250704.2147"
+VERSIONNUMBER="20250704.2208"
 
 # colors and styles
 RESET="\033[0m"
@@ -813,7 +813,7 @@ update_changes() {
 				sed -i "s|^IGITHUBUSERNAME=.*|$keyUNAME|" "$destination"
 				sed -i "s|^IGITHUBACCESSTOKEN=.*|$keyUTOKEN|" "$destination"
 				sed -i "s|^IGITHUBEMAIL=.*|$keyUEMAIL|" "$destination"
-				echo "Reinserted tokenKey into $(basename $destination)"
+				# echo "Reinserted tokenKey into $(basename $destination)"
 				tokenKey=""
 			fi
 
