@@ -287,20 +287,6 @@ def get_conflicted_files():
 	code, out, _ = subprocess_for_pull_command("git diff --name-only --diff-filter=U")
 	return out.splitlines() if out else []
 
-	# result = run_subprocess(['git', 'diff', '--name-only', '--diff-filter=U'])
-	# # print(f'result.stdout: {result.stdout.strip()} xxxxxxxxx')
-	# list_of_conflicted_files = result.stdout.strip().splitlines()
-	# cleaned_list_of_conflicted_files = []
-	# for check_file in list_of_conflicted_files:
-	# 	checkForMarker = check_for_marker_in_file(check_file)
-	# 	# print(f"check for Marker in {check_file}. is marker: {checkForMarker}")
-	# 	if not checkForMarker:
-	# 		run_subprocess(['git', 'add', check_file])
-	# 		merge_operation()
-	# 		continue
-	# 	cleaned_list_of_conflicted_files.append(check_file)
-	# return cleaned_list_of_conflicted_files
-
 def resolve_conflict(filepath):
 	conflict_start = '<<<<<<<'
 	conflict_middle = '======='
@@ -309,8 +295,8 @@ def resolve_conflict(filepath):
 	with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
 		lines = f.readlines()
 
-	a_line = get_conflict_label(lines, conflict_start) + ' '
-	b_line = get_conflict_label(lines, conflict_end) + ' '
+	a_line = get_conflict_label(lines, conflict_start).strip()
+	b_line = get_conflict_label(lines, conflict_end).strip()
 	resolved = []
 	i = 0
 	while i < len(lines):
@@ -435,7 +421,7 @@ def show_conflict_blocks(filepath):
 	except FileNotFoundError:
 		print_norm(f"File not found: {filepath}")
 
-def check_and_resolve_conflicts():
+def check_and_resolve_conflicts(incoming_branch=None, current_branch=None, is_from_stash=False):
 	conflicted_files = get_conflicted_files()
 	if not conflicted_files:
 		print_norm("No merge conflicts detected.")
@@ -454,13 +440,153 @@ def check_and_resolve_conflicts():
 	# for f in conflicted_files:
 		resolve_conflict(f)
 
-	print_norm("\nAll conflicts resolved and staged.")
-	if os.path.exists(".git/MERGE_HEAD"):
-		run_subprocess(["git", "commit"], check=True)
-		print_norm("Merge commit completed.")
-	elif os.path.exists(".git/rebase-merge") or os.path.exists(".git/rebase-apply"):
-		run_subprocess(["git", "rebase", "--continue"], check=True)
+	print_norm("\nAll conflicts resolved.")
+	if not is_from_stash:
+		return is_from_stash
+	result = run_subprocess(['git', 'rev-parse', '--git-dir'])
+	git_dir = result.stdout.strip()
+	merge_head = os.path.exists(os.path.join(git_dir, 'MERGE_HEAD'))
+	rebase_apply = os.path.exists(os.path.join(git_dir, 'rebase-merge')) or os.path.exists(os.path.join(git_dir, 'rebase-apply'))
+	if merge_head or rebase_apply:
+		unmerged_files = subprocess.check_output(["git", "diff", "--name-only", "--diff-filter=U"]).decode().strip()
+		if unmerged_files:
+			print("❗ Unresolved merge conflicts remain:\n" + unmerged_files)
+			print("❌ Resolve all conflicts and run again.")
+			sys.exit(1)
+	if merge_head:
+		commit_changes(operation_type="merge", incoming_branch=incoming_branch, current_branch=current_branch)
+	elif rebase_apply:
+		commit_changes(operation_type="rebase", incoming_branch=incoming_branch, current_branch=current_branch)
+
+def commit_changes(operation_type="merge", incoming_branch=None, current_branch=None, msg=False):
+	if not incoming_branch and not current_branch:
+		print_norm("No branches specified for commit message.")
+		print_norm("Kind provide the branch names to use in the commit message.")
+		quit('q')
+	commit_message = input(
+		f"Enter a commit message for the {operation_type}.\n"
+		f"- Press Enter to use a default message\n"
+		f"- Type (q) to exit without doing anything\n"
+		f"- Type (a) to abort the {operation_type} operation\n"
+		">>> "
+		).strip()
+	quit(commit_message.lower()) # if q is pressed, exit the operation
+	if commit_message.lower() == 'a':
+		print_norm(f"Aborting {operation_type} operation...")
+		run_subprocess_live(["git", operation_type, "--abort"])
+		print_norm(f"{operation_type.title()} operation aborted.")
+		exit('q')
+	if not commit_message and incoming_branch and current_branch:
+		commit_message = f"{operation_type.title()} remote-tracking branch 'origin/{incoming_branch}' into {current_branch} resolved on {formatted_now}"
+	print()
+	print_norm(f"Using commit message:\n  {commit_message}")
+	print()
+	if msg:
+		return commit_message
+	if operation_type == "merge":
+		run_subprocess_live(["git", "commit", "-m", commit_message])
+		print_norm(f"{operation_type.title()} commit completed.")
+	else:
+		run_subprocess_live(["git", operation_type, "--continue"])
 		print_norm("Rebase continued.")
+
+def is_fast_forward(branch_name=None):
+	fetch_for_base = run_subprocess(["git", "fetch", "origin"])
+	print(f'fetch_for_base output: {fetch_for_base.stdout}')
+	print(f'fetch_for_base stderr: {fetch_for_base.stderr}')
+	print(f'fetch_for_base returncode: {fetch_for_base.returncode}')
+	result = run_subprocess(["git", "merge-base", "--is-ancestor", "HEAD", f"origin/{branch_name}"])
+	print(f"merge-base output: {result.stdout.strip()}")
+	print(f"merge-base returncode: {result.returncode}")
+	print(f"merge-base stderr: {result.stderr.strip()}")
+	if result.returncode == 0:
+		return True  # Fast-forward possible
+	return False     # Not fast-forward (diverged or up-to-date or behind)
+
+def check_merge_type(branch_name):
+	# Compare local and remote branch history
+	result = run_subprocess(["git", "rev-list", "--left-right", "--count", f"HEAD...origin/{branch_name}"])
+	output = result.stdout.strip()
+	# print(f"rev-list output: {output}")
+
+	merge_type = "unknown"
+
+	if not output:
+		return merge_type, None, None
+
+	local_ahead, remote_ahead = map(int, output.split())
+
+	if local_ahead == 0 and remote_ahead > 0:
+		merge_type = "fast-forward"
+		return merge_type, local_ahead, remote_ahead
+	elif local_ahead > 0 and remote_ahead > 0:
+		merge_type = "diverged"
+		# if is_fast_forward(branch_name):
+		# 	merge_type = "fast-forward"
+		# 	return merge_type
+		return merge_type, local_ahead, remote_ahead
+	elif local_ahead == 0 and remote_ahead == 0:
+		merge_type = "up-to-date"
+		return merge_type, local_ahead, remote_ahead
+	else:
+		return merge_type, None, None
+
+def check_for_merge_conflict(branch_name=None):
+	"""Check for merge conflicts when merging a branch into the current branch."""
+	if not branch_name:
+		print_norm("No branch name provided. Cannot check for merge conflicts.")
+		exit('q')
+	merge_type, merge_type_tag, local_ahead, remote_ahead = None, None, None, None
+	merge_type, local_ahead, remote_ahead = check_merge_type(branch_name)
+	# print(f'merge_type: {merge_type}')
+
+	# if merge_type == "up-to-date":
+	# 	merge_type_tag = 'no commit'
+
+	# merge_command = ["git", "merge", "--no-commit", "--no-ff", f"origin/{branch_name}"]
+	check_for_merge_conflicts = None
+	# Check/perform a merge operation/is already in progress
+	if merge_type == "fast-forward":
+		run_subprocess_live(["git", "merge", "--no-commit", f"origin/{branch_name}"])
+	else:
+		check_for_merge_conflicts = run_subprocess(["git", "merge", "--no-commit", "--no-ff", f"origin/{branch_name}"])
+
+	if check_for_merge_conflicts:
+		stdout = check_for_merge_conflicts.stdout.lower()
+		stderr = check_for_merge_conflicts.stderr.lower()
+		returncode = check_for_merge_conflicts.returncode
+
+		# print(f'check_for_merge_conflicts.stdout: {check_for_merge_conflicts.stdout}')
+		# print(f'check_for_merge_conflicts.stderr: {check_for_merge_conflicts.stderr}')
+		# print(f'check_for_merge_conflicts.returncode: {returncode}')
+
+		# Look for known conflict indicators
+		conflict_keywords = [
+			"automatic merge failed".lower(),
+			"conflict (content)".lower(),
+			"merge conflict".lower()
+		]
+
+		# Combine outputs
+		combined_output = f"{stdout} {stderr}"
+
+		if any(word in combined_output for word in conflict_keywords) or returncode != 0:
+			# print_norm("Merge conflict detected. sending signal for interactive resolution...")
+			# print_norm("Merge conflict detected. Aborting merge to restore original state...")
+			# restore_init_state = run_subprocess(["git", "merge", "--abort"])
+			# print(f'restore_init_state.stdout: {restore_init_state.stdout}')
+			# print(f'restore_init_state.stderr: {restore_init_state.stderr}')
+			# print(f'restore_init_state.returncode: {restore_init_state.returncode}')
+			merge_type_tag = None
+			return True, merge_type, merge_type_tag, local_ahead, remote_ahead
+		if returncode == 0 and "Already up to date".lower() in combined_output.replace('\n', ' ').lower() or merge_type == "up-to-date":
+			# print_norm("No merge conflict detected.")
+			# print(f'returncode: {returncode}')
+			merge_type_tag = 'no commit'
+			return False, merge_type, merge_type_tag, local_ahead, remote_ahead
+
+	# print_norm("No merge conflict detected.")
+	return False, merge_type, merge_type_tag, local_ahead, remote_ahead
 
 def get_conflict_label(lines, marker):
 	conflict_label = ''
@@ -476,58 +602,6 @@ def is_binary(file_path):
 	return "binary: set" in result.stdout
 ############################################################################
 
-
-# def show_conflict_lines(file_path):
-# 	conflict_start = '<<<<<<<'
-# 	conflict_middle = '======='
-# 	conflict_end = '>>>>>>>'
-
-# 	try:
-# 		mid_index = -1
-# 		strt_index = -1
-# 		with open(file_path, 'r', errors='ignore') as f:
-# 			lines = f.readlines()
-
-# 		first = get_conflict_label(lines, conflict_start) + ' '
-# 		second = get_conflict_label(lines, conflict_end) + ' '
-# 		# last = ''
-
-# 		filename = f"{('/').join(file_path.split('/')[:-1])}/{BOLD}{MAGENTA}{file_path.split('/')[-1]}{RESET}" if '/' in file_path else f'{BOLD}{MAGENTA}{file_path.split(".")[-1]}{RESET}'
-# 		print(f"\nDetails of conflict in {filename}:")
-
-# 		in_conflict = False
-# 		for i, line in enumerate(lines):
-# 			stripped_line = line.strip()
-
-# 			if i == strt_index:
-# 				print(f"line: {i+1} {stripped_line}	{BOLD}{YELLOW} <- {UNDERLINE}{in_conflict.upper()} {first}starts here{RESET}")
-# 			elif i == mid_index:
-# 				print(f"line: {i+1} {stripped_line}	{BOLD}{GREEN} <- {UNDERLINE}{in_conflict.upper()} {second}starts here{RESET}")
-# 			elif stripped_line.startswith(conflict_start):
-# 				in_conflict = "A"
-# 				# first = line.split(conflict_start)[-1].strip()
-# 				strt_index = i + 1
-# 				print(f"line: {i+1} {stripped_line}")
-# 			elif stripped_line.startswith(conflict_middle):
-# 				in_conflict = "B"
-# 				mid_index = i + 1
-# 				print(f"line: {i+1} {stripped_line}")
-# 			elif stripped_line.startswith(conflict_end):
-# 				# second = line.split(conflict_end)[-1].strip()
-# 				print(f"line: {i+1} {stripped_line}	{BOLD}{WHITE} <- end of conflict{RESET}\n")
-# 				in_conflict = False
-# 			elif in_conflict:
-# 				print(f"line: {i+1} {stripped_line}")
-# 		# print(f"mid_index: {mid_index}")
-# 		return first, second
-# 	except FileNotFoundError:
-# 		print(f"File not found: {file_path}")
-
-# def pop_stash(stash_resp=None, stash_status=False):
-# 	if stash_status:
-# 		pop_top_stash = run_subprocess(['git', 'stash', 'pop'])
-# 		stashList = run_subprocess(['git', 'stash', 'list'])
-
 def is_rebase_in_progress():
 	result = run_subprocess(['git', 'rev-parse', '--git-dir'])
 	git_dir = result.stdout.strip()
@@ -536,11 +610,26 @@ def is_rebase_in_progress():
 	# print(f'is_rebase_in_progress: {response}')
 	return response
 
-def is_merge_in_progress():
-	result = run_subprocess(['git', 'rev-parse', '--git-dir'])
-	git_dir = result.stdout.strip()
-	response = os.path.exists(os.path.join(git_dir, 'MERGE_HEAD'))
-	return response
+def is_merge_in_progress(check_remote_branch=None):
+	fatal1 = "(MERGE_HEAD exists)".lower()
+	fatal2 = "commit your changes before you merge".lower()
+	check_merge = run_subprocess(["git", "merge", "--no-commit", "--no-ff", f"origin/{check_remote_branch}"])
+	response = "{} {}".format(check_merge.stdout.replace('\n', ' '), check_merge.stderr.replace('\n', ' ')).lower()
+	if fatal1 in response or fatal2 in response:
+		print_norm("Merge in progress. Please resolve conflicts before proceeding.")
+		return True
+	return False
+	# result = run_subprocess(['git', 'rev-parse', '--git-dir'])
+	# git_dir = result.stdout.strip()
+	# response = os.path.exists(os.path.join(git_dir, 'MERGE_HEAD'))
+	# return response
+
+def get_git_state():
+	git_dir = subprocess.check_output(['git', 'rev-parse', '--git-dir']).decode().strip()
+	return {
+		"merge": os.path.exists(os.path.join(git_dir, "MERGE_HEAD")),
+		"rebase": os.path.exists(os.path.join(git_dir, "rebase-merge")) or os.path.exists(os.path.join(git_dir, "rebase-apply"))
+	}
 
 def set_editor():
 	"""Sets the editor for Git commit messages."""
@@ -632,125 +721,12 @@ def merge_operation():
 def merge_or_rebase_in_progress():
 	if is_rebase_in_progress():
 		run_subprocess(['git', 'rebase', '--continue'])
-	elif is_merge_in_progress():
-		merge_operation()
+	# elif is_merge_in_progress():
+	# 	merge_operation()
 	else:
 		pass
 		# print_norm("No rebase or merge in progress.")
 		# return True
-
-# def clean_conflict_markers(file_path, keep='a'):
-# 	"""
-# 	Removes Git conflict markers and keeps either 'a' or 'b' changes.
-# 	"""
-# 	# print(f"Cleaning conflict markers in {file_path}, keeping: {keep}")
-# 	try:
-# 		with open(file_path, 'r') as f:
-# 			lines = f.readlines()
-
-# 		new_lines = []
-# 		inside_conflict = False
-# 		keep_local = (keep == 'a')
-# 		buffer = {'a': [], 'b': []}
-# 		current = None
-
-# 		for line in lines:
-# 			if line.startswith('<<<<<<<'):
-# 				inside_conflict = True
-# 				current = 'a'
-# 				buffer = {'a': [], 'b': []}
-# 			elif line.startswith('=======') and inside_conflict:
-# 				current = 'b'
-# 			elif line.startswith('>>>>>>>') and inside_conflict:
-# 				inside_conflict = False
-# 				part_to_keep = buffer['a'] if keep_local else buffer['b']
-# 				# print(f'part_to_keep: {part_to_keep}')
-# 				new_lines.extend(part_to_keep)
-# 				current = None
-# 			elif inside_conflict and current:
-# 				buffer[current].append(line)
-# 			else:
-# 				new_lines.append(line)
-
-# 		with open(file_path, 'w') as f:
-# 			f.writelines(new_lines)
-
-# 		# print(f"✅ Conflict markers removed and '{keep}' version kept.")
-# 		return True
-# 	except Exception as e:
-# 		print(f"❌ Failed to clean conflict markers: {e}")
-# 		return False
-
-# def checkBranch():
-# 	"""This function checks if the current branch is main or master.
-# 		It returns True if it is, otherwise False.
-# 	"""
-# 	current_branch = run_subprocess(["git", "branch", "--show-current"])
-# 	print(f"you are currently in {current_branch.stdout or current_branch.stderr} branch")
-
-# def check_for_conflicts():
-# 	conflicted_files = get_conflicted_files()
-# 	# print(f'conflicted_files: {conflicted_files}')
-# 	if conflicted_files:
-# 		print()
-# 		print_norm("Oopsi! Merge conflicts detected...")
-# 		# print_norm(f"Pull unsuccessful. YYYYY{conflictText}YYYYY")
-
-# 		# print(f'{print_stashes(33333)}')
-# 		# checkBranch()
-
-# 		number_of_conflicted_files = len(conflicted_files)
-# 		append_s = 's' if number_of_conflicted_files > 1 else ''
-# 		print_norm(f"Found {number_of_conflicted_files} conflicted file{append_s}.")
-# 		# print()
-# 		comfile = None
-# 		is_conflicts_resolved = []
-# 		for file in conflicted_files:
-# 			comfile = file
-# 			# if file.endswith('.png') or file.endswith('.jpg') or file.endswith('.jpeg') or file.endswith('.pdf') or file.endswith('.docx'):
-# 			# 	# binary file — prompt user
-# 			# 	choice = input(f"Binary conflict in {file}. Keep (l)ocal or (r)emote? ").strip().lower()
-# 			# 	resolve_conflict(file, 'local' if choice == 'l' else 'remote')
-# 			# print(f'file: {file}')
-# 			filename = f"{('/').join(file.split('/')[:-1])}/{BOLD}{BLUE}{file.split('/')[-1]}{RESET}" if '/' in file else f'{BOLD}{BLUE}{file.split(".")[-1]}{RESET}'
-# 			# print(f'filename: {filename}')
-# 			if not is_binary(file):
-# 				first, second = show_conflict_lines(file)
-# 			promptText = f"How do you want to resolve the conflict:\nKeep A-({first}) or B-({second}) [q - quit]\nHow do you wish to proceed [a/b]? >>> "
-# 			invalidText = "Invalid choice. Please enter 'a' or 'b' [q to quit]."
-# 			choice = getUserInput(promptText, allowedEntryArray=['a', 'b'], invalidText=invalidText)
-# 			# print(f"choice: X{choice}X #####")
-# 			# print(f'file: {file}')
-# 			# checkBranch()
-# 			# print(f'choice: {choice}')
-# 			# print(f'is_rebase_in_progress2: {is_rebase_in_progress()}')
-# 			is_conflict_resolved = resolve_conflict(file, keep='a' if choice == 'a' else 'b')
-			
-# 			# print(f'is_conflict_resolved: {is_conflict_resolved}')
-# 			print(f"Resolved conflict in {filename} by keeping {'local' if choice == 'l' else 'remote'} changes.")
-# 			# resolve_conflict(file, keep='local' if choice == 'l' else 'remote')
-# 			# else:
-# 			# checkBranch()
-# 			is_conflicts_resolved.append(is_conflict_resolved)
-# 			# 	choice = getUserInput(promptText, allowedEntryArray=['l', 'r'], invalidText=invalidText)
-# 			# 	resolve_conflict(file, keep='local' if choice == 'l' else 'remote')
-# 		# print("out of the loop...")
-# 		if all(is_conflicts_resolved) == True:
-# 			print_norm("All conflicts resolved.")
-# 			# print_norm("continuing with the rebase or merge process.")
-# 			merge_or_rebase_in_progress()
-
-# 		else:
-# 			print_norm("Some conflicts were not resolved successfully. Please check the files manually.")
-# 			print_norm("You can try running 'git status' to see the current state of your repository.")
-# 			print_norm("Exiting...")
-# 			quit("q")
-# 		# print("exiting..."); sys.exit()
-# 		print()
-# 		conflictSuccess = 'Successful! conflicts resolved.'
-# 		print_norm(f"{conflictSuccess}")
-# 	else:
-# 		print_norm("Conflicts resolved. Continuing with the process...")
 
 #######################################################################
 def check_unstaged_or_untracked():
@@ -767,205 +743,137 @@ def pull(is_main_branch=False):
 	# Ensure script exits on unhandled error
 	# print()
 	print_norm("#### pulling ...################################################")
-	try:
-		current_branch_name = view_branch(action=100)
-		main = view_branch(new_branch="main", action=-2)
-		use_branch = main if is_main_branch else current_branch_name
-		stashed = False
-		stash_msg = ""
+	# try:
+	current_branch_name = view_branch(action=100)
+	main = view_branch(new_branch="main", action=-2)
+	use_branch = main if is_main_branch else current_branch_name
+	stashed = False
+	stash_msg = ""
 
-		is_main_branch and print_norm(f"Pulling updates from {main} branch\n")
+	print_norm(f"Pulling updates from origin/{use_branch}\n")
 
-		# Fetch from origin
-		run_subprocess(['git', 'fetch', 'origin', use_branch], check=True)
+	# Fetch from origin
+	fetch_from_origin = run_subprocess(['git', 'fetch', 'origin'])
+	# print(f'fetch_from_origin.stdout: {fetch_from_origin.stdout}')
+	# print(f'fetch_from_origin.stderr: {fetch_from_origin.stderr}')
+	# print(f'fetch_from_origin.returncode: {fetch_from_origin.returncode}')
 
-		# Determine if we need to stash
-		if check_unstaged_or_untracked():
-			print_norm("Local changes detected. Stashing...")
-			# print()
-			stash_msg = f"temp-stash-before-merge-{formatted_stash_time}"
-			run_subprocess(['git', 'stash', 'push', '-u', '-m', stash_msg], check=True)
-			stashed = True
-		# else:
-		# 	pass
-			# stashed = False
-			# stash_msg = ""
+	# Determine if we need to stash
+	if check_unstaged_or_untracked():
+		print_norm("Local changes detected. Stashing...")
+		# print()
+		stash_msg = f"temp-stash-before-merge-{formatted_stash_time}"
+		git_stash = run_subprocess(['git', 'stash', 'push', '-u', '-m', stash_msg])
+		# print(f"git_stash.stdout: {git_stash.stdout}")
+		# print(f"git_stash.stderr: {git_stash.stderr}")
+		stashed = True
+	# else:
+	# 	pass
+		# stashed = False
+		# stash_msg = ""
 
-		# Merge (do not raise exception on failure)
-		# print(f"Synchronising origin/{use_branch}...")
-		print()
-		# print("start of merge operation...")
-		# merge_result = run_subprocess_live(['git', 'merge', f'origin/{use_branch}'],
-		# 									stdout=sys.stdout,
-		# 									stderr=sys.stderr)
-		merge_result = run_subprocess(['git', 'merge', f'origin/{use_branch}'])
-		# print(f"merge_result.stdout: {merge_result.stdout}")
-		# print(f"merge_result.stderr: {merge_result.stderr}")
-		merge_result_message = "\n".join([
-			line for line in f"{merge_result.stdout}{merge_result.stderr}".splitlines()
-			if "Merge made by the 'ort' strategy" not in line.strip()
-		])
-		# print(f'merge_result_message: {merge_result_message}')
-		print_stdout(merge_result_message.strip())
-		# print('middle')
-		# print_norm(merge_result_message)
-		# print("end of merge operation...")
-		merge_success = merge_result.returncode == 0
+	# Merge (do not raise exception on failure)
+	# print(f"Synchronising origin/{use_branch}...")
+	print()
+	# print("start of merge operation...")
+	state = get_git_state()
+	if state["merge"]:
+		print(f"Merge in progress on branch {current_branch_name}")
+		commit_changes(operation_type="merge", incoming_branch=use_branch, current_branch=current_branch_name)
+	elif state["rebase"]:
+		print(f"Rebase in progress on branch {current_branch_name}")
+		commit_changes(operation_type="rebase", incoming_branch=use_branch, current_branch=current_branch_name)
+	is_merge_conflict, merge_type, merge_tag, local_ahead, remote_ahead = check_for_merge_conflict(branch_name=use_branch)
+	# print(f'\nis_merge_conflict: {is_merge_conflict}')
+	# print(f'merge_type: {merge_type}')
+	# print(f'merge_tag: {merge_tag}')
+	# print(f'local_ahead: {local_ahead}')
+	# print(f'remote_ahead: {remote_ahead}\n')
+	if is_merge_conflict:
+		print_norm("Merge conflict occurred. Attempting to resolve interactively...")
+		proceed_to_pop_stash = check_and_resolve_conflicts(incoming_branch=use_branch, current_branch=current_branch_name)
+		merge_success = proceed_to_pop_stash  # After successful resolution
+		# merge_command = ['git', 'merge', f'origin/{use_branch}']
+	else:
+		if merge_tag == "no commit":
+			print_norm("Already up to date.")
+			merge_success = True
+		elif merge_type == "fast-forward":
+			merge_success = True
+		elif merge_type == "up-to-date":
+			merge_success = True
+		elif merge_type == "diverged":
+			local_is_ahead = {'first': f'{current_branch_name}', 'fhead': local_ahead, 'second': f'origin/{use_branch}', 'rhead': remote_ahead} if local_ahead > remote_ahead else {'first': f'origin/{use_branch}', 'fhead': remote_ahead, 'second': f'{current_branch_name}','rhead': local_ahead}
+			print_norm("Your branches have diverged. you need to merge them with a commit...")
+			print_norm(f"{local_is_ahead['first']} branch has diverged by {local_is_ahead['fhead']} commit{'s' if local_ahead > 1 else ''} and {local_is_ahead['second']} branch has diverged by {local_is_ahead['rhead']} commit{'s' if remote_ahead > 1 else ''}.")
+			print_norm(f"Merging updates from origin/{use_branch} into {current_branch_name} branch...")
+			merge_commit_msg = commit_changes(operation_type="merge", incoming_branch=use_branch, current_branch=current_branch_name, msg=True)
+			merge_result = run_subprocess(['git', 'commit', '-m', merge_commit_msg])
+			# print(f'merge_result.stdout: {merge_result.stdout}')
+			# print(f'merge_result.stderr: {merge_result.stderr}')
+			# print(f'merge_result.returncode: {merge_result.returncode}')
+			merge_success = merge_result.returncode == 0
+ 
+ 
+ 
+	# # print("exiting..."); sys.exit()
+	# merge_result = run_subprocess_live(['git', 'merge', f'origin/{use_branch}'])
+	# # merge_result = run_subprocess(['git', 'merge', f'origin/{use_branch}'])
+	# # print(f"merge_result.stdout: {merge_result.stdout}")
+	# # print(f"merge_result.stderr: {merge_result.stderr}")
+	# # merge_result_message = "\n".join([
+	# # 	line for line in f"{merge_result.stdout}{merge_result.stderr}".splitlines()
+	# # 	if "Merge made by the 'ort' strategy" not in line.strip()
+	# # ])
+	# # # print(f'merge_result_message: {merge_result_message}')
+	# # print_stdout(merge_result_message.strip())
+	# # print('middle')
+	# # print_norm(merge_result_message)
+	# print("end of merge operation...")
+	# merge_success = merge_result.returncode == 0
 
-		# print(f'merge_result: {merge_result}')
-		print()
-		if merge_success:
-			print_norm("Pull successful!")
+	# print(f'merge_result: {merge_result}')
+	# print(f"merge_tag!=no commit or merge_type!=fast-forward: {merge_tag!='no commit' or merge_type!='fast-forward'}")
+	(merge_tag!="no commit" and merge_type!="fast-forward") and print()
+	if merge_success:
+		merge_tag != "no commit" and print_norm("Pull successful!")
+	else:
+		print_norm("Pull failed. Manual intervention might be required.")
+
+	print()
+
+	# Restore stash only if merge was successful
+	if stashed and merge_success:
+		print_norm("Restoring stashed changes...")
+		_, stash_list_out, _ = subprocess_for_pull_command('git stash list')
+		stash_id = None
+		for line in stash_list_out.splitlines():
+			if stash_msg in line:
+				stash_id = line.split(':')[0]
+				break
+		if stash_id:
+			try:
+				result = run_subprocess(['git', 'stash', 'pop', stash_id])
+				if result.returncode == 0:
+					print_norm("Restore successful!")
+				else:
+					print_norm(f"Restore failed due to conflicts. Your changes are still in: {stash_id}")
+					print_norm("Attempting to help resolve stash conflicts interactively...")
+					check_and_resolve_conflicts(incoming_branch=use_branch, current_branch=current_branch_name, is_from_stash=True)
+					print_norm("Conflict resolution complete for stashed changes.")
+			except Exception:
+				print_norm("Restore failed. Please recover manually in stashes.")
 		else:
-			print_norm("Merge conflict occurred. Attempting to resolve interactively...")
-			check_and_resolve_conflicts()
-			merge_success = True  # After successful resolution
+			print_norm("Expected stash not found. You may need to restore it manually.")
 
-		print()
-
-		# Restore stash only if merge was successful
-		if stashed and merge_success:
-			print_norm("Restoring stashed changes...")
-			_, stash_list_out, _ = subprocess_for_pull_command('git stash list')
-			stash_id = None
-			for line in stash_list_out.splitlines():
-				if stash_msg in line:
-					stash_id = line.split(':')[0]
-					break
-			if stash_id:
-				try:
-					result = run_subprocess(['git', 'stash', 'pop', stash_id])
-					if result.returncode == 0:
-						print_norm("Restore successful!")
-					else:
-						print_norm(f"Restore failed due to conflicts. Your changes are still in: {stash_id}")
-						print_norm("Attempting to help resolve stash conflicts interactively...")
-						check_and_resolve_conflicts()
-						print_norm("Conflict resolution complete for stashed changes.")
-				except Exception:
-					print_norm("Restore failed. Please recover manually in stashes.")
-			else:
-				print_norm("Expected stash not found. You may need to restore it manually.")
-
-		# Inform user about stash if merge failed
-		if stashed and not merge_success:
-			print_norm(f"Operation failed. Your changes were stashed as: {stash_msg}")
-			print_norm("You can recover them with:")
-			print_norm("    git stash list")
-			print_norm("    git stash pop <stash@{{N}}>")
-	# except KeyboardInterrupt:
-	# 	print_norm("\nInterrupted by user")
-	# 	sys.exit(1)
-	except subprocess.CalledProcessError as e:
-		print_norm(f"Command failed: {e.cmd}")
-		sys.exit(e.returncode)
+	# Inform user about stash if merge failed
+	if stashed and not merge_success:
+		print_norm(f"Operation failed. Your changes were stashed as: {stash_msg}")
+		print_norm("You can recover them with:")
+		print_norm("    git stash list")
+		print_norm("    git stash pop <stash@{{N}}>")
 
 #######################################################################
-
-# def pull(is_main_branch=False):
-# 	"""This function pulls and merges updates from the remote (corresponding current/main/master branch)
-# 		to the local branch
-# 	Args:
-# 		is_main_branch (bool, optional): Defaults to False.
-# 	"""
-# 	print()
-# 	print_norm("#### pulling ...################################################")
-
-# 	# Stash everything
-# 	is_stashed = None
-# 	# print(f'is_main_branch: {is_main_branch}')
-# 	status = run_subprocess(['git', 'status', '--porcelain'])
-# 	if status.stdout.strip():
-# 		run_subprocess(['git', 'stash', '--include-untracked'])
-# 		is_stashed = True
-# 		# print_norm("Stashed local changes...")
-# 	else: # consider removing
-# 		# _ = ''
-# 		print_norm("No local changes found.")
-
-# 	# print_norm("Stashed local changes...")
-# 	# print_stdout(stash_result.stdout)
-# 	# print(f'{print_stashes(22222)}')
-
-# 	# Pull with rebase
-# 	# pull = run_subprocess(["git", "pull", "--rebase"])
-# 	# pulls from corresponding remote branch but if is_main_branch is true, it pulls from that main/master branch
-# 	main = view_branch(new_branch="main", action=-2)
-# 	current_branch_name = view_branch(action=100)
-# 	print(f'current_branch_name: {current_branch_name}')
-# 	if is_main_branch:
-# 		# print_norm(f'current branch: {current_branch_name}')
-# 		if current_branch_name in ["main", "master"]:
-# 			print_norm(f"You are on {main} branch.")
-# 			print_norm(f"Switch to the desired branch you want to pull {main} into.")
-# 			quit("q")
-
-# 	pull = run_subprocess(["git", "pull"] if not is_main_branch else ["git", "pull", "origin", main])
-
-
-# 	# print_norm(f"stdout: {pull.stdout}")
-# 	# print_norm(f"stderr: {pull.stderr}")
-
-# 	conflict_str = "CONFLICT (content)".lower()
-# 	unmerged_files = "you have unmerged files".lower()
-# 	resolve_manually = "Resolve all conflicts manually".lower()
-
-# 	is_stashed and print_norm("adding local changes ontop of update...")
-# 	# checkBranch()
-# 	if pull.returncode == 0:
-# 		print_stdout(pull.stdout)
-# 	else:
-# 		# stderr_content = map(lambda x: x, pull.stderr)
-# 		# print('type of stderr:', type(pull.stderr))
-# 		# print(pull.stderr.replace('\n', ' '))
-# 		unmerged_text = "{} {}".format(pull.stderr.replace('\n', ' '), pull.stdout.replace('\n', ' '))
-# 		# print(f"".rjust(40, 'P'))
-# 		if any(any_str in unmerged_text.lower() for any_str in [conflict_str, unmerged_files, resolve_manually]):
-# 			print_norm(f'{pull.stdout}\n:pull.stdout')
-# 			print_norm(f'{pull.stderr}\n:pull.stderr')
-# 			# print(f'is_rebase_in_progress1: {is_rebase_in_progress()}')
-# 			# print_norm(pull.stderr)
-# 			# checkBranch()
-# 			check_for_conflicts()
-# 			# checkBranch()
-# 			# print(f'is_rebase_in_progress5: {is_rebase_in_progress()}')
-# 			# print_norm("Unmerged files found. Please resolve conflicts before proceeding.")
-# 			# print(f'is_stashed pull: {is_stashed}')
-# 			pop_stash(stash_status=is_stashed)
-# 			is_stashed = False
-# 			# checkBranch()
-# 		else:
-# 			print_norm("Oops! I got {}".format(pull.stderr))
-# 			quit()
-
-# 	if is_stashed:
-# 		# checkBranch()
-# 		stash_pop = run_subprocess(['git', 'stash', 'pop'])
-# 		stderr_clean = stash_pop.stderr.replace('\n', ' ')
-# 		stdout_clean = stash_pop.stdout.replace('\n', ' ')
-# 		unmerged_pop_text = f"{stderr_clean} {stdout_clean}"
-# 		# print_norm(f"GGGGG{unmerged_pop_text}GGGGG")
-
-# 		if any(any_str in unmerged_pop_text.lower() for any_str in [conflict_str, unmerged_files, resolve_manually]):
-# 		# if 'CONFLICT' in unmerged_pop_text:
-# 			# checkBranch()
-# 			print_norm(f'{stash_pop.stdout}\n:stash_pop.stdout')
-# 			print_norm(f'{stash_pop.stderr}\n:stash_pop.stderr')
-# 			# print_norm(stash_pop.stderr)
-# 			# print(f'is_rebase_in_progress6: {is_rebase_in_progress()}')
-# 			# print(f"".rjust(40, 'S'))
-# 			check_for_conflicts()
-# 			# print(f'is_rebase_in_progress7: {is_rebase_in_progress()}')
-# 			# print(f'is_stashed stash: {is_stashed}')
-# 			# checkBranch()
-# 			pop_stash(stash_status=is_stashed)
-# 			is_stashed = False
-# 	# print(f'is_stashed final: {is_stashed}')
-# 	# checkBranch()
-
-# 	print()
-# 	print_norm("Done...")
-# 	print()
 
 def push(file_list: list=None):
 	"""This function takes a list as argument and Updates the
@@ -975,7 +883,7 @@ def push(file_list: list=None):
 		file_list (list): list of files in the current working directory
 	"""
 	if 'custom_commands' in os.getcwd():
-		subprocess.run(["bash", "bumpCCVersion"], check=True, cwd=bumpCCVersion, stdout=None, stderr=None)
+		subprocess.run(["bash", "bumpCCVersion"], cwd=bumpCCVersion, stdout=None, stderr=None)
 	print_norm("#### pushing ...################################################")
 	push = run_subprocess_cmd_alone(["git", "push"])
 	if push.returncode == 0:
@@ -1043,7 +951,7 @@ def add_commit_all(type: str="current", commit_message: str=""):
 	############################################################################################################
 	# print(f'current location (git_codes): {os.getcwd()}')
 	if '/home/dafetite/alx/altaviz/altaviz_mobile/altaviz_mobile' in os.getcwd():
-		subprocess.run(["bash", "bumpAppJsonVersion"], check=True, cwd=bumpAppJsonVersionScript, stdout=None, stderr=None)
+		subprocess.run(["bash", "bumpAppJsonVersion"], cwd=bumpAppJsonVersionScript, stdout=None, stderr=None)
 	# print(f'current location (git_codes): {os.getcwd()}')
 	############################################################################################################
 	############################################################################################################
@@ -1720,132 +1628,6 @@ def update_token_command():
 # 		print_stdout(f'$$$$$ {stashList.stderr} fxn')
 # 	else:
 # 		print_norm(f"$$$$$ No stashes found. fxn")
-
-
-
-
-# entry point for pull_from_main_or_master command
-# def pull_from_main_or_master():
-# 	"""pulls changes from the remote main/master branch into the current branch
-# 	"""
-# 	# print('in pull_from_main_or_master()')
-# 	stashCreated = False
-# 	main = view_branch(new_branch="main", action=-2)
-
-# 	current_branch_name = view_branch(action=100)
-# 	print_norm(f'current branch: {current_branch_name}')
-# 	if current_branch_name in ["main", "master"]:
-# 		print_norm(f"You are on {main} branch.")
-# 		print_norm(f"Switch to the desired branch you want to pull {main} into.")
-# 		quit("q")
-# 	# print("Exiting early...");sys.exit()
-
-# 	# stash changes, if any
-# 	stashChanges = run_subprocess(['git', 'status', '--porcelain'])
-# 	if stashChanges.stdout.strip():
-# 		run_subprocess(['git', 'stash', '--include-untracked'])
-# 		stashCreated = True
-# 		# print_norm("Stashed local changes...")
-# 	else: # consider removing
-# 		print_norm("No local changes to stash. Proceeding with rebase...")
-
-# 	# fetch changes from origin
-# 	fetchChangesFromOrigin = run_subprocess(["git", "fetch", "origin"])
-# 	# print("for: fetchChangesFromOrigin")
-# 	# print(f">>>> stdout-start:\n{fetchChangesFromOrigin.stdout}\n<<<<")
-# 	# print(f"♧♧♧♧ stderr-start:\n{fetchChangesFromOrigin.stderr}\n♧♧♧♧")
-# 	if fetchChangesFromOrigin.stdout:
-# 		print_norm(f'{fetchChangesFromOrigin.stdout}:fetch_stdout')
-# 	elif fetchChangesFromOrigin.stderr:
-# 		print_norm(f'{fetchChangesFromOrigin.stderr}:fetch_stderr')
-# 		# quit("q")
-
-# 	# rebase from main/master branch
-# 	rebaseFromMain = run_subprocess(["git", "merge", f"origin/{main}"])
-# 	# print("for: rebaseFromMain")
-# 	# print(f">>>> stdout-start:\n{rebaseFromMain.stdout}\n<<<<")
-# 	# print(f"♧♧♧♧ stderr-start:\n{rebaseFromMain.stderr}\n♧♧♧♧")
-# 	if rebaseFromMain.stdout:
-# 		print_norm(f'{rebaseFromMain.stdout}:rbaseM_stdout')
-# 	elif rebaseFromMain.stderr:
-# 		print_norm(f'{rebaseFromMain.stderr}:rbaseM_stderr')
-
-# 	# addition from phone starts 1 here
-# 	rOut = rebaseFromMain.stdout.replace('\n', ' ')
-# 	rErr = rebaseFromMain.stderr.replace('\n', ' ')
-# 	chechForMergeConflicts = f"{rOut} {rErr}"
-# 	stashCreated and print_norm("adding local changes ontop of update...")
-# 	if 'you have unmerged files'.lower() in chechForMergeConflicts.lower() or 'CONFLICT' in chechForMergeConflicts or 'Resolve all conflicts manually'.lower() in chechForMergeConflicts.lower():
-# 	# if 'you have unmerged files'.lower() in chechForMergeConflicts.lower() or 'Resolve all conflicts manually'.lower() in chechForMergeConflicts.lower():
-# 	# if 'you have unmerged files' in chechForMergeConflicts:
-# 		print_norm(f'{rebaseFromMain.stdout}\n:rebFrmMain.stdout')
-# 		print_norm(f'{rebaseFromMain.stderr}\n:rebFrmMain.stderr')
-# 		# print_norm(rebaseFromMain.stderr)
-# 		check_for_conflicts()
-# 		pop_stash(stash_status=stashCreated)
-# 		stashCreated = False
-# 		# addition from phone ends 1 here
-
-# 	# pop stash if one was created
-# 	if stashCreated:
-# 		# addition from phone starts 2 here
-# 		popStash = run_subprocess(["git", "stash", "pop"])
-# 		# print(f'popStash: {popStash}')
-# 		pOut = popStash.stdout.replace('\n', ' ')
-# 		pErr = popStash.stderr.replace('\n', ' ')
-# 		pchechForMergeConflicts = f"{pOut} {pErr}"
-# 		if 'you have unmerged files'.lower() in pchechForMergeConflicts.lower() or 'CONFLICT' in pchechForMergeConflicts or 'Resolve all conflicts manually'.lower() in pchechForMergeConflicts.lower():
-# 		# if 'you have unmerged files'.lower() in pchechForMergeConflicts.lower():
-# 		# if 'CONFLICT' in pchechForMergeConflicts:
-# 			print_norm(f'{popStash.stdout}\n:popStash.stdout')
-# 			print_norm(f'{popStash.stderr}\n:popStash.stderr')
-# 			# print('Found=> CONFLICT :::::in stdout and stderr (stash)')
-# 			# print_norm(popStash.stderr)
-# 			check_for_conflicts(rebase_in_progress=False)
-# 			pop_stash(stash_status=stashCreated)
-# 			stashCreated = False
-# 			# addition from phone ends 2 here
-
-# 		# if popStash.stdout:
-# 		# 	print_norm(f'{popStash.stdout}:stdout')
-# 		# elif popStash.stderr:
-# 		# 	print_norm(f'{popStash.stderr}:stderr')
-# 	# cleanup = run_subprocess(['git', 'stash', 'list'])
-# 	# print(f"stashes:\n{cleanup.stdout}")
-# 	# if cleanup.stdout.strip():
-# 	# 	print_norm("Cleaning up...")
-# 	# 	run_subprocess(['git', 'stash', 'drop'])  # drops top stash (stas
-
-
-# entry point for show_diff_from_main_or_master command
-# def show_diff_from_main_or_master():
-# 	"""shows all the changes on the remote main/master branch compared to the current branch
-# 	"""
-# 	# current_branch_name = view_branch(action=100)
-# 	# main = view_branch(new_branch="main", action=-2)
-# 	# print_norm(f'current branch: {current_branch_name}')
-
-# 	# # fetch changes from origin
-# 	# fetchChangesFromOrigin = run_subprocess(["git", "fetch", "origin"])
-# 	# if fetchChangesFromOrigin.stdout:
-# 	# 	print_norm(f'{fetchChangesFromOrigin.stdout}:stdout')
-# 	# elif fetchChangesFromOrigin.stderr:
-# 	# 	print_norm(f'{fetchChangesFromOrigin.stderr}:stderr')
-
-# 	# diff changes from main/master branch
-# 	diffComparedToMain = run_subprocess(["git", "diff", f"HEAD..origin/{main}"])
-# 	if diffComparedToMain.returncode == 0:
-# 		if diffComparedToMain.stdout:
-# 			print_stdout(f'{diffComparedToMain.stdout}:stdout', status=1)
-# 		elif diffComparedToMain.stderr:
-# 			print_stdout(f'{diffComparedToMain.stderr}:stderr', status=1)
-# 		else:
-# 			print()
-# 			print_norm("No changes found on the remote main/master branch.")
-# 			print_norm("Your working directory is in the same state as your last commit.")
-# 	elif diffComparedToMain.returncode > 0:
-# 		print_norm("Oops! I got:")
-# 		print_norm("{}".format(print_stdout(diffComparedToMain.stderr)))
 
 def getCurrentAccessToken():
 	"""This function fetches the users access token from the repository.
