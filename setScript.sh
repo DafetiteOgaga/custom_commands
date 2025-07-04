@@ -813,7 +813,7 @@ update_changes() {
 				sed -i "s|^IGITHUBUSERNAME=.*|$keyUNAME|" "$destination"
 				sed -i "s|^IGITHUBACCESSTOKEN=.*|$keyUTOKEN|" "$destination"
 				sed -i "s|^IGITHUBEMAIL=.*|$keyUEMAIL|" "$destination"
-				echo "Reinserted tokenKey into $(basename $destination)"
+				# echo "Reinserted tokenKey into $(basename $destination)"
 				tokenKey=""
 			fi
 
