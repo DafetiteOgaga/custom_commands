@@ -309,8 +309,8 @@ def resolve_conflict(filepath):
 	with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
 		lines = f.readlines()
 
-	a_line = get_conflict_label(lines, conflict_start) + ' '
-	b_line = get_conflict_label(lines, conflict_end) + ' '
+	a_line = get_conflict_label(lines, conflict_start).strip()
+	b_line = get_conflict_label(lines, conflict_end).strip()
 	resolved = []
 	i = 0
 	while i < len(lines):
@@ -435,7 +435,7 @@ def show_conflict_blocks(filepath):
 	except FileNotFoundError:
 		print_norm(f"File not found: {filepath}")
 
-def check_and_resolve_conflicts():
+def check_and_resolve_conflicts(incoming_branch=None, current_branch=None, is_from_stash=False):
 	conflicted_files = get_conflicted_files()
 	if not conflicted_files:
 		print_norm("No merge conflicts detected.")
@@ -455,12 +455,150 @@ def check_and_resolve_conflicts():
 		resolve_conflict(f)
 
 	print_norm("\nAll conflicts resolved and staged.")
-	if os.path.exists(".git/MERGE_HEAD"):
-		run_subprocess(["git", "commit"], check=True)
-		print_norm("Merge commit completed.")
-	elif os.path.exists(".git/rebase-merge") or os.path.exists(".git/rebase-apply"):
-		run_subprocess(["git", "rebase", "--continue"], check=True)
+	if not is_from_stash:
+		return is_from_stash
+	result = run_subprocess(['git', 'rev-parse', '--git-dir'])
+	git_dir = result.stdout.strip()
+	merge_head = os.path.exists(os.path.join(git_dir, 'MERGE_HEAD'))
+	rebase_apply = os.path.exists(os.path.join(git_dir, 'rebase-merge')) or os.path.exists(os.path.join(git_dir, 'rebase-apply'))
+	if merge_head or rebase_apply:
+		unmerged_files = subprocess.check_output(["git", "diff", "--name-only", "--diff-filter=U"]).decode().strip()
+		if unmerged_files:
+			print("❗ Unresolved merge conflicts remain:\n" + unmerged_files)
+			print("❌ Resolve all conflicts and run again.")
+			sys.exit(1)
+	if merge_head:
+		commit_changes(operation_type="merge", incoming_branch=incoming_branch, current_branch=current_branch)
+	elif rebase_apply:
+		commit_changes(operation_type="rebase", incoming_branch=incoming_branch, current_branch=current_branch)
+
+def commit_changes(operation_type="merge", incoming_branch=None, current_branch=None, msg=False):
+	if not incoming_branch and not current_branch:
+		print_norm("No branches specified for commit message.")
+		print_norm("Kind provide the branch names to use in the commit message.")
+		quit('q')
+	commit_message = input(
+		f"Enter a commit message for the {operation_type}.\n"
+		f"- Press Enter to use a default message\n"
+		f"- Type (q) to exit without doing anything\n"
+		f"- Type (a) to abort the {operation_type} operation\n"
+		">>> "
+		).strip()
+	quit(commit_message.lower()) # if q is pressed, exit the operation
+	if commit_message.lower() == 'a':
+		print_norm(f"Aborting {operation_type} operation...")
+		run_subprocess_live(["git", operation_type, "--abort"])
+		print_norm(f"{operation_type.title()} operation aborted.")
+		exit('q')
+	if not commit_message and incoming_branch and current_branch:
+		commit_message = f"{operation_type.title()} remote-tracking branch 'origin/{incoming_branch}' into {current_branch} resolved on {formatted_now}"
+	print_norm(f"Using commit message:\n  {commit_message}")
+	if msg:
+		return commit_message
+	if operation_type == "merge":
+		run_subprocess_live(["git", "commit", "-m", commit_message])
+		print_norm(f"{operation_type.title()} commit completed.")
+	else:
+		run_subprocess_live(["git", operation_type, "--continue"])
 		print_norm("Rebase continued.")
+
+def is_fast_forward(branch_name=None):
+	fetch_for_base = run_subprocess(["git", "fetch", "origin"])
+	print(f'fetch_for_base output: {fetch_for_base.stdout}')
+	print(f'fetch_for_base stderr: {fetch_for_base.stderr}')
+	print(f'fetch_for_base returncode: {fetch_for_base.returncode}')
+	result = run_subprocess(["git", "merge-base", "--is-ancestor", "HEAD", f"origin/{branch_name}"])
+	print(f"merge-base output: {result.stdout.strip()}")
+	print(f"merge-base returncode: {result.returncode}")
+	print(f"merge-base stderr: {result.stderr.strip()}")
+	if result.returncode == 0:
+		return True  # Fast-forward possible
+	return False     # Not fast-forward (diverged or up-to-date or behind)
+
+def check_merge_type(branch_name):
+	# Compare local and remote branch history
+	result = run_subprocess(["git", "rev-list", "--left-right", "--count", f"HEAD...origin/{branch_name}"])
+	output = result.stdout.strip()
+	print(f"rev-list output: {output}")
+
+	merge_type = "unknown"
+
+	if not output:
+		return merge_type, None, None
+
+	local_ahead, remote_ahead = map(int, output.split())
+
+	if local_ahead == 0 and remote_ahead > 0:
+		merge_type = "fast-forward"
+		return merge_type, local_ahead, remote_ahead
+	elif local_ahead > 0 and remote_ahead > 0:
+		merge_type = "diverged"
+		# if is_fast_forward(branch_name):
+		# 	merge_type = "fast-forward"
+		# 	return merge_type
+		return merge_type, local_ahead, remote_ahead
+	elif local_ahead == 0 and remote_ahead == 0:
+		merge_type = "up-to-date"
+		return merge_type, local_ahead, remote_ahead
+	else:
+		return merge_type, None, None
+
+def check_for_merge_conflict(branch_name=None):
+	"""Check for merge conflicts when merging a branch into the current branch."""
+	if not branch_name:
+		print_norm("No branch name provided. Cannot check for merge conflicts.")
+		exit('q')
+	merge_type, merge_type_tag, local_ahead, remote_ahead = None, None, None, None
+	merge_type, local_ahead, remote_ahead = check_merge_type(branch_name)
+	print(f'merge_type: {merge_type}')
+
+	# if merge_type == "up-to-date":
+	# 	merge_type_tag = 'no commit'
+
+	# merge_command = ["git", "merge", "--no-commit", "--no-ff", f"origin/{branch_name}"]
+	check_for_merge_conflicts = None
+	# Check/perform a merge operation/is already in progress
+	if merge_type == "fast-forward":
+		run_subprocess_live(["git", "merge", "--no-commit", f"origin/{branch_name}"])
+	else:
+		check_for_merge_conflicts = run_subprocess(["git", "merge", "--no-commit", "--no-ff", f"origin/{branch_name}"])
+
+	if check_for_merge_conflicts:
+		stdout = check_for_merge_conflicts.stdout.lower()
+		stderr = check_for_merge_conflicts.stderr.lower()
+		returncode = check_for_merge_conflicts.returncode
+
+		print(f'check_for_merge_conflicts.stdout: {check_for_merge_conflicts.stdout}')
+		print(f'check_for_merge_conflicts.stderr: {check_for_merge_conflicts.stderr}')
+		print(f'check_for_merge_conflicts.returncode: {returncode}')
+
+		# Look for known conflict indicators
+		conflict_keywords = [
+			"automatic merge failed".lower(),
+			"conflict (content)".lower(),
+			"merge conflict".lower()
+		]
+
+		# Combine outputs
+		combined_output = f"{stdout} {stderr}"
+
+		if any(word in combined_output for word in conflict_keywords) or returncode != 0:
+			print_norm("Merge conflict detected. sending signal for interactive resolution...")
+			# print_norm("Merge conflict detected. Aborting merge to restore original state...")
+			# restore_init_state = run_subprocess(["git", "merge", "--abort"])
+			# print(f'restore_init_state.stdout: {restore_init_state.stdout}')
+			# print(f'restore_init_state.stderr: {restore_init_state.stderr}')
+			# print(f'restore_init_state.returncode: {restore_init_state.returncode}')
+			merge_type_tag = None
+			return True, merge_type, merge_type_tag, local_ahead, remote_ahead
+		if returncode == 0 and "Already up to date".lower() in combined_output.replace('\n', ' ').lower() or merge_type == "up-to-date":
+			# print_norm("No merge conflict detected.")
+			# print(f'returncode: {returncode}')
+			merge_type_tag = 'no commit'
+			return False, merge_type, merge_type_tag, local_ahead, remote_ahead
+
+	# print_norm("No merge conflict detected.")
+	return False, merge_type, merge_type_tag, local_ahead, remote_ahead
 
 def get_conflict_label(lines, marker):
 	conflict_label = ''
@@ -536,11 +674,26 @@ def is_rebase_in_progress():
 	# print(f'is_rebase_in_progress: {response}')
 	return response
 
-def is_merge_in_progress():
-	result = run_subprocess(['git', 'rev-parse', '--git-dir'])
-	git_dir = result.stdout.strip()
-	response = os.path.exists(os.path.join(git_dir, 'MERGE_HEAD'))
-	return response
+def is_merge_in_progress(check_remote_branch=None):
+	fatal1 = "(MERGE_HEAD exists)".lower()
+	fatal2 = "commit your changes before you merge".lower()
+	check_merge = run_subprocess(["git", "merge", "--no-commit", "--no-ff", f"origin/{check_remote_branch}"])
+	response = "{} {}".format(check_merge.stdout.replace('\n', ' '), check_merge.stderr.replace('\n', ' ')).lower()
+	if fatal1 in response or fatal2 in response:
+		print_norm("Merge in progress. Please resolve conflicts before proceeding.")
+		return True
+	return False
+	# result = run_subprocess(['git', 'rev-parse', '--git-dir'])
+	# git_dir = result.stdout.strip()
+	# response = os.path.exists(os.path.join(git_dir, 'MERGE_HEAD'))
+	# return response
+
+def get_git_state():
+	git_dir = subprocess.check_output(['git', 'rev-parse', '--git-dir']).decode().strip()
+	return {
+		"merge": os.path.exists(os.path.join(git_dir, "MERGE_HEAD")),
+		"rebase": os.path.exists(os.path.join(git_dir, "rebase-merge")) or os.path.exists(os.path.join(git_dir, "rebase-apply"))
+	}
 
 def set_editor():
 	"""Sets the editor for Git commit messages."""
@@ -632,8 +785,8 @@ def merge_operation():
 def merge_or_rebase_in_progress():
 	if is_rebase_in_progress():
 		run_subprocess(['git', 'rebase', '--continue'])
-	elif is_merge_in_progress():
-		merge_operation()
+	# elif is_merge_in_progress():
+	# 	merge_operation()
 	else:
 		pass
 		# print_norm("No rebase or merge in progress.")
@@ -767,98 +920,141 @@ def pull(is_main_branch=False):
 	# Ensure script exits on unhandled error
 	# print()
 	print_norm("#### pulling ...################################################")
-	try:
-		current_branch_name = view_branch(action=100)
-		main = view_branch(new_branch="main", action=-2)
-		use_branch = main if is_main_branch else current_branch_name
-		stashed = False
-		stash_msg = ""
+	# try:
+	current_branch_name = view_branch(action=100)
+	main = view_branch(new_branch="main", action=-2)
+	use_branch = main if is_main_branch else current_branch_name
+	stashed = False
+	stash_msg = ""
 
-		is_main_branch and print_norm(f"Pulling updates from {main} branch\n")
+	print_norm(f"Pulling updates from origin/{use_branch} branch\n")
 
-		# Fetch from origin
-		run_subprocess(['git', 'fetch', 'origin', use_branch], check=True)
+	# Fetch from origin
+	fetch_from_origin = run_subprocess(['git', 'fetch', 'origin'])
+	print(f'fetch_from_origin.stdout: {fetch_from_origin.stdout}')
+	print(f'fetch_from_origin.stderr: {fetch_from_origin.stderr}')
+	print(f'fetch_from_origin.returncode: {fetch_from_origin.returncode}')
 
-		# Determine if we need to stash
-		if check_unstaged_or_untracked():
-			print_norm("Local changes detected. Stashing...")
-			# print()
-			stash_msg = f"temp-stash-before-merge-{formatted_stash_time}"
-			run_subprocess(['git', 'stash', 'push', '-u', '-m', stash_msg], check=True)
-			stashed = True
-		# else:
+	# Determine if we need to stash
+	if check_unstaged_or_untracked():
+		print_norm("Local changes detected. Stashing...")
+		# print()
+		stash_msg = f"temp-stash-before-merge-{formatted_stash_time}"
+		git_stash = run_subprocess(['git', 'stash', 'push', '-u', '-m', stash_msg])
+		# print(f"git_stash.stdout: {git_stash.stdout}")
+		# print(f"git_stash.stderr: {git_stash.stderr}")
+		stashed = True
+	# else:
+	# 	pass
+		# stashed = False
+		# stash_msg = ""
+
+	# Merge (do not raise exception on failure)
+	# print(f"Synchronising origin/{use_branch}...")
+	print()
+	print("start of merge operation...")
+	state = get_git_state()
+	if state["merge"]:
+		print(f"Merge in progress on branch {current_branch_name}")
+		commit_changes(operation_type="merge", incoming_branch=use_branch, current_branch=current_branch_name)
+	elif state["rebase"]:
+		print(f"Rebase in progress on branch {current_branch_name}")
+		commit_changes(operation_type="rebase", incoming_branch=use_branch, current_branch=current_branch_name)
+	is_merge_conflict, merge_type, merge_tag, local_ahead, remote_ahead = check_for_merge_conflict(branch_name=use_branch)
+	print(f'\nis_merge_conflict: {is_merge_conflict}')
+	print(f'merge_type: {merge_type}')
+	print(f'merge_tag: {merge_tag}')
+	print(f'local_ahead: {local_ahead}')
+	print(f'remote_ahead: {remote_ahead}\n')
+	if is_merge_conflict:
+		print_norm("Merge conflict occurred. Attempting to resolve interactively...")
+		proceed_to_pop_stash = check_and_resolve_conflicts(incoming_branch=use_branch, current_branch=current_branch_name)
+		merge_success = proceed_to_pop_stash  # After successful resolution
+		# merge_command = ['git', 'merge', f'origin/{use_branch}']
+	else:
+		if merge_tag == "no commit":
+			print_norm("Already up to date.")
+			merge_success = True
+		# elif merge_type == "fast-forward":
 		# 	pass
-			# stashed = False
-			# stash_msg = ""
+		# elif merge_type == "up-to-date":
+		# 	pass
+		elif merge_type == "diverged":
+			local_is_ahead = {'first': f'{current_branch_name}', 'fhead': local_ahead, 'second': f'origin/{use_branch}', 'rhead': remote_ahead} if local_ahead > remote_ahead else {'first': f'origin/{use_branch}', 'fhead': remote_ahead, 'second': f'{current_branch_name}','rhead': local_ahead}
+			print_norm("Your branches have diverged. you need to merge them with a commit...")
+			print_norm(f"{local_is_ahead['first']} branch has diverged by {local_is_ahead['fhead']} commit{'s' if local_ahead > 1 else ''} and {local_is_ahead['second']} branch has diverged by {local_is_ahead['rhead']} commit{'s' if remote_ahead > 1 else ''}.")
+			print_norm(f"Merging updates from origin/{use_branch} into {current_branch_name} branch...")
+			merge_commit_msg = commit_changes(operation_type="merge", incoming_branch=use_branch, current_branch=current_branch_name, msg=True)
+			merge_result = run_subprocess(['git', 'commit', '-m', merge_commit_msg])
+			print(f'merge_result.stdout: {merge_result.stdout}')
+			print(f'merge_result.stderr: {merge_result.stderr}')
+			print(f'merge_result.returncode: {merge_result.returncode}')
+			merge_success = merge_result.returncode == 0
+ 
+ 
+ 
+	# # print("exiting..."); sys.exit()
+	# merge_result = run_subprocess_live(['git', 'merge', f'origin/{use_branch}'])
+	# # merge_result = run_subprocess(['git', 'merge', f'origin/{use_branch}'])
+	# # print(f"merge_result.stdout: {merge_result.stdout}")
+	# # print(f"merge_result.stderr: {merge_result.stderr}")
+	# # merge_result_message = "\n".join([
+	# # 	line for line in f"{merge_result.stdout}{merge_result.stderr}".splitlines()
+	# # 	if "Merge made by the 'ort' strategy" not in line.strip()
+	# # ])
+	# # # print(f'merge_result_message: {merge_result_message}')
+	# # print_stdout(merge_result_message.strip())
+	# # print('middle')
+	# # print_norm(merge_result_message)
+	# print("end of merge operation...")
+	# merge_success = merge_result.returncode == 0
 
-		# Merge (do not raise exception on failure)
-		# print(f"Synchronising origin/{use_branch}...")
-		print()
-		# print("start of merge operation...")
-		# merge_result = run_subprocess_live(['git', 'merge', f'origin/{use_branch}'],
-		# 									stdout=sys.stdout,
-		# 									stderr=sys.stderr)
-		merge_result = run_subprocess(['git', 'merge', f'origin/{use_branch}'])
-		# print(f"merge_result.stdout: {merge_result.stdout}")
-		# print(f"merge_result.stderr: {merge_result.stderr}")
-		merge_result_message = "\n".join([
-			line for line in f"{merge_result.stdout}{merge_result.stderr}".splitlines()
-			if "Merge made by the 'ort' strategy" not in line.strip()
-		])
-		# print(f'merge_result_message: {merge_result_message}')
-		print_stdout(merge_result_message.strip())
-		# print('middle')
-		# print_norm(merge_result_message)
-		# print("end of merge operation...")
-		merge_success = merge_result.returncode == 0
+	# print(f'merge_result: {merge_result}')
+	merge_tag != "no commit" and print()
+	if merge_success:
+		merge_tag != "no commit" and print_norm("Pull successful!")
+	else:
+		print_norm("Pull failed. Manual intervention might be required.")
 
-		# print(f'merge_result: {merge_result}')
-		print()
-		if merge_success:
-			print_norm("Pull successful!")
+	print()
+
+	# Restore stash only if merge was successful
+	if stashed and merge_success:
+		print_norm("Restoring stashed changes...")
+		_, stash_list_out, _ = subprocess_for_pull_command('git stash list')
+		stash_id = None
+		for line in stash_list_out.splitlines():
+			if stash_msg in line:
+				stash_id = line.split(':')[0]
+				break
+		if stash_id:
+			try:
+				result = run_subprocess(['git', 'stash', 'pop', stash_id])
+				if result.returncode == 0:
+					print_norm("Restore successful!")
+				else:
+					print_norm(f"Restore failed due to conflicts. Your changes are still in: {stash_id}")
+					print_norm("Attempting to help resolve stash conflicts interactively...")
+					check_and_resolve_conflicts(incoming_branch=use_branch, current_branch=current_branch_name, is_from_stash=True)
+					print_norm("Conflict resolution complete for stashed changes.")
+			except Exception:
+				print_norm("Restore failed. Please recover manually in stashes.")
 		else:
-			print_norm("Merge conflict occurred. Attempting to resolve interactively...")
-			check_and_resolve_conflicts()
-			merge_success = True  # After successful resolution
+			print_norm("Expected stash not found. You may need to restore it manually.")
 
-		print()
-
-		# Restore stash only if merge was successful
-		if stashed and merge_success:
-			print_norm("Restoring stashed changes...")
-			_, stash_list_out, _ = subprocess_for_pull_command('git stash list')
-			stash_id = None
-			for line in stash_list_out.splitlines():
-				if stash_msg in line:
-					stash_id = line.split(':')[0]
-					break
-			if stash_id:
-				try:
-					result = run_subprocess(['git', 'stash', 'pop', stash_id])
-					if result.returncode == 0:
-						print_norm("Restore successful!")
-					else:
-						print_norm(f"Restore failed due to conflicts. Your changes are still in: {stash_id}")
-						print_norm("Attempting to help resolve stash conflicts interactively...")
-						check_and_resolve_conflicts()
-						print_norm("Conflict resolution complete for stashed changes.")
-				except Exception:
-					print_norm("Restore failed. Please recover manually in stashes.")
-			else:
-				print_norm("Expected stash not found. You may need to restore it manually.")
-
-		# Inform user about stash if merge failed
-		if stashed and not merge_success:
-			print_norm(f"Operation failed. Your changes were stashed as: {stash_msg}")
-			print_norm("You can recover them with:")
-			print_norm("    git stash list")
-			print_norm("    git stash pop <stash@{{N}}>")
-	# except KeyboardInterrupt:
-	# 	print_norm("\nInterrupted by user")
-	# 	sys.exit(1)
-	except subprocess.CalledProcessError as e:
-		print_norm(f"Command failed: {e.cmd}")
-		sys.exit(e.returncode)
+	# Inform user about stash if merge failed
+	if stashed and not merge_success:
+		print_norm(f"Operation failed. Your changes were stashed as: {stash_msg}")
+		print_norm("You can recover them with:")
+		print_norm("    git stash list")
+		print_norm("    git stash pop <stash@{{N}}>")
+# except KeyboardInterrupt:
+# 	print_norm("\nInterrupted by user")
+# 	sys.exit(1)
+# except subprocess.CalledProcessError as e:
+# 	# print_norm(f"Command failed with error: {e}")
+# 	print_norm(f"Command failed: {e.cmd}")
+# 	sys.exit(e.returncode)
 
 #######################################################################
 
@@ -975,7 +1171,7 @@ def push(file_list: list=None):
 		file_list (list): list of files in the current working directory
 	"""
 	if 'custom_commands' in os.getcwd():
-		subprocess.run(["bash", "bumpCCVersion"], check=True, cwd=bumpCCVersion, stdout=None, stderr=None)
+		subprocess.run(["bash", "bumpCCVersion"], cwd=bumpCCVersion, stdout=None, stderr=None)
 	print_norm("#### pushing ...################################################")
 	push = run_subprocess_cmd_alone(["git", "push"])
 	if push.returncode == 0:
@@ -1043,7 +1239,7 @@ def add_commit_all(type: str="current", commit_message: str=""):
 	############################################################################################################
 	# print(f'current location (git_codes): {os.getcwd()}')
 	if '/home/dafetite/alx/altaviz/altaviz_mobile/altaviz_mobile' in os.getcwd():
-		subprocess.run(["bash", "bumpAppJsonVersion"], check=True, cwd=bumpAppJsonVersionScript, stdout=None, stderr=None)
+		subprocess.run(["bash", "bumpAppJsonVersion"], cwd=bumpAppJsonVersionScript, stdout=None, stderr=None)
 	# print(f'current location (git_codes): {os.getcwd()}')
 	############################################################################################################
 	############################################################################################################
