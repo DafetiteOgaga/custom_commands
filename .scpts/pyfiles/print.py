@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import time
+import time, sys
 # from pyfiles.subprocessfxn import run_subprocess
 from pathlib import Path
 # from pyfiles.verify_repo_new import entry_point
@@ -8,6 +8,35 @@ try:
 	from .colors import *
 except ImportError:
 	from colors import *
+
+# def quit(val='q'):
+# 	"""
+# 	This function stops and exit the program.
+# 	"""
+
+# 	if val.lower() == "q":
+# 		print()
+# 		print("Cheers.")
+# 		sys.exit()
+
+# def exit(option: str):
+	
+# 	if option == 'q'.lower():
+# 		print()
+# 		print()
+# 		sys.exit()
+
+def quit_program(arg: str, value: int=0):
+	"""Exits the program
+
+	Args:
+		option (str): argument to check
+	"""
+	if arg.lower() == 'q':
+		print()
+		print_norm('Cheers.')
+		# time.sleep(0.5)
+		sys.exit(value)
 
 def print_stdout(stdout: str, index: int=0, serial_numbered: int=0, status: int=0):
 	"""This function nicely colors and prints out the output stream the
@@ -304,7 +333,7 @@ def backward_search(path=None):
 			with open(parent / '.git' / 'config', 'r') as config_file:
 				config_content = config_file.readlines()
 			configRepoName = [line for line in config_content
-                    if 'url' in line and 'https://' in line]
+					if 'url' in line and 'https://' in line]
 			if not configRepoName:
 				print_norm("This repository wasn't cloned using https")
 				return True
