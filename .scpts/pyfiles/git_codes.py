@@ -42,7 +42,6 @@ try:
 except:
 	print('.....')
 	# print(f'except block')
-	# py = None
 	exit2(leave=root_repo)
 
 if root_repo == True:
