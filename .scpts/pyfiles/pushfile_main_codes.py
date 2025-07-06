@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 import subprocess, sys, os, time, shutil
-from .my_prompt import main as prompt_1ch
-from .git_codes import print_set_commit, print_norm, print_stdout, clear_staged_and_commit, pull, push, checkPushAccess, print_set_pre_commit
+from pyfiles.my_prompt import main as prompt_1ch
+from pyfiles.git_codes import clear_staged_and_commit, pull, push, checkPushAccess
+from pyfiles.print import print_norm, print_stdout
 from pyfiles.subprocessfxn import run_subprocess
 from pyfiles.print import quit_program
 from pyfiles.keyboardInterruption import auto_wrap_interrupt_guard
@@ -11,6 +12,8 @@ home_dir = os.path.join(os.path.expanduser("~"), '.xbin')  # Expands "~" to "/ho
 bumpAppJsonVersionScript = os.path.join(home_dir, "pyfiles")  # location to bumpAppJsonVersion
 bumpCCVersion = os.path.join(home_dir, "pyfiles")  # location to bumpCCVersion
 set_filename = True # amodification
+remove_pre_commit = "unset-pre"
+add_pre_commit = "precommit"
 
 def add_commit(file, arg="arg"):
 	"""This function will:
@@ -88,7 +91,7 @@ def add_commit(file, arg="arg"):
 	# displayed_filename = file.split("/")[-1] if "/" in file else file
 	pre_commit_message = set_filename_as_pre_commit_msg(displayed_filename)
 	if not set_default:
-		commit_message = input("Enter a commit message for {} [q] to abort >>> {}: ".format(displayed_filename, pre_commit_message))
+		commit_message = input("Enter a commit message for {} [q] to abort >>> {}".format(displayed_filename, pre_commit_message))
 		if commit_message.lower() == "pass":
 			print()
 			print(":###: You skipped {} #####".format(displayed_filename))
@@ -97,30 +100,19 @@ def add_commit(file, arg="arg"):
 		if commit_message.lower() == "unset commit" and file != "README.md": # xmodification
 			success_mode = set_default_commit_msg("n") # xmodification
 			print_set_commit("unset") # xmodification
-			commit_message = input("Enter a commit message for {} [q] to abort >>> {}: ".format(displayed_filename, pre_commit_message)) # xmodification
+			commit_message = input("Enter a commit message for {} [q] to abort >>> {}".format(displayed_filename, pre_commit_message)) # xmodification
 		elif commit_message.lower() == "unset commit" and file == "README.md": # xmodification
 			success_mode = set_default_commit_msg("n") # xmodification
 			print_set_commit("unset") # xmodification
-		elif "precommit" in commit_message.lower(): # xmodification
-			print(f"commit message: {commit_message}")
-			if commit_message.lower() == "unset precommit": # xmodification
-				if not set_filename: # xmodification
-					print_norm("Pre-commit message previously unset.") # xmodification
-					commit_message = input("Enter a commit message for {} [q] to abort >>> {}: ".format(displayed_filename, pre_commit_message)) # xmodification
-				elif set_filename: # xmodification
-					print(f'set_pre_commit_msg with NO')
-					success_mode = set_pre_commit_msg("n") # xmodification
-					print_set_pre_commit("unset") # xmodification
-					commit_message = input("Enter a commit message for {} [q] to abort >>> {}: ".format(displayed_filename, pre_commit_message)) # xmodification
-			elif commit_message.lower() == "precommit": # xmodification
-				if set_filename: # xmodification
-					print_norm("Pre-commit message previously set.") # xmodification
-					commit_message = input("Enter a commit message for {} [q] to abort >>> {}: ".format(displayed_filename, pre_commit_message)) # xmodification
-				elif not set_filename: # xmodification
-					print(f'set_pre_commit_msg with YES')
-					success_mode = set_pre_commit_msg("y") # xmodification
-					print_set_pre_commit("set") # xmodification
-					commit_message = input("Enter a commit message for {} [q] to abort >>> {}: ".format(displayed_filename, pre_commit_message)) # xmodification
+		elif commit_message.lower() == add_pre_commit or commit_message.lower() == remove_pre_commit: # xmodification
+			commit_message = collect_valid_commit_message(
+								# lookup1=add_pre_commit,
+								# lookup2=remove_pre_commit,
+								condition=True,
+								commit_message=commit_message,
+								filename=displayed_filename,
+								pre_commit_message=pre_commit_message
+								) # xmodification
 	quit_program(commit_message)
 	if commit_message == "":
 		print("You must provide a commit message for {}. Try again".format(displayed_filename))
@@ -146,7 +138,7 @@ def add_commit(file, arg="arg"):
 	############################################################################################################
 	############################################################################################################
 	commit_message = f"{pre_commit_message}{commit_message}"
-	print(f'XXXXXXXXXX final commit_message: {commit_message}')
+	# print(f'XXXXXXXXXX final commit_message: {commit_message}')
 	commit = run_subprocess(["git", "commit", "-m", commit_message])
 	if commit.returncode == 0:
 		print_stdout(commit.stdout)
@@ -162,6 +154,40 @@ def add_commit(file, arg="arg"):
 		quit_program("q")
 	return success_mode
 
+def collect_valid_commit_message(condition: bool = False, commit_message: str = "", filename: str = "", pre_commit_message: str = ""):
+	"""This function collects a valid commit message from the user.
+
+	Args:
+		condition (bool): a condition to check if the commit message is valid
+		commit_message (str): the initial commit message
+		filename (str): the filename displayed in the prompt
+		pre_commit_message (str): the filename to use as pre-commit (part of the commit) message
+
+	Returns:
+		str: commit message
+	"""
+	while condition:
+		# print(f"commit message: {commit_message}")
+		if commit_message.lower() == remove_pre_commit: # xmodification
+			if set_filename: # xmodification
+				# print(f'set_pre_commit_msg with NO')
+				set_pre_commit_msg() # xmodification
+				print_set_pre_commit("unset") # xmodification
+			else:
+				print_norm("Filename as pre-commit message is not set.") # xmodification
+			commit_message = input("Enter a commit message for {} [q] to abort >>> {}".format(filename, pre_commit_message)) # xmodification
+		elif commit_message.lower() == add_pre_commit: # xmodification
+			if set_filename: # xmodification
+				print_norm("Filename as pre-commit message exists.") # xmodification
+			else:
+				# print(f'set_pre_commit_msg with YES')
+				set_pre_commit_msg() # xmodification
+				print_set_pre_commit("set") # xmodification
+			commit_message = input("Enter a commit message for {} [q] to abort >>> {}".format(filename, pre_commit_message)) # xmodification
+		print()
+		if commit_message.lower() != remove_pre_commit and commit_message.lower() != add_pre_commit:
+			condition = False
+			return commit_message
 
 def set_default_commit_msg(par: str):
 	"""
@@ -237,7 +263,7 @@ def set_default_commit_msg(par: str):
 	# print("set_default_commit_msg: finished *************************************")
 	return mode
 
-def set_pre_commit_msg(par: str):
+def set_pre_commit_msg():
 	"""
 	This function recreates the git_codes.py script to set the current file name
 	as part of the commit message (pre-commit message).
@@ -256,22 +282,24 @@ def set_pre_commit_msg(par: str):
 	temp_file = os.path.join(file_path, "mod_pushfile_main_codes.py")
 	source_file = os.path.join(file_path, source_file_name)
 	# test_file = os.path.join(file_path, "Test_git_codes.py")
-	print("set_pre_commit_msg: start *************************************")
+	# print("set_pre_commit_msg: start *************************************")
 	print()
 
 	res_list = ["amodification", "anorm"]
-	if par.lower() == "y":
-		set_def1, set_def2 = res_list
-		my_str = "Removing" # for bar
-		print('Unsetting pre-commit for all files ...')
-	elif par.lower() == "n":
-		set_def2, set_def1 = res_list
-		my_str = "Setting" # for bar
-		print('Setting pre-commit for all files ...')
+	set_def1, set_def2 = res_list
+	my_str = "Setting" # for bar
+	# if par.lower() == "y":
+	# 	set_def1, set_def2 = res_list
+	# 	my_str = "Removing" # for bar
+	# 	print('Unsetting pre-commit for all files ...')
+	# elif par.lower() == "n":
+	# 	set_def2, set_def1 = res_list
+	# 	my_str = "Setting" # for bar
+	# 	print('Setting pre-commit for all files ...')
 
-	print(f'par: {par}')
-	print(f'set_def1: {set_def1}')
-	print(f'set_def2: {set_def2}')
+	# print(f'par: {par}')
+	# print(f'set_def1: {set_def1}')
+	# print(f'set_def2: {set_def2}')
 
 	cur_dir = os.getcwd() # for bar
 	os.chdir(file_path) # for bar
@@ -283,17 +311,18 @@ def set_pre_commit_msg(par: str):
 	with open(source_file, "r") as main_code:
 		count = 1 # for bar
 		content = main_code.readlines()
-		print() # remove this line
 		for line in content:
 			time.sleep(.005)
 			if line.rstrip().endswith(set_def1):
-				print(f'Found1: {line.rstrip()} ends with {set_def1}')
-				# line = f"set_filename = True # {set_def2}\n"
-				print(f'changed to: {line.rstrip()}')
+				# print(f'\nWWWWW Found1: {line.rstrip()} ends with {set_def1}')
+				line = f"set_filename = False # {set_def2}\n"
+				# time.sleep(.005)
+				# print(f'YYYYY changed to: {line.rstrip()}')
 			elif line.rstrip().endswith(set_def2):
-				print(f'Found2: {line.rstrip()} ends with {set_def2}')
-				# line = f"set_filename = False # {set_def1}\n"
-				print(f'changed to: {line.rstrip()}')
+				# print(f'\nAAAAA Found2: {line.rstrip()} ends with {set_def2}')
+				line = f"set_filename = True # {set_def1}\n"
+				# time.sleep(.005)
+				# print(f'BBBBB changed to: {line.rstrip()}')
 			new_file.append(line)
 			# print('::::##:::: {}'.format(line.strip()))
 
@@ -305,23 +334,23 @@ def set_pre_commit_msg(par: str):
 		# print(new_file)
 
 	with open(temp_file, "w") as def_commit:
-		print(f'writing to temp_file: {temp_file}')
+		# print(f'writing to temp_file: {temp_file}')
 		def_commit.writelines(new_file)
 
 	shutil.copy(temp_file, source_file)
-	print(f'Copied temp_file: {temp_file} to source_file: {source_file}')
+	# print(f'Copied temp_file: {temp_file} to source_file: {source_file}')
 	os.remove(temp_file)
-	print(f'Removed temp_file: {temp_file}')
+	# print(f'Removed temp_file: {temp_file}')
 	print()
 	print("Done.")
-	if par.lower() == "y":
-		mode = "mod"
-	elif par.lower() == "n":
-		mode = "norm"
+	# if par.lower() == "y":
+	# 	mode = "mod"
+	# elif par.lower() == "n":
+	# 	mode = "norm"
 	print()
-	print("set_pre_commit_msg: finished *************************************")
-	print(f'returned mode: {mode}')
-	return mode
+	# print("set_pre_commit_msg: finished *************************************")
+	# print(f'returned mode')
+	# return mode
 
 
 def print_committted_files(files, additional_list=None, mode=None, prompt1=None, prompt2=None):
@@ -414,7 +443,41 @@ def set_filename_as_pre_commit_msg(filename: str):
 	"""
 	if not set_filename:
 		return ""
-	return f"{filename}"
+	return f"{filename}: "
+
+def print_set_commit(var: str):
+	"""This function prints information regarding the state of "Update README.md" setting.
+
+	Args:
+		var (str): string
+	"""
+
+	note = 'NOTE: CHANGES WILL TAKE EFFECT THE NEXT TIME YOU RUN THE "pushfile" command.'
+	dotted_line = "".ljust(len(note)+6, '.')
+	print(dotted_line)
+	if var.lower() == "unset":
+		print_norm('"Update README.md" is no longer your default commit message to all README.md files')
+	elif var.lower() == "set":
+		print_norm('"Update README.md" is now your default commit message for all README.md files.')
+	print_norm(note)
+	print(dotted_line)
+
+def print_set_pre_commit(var: str):
+	"""This function prints information regarding the state of "Update README.md" setting.
+
+	Args:
+		var (str): string
+	"""
+
+	note = 'NOTE: CHANGES WILL TAKE EFFECT THE NEXT TIME YOU RUN THE "pushfile" command.'
+	dotted_line = "".ljust(len(note)+6, '.')
+	print(dotted_line)
+	if var.lower() == "unset":
+		print_norm('Pre commit for all files unset.')
+	elif var.lower() == "set":
+		print_norm('Pre commit for all files set.')
+	print_norm(note)
+	print(dotted_line)
 
 def main_enrty():
 	"""The main execution of the program
@@ -497,11 +560,14 @@ def main_enrty():
 	# print(f'deleted_file_list: {deleted_file_list}')
 	if new_args_len > 0 or ahead_of_origin or arg_len > 1 or deleted_file_list_len > 0:
 		if new_args_len > 0 or ahead_of_origin or arg_len > 1:
-			print("...............................................................")
+			instruction1 = 'Enter "pass" to skip the current file.'
+			instruction2 = f'Enter "{remove_pre_commit if set_filename else add_pre_commit}" to set every filename as pre-commit message.'
+			dotted_line = "".ljust(len(instruction2)+1, '.')
+			print(dotted_line)
 			# print("Enter \"unset commit\" to undo the default README.md commit message.") # xmodification
-			print("Enter \"pass\" to skip the current file.")
-			print(f"Enter \"{'unset precommit' if set_filename else 'precommit'}\" to set every filename as pre-commit message.")
-			print("...............................................................")
+			print(instruction1)
+			print(instruction2)
+			print(dotted_line)
 		# print("Current working directory: {}".format(currentDirectory))
 		# print(f'arg_len: {arg_len-1}')
 		# print(f'sys.argv: {sys.argv}')
