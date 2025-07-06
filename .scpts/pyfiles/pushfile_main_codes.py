@@ -2,8 +2,9 @@
 
 import subprocess, sys, os, time, shutil
 from .my_prompt import main as prompt_1ch
-from .git_codes import print_set_commit, print_norm, print_stdout, quit, clear_staged_and_commit, pull, push, checkPushAccess
+from .git_codes import print_set_commit, print_norm, print_stdout, clear_staged_and_commit, pull, push, checkPushAccess
 from pyfiles.subprocessfxn import run_subprocess
+from pyfiles.print import quit_program
 
 home_dir = os.path.join(os.path.expanduser("~"), '.xbin')  # Expands "~" to "/home/your-username"
 bumpAppJsonVersionScript = os.path.join(home_dir, "pyfiles")  # location to bumpAppJsonVersion
@@ -97,7 +98,7 @@ def add_commit(file, arg="arg"):
 		elif commit_message.lower() == "unset commit" and file == "README.md": # xmodification
 			success_mode = set_default_commit_msg("n") # xmodification
 			print_set_commit("unset") # xmodification
-	quit(commit_message)
+	quit_program(commit_message)
 	if commit_message == "":
 		print("You must provide a commit message for {}. Try again".format(displayed_filename))
 		return 2
@@ -105,7 +106,7 @@ def add_commit(file, arg="arg"):
 	add = run_subprocess(["git", "add", file])
 	if add.returncode != 0:
 		print("Oops! I got {}. When trying to stage {}".format(add.stderr, displayed_filename))
-		sys.exit()
+		quit_program("q")
 	else:
 		print_stdout(add.stdout)
 		print("{} successfully staged.".format(displayed_filename))
@@ -133,7 +134,7 @@ def add_commit(file, arg="arg"):
 		print("nothing to commit, working tree clean")
 	else:
 		print("Oops! I got: {}When trying to commit {} to {} in the repository.".format(commit.stderr,commit_message, displayed_filename))
-		sys.exit()
+		quit_program("q")
 	return success_mode
 
 
@@ -296,7 +297,7 @@ def main_enrty():
 
 	checkEditAccess = checkPushAccess()
 	if not checkEditAccess:
-		sys.exit()
+		quit_program("q")
 	# currentDirectory = os.getcwd()
 	status_details = run_subprocess(["git", "status"])
 	# print(f'status_details.stdout: {status_details.stdout}')
@@ -305,7 +306,7 @@ def main_enrty():
 	# print(f'status_string: {status_string}')
 	# if "nothing to commit, working tree clean" in status_string:
 	# 	print("You have nothing to commit. Your working tree is clean.")
-		# sys.exit() # uncomment this line to exit the program
+		# quit_program("q") # uncomment this line to exit the program
 	ahead_of_origin = "Your branch is ahead of 'origin/" in status_string
 	file_paths = []
 	deleted_file_list = []
@@ -435,7 +436,7 @@ def main_enrty():
 		# 		elif file.lower() == "unset commit" and file == "README.md": # xmodification
 		# 			success_mode = set_default_commit_msg("n") # xmodification
 		# 			print_set_commit("unset") # xmodification
-		# 		quit(file)
+		# 		quit_program(file)
 		# 		if file.lower() == "s":
 		# 			print()
 		# 			break
@@ -478,7 +479,7 @@ def main_enrty():
 				# else:
 					# handles when there are no files staged and committed, including deleted files
 					# print("You are yet to stage and commit any file. Try again.")
-				sys.exit()
+				quit_program("q")
 			else:
 				# handles previuosly committed that are not pushed
 				all_files = committed_files.stdout.splitlines()
@@ -508,7 +509,7 @@ def main_enrty():
 			print()
 			ready = prompt_1ch('Select one >>> ')
 			
-			quit(ready)
+			quit_program(ready)
 			if ready.lower() == "r":
 				clear_staged_and_commit()
 			elif ready.lower() == "u": # xmodification
@@ -526,7 +527,7 @@ def main_enrty():
 	else:
 		print()
 		print_norm("nothing to commit, working tree clean.")
-		sys.exit()
+		quit_program("q")
 	print("Done.")
 	print()
 
