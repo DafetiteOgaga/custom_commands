@@ -6,19 +6,8 @@ from pyfiles.check_db import check_database
 from pyfiles.check_MySQLdb import check_mysqldb
 from pyfiles import check_MySQLdb
 from pyfiles.configure_settings_py import find_settings_py as settings
-from pyfiles.print import print_norm as print_stdout
+from pyfiles.print import print_norm as print_stdout, quit_program
 from pyfiles.subprocessfxn import run_subprocess, run_subprocess_cmd_alone
-
-def exit(option: str):
-	"""Exits the program
-
-	Args:
-		option (str): argument to check
-	"""
-	if option == 'q'.lower():
-		print()
-		print('Cheers.')
-		sys.exit()
 
 def locator(disp_list: list, manage_py_list: list, migration_list: list):
 	"""Forward seraches the current directory and its sub-directory(ies)
@@ -71,8 +60,7 @@ def main(runserver: str=None, migrate: str=None, show: str=None):
 		if len(manage) == 0:
 			print_stdout('No django project found in this directory or its sub-directories.')
 			print_stdout('Change to a directory that has a django project or has it in its sub-directory(ies).')
-			print()
-			sys.exit(1)
+			quit_program("q", 1)
 		elif len(manage) == 1:
 			return manage[0]
 		else:
@@ -86,9 +74,8 @@ def main(runserver: str=None, migrate: str=None, show: str=None):
 			try:
 				option = input("Select the project you wish to spin up. [q] - exit >>> ")
 			except KeyboardInterrupt:
-				print()
-				sys.exit()
-			exit(option)
+				quit_program("q", 1)
+			quit_program(option)
 			option = int(option) - 1
 			print_stdout(f'Spinning server for project: {manage[option].split(os.sep)[-1]}')
 			print()
@@ -108,34 +95,30 @@ def main(runserver: str=None, migrate: str=None, show: str=None):
 				print()
 				print_stdout('No migration found')
 				print_stdout('Use "makemigrations", "migrate" or "mkandmigrate"')
-				print()
-				sys.exit(1)
+				quit_program("q", 1)
 			for index, i in enumerate(app_list):
 				print(f'{index + 1}. {i}')
 			print()
 			try:
 				selection = input('Make a selection. [q] - exit >>> ')
 			except KeyboardInterrupt:
-				print()
-				sys.exit()
-			exit(selection)
+				quit_program("q")
+			quit_program(selection)
 			selection = int(selection) - 1
 		else:
 			if len(app_name_list) == 0:
 				print()
 				print_stdout('No app/history found')
 				print_stdout('Use "makemigrations", "migrate" or "mkandmigrate"')
-				print()
-				sys.exit(1)
+				quit_program("q", 1)
 			for index, i in enumerate(app_name_list):
 				print_stdout(f'{index + 1}. {i}')
 			print()
 			try:
 				selection = input('Select an option. [q] - exit >>> ')
 			except KeyboardInterrupt:
-				print()
-				sys.exit()
-			exit(selection)
+				quit_program("q")
+			quit_program(selection)
 			selection = int(selection) - 1
 		return dict_app_name, app_list[selection]
 	
@@ -179,7 +162,7 @@ def output_func():
 	else:
 		print()
 		print('Invalid entry!')
-		sys.exit(1)
+		quit_program("q", 1)
 	return ret
 
 
@@ -244,7 +227,7 @@ b. Install the dependencies in the requirements.txt
 """
 		print(options)
 		response = prompt(f'Make a choice. [q] - quit >>> ')
-		exit(response)
+		quit_program(response)
 	else:
 		print_stdout('Creating requirements.txt file ...')
 		response = 'a'
@@ -256,7 +239,7 @@ b. Install the dependencies in the requirements.txt
 	else:
 		print()
 		print('Invalid entry!')
-		sys.exit(1)
+		quit_program("q", 1)
 
 
 def check_database_type(drf: bool=False):
@@ -272,8 +255,7 @@ def check_database_type(drf: bool=False):
 		print()
 		print_stdout("You don't have django rest framework installed properly.")
 		print_stdout("Run: drf command")
-		print()
-		sys.exit(1)
+		quit_program("q", 1)
 	if 'MySQL' in db_check:
 		mysqlclient = check_mysqldb(py=True)
 		if mysqlclient == 'not installed':
@@ -284,8 +266,7 @@ def check_database_type(drf: bool=False):
 			print_stdout("    sudo apt-get install pkg-config")
 			print_stdout("    sudo apt-get install libmysqlclient-dev")
 			print_stdout("    pip install mysqlclient")
-			print()
-			sys.exit(1)
+			quit_program("q", 1)
 
 def moduleNotFound_in_settings(err_output):
 	"""Handles the ModuleNotFoundError.
@@ -322,7 +303,7 @@ def django_migrate():
 	code, response = error_check()
 	stop = error_response(code, response)
 	if stop:
-		sys.exit(stop)
+		quit_program("q", stop)
 
 	if len(sys.argv) > 2:
 		args = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
@@ -346,13 +327,12 @@ def runserver_func():
 	code, response = error_check()
 	stop = error_response(code, response)
 	if stop:
-		sys.exit(stop)
+		quit_program("q", stop)
 
 	if len(sys.argv) == 2 and type(sys.argv[1]) != int and len(sys.argv[1]) != 4:
 		print()
 		print_stdout('port number must be an integer of 4 numbers')
-		print()
-		sys.exit(1)
+		quit_program("q", 1)
 
 	text_path = os.getcwd()
 	print()
@@ -380,7 +360,7 @@ def sqlmigrate_func():
 	code, response = error_check()
 	stop = error_response(code, response)
 	if stop:
-		sys.exit(stop)
+		quit_program("q", stop)
 
 	if len(sys.argv) > 1:
 		args = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
@@ -402,7 +382,7 @@ def requirements_func():
 	code, response = error_check()
 	stop = error_response(code, response)
 	if stop:
-		sys.exit(stop)
+		quit_program("q", stop)
 
 	if len(sys.argv) > 1:
 		args = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
