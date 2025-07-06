@@ -2,20 +2,22 @@
 
 import subprocess, sys, os, time, shutil
 from .my_prompt import main as prompt_1ch
-from .git_codes import print_set_commit, print_norm, print_stdout, clear_staged_and_commit, pull, push, checkPushAccess
+from .git_codes import print_set_commit, print_norm, print_stdout, clear_staged_and_commit, pull, push, checkPushAccess, print_set_pre_commit
 from pyfiles.subprocessfxn import run_subprocess
 from pyfiles.print import quit_program
+from pyfiles.keyboardInterruption import auto_wrap_interrupt_guard
 
 home_dir = os.path.join(os.path.expanduser("~"), '.xbin')  # Expands "~" to "/home/your-username"
 bumpAppJsonVersionScript = os.path.join(home_dir, "pyfiles")  # location to bumpAppJsonVersion
 bumpCCVersion = os.path.join(home_dir, "pyfiles")  # location to bumpCCVersion
+set_filename = True # amodification
 
 def add_commit(file, arg="arg"):
 	"""This function will:
 	1. Check if the input is a directory and dress it for processing
 	2. Check if the file/directory exists in the current working directory
 	3. Check and skip files/directories that have been staged and committed
-	4. Loop through the files as provided via the command line. 
+	4. Loop through the files as provided via the command line.
 		Then, add and commit to each files separately
 
 	Args:
@@ -84,8 +86,9 @@ def add_commit(file, arg="arg"):
 	else:
 		print()
 	# displayed_filename = file.split("/")[-1] if "/" in file else file
-	if not set_default:		
-		commit_message = input("Enter a commit message for {} [q] to abort >>> ".format(displayed_filename))
+	pre_commit_message = set_filename_as_pre_commit_msg(displayed_filename)
+	if not set_default:
+		commit_message = input("Enter a commit message for {} [q] to abort >>> {}: ".format(displayed_filename, pre_commit_message))
 		if commit_message.lower() == "pass":
 			print()
 			print(":###: You skipped {} #####".format(displayed_filename))
@@ -94,10 +97,30 @@ def add_commit(file, arg="arg"):
 		if commit_message.lower() == "unset commit" and file != "README.md": # xmodification
 			success_mode = set_default_commit_msg("n") # xmodification
 			print_set_commit("unset") # xmodification
-			commit_message = input("Enter a commit message for {} [q] to abort >>> ".format(displayed_filename)) # xmodification
+			commit_message = input("Enter a commit message for {} [q] to abort >>> {}: ".format(displayed_filename, pre_commit_message)) # xmodification
 		elif commit_message.lower() == "unset commit" and file == "README.md": # xmodification
 			success_mode = set_default_commit_msg("n") # xmodification
 			print_set_commit("unset") # xmodification
+		elif "precommit" in commit_message.lower(): # xmodification
+			print(f"commit message: {commit_message}")
+			if commit_message.lower() == "unset precommit": # xmodification
+				if not set_filename: # xmodification
+					print_norm("Pre-commit message previously unset.") # xmodification
+					commit_message = input("Enter a commit message for {} [q] to abort >>> {}: ".format(displayed_filename, pre_commit_message)) # xmodification
+				elif set_filename: # xmodification
+					print(f'set_pre_commit_msg with NO')
+					success_mode = set_pre_commit_msg("n") # xmodification
+					print_set_pre_commit("unset") # xmodification
+					commit_message = input("Enter a commit message for {} [q] to abort >>> {}: ".format(displayed_filename, pre_commit_message)) # xmodification
+			elif commit_message.lower() == "precommit": # xmodification
+				if set_filename: # xmodification
+					print_norm("Pre-commit message previously set.") # xmodification
+					commit_message = input("Enter a commit message for {} [q] to abort >>> {}: ".format(displayed_filename, pre_commit_message)) # xmodification
+				elif not set_filename: # xmodification
+					print(f'set_pre_commit_msg with YES')
+					success_mode = set_pre_commit_msg("y") # xmodification
+					print_set_pre_commit("set") # xmodification
+					commit_message = input("Enter a commit message for {} [q] to abort >>> {}: ".format(displayed_filename, pre_commit_message)) # xmodification
 	quit_program(commit_message)
 	if commit_message == "":
 		print("You must provide a commit message for {}. Try again".format(displayed_filename))
@@ -122,6 +145,8 @@ def add_commit(file, arg="arg"):
 	############################################################################################################
 	############################################################################################################
 	############################################################################################################
+	commit_message = f"{pre_commit_message}{commit_message}"
+	print(f'XXXXXXXXXX final commit_message: {commit_message}')
 	commit = run_subprocess(["git", "commit", "-m", commit_message])
 	if commit.returncode == 0:
 		print_stdout(commit.stdout)
@@ -212,6 +237,93 @@ def set_default_commit_msg(par: str):
 	# print("set_default_commit_msg: finished *************************************")
 	return mode
 
+def set_pre_commit_msg(par: str):
+	"""
+	This function recreates the git_codes.py script to set the current file name
+	as part of the commit message (pre-commit message).
+
+	Args:
+		par (str): user response
+
+	Returns:
+		str: mode of configuration
+	"""
+	source_file_name = "pushfile_main_codes.py" # for bar or not
+	file_path = os.path.join(os.path.expanduser("~"), ".xbin", "pyfiles")
+
+	# file_path = "pyfiles" # remove
+
+	temp_file = os.path.join(file_path, "mod_pushfile_main_codes.py")
+	source_file = os.path.join(file_path, source_file_name)
+	# test_file = os.path.join(file_path, "Test_git_codes.py")
+	print("set_pre_commit_msg: start *************************************")
+	print()
+
+	res_list = ["amodification", "anorm"]
+	if par.lower() == "y":
+		set_def1, set_def2 = res_list
+		my_str = "Removing" # for bar
+		print('Unsetting pre-commit for all files ...')
+	elif par.lower() == "n":
+		set_def2, set_def1 = res_list
+		my_str = "Setting" # for bar
+		print('Setting pre-commit for all files ...')
+
+	print(f'par: {par}')
+	print(f'set_def1: {set_def1}')
+	print(f'set_def2: {set_def2}')
+
+	cur_dir = os.getcwd() # for bar
+	os.chdir(file_path) # for bar
+	shell_return = run_subprocess(["wc", source_file_name]) # for bar
+	total_iterations = int((shell_return.stdout.strip().split())[0]) # for bar
+	os.chdir(cur_dir) # for bar
+
+	new_file = []
+	with open(source_file, "r") as main_code:
+		count = 1 # for bar
+		content = main_code.readlines()
+		print() # remove this line
+		for line in content:
+			time.sleep(.005)
+			if line.rstrip().endswith(set_def1):
+				print(f'Found1: {line.rstrip()} ends with {set_def1}')
+				# line = f"set_filename = True # {set_def2}\n"
+				print(f'changed to: {line.rstrip()}')
+			elif line.rstrip().endswith(set_def2):
+				print(f'Found2: {line.rstrip()} ends with {set_def2}')
+				# line = f"set_filename = False # {set_def1}\n"
+				print(f'changed to: {line.rstrip()}')
+			new_file.append(line)
+			# print('::::##:::: {}'.format(line.strip()))
+
+			progress = count / total_iterations # for bar
+			print("\r{}. please wait... : %-40s %d%% done.".format(my_str) % ('>' * int(40 * progress), int(100 * progress)), end='') # for bar
+			count += 1 # for bar
+
+		print("") # for bar
+		# print(new_file)
+
+	with open(temp_file, "w") as def_commit:
+		print(f'writing to temp_file: {temp_file}')
+		def_commit.writelines(new_file)
+
+	shutil.copy(temp_file, source_file)
+	print(f'Copied temp_file: {temp_file} to source_file: {source_file}')
+	os.remove(temp_file)
+	print(f'Removed temp_file: {temp_file}')
+	print()
+	print("Done.")
+	if par.lower() == "y":
+		mode = "mod"
+	elif par.lower() == "n":
+		mode = "norm"
+	print()
+	print("set_pre_commit_msg: finished *************************************")
+	print(f'returned mode: {mode}')
+	return mode
+
+
 def print_committted_files(files, additional_list=None, mode=None, prompt1=None, prompt2=None):
 	"""This function prints the files that have been committed to the
 		repository. But not pushed to the remote repository.
@@ -290,6 +402,19 @@ def get_file_recursively(directory):
 		for file in files:
 			file_paths.append(os.path.join(root, file))
 	return file_paths
+
+def set_filename_as_pre_commit_msg(filename: str):
+	"""This function sets the filename as the commit message.
+
+	Args:
+		set_filename (bool): checks whether to set_filename as pre commit message
+
+	Returns:
+		str: the pre commit message or ""
+	"""
+	if not set_filename:
+		return ""
+	return f"{filename}"
 
 def main_enrty():
 	"""The main execution of the program
@@ -373,8 +498,9 @@ def main_enrty():
 	if new_args_len > 0 or ahead_of_origin or arg_len > 1 or deleted_file_list_len > 0:
 		if new_args_len > 0 or ahead_of_origin or arg_len > 1:
 			print("...............................................................")
-			print("Enter \"unset commit\" to undo the default README.md commit message.") # xmodification
+			# print("Enter \"unset commit\" to undo the default README.md commit message.") # xmodification
 			print("Enter \"pass\" to skip the current file.")
+			print(f"Enter \"{'unset precommit' if set_filename else 'precommit'}\" to set every filename as pre-commit message.")
 			print("...............................................................")
 		# print("Current working directory: {}".format(currentDirectory))
 		# print(f'arg_len: {arg_len-1}')
@@ -423,37 +549,6 @@ def main_enrty():
 				all_files.append(file)
 				count += 1
 				print("...................................................")
-
-		# if arg_len == 2:
-		# 	print('3333333333')
-		# 	all_files = []
-		# 	while True:
-		# 		file = input("Enter file(s). Enter [q] after last file >>> ")
-		# 		if file.lower() == "unset commit" and file != "README.md": # xmodification
-		# 			success_mode = set_default_commit_msg("n") # xmodification
-		# 			print_set_commit("unset") # xmodification
-		# 			file = input("Enter file(s). Enter [q] after last file >>> ") # xmodification
-		# 		elif file.lower() == "unset commit" and file == "README.md": # xmodification
-		# 			success_mode = set_default_commit_msg("n") # xmodification
-		# 			print_set_commit("unset") # xmodification
-		# 		quit_program(file)
-		# 		if file.lower() == "s":
-		# 			print()
-		# 			break
-				
-		# 		if file:
-		# 			res_add_commit = add_commit(file)
-		# 			# moves to the next file
-		# 			if res_add_commit in [1, 3]:
-		# 				count += 1
-		# 				continue
-		# 			# stays on the current file
-		# 			elif res_add_commit == 2:
-		# 				continue
-		# 			if res_add_commit == "mod":
-		# 				print_set_commit("set")
-		# 			all_files.append(file)
-		# 		print("...................................................")
 
 		print()
 		# print(f'all_files: {all_files}')
@@ -504,17 +599,17 @@ def main_enrty():
 			# print('[y] or "Enter" to push these changes to remote')
 			print(f'[y] ({"push" if not use_pushall else "pushall"}) update your remote repository with {"these changes" if not use_pushall else "all changes in this repository"}')
 			print('[q] to abort')
-			print('[u] to unset auto commit message for README.md files') # xmodification
+			# print('[u] to unset auto commit message for README.md files') # xmodification
 			# print('[r] to clear your staging area and commits')
 			print()
 			ready = prompt_1ch('Select one >>> ')
 			
 			quit_program(ready)
-			if ready.lower() == "r":
-				clear_staged_and_commit()
-			elif ready.lower() == "u": # xmodification
-				set_default_commit_msg("n") # xmodification
-			elif ready == "" or ready.lower() == "y":
+			# if ready.lower() == "r":
+			# 	clear_staged_and_commit()
+			# elif ready.lower() == "u": # xmodification
+			# 	set_default_commit_msg("n") # xmodification
+			if ready == "" or ready.lower() == "y":
 				if deleted_file_list:
 					commit_deleted_files(deleted_file_list, mode=1)
 				pull()
@@ -534,3 +629,5 @@ def main_enrty():
 
 # if __name__ == "__main__":
 main_enrty() if __name__ == "__main__" else None
+
+auto_wrap_interrupt_guard(globals())
