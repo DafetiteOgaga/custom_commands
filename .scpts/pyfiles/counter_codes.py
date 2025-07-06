@@ -3,6 +3,7 @@
 import time, subprocess, os, sys
 from .colors import *
 from pyfiles.subprocessfxn import run_subprocess
+from pyfiles.print import quit_program, print_norm
 
 def check_arg(files):
 	"""checks that atleast a file(argument) is
@@ -16,8 +17,8 @@ def check_arg(files):
 	"""
 	length = len(files)
 	if length == 1:
-		print("No argument(s) provided.")
-		sys.exit(1)
+		print_norm("No argument(s) provided.")
+		quit_program("q", 1)
 	return length
 	
 
