@@ -3,6 +3,7 @@
 import subprocess, os, time, sys
 from .colors import *
 from pyfiles.subprocessfxn import run_subprocess
+from pyfiles.print import quit_program
 
 def create_gitignore(list_dict: dict, current_directory, action: str=None):
 	"""_summary_
@@ -107,7 +108,7 @@ def scan_dir(dir, num_items: int, repo, verify_repo: int=0):
 					# time.sleep(1)
 					print(f"Root repo is {os.getcwd()}")
 					print()
-					sys.exit(0)
+					quit_program("q")
 				break
 	return num, git
 
@@ -147,14 +148,14 @@ def entry_point(action: str=None, verify_repo: int=0):
 			print('permission denied: probably reached system files')
 			print(f'tried accessing: {tempCurrDir}')
 			print(notAGitRepo)
-			sys.exit()
+			quit_program("q")
 		directory = os.listdir()
 		num_of_items_in_dir = len(directory)
 		if current_dir == "/":
 			# time.sleep(1)
 			print(notAGitRepo)
 			print()
-			sys.exit(1)
+			quit_program("q", 1)
 		count += 1
 		# print(f"Current directory: {current_dir}")
 	returned_dict = ignore__pycache(current_dir_list)
