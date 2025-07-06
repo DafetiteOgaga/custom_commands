@@ -201,6 +201,21 @@ def print_set_commit(var: str):
 	print_norm('##### NOTE: CHANGES WILL TAKE EFFECT THE NEXT TIME YOU RUN THE "pushfile" command. #####')
 	print("........................................................................................")
 
+def print_set_pre_commit(var: str):
+	"""This function prints information regarding the state of "Update README.md" setting.
+
+	Args:
+		var (str): string
+	"""
+
+	print("........................................................................................")
+	if var.lower() == "unset":
+		print_norm('Pre commit for all files unset.')
+	elif var.lower() == "set":
+		print_norm('Pre commit for all files set.')
+	print_norm('##### NOTE: CHANGES WILL TAKE EFFECT THE NEXT TIME YOU RUN THE "pushfile" command. #####')
+	print("........................................................................................")
+
 
 # def pull():
 # 	"""This function pulls and merges updates from the remote to the local branch
