@@ -1068,8 +1068,8 @@ def view_branch(action: int=0, new_branch="", remove_current_and_main_and_master
 			input_str_type = "delete_branch"
 			branch_listlist = "\n".join(line for line in branch_listlist.split("\n")
 											if not line.startswith("*") and
-											("main" not in line) and
-											("master" not in line))
+											(" main" not in line) and
+											(" master" not in line))
 			# print(f"branch_list.stdout (after removing current branch):\n{branch_listlist}")
 		# print(f"branch_list.stdout (updated):\ns#{branch_listlist}#f")
 		if not branch_listlist.strip():
@@ -1312,11 +1312,11 @@ def delete_branch():
 	# if len_args == 1:
 	selection = view_branch(remove_current_and_main_and_master_branch=True)
 	print()
-	print(f'selection: {selection}')
+	# print(f'selection: {selection}')
 	currentBranch = run_subprocess(["git", "branch", "--show-current"])
-	print(f'currentBranch.stdout: {currentBranch.stdout.strip()}')
-	print(f'currentBranch.stderr: {currentBranch.stderr.strip()}')
-	print_norm(f"This process will delete the branch locally and remotely.")
+	# print(f'currentBranch.stdout: {currentBranch.stdout.strip()}')
+	# print(f'currentBranch.stderr: {currentBranch.stderr.strip()}')
+	print_norm(f"This process will delete the branch locally and it's corresponding remote version.")
 	print_norm(f"{BOLD}{RED}NOTE: It's not REVERSIBLE.{RESET}")
 	print()
 	deleteBrnch = prompt_1ch(f'Are you sure you want to delete the branch {BOLD}{RED}{selection}{RESET}? [y/N] [q] to quit >>> ')
