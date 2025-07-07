@@ -1407,9 +1407,9 @@ def diff(is_main_branch=False):
 	diff_res = run_subprocess(git_command)
 	if diff_res.returncode == 0:
 		if diff_res.stdout:
-			print_stdout(f'{diff_res.stdout}:stdout', status=1)
+			print_stdout(f'{diff_res.stdout}:stdout', status=1, main=is_main_branch)
 		elif diff_res.stderr:
-			print_stdout(f'{diff_res.stderr}:stderr', status=1)
+			print_stdout(f'{diff_res.stderr}:stderr', status=1, main=is_main_branch)
 		else:
 			print()
 			print_norm(f"No changes found{f' on remote origin/{main}' if is_main_branch else ''}.")
