@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250704.2208"
+VERSIONNUMBER="20250706.1704"
 
 # colors and styles
 RESET="\033[0m"
@@ -751,7 +751,18 @@ update_setup_scripts_in_pyfiles() {
 		destination="$XBIN/pyfiles/$filename"
 		# echo "filename: $filename"
 		if [[ -f "$destination" ]]; then
+			# preserve the set_filename line if it exists in pushfile_main_codes.py
+			if [[ "$filename" == "pushfile_main_codes.py" ]] && grep -q "^set_filename =" "$destination"; then
+				line="$(grep "^set_filename =" "$destination")"
+				lineKey="1"
+				# echo "Found the line $line in $destination"
+			fi
 			cp "$file" "$destination"
+			if [[ -n "$lineKey" ]]; then
+				# echo "Reinserted $line into $destination"
+				sed -i "s|^set_filename =.*|$line|" "$destination"
+				lineKey=""
+			fi
 		elif [[ -d "$destination" && "$filename" != "__pycache__" ]]; then
 			cp -r "$file" "$XBIN/pyfiles/"
 			if is_git_bash; then

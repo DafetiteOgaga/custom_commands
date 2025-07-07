@@ -4,8 +4,7 @@ import subprocess, sys, os, time, shlex
 from datetime import datetime
 from pyfiles.verify_repo_new import entry_point
 from pyfiles.my_prompt import main as prompt_1ch
-from pyfiles.print import print_stdout, write_to_file, backward_search
-from pyfiles.print import print_norm
+from pyfiles.print import print_stdout, write_to_file, backward_search, print_norm, quit_program
 from pyfiles.configure_settings_py import compile_dir_list, list_filter, check_for_venv_or_node_modules
 from pyfiles.colors import *
 from pyfiles.subprocessfxn import run_subprocess, run_subprocess_cmd_alone, run_interactive_subprocess, subprocess_for_pull_command, run_subprocess_live
@@ -29,7 +28,7 @@ formatted_stash_time = int(datetime.now().timestamp())
 
 def exit2(leave: bool = False):
 	if leave == True:
-		sys.exit(0)
+		quit_program("q")
 
 root_repo = True
 delimiter = ''
@@ -43,7 +42,6 @@ try:
 except:
 	print('.....')
 	# print(f'except block')
-	# py = None
 	exit2(leave=root_repo)
 
 if root_repo == True:
@@ -169,7 +167,7 @@ def gitignore_resp(auto_set_pycache: str, pycache: list):
 	root_list = []
 	if auto_set_pycache.lower() == 'q':
 		print('Cheers...')
-		sys.exit(0)
+		quit_program('q')
 	elif auto_set_pycache.lower() == 'y' or auto_set_pycache == '\n':
 		for file in pycache:
 			root_list.append(file)
@@ -187,21 +185,6 @@ def browse_files():
 	# print(f'root_list: {root_list}')
 	# delimiter = root_repo + f'{os.sep}'
 	search_repo(root_list, delimiter=delimiter)
-
-def print_set_commit(var: str):
-	"""This function prints information regarding the state of "Update README.md" setting.
-
-	Args:
-		var (str): string
-	"""
-
-	print("........................................................................................")
-	if var.lower() == "unset":
-		print_norm('"Update README.md" is no longer your default commit message to all README.md files')
-	elif var.lower() == "set":
-		print_norm('"Update README.md" is now your default commit message for all README.md files.')
-	print_norm('##### NOTE: CHANGES WILL TAKE EFFECT THE NEXT TIME YOU RUN THE "pushfile" command. #####')
-	print("........................................................................................")
 
 
 # def pull():
@@ -227,7 +210,7 @@ def print_set_commit(var: str):
 # 		print_stdout(pull.stderr)
 # 	else:
 # 		print_norm("Oops! I got {}".format(pull.stderr))
-# 		sys.exit()
+# 		quit_program('q')
 # 	print_norm("Pull successful...")
 # 	print()
 
@@ -260,7 +243,7 @@ def getUserInput(promptText='Select a choice', allowedEntryArray=None, invalidTe
 		# print(f'length of choice: {len(choice)}')
 		# print(f'choice: {choice}')
 		if choice == 'q':
-			quit()
+			quit_program('q')
 		# elif len(choice) == 0:
 		if allowedEntryArray:
 			if choice in allowedEntryArray:
@@ -421,7 +404,7 @@ def show_conflict_blocks(filepath):
 	except FileNotFoundError:
 		print_norm(f"File not found: {filepath}")
 
-def check_and_resolve_conflicts(incoming_branch=None, current_branch=None, is_from_stash=False):
+def check_and_resolve_conflicts(incoming_branch=None, current_branch=None, is_from_stash=False, stash_msg=None):
 	conflicted_files = get_conflicted_files()
 	if not conflicted_files:
 		print_norm("No merge conflicts detected.")
@@ -452,30 +435,63 @@ def check_and_resolve_conflicts(incoming_branch=None, current_branch=None, is_fr
 		if unmerged_files:
 			print("❗ Unresolved merge conflicts remain:\n" + unmerged_files)
 			print("❌ Resolve all conflicts and run again.")
-			sys.exit(1)
+			quit_program('q', 1)
 	if merge_head:
-		commit_changes(operation_type="merge", incoming_branch=incoming_branch, current_branch=current_branch)
+		commit_changes(stash_msg=stash_msg, operation_type="merge", incoming_branch=incoming_branch, current_branch=current_branch)
 	elif rebase_apply:
-		commit_changes(operation_type="rebase", incoming_branch=incoming_branch, current_branch=current_branch)
+		commit_changes(stash_msg=stash_msg, operation_type="rebase", incoming_branch=incoming_branch, current_branch=current_branch)
 
-def commit_changes(operation_type="merge", incoming_branch=None, current_branch=None, msg=False):
+def restore_stash(is_stashed, message, branch, current_branch):
+	if is_stashed:
+		print_norm("Restoring stashed changes...")
+		_, stash_list_out, _ = subprocess_for_pull_command('git stash list')
+		stash_id = None
+		for line in stash_list_out.splitlines():
+			if message in line:
+				stash_id = line.split(':')[0]
+				break
+		if stash_id:
+			try:
+				result = run_subprocess(['git', 'stash', 'pop', stash_id])
+				if result.returncode == 0:
+					print_norm("Restore successful!")
+				else:
+					print_norm(f"Restore failed due to conflicts. Your changes are still in: {stash_id}")
+					print_norm("Attempting to help resolve stash conflicts interactively...")
+					check_and_resolve_conflicts(incoming_branch=branch, current_branch=current_branch, is_from_stash=True)
+					print_norm("Conflict resolution complete for stashed changes.")
+			except Exception:
+				print_norm("Restore failed. Please recover manually in stashes.")
+		else:
+			print_norm("Expected stash not found. You may need to restore it manually.")
+
+def commit_changes(stash_msg=None, operation_type="merge", incoming_branch=None, current_branch=None, msg=False):
 	if not incoming_branch and not current_branch:
 		print_norm("No branches specified for commit message.")
 		print_norm("Kind provide the branch names to use in the commit message.")
-		quit('q')
+		quit_program('q')
+	print()
 	commit_message = input(
 		f"Enter a commit message for the {operation_type}.\n"
 		f"- Press Enter to use a default message\n"
-		f"- Type (q) to exit without doing anything\n"
+		# f"- Type (q) to exit without doing anything\n"
 		f"- Type (a) to abort the {operation_type} operation\n"
-		">>> "
+		"::::: >>> "
 		).strip()
-	quit(commit_message.lower()) # if q is pressed, exit the operation
+	# if commit_message.lower() == 'q':
+	# 	print_norm(f"Restoring working directory...")
+	# 	run_subprocess_live(["git", operation_type, "--abort"])
+	# 	restore_stash(is_stashed=True, message=stash_msg, branch=incoming_branch, current_branch=current_branch)
+	# 	print_norm(f"{operation_type.title()} operation stopped.")
+	# 	quit(commit_message.lower()) # if q is pressed, exit the operation
 	if commit_message.lower() == 'a':
+		print()
 		print_norm(f"Aborting {operation_type} operation...")
 		run_subprocess_live(["git", operation_type, "--abort"])
+		print_norm("Restoring working directory...")
+		restore_stash(is_stashed=True, message=stash_msg, branch=incoming_branch, current_branch=current_branch)
 		print_norm(f"{operation_type.title()} operation aborted.")
-		exit('q')
+		quit_program('q')
 	if not commit_message and incoming_branch and current_branch:
 		commit_message = f"{operation_type.title()} remote-tracking branch 'origin/{incoming_branch}' into {current_branch} resolved on {formatted_now}"
 	print()
@@ -535,7 +551,7 @@ def check_for_merge_conflict(branch_name=None):
 	"""Check for merge conflicts when merging a branch into the current branch."""
 	if not branch_name:
 		print_norm("No branch name provided. Cannot check for merge conflicts.")
-		exit('q')
+		quit_program('q')
 	merge_type, merge_type_tag, local_ahead, remote_ahead = None, None, None, None
 	merge_type, local_ahead, remote_ahead = check_merge_type(branch_name)
 	# print(f'merge_type: {merge_type}')
@@ -779,10 +795,10 @@ def pull(is_main_branch=False):
 	state = get_git_state()
 	if state["merge"]:
 		print(f"Merge in progress on branch {current_branch_name}")
-		commit_changes(operation_type="merge", incoming_branch=use_branch, current_branch=current_branch_name)
+		commit_changes(stash_msg=stash_msg, operation_type="merge", incoming_branch=use_branch, current_branch=current_branch_name)
 	elif state["rebase"]:
 		print(f"Rebase in progress on branch {current_branch_name}")
-		commit_changes(operation_type="rebase", incoming_branch=use_branch, current_branch=current_branch_name)
+		commit_changes(stash_msg=stash_msg, operation_type="rebase", incoming_branch=use_branch, current_branch=current_branch_name)
 	is_merge_conflict, merge_type, merge_tag, local_ahead, remote_ahead = check_for_merge_conflict(branch_name=use_branch)
 	# print(f'\nis_merge_conflict: {is_merge_conflict}')
 	# print(f'merge_type: {merge_type}')
@@ -791,7 +807,7 @@ def pull(is_main_branch=False):
 	# print(f'remote_ahead: {remote_ahead}\n')
 	if is_merge_conflict:
 		print_norm("Merge conflict occurred. Attempting to resolve interactively...")
-		proceed_to_pop_stash = check_and_resolve_conflicts(incoming_branch=use_branch, current_branch=current_branch_name)
+		proceed_to_pop_stash = check_and_resolve_conflicts(incoming_branch=use_branch, current_branch=current_branch_name, stash_msg=stash_msg)
 		merge_success = proceed_to_pop_stash  # After successful resolution
 		# merge_command = ['git', 'merge', f'origin/{use_branch}']
 	else:
@@ -807,7 +823,7 @@ def pull(is_main_branch=False):
 			print_norm("Your branches have diverged. you need to merge them with a commit...")
 			print_norm(f"{local_is_ahead['first']} branch has diverged by {local_is_ahead['fhead']} commit{'s' if local_ahead > 1 else ''} and {local_is_ahead['second']} branch has diverged by {local_is_ahead['rhead']} commit{'s' if remote_ahead > 1 else ''}.")
 			print_norm(f"Merging updates from origin/{use_branch} into {current_branch_name} branch...")
-			merge_commit_msg = commit_changes(operation_type="merge", incoming_branch=use_branch, current_branch=current_branch_name, msg=True)
+			merge_commit_msg = commit_changes(stash_msg=stash_msg, operation_type="merge", incoming_branch=use_branch, current_branch=current_branch_name, msg=True)
 			merge_result = run_subprocess(['git', 'commit', '-m', merge_commit_msg])
 			# print(f'merge_result.stdout: {merge_result.stdout}')
 			# print(f'merge_result.stderr: {merge_result.stderr}')
@@ -816,7 +832,7 @@ def pull(is_main_branch=False):
  
  
  
-	# # print("exiting..."); sys.exit()
+	# # print("exiting..."); quit_program('q')
 	# merge_result = run_subprocess_live(['git', 'merge', f'origin/{use_branch}'])
 	# # merge_result = run_subprocess(['git', 'merge', f'origin/{use_branch}'])
 	# # print(f"merge_result.stdout: {merge_result.stdout}")
@@ -844,28 +860,7 @@ def pull(is_main_branch=False):
 
 	# Restore stash only if merge was successful
 	if stashed and merge_success:
-		print_norm("Restoring stashed changes...")
-		_, stash_list_out, _ = subprocess_for_pull_command('git stash list')
-		stash_id = None
-		for line in stash_list_out.splitlines():
-			if stash_msg in line:
-				stash_id = line.split(':')[0]
-				break
-		if stash_id:
-			try:
-				result = run_subprocess(['git', 'stash', 'pop', stash_id])
-				if result.returncode == 0:
-					print_norm("Restore successful!")
-				else:
-					print_norm(f"Restore failed due to conflicts. Your changes are still in: {stash_id}")
-					print_norm("Attempting to help resolve stash conflicts interactively...")
-					check_and_resolve_conflicts(incoming_branch=use_branch, current_branch=current_branch_name, is_from_stash=True)
-					print_norm("Conflict resolution complete for stashed changes.")
-			except Exception:
-				print_norm("Restore failed. Please recover manually in stashes.")
-		else:
-			print_norm("Expected stash not found. You may need to restore it manually.")
-
+		restore_stash(is_stashed=stashed, message=stash_msg, branch=use_branch, current_branch=current_branch_name)
 	# Inform user about stash if merge failed
 	if stashed and not merge_success:
 		print_norm(f"Operation failed. Your changes were stashed as: {stash_msg}")
@@ -896,7 +891,7 @@ def push(file_list: list=None):
 		print_stdout(push.stderr)
 	else:
 		print_norm("Oops! I got {}".format(push.stderr))
-		sys.exit()
+		quit_program('q')
 
 def checkPushAccess():
 	"""This function checks if the user has push access to the remote repository.
@@ -924,7 +919,7 @@ def add_commit_all(type: str="current", commit_message: str=""):
 	"""
 	checkEditAccess = checkPushAccess()
 	if not checkEditAccess:
-		sys.exit()
+		quit_program('q')
 	while True:
 		if len(sys.argv) > 1:
 			commit_message = (sys.argv)[1]
@@ -935,7 +930,7 @@ def add_commit_all(type: str="current", commit_message: str=""):
 		# 	commit_message = input("Provide a commit message. [q] to quit >>> ")
 		if not commit_message:
 			commit_message = input("Provide a commit message. [q] to quit >>> ")
-		quit(commit_message)
+		quit_program(commit_message)
 		if commit_message != "":
 			break
 		print_norm("You have to provide a commit message.")
@@ -965,18 +960,6 @@ def add_commit_all(type: str="current", commit_message: str=""):
 	elif commit.stderr:
 		print_stdout(commit.stderr)
 
-
-def quit(val='q'):
-	"""
-	This function stops and exit the program.
-	"""
-
-	if val.lower() == "q":
-		print()
-		print("Cheers.")
-		sys.exit()
-
-
 def clear_staged_and_commit():
 	"""This function will unstage and clears the recent changes made on the
 		local branch and revert it to the recent state of the remote
@@ -996,7 +979,7 @@ Are you sure that you want to proceed? [y/N] >>> """)
 	else:
 		print("Operation aborted.")
 	print()
-	sys.exit()
+	quit_program('q')
 
 def git_status(action: int=0):
 	"""This function displays the current changes made to the working tree compared to that in the
@@ -1037,14 +1020,14 @@ def collect_input(num: int, string: str):
 		# single input function needed here
 		if string == "branch_list":
 			item = prompt_1ch('Select a branch to switch to. [q] to quit >>> ')
-			quit(item)
+			quit_program(item)
 		elif string == "delete_branch":
 			item = prompt_1ch('Select the branch to delete. [q] to quit >>> ')
-			quit(item)
+			quit_program(item)
 		elif string == "stash":
 			print_norm(F"{RED}NOTE: IF YOU QUIT. YOUR STASH WILL NOT BE APPLIED TO THIS BRANCH.{RESET}")
 			item = prompt_1ch('Select the stash you wish to apply. [q] to quit >>> ')
-			quit(item)
+			quit_program(item)
 		if item.isdecimal() and int(item) > 0 and int(item) <= num:
 			item = int(item)
 			break
@@ -1085,8 +1068,8 @@ def view_branch(action: int=0, new_branch="", remove_current_and_main_and_master
 			input_str_type = "delete_branch"
 			branch_listlist = "\n".join(line for line in branch_listlist.split("\n")
 											if not line.startswith("*") and
-											("main" not in line) and
-											("master" not in line))
+											(" main" not in line) and
+											(" master" not in line))
 			# print(f"branch_list.stdout (after removing current branch):\n{branch_listlist}")
 		# print(f"branch_list.stdout (updated):\ns#{branch_listlist}#f")
 		if not branch_listlist.strip():
@@ -1097,7 +1080,7 @@ def view_branch(action: int=0, new_branch="", remove_current_and_main_and_master
 			unifiedBranch = f"'{getMainBranch}' branch" if getMainBranch == getCurrentBranchName else f"your current '{getCurrentBranchName}' branch and '{getMainBranch}' branch"
 			# final_string = f"There are no branches to delete except your {unifiedBranch if }) and/or {getMainBranch} branch."
 			print_norm(f"There are no branches to delete except {unifiedBranch}.")
-			quit("q")
+			quit_program("q")
 		num, returned_list = print_stdout(branch_listlist, serial_numbered=1)
 		item = collect_input(num, input_str_type)
 		item = item - 1
@@ -1118,11 +1101,11 @@ def view_branch(action: int=0, new_branch="", remove_current_and_main_and_master
 		for line in (branch_list.stdout).split("\n"):
 			if line.strip() == new_branch.strip():
 				print_norm(f"The branch {new_branch} already exist.")
-				quit("q")
+				quit_program("q")
 			if line.startswith("*"):
 				if (line.strip("*").strip()) == new_branch.strip():
 					print_norm(f"You are currently on this branch({new_branch}).")
-					quit("q")
+					quit_program("q")
 	elif action == 100:
 		# get current branch name
 		for line in (branch_list.stdout).split("\n"):
@@ -1215,24 +1198,24 @@ def stash(action: int=0):
 				print_norm(f"How do you want to handle changes in {current_branch_name}?")
 				print_norm("[v] to see file(s) with changes - [d] to see content of change(s) - [q] to quit ")
 				resp = prompt_1ch("commit[c] or stash[s]? [c/s] >>> ")
-				quit(resp)
+				quit_program(resp)
 				if resp.lower() == "c":
 					response = prompt_1ch("Use default commit message? [y/N] [q] to quit >>> ")
-					quit(response)
+					quit_program(response)
 					if response.lower() == "y" or response == "":
 						message = default_commit_message
 					elif response.lower() == "n":
 						message = input("Enter your commit message. [q] to quit >>> ")
-						quit(message)
+						quit_program(message)
 					print("Invalid response.")
 				elif resp.lower() == "s":
 					response = prompt_1ch("Use default stash message? [y/N] [q] to quit >>> ")
-					quit(response)
+					quit_program(response)
 					if response.lower() == "y" or response == "":
 						message = default_stash_message
 					elif response.lower() == "n":
 						message = input("Enter your stash message. [q] to quit >>> ")
-						quit(message)
+						quit_program(message)
 					print("Invalid response.")
 				elif resp.lower() == "v":
 					git_status()
@@ -1307,11 +1290,11 @@ def create_or_view_branches():
 		while True:
 			print()
 			create_branch = prompt_1ch(f'Create a branch "{new_branch}"? [y/N] [q] to quit >>> ')
-			quit(create_branch)
+			quit_program(create_branch)
 			if create_branch.lower() == "y":
 				break
 			elif create_branch.lower() == "n":
-				quit("q")
+				quit_program("q")
 		view_branch(action=1)
 		create_or_switch_branch("branch", new_branch)
 
@@ -1325,19 +1308,19 @@ def delete_branch():
 	if len_args > 1:
 		print_norm("This command takes no argument.")
 		print_norm("Try again.")
-		quit("q")
+		quit_program("q")
 	# if len_args == 1:
 	selection = view_branch(remove_current_and_main_and_master_branch=True)
 	print()
-	print(f'selection: {selection}')
+	# print(f'selection: {selection}')
 	currentBranch = run_subprocess(["git", "branch", "--show-current"])
-	print(f'currentBranch.stdout: {currentBranch.stdout.strip()}')
-	print(f'currentBranch.stderr: {currentBranch.stderr.strip()}')
-	print_norm(f"This process will delete the branch locally and remotely.")
+	# print(f'currentBranch.stdout: {currentBranch.stdout.strip()}')
+	# print(f'currentBranch.stderr: {currentBranch.stderr.strip()}')
+	print_norm(f"This process will delete the branch locally and it's corresponding remote version.")
 	print_norm(f"{BOLD}{RED}NOTE: It's not REVERSIBLE.{RESET}")
 	print()
 	deleteBrnch = prompt_1ch(f'Are you sure you want to delete the branch {BOLD}{RED}{selection}{RESET}? [y/N] [q] to quit >>> ')
-	quit(deleteBrnch)
+	quit_program(deleteBrnch)
 	if deleteBrnch.lower() == "y":
 		# delete local branch
 		delete_local = run_subprocess(["git", "branch", "-D", selection])
@@ -1355,7 +1338,7 @@ def delete_branch():
 	else:
 		print()
 		print_norm("Branch deletion aborted.")
-		quit("q")
+		quit_program("q")
 
 
 # entry point for merge command
@@ -1366,14 +1349,14 @@ def merge_to_main_master():
 	if current_branch_name == "main" or current_branch_name == "master":
 		print_norm(f"You are in {current_branch_name} branch.")
 		print_norm(f"Switch to the desired branch you want to merge to {current_branch_name}.")
-		quit("q")
+		quit_program("q")
 	while True:
 		print()
 		check = prompt_1ch("Are you sure that you want to merge this branch to main/master? [y/N] >>> ")
 		if check.lower() == "y":
 			break
 		elif check.lower() == "n":
-			quit("q")
+			quit_program("q")
 		print()
 		print_norm("You must decide.")
 	main = view_branch(new_branch="main", action=3)
@@ -1483,24 +1466,24 @@ def search_repo(repo_dir: list, delimiter: str, dir_path: str=None, repeat: int=
 	selection = input('Make a selecion [Enter to submit], [q to quit] >>> ')
 	if selection == '':
 		return ignore_list
-	quit(selection)
+	quit_program(selection)
 	cur_dir = ""
 	try:
 		selection = int(selection)
 		item = dir_list[selection - 1]
 	except ValueError:
 		print("Invalid selection. Please enter a valid integer.")
-		sys.exit(1)
+		quit_program('q', 1)
 	except IndexError:
 		print("Selection is out of range. Please enter a valid number.")
-		sys.exit(1)
+		quit_program('q', 1)
 	cur_dir = f'{dir}{os.sep}{item}'
 	# print(f'You selected: {cur_dir}')
 	print()
 	if os.path.isdir(cur_dir):
 		print('[n] - to add the dir to .gitignore file')
 		open_dir = prompt_1ch(f'You want to explore {item}? [y/N] [q] - quit >>> ')
-		quit(open_dir)
+		quit_program(open_dir)
 		if open_dir.lower() == 'y':
 			search_repo([cur_dir], delimiter=delimiter, child_dir=1)
 		elif open_dir.lower() == 'n':
@@ -1514,7 +1497,7 @@ def search_repo(repo_dir: list, delimiter: str, dir_path: str=None, repeat: int=
 		else:
 			print()
 			print("Invalid entry.")
-			sys.exit(1)
+			quit_program('q', 1)
 	else:
 		ignore_list.append(cur_dir)
 		del dir_list[selection - 1]
@@ -1543,7 +1526,7 @@ def Update_github_token(token: str, my_token: str):
 	done = f"{BOLD}{'Done.'}{RESET}"
 	if len(token) != 36 and (len(token) != 40 or not token.startswith('ghp_')):
 		print_norm("\nInvalid token. Please enter a valid Github token.")
-		sys.exit(1)
+		quit_program('q', 1)
 	if len(token) == 36:
 		token = f'ghp_{token}'
 	root = root_repo
@@ -1568,13 +1551,13 @@ def Update_github_token(token: str, my_token: str):
 		search_word = f'{old_token+append_github}'
 		if replace.lower() != 'y' and replace == '':
 			print(abort_op)
-			sys.exit(0)
+			quit_program('q')
 	elif len(github_url[0][2]) == 10:
 		print(f'New token: {BRIGHT_MAGENTA}{token[:8]}...{token[32:]}{RESET}')
 		adding = prompt_1ch(f"\nAdd it to your local credentials ? [y/N] >>> ")
 		if adding.lower() != 'y' and adding == '':
 			print(abort_op)
-			sys.exit(0)
+			quit_program('q')
 	replacement = f'{token+append_github}'
 	# print('search_word:', search_word)
 	# print('replacement:', replacement)
@@ -1598,7 +1581,7 @@ def incorrect_args():
 		token = input('Enter Github token to Add/Update to your Credentials [q] - quit >>> ')
 		if token.lower() == 'q':
 			print('\nCheers!')
-			sys.exit(0)
+			quit_program('q')
 		return token
 
 def update_token_command():

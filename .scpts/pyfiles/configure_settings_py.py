@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os, sys, traceback
+from pyfiles.print import quit_program
 try:
 	from .print import print_norm as print_stdout
 except ImportError:
@@ -365,8 +366,7 @@ def install_entity(entity: str, djoser: bool=False,):# variable: str=None):
 				print(f'checking insert: {check_insert}')
 				if check_insert:
 					print(f'*********** line already exist: {project_dict["content"].strip()}')
-					print('exiting ...')
-					sys.exit(0)
+					quit_program("q")
 				print(f'project_dict in match case code: {project_dict}')
 				add_dependency_to_installed_apps(project_dict=project_dict)
 				print('switch d extension section')
@@ -405,7 +405,7 @@ def install_entity(entity: str, djoser: bool=False,):# variable: str=None):
 					exist = True
 					print(f'*********** line already exist: {project_dict["content"].strip()}')
 					print('exiting ...')
-					sys.exit(0)
+					quit_program("q")
 				print(f'project_dict in match case code: {project_dict}')
 				add_dependency_to_installed_apps(project_dict=project_dict)
 				print('switch startapp1')
@@ -480,7 +480,7 @@ def install_entity(entity: str, djoser: bool=False,):# variable: str=None):
 				# if check_insert:
 				# 	print(f'*********** line already exist: {project_dict["content"].strip()}')
 				# 	print('exiting ...')
-				# 	sys.exit(0)
+				# 	quit_program("q")
 				# print(f'project_dict in match case code: {project_dict}')
 				# add_dependency_to_installed_apps(project_dict=project_dict)
 
@@ -521,7 +521,7 @@ def install_entity(entity: str, djoser: bool=False,):# variable: str=None):
 				# if check_insert:
 				# 	print(f'*********** line already exist: {project_dict["content"].strip()}')
 				# 	print('exiting ...')
-				# 	sys.exit(0)
+				# 	quit_program("q")
 				# print(f'project_dict in match case code: {project_dict}')
 				# add_dependency_to_installed_apps(project_dict=project_dict)
 				# print('switch d extension section')
@@ -576,7 +576,7 @@ def install_entity(entity: str, djoser: bool=False,):# variable: str=None):
 				if check_insert:
 					print(f'*********** line already exist: {project_dict["content"].strip()}')
 					print('exiting ...')
-					sys.exit(0)
+					quit_program("q")
 				add_dependency_to_installed_apps(project_dict=project_dict)
 				print('switch startapp2')
 				
@@ -592,7 +592,7 @@ def install_entity(entity: str, djoser: bool=False,):# variable: str=None):
 		# pass
 	
 	print('no pass!')
-	sys.exit(0)
+	quit_program("q")
 	print('--------------------------------')
 	settings_path = temp_settings
 	# end add the switch code for commands here
@@ -607,10 +607,10 @@ def install_entity(entity: str, djoser: bool=False,):# variable: str=None):
 			# print('entity:', entity)
 			print('\n')
 			print_stdout('Do you have a django app installed?')
-			sys.exit(1)
+			quit_program("q", 1)
 		print(f'entity: {entity} ----- 1st try-except block (EXCEPT BLOCK) ln: 348')
 	# print('app_path: {}'.format(app_path))
-	# sys.exit(0)
+	# quit_program("q")
 	command = None
 	variable = ''
 	rm_FW = False
@@ -1156,13 +1156,13 @@ def entry_point():
 
 	settings_path = find_settings_py()
 	file_path = list(filter(lambda k: k.endswith('settings.py'), settings_path))[0]
-	# sys.exit(0)
+	# quit_program("q")
 	settings_path = [file_path]
 	if len(settings_path) > 2:
 		print_stdout('You have multiple files')
 		for i, j in enumerate(settings_path):
 			print(f'{i+1}. {j}')
-		sys.exit(0)
+		quit_program("q")
 
 	# if entity == "djoser":
 	# 	djoser = True
