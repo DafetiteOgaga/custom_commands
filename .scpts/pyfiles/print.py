@@ -38,7 +38,7 @@ def quit_program(arg: str, value: int=0):
 		# time.sleep(0.5)
 		sys.exit(value)
 
-def print_stdout(stdout: str, index: int=0, serial_numbered: int=0, status: int=0):
+def print_stdout(stdout: str, index: int=0, serial_numbered: int=0, status: int=0, main: bool=False):
 	"""This function nicely colors and prints out the output stream the
 		result of the argument passed to it
 
@@ -72,7 +72,7 @@ def print_stdout(stdout: str, index: int=0, serial_numbered: int=0, status: int=
 			if line.startswith('+') and not line.startswith('+++'):
 				line = f"{GREEN}{line}"
 			elif line.startswith('-') and not line.startswith('---'):
-				line = f"{RED}{line}"
+				line = f"{RED if not main else CYAN}{line}"
 			elif line.startswith('diff --git'):
 				line = f"{UNDERLINE}{BOLD}{BRIGHT_BLUE}{line}"
 				status_line = i
