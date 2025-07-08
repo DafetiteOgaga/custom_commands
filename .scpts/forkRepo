@@ -75,9 +75,10 @@ disp()
         elif [[ "$selection" =~ ^[1-9]|[1-9][0-9]|[1-9][0-9][0-9]*$ && "$selection" -le "$serial_number" ]]; then
             converted_selection="$(( ($page - 1) * $page_size + $((selection-1)) ))"
             selected_repo=${repo_names_cleaned[$converted_selection]}
-            
+
 			echo -e ""
             echo "You selected: $selected_repo"
+			# exit 0
             break
         else
             echo "Invalid selection."
@@ -85,90 +86,14 @@ disp()
     done
 }
 
-get_repo_name()
+get_repositories()
 {
 	echo ""
 	echo "Hold on ..."
 	echo ""
-	if [[ -z "$TOKEN" && "$CHK" == "no" ]]; then
-		# someone's public repo
-		public_list
-
-	elif [[ "$CHK" == "yes" ]]; then
-		# users repo
-		if [[ "$TOKEN" == *"ghp_"* ]]; then
-			echo -e ""
-		else
-			TOKEN="ghp_$TOKEN"
-		fi
-
-		public_response=$(curl -s "https://api.github.com/users/$AUSERNAME/repos?type=public&per_page=100")
-
-		private_response=$(curl -s -H "Authorization: token $TOKEN" \
-		"https://api.github.com/user/repos?visibility=private")
-
-		if [[ "$public_response" == *"message"* && "$public_response" == *"Not Found"* ]]; then
-			echo "User $AUSERNAME not found on GitHub."
-			exit 1
-		fi
-
-		if [[ "$private_response" == *"message"* && "$private_response" == *"Bad credentials"* ]]; then
-			echo "Bad credentials. Make sure your GitHub token is valid and has the required permissions."
-			exit 1
-		fi
-
-		if [[ "$public_response" == "" || "$private_response" == "" ]]; then
-			echo -e "Could not connect to https://github.com/$AUSERNAME"
-			echo -e "Check your internet connection."
-			echo -e ""
-			exit 1
-		fi
-
-		public_resp=$(echo "$public_response" | grep -oP '"full_name": "\K[^"]+' | awk -F'/' '{print $2}')
-
-		private_resp=$(echo "$private_response" | grep -oP '"full_name": "\K[^"]+' | awk -F'/' '{print $2}')
-
-		pub_arr=($public_resp)
-		pri_arr=($private_resp)
-
-		repo_names_cleaned=("${pub_arr[@]}" "${pri_arr[@]}")
-
-		for ((i=0; i<${#pub_arr[@]}; i++)); do
-			pub_arr[$i]="${pub_arr[$i]} (pub)"
-		done
-
-		for ((i=0; i<${#pri_arr[@]}; i++)); do
-			pri_arr[$i]="${pri_arr[$i]} (priv)"
-		done
-
-		repo_names=("${pub_arr[@]}" "${pri_arr[@]}")
-		disp
-		REPONAME="$selected_repo"
-
-	elif [[ "$TOKEN" && "$CHK" == "no" ]]; then
-		# collaboration
-		while true; do
-			read -n 1 -s -r -p "Is this repository public? [y/N] (Collaboration) >>> " pub
-			echo -e "$pub"
-			if [[ "$pub" =~ [yYnN] ]]; then
-				break
-			fi
-		done
-		if [[ "$pub" =~ [yY] ]]; then
-			echo -e ""
-			echo -e "Preparing the lists of $AUSERNAME's public repos ..."
-			public_list
-		elif [[ "$pub" =~ [nN] ]]; then
-			echo -n "Provide the name of the repository >>> "
-			read REPONAME
-		fi
-	fi
-
-	if [[ -z "$REPONAME" ]]; then
-		lines
-		echo -e "You can't clone a repo without a name..."
-		exiting
-	fi
+	echo -e "Preparing the lists of $AUSERNAME's public repos ..."
+	public_list
+	echo ""
 }
 
 # ........................................................................... X
@@ -178,7 +103,7 @@ function git_check()
 	curr_dir="$(pwd)"
 	cd "$REPONAME"
 	post_clone=(
-		"Repository cloned successfully."
+		"Repository forked and cloned successfully."
 		"....................................................."
 		"Setting up the local user(i.e commit author) for this repo"
 		"..........................................................."
@@ -187,7 +112,7 @@ function git_check()
 		"..........................................................."
 		"$(git config user.name "$GUSERNAME")"
 		"$(git config user.email "$GEMAIL")"
-		"\"$REPONAME\" has been successfully cloned in the directory: \n$curr_dir"
+		"\"$REPONAME\" has been successfully forked on remote and cloned locally in the directory: \n$curr_dir"
 		"$(lines)"
 	)
 	for i in "${post_clone[@]}"; do
@@ -197,23 +122,34 @@ function git_check()
 	cd ../
 }
 # ........................................................................... X
-
 cloning()
 {
 	echo -e "\nYou are now cloning the repository \"$REPONAME\" in the account \"$AUSERNAME\"...\n"
-
-	echo -e "......................Cloning repo........................"
-	if [ -z "$TOKEN" ]; then
-		git clone https://github.com/$AUSERNAME/$REPONAME.git
-		exit_status="$?"
-	else
-		git clone https://$TOKEN@github.com/$AUSERNAME/$REPONAME.git
-		exit_status="$?"
-	fi
-	if [[ $exit_status != 0 ]]; then
+	git clone https://ghp_$GTOKEN@github.com/$GUSERNAME/$REPONAME.git
+	clone_exit_status="$?"
+	# fi
+	if [[ $clone_exit_status != 0 ]]; then
 		echo "....................................................."
 		echo "Oops! something went wrong. Error cloning repository."
-		echo "Exit status code: $exit_status"
+		echo "Exit status code: $clone_exit_status"
+		echo "....................................................."
+		exit 1
+	fi
+}
+# ........................................................................... X
+forking()
+{
+	echo "Forking repository \"$REPONAME\" in the account \"$AUSERNAME\"..."
+	response=$(curl -u "$GUSERNAME:ghp_$GTOKEN" -X POST "https://api.github.com/repos/$AUSERNAME/$REPONAME/forks" 2>&1)
+	exit_status_code=$?
+	sleep 2
+	if [[ "$exit_status_code" == 0 || "$(echo "$response" | grep -i '"full_name"')" ]]; then
+		echo "Done. Forked repository successfully."
+		cloning
+	else
+		echo "....................................................."
+		echo "Oops! something went wrong. Error forking repository."
+		echo "Exit status code: $exit_status_code"
 		echo "....................................................."
 		exit 1
 	fi
@@ -248,93 +184,44 @@ public_list()
 	REPONAME="$selected_repo"
 }
 
-# main ...
-echo ""
-echo -e "You are attempting to clone a Github repository."
-echo -n "Do you want to clone from the Github Account \"$GUSERNAME\"? [y/N] >>> "
-read -n 1 -s -r UREPO
-echo -e "$UREPO"
-
-if [[ "$UREPO" =~ [yY] ]]; then
-	CHK="yes"
-elif [[ "$UREPO" =~ [nN] ]]; then
-	CHK="no"
-else
-	lines
-	echo -e "Invalid response."
-	exiting
-fi
-
+# ENTRY POINT ...
 
 #... chk.................. #
-while true; do
-	echo ""
-	echo -e "Pls, confirm that this is the directory where you want to clone the repo:"
-	echo -e "Current Directory: $(pwd)"
-	echo ""
-	echo -n "Do you want to abort to fix this? [y/N] >>> "
-	read -n 1 -s -r CLCR
-	echo -e "$CLCR"
-
-	if [[ "$CLCR" =~ [yYnN] ]]; then
-		break
-	fi
-done
-
-if [[ "$CLCR" =~ [yY] ]]; then
-	echo ""
-	echo -e "Ok."
-	exiting
-fi
-
-if [[ "$CHK" == "no" ]]; then
-	echo ""
-	echo -n "Provide the Github Username >>> "
-	read AUSERNAME
-
-	if [ -z "$AUSERNAME" ]; then
-		lines
-		echo -e "You must provide a valid Username."
-		exiting
-	fi
-
+confirm_dir_location()
+{
 	while true; do
 		echo ""
-		echo -e "Are you a collaborator?"
-		echo -n "Do you have the PAT(classic) for this repository in $AUSERNAME's? [y/N] >>> "
-		read -n 1 -s -r RESP
-		echo -e "$RESP"
-		if [[ "$RESP" =~ [yYnN] ]]; then
+		echo -e "Pls, confirm that this is the directory where you want to clone the repo:"
+		echo -e "Current Directory: $(pwd)"
+		echo ""
+		echo -n "Do you want to abort to fix this? [y/N] >>> "
+		read -n 1 -s -r CLCR
+		echo -e "$CLCR"
+
+		if [[ "$CLCR" =~ [yYnN] ]]; then
 			break
 		fi
 	done
 
-	
-	if [[ "$RESP" =~ [yY] ]]; then
+	if [[ "$CLCR" =~ [yY] ]]; then
 		echo ""
-		echo -n "Enter the PAT(classic) without the \"ghp_\" >>> "
-		read TOKEN
-	
-		if [ -z "$TOKEN" ]; then
-			lines
-			echo -e "Didn't you just say you have the PAT?"
-			exiting
-		fi
-
-		NUM2=${#TOKEN}
-		
-		if [[ "$NUM2" != "$NUM1" ]]; then
-			lines
-			echo -e "The TOKEN: $TOKEN which you supplied is not the classic TOKEN I expected.\n"
-			exiting
-		fi
-		TOKEN="ghp_$TOKEN"
+		echo -e "Ok."
+		exiting
 	fi
-else
-	AUSERNAME="$GUSERNAME"
-	TOKEN="ghp_$GTOKEN"
+}
+
+# if [[ "$CHK" == "no" ]]; then
+echo ""
+echo -n "Provide the Github Username of the repo you want to fork >>> "
+read AUSERNAME
+
+if [ -z "$AUSERNAME" ]; then
+	lines
+	echo -e "You must provide a valid Username."
+	exiting
 fi
 
+confirm_dir_location
 
 count=0
 while true; do
@@ -345,8 +232,8 @@ while true; do
 	fi
 
 	if [[ ("$count" -eq 0 && -z "$RESP0") || "$RESP0" =~ [yY] ]]; then
-		get_repo_name
-		cloning
+		get_repositories
+		forking
 		git_check
 	elif [[ "$RESP0" =~ [nN] ]]; then
 		echo -e ""

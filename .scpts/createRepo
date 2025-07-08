@@ -232,8 +232,7 @@ if [[ -z "$RESP" ]]; then
 		echo -e ""
 		# git init
 		# echo -e ""
-		echo -e "\nCreating $REPONAME as $( [[ "$PRIVATE_OPTION" == "true" ]] && echo "private" || echo "public" )\
- in \"https://github.com/$GUSERNAME\" ......\n"
+		echo -e "\nCreating $REPONAME as $( [[ "$PRIVATE_OPTION" == "true" ]] && echo "private" || echo "public" ) in \"https://github.com/$GUSERNAME\" ......\n"
 
 		response=$(curl -u "$GUSERNAME:ghp_$GTOKEN" -X POST "https://api.github.com/user/repos" -d '{"name":"'$REPONAME'", "private":'"$PRIVATE_OPTION"'}' 2>&1)
 		exit_status_code=$?
