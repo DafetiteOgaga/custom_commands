@@ -63,7 +63,7 @@ disp()
 
 		selection=""
         echo -e ""
-        read -n 1 -s -r -p "Enter the number corresponding to the repository you want to clone >>> " selection
+        read -n 1 -s -r -p "Enter the number corresponding to the repository you want to fork and clone >>> " selection
         echo -e "$selection"
 
         if [[ "$selection" =~ [qQ] ]]; then
