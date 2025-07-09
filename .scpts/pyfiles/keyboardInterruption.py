@@ -1,6 +1,6 @@
 # safeexit.py
-import sys
-import types
+import sys, types
+from pyfiles.print import quit_program
 from functools import wraps
 
 def interrupt_guard(fn):
@@ -10,7 +10,7 @@ def interrupt_guard(fn):
             return fn(*args, **kwargs)
         except KeyboardInterrupt:
             print("\nInterrupted by user (Ctrl+C)")
-            sys.exit(1)
+            quit_program("q", 1)
     return wrapper
 
 def auto_wrap_interrupt_guard(module_globals):

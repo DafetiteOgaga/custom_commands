@@ -390,6 +390,17 @@ Depending on the command, the usage instruction for that command is provided aft
     <td></td>
     <td></td>
   </tr>
+  <tr>
+    <td>forkRepo</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
 
 </table>
 
@@ -405,11 +416,10 @@ Check out our [Contributing Guide](.github/CONTRIBUTING.md) to get started.
 
 
 ## New
+  - forkRepo
   - deleteBranch
   - showDiffOnMain
   - pullFromMain
-  - mongoOp
-  - mongoVersion
   - revert2commit
   - createExpoApp
   - createReactApp

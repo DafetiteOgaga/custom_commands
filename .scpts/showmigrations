@@ -3,13 +3,14 @@
 import subprocess, sys
 from pyfiles.django_codes import *
 from pyfiles.subprocessfxn import run_subprocess
+from pyfiles.print import quit_program
 
 error_check()
 code, response = error_check()
 # print('error code 12abcd: ', code, 'response 12abcd: ', response)
 stop = error_response(code, response)
 if stop:
-	sys.exit(stop)
+	quit_program("q", stop)
 
 if len(sys.argv) > 2:
 	args = ['a', 'b', 'c', 'd', 'e', 'f', 'g']

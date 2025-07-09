@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250704.2208"
+VERSIONNUMBER="20250708.0259"
 
 # colors and styles
 RESET="\033[0m"
@@ -270,7 +270,7 @@ details() {
 }
 
 unametokenmaill2() {
-	# collects user details to createRepo, cloneRepo, deleteRepo, viewRepo and distributeApk commands
+	# collects user details to createRepo, cloneRepo, forkRepo, deleteRepo, viewRepo and distributeApk commands
 	while [[ -z "$NUSERNAME" ]]; do
 		echo -n "Kindly Enter your Github Username >>> "
 		read NUSERNAME
@@ -324,7 +324,7 @@ unametokenmaill2() {
 }
 
 unametokenmaill() {
-	# populates the user details to createRepo, cloneRepo, deleteRepo, viewRepo and distributeApk commands
+	# populates the user details to createRepo, cloneRepo, forkRepo, deleteRepo, viewRepo and distributeApk commands
 	if [[ "$NUSERNAME" && "$NTOKEN" && "$NEMAIL" ]]; then
 		echo -e "Hey! I still have your details"
 		while [[ "$VALS" != [yYnN] ]]; do
@@ -415,7 +415,7 @@ py_scripts=(
 	"clear_commit"
 )
 bash_scripts=(
-	"createRepo:cr" "deleteRepo:dr" "cloneRepo:cl" "viewRepos:vr" "revert2commit"
+	"createRepo:cr" "deleteRepo:dr" "cloneRepo:cl" "forkRepo:fr" "viewRepos:vr" "revert2commit"
 	"pyxecute" "shxecute" "jsxecute" "restoreFile" "currfol" "cls" "authorID"
 	"createPatch" "createReactApp" "createExpoApp" "dependenciesReact"
 	"updateReactPackagez" "dependencyDevReact" "py3venv" "startproject" "startapp"
@@ -442,6 +442,7 @@ get_description() {
 		createRepo) echo "creates a github repository right from CLI" ;;
 		deleteRepo) echo "deletes a github repository right from CLI" ;;
 		cloneRepo) echo "clone a repository with less commands" ;;
+		forkRepo) echo "forks a remote repo and clones it locally" ;;
 		restoreFile) echo "restores file(s) to previous states" ;;
 		viewRepos) echo "displays the list of repos from any account on CLI" ;;
 		updateToken) echo "adds/updates your repo with a new token" ;;
@@ -567,6 +568,8 @@ category() {
 				new_value=22222
 			elif [[ "$btype" == "cl" ]]; then
 				new_value=33333
+			elif [[ "$btype" == "fr" ]]; then
+				new_value=77777
 			elif [[ "$btype" == "vr" ]]; then
 				new_value=55555
 			elif [[ "$btype" == "ct" ]]; then
@@ -636,8 +639,8 @@ options() {
 	#....tags............................. #
 	# assign the type of file in based on the new value index
 	case "$new_value" in
-		2[0-9][0-9][0-9]|11111|22222|33333|44444|55555|66666)
-			# 2000 - 2999 and 11111, 22222, 33333, 44444, 55555, 66666
+		2[0-9][0-9][0-9]|11111|22222|33333|44444|55555|66666|77777)
+			# 2000 - 2999 and 11111, 22222, 33333, 44444, 55555, 66666, 77777
 			FILETYPE="bashscript"
 			;;
 		3[0-9][0-9][0-9])
@@ -721,7 +724,7 @@ opertn() {
 		# copies the command code into .xbin/ and based on the
 		# new value index, copies the command script accordingly
 		case "$new_value" in
-			11111|22222|33333|55555|66666)
+			11111|22222|33333|55555|66666|77777)
 				# special commands (requires username/token/email)
 				unametokenmaill
 				;;
@@ -751,7 +754,18 @@ update_setup_scripts_in_pyfiles() {
 		destination="$XBIN/pyfiles/$filename"
 		# echo "filename: $filename"
 		if [[ -f "$destination" ]]; then
+			# preserve the set_filename line if it exists in pushfile_main_codes.py
+			if [[ "$filename" == "pushfile_main_codes.py" ]] && grep -q "^set_filename =" "$destination"; then
+				line="$(grep "^set_filename =" "$destination")"
+				lineKey="1"
+				# echo "Found the line $line in $destination"
+			fi
 			cp "$file" "$destination"
+			if [[ -n "$lineKey" ]]; then
+				# echo "Reinserted $line into $destination"
+				sed -i "s|^set_filename =.*|$line|" "$destination"
+				lineKey=""
+			fi
 		elif [[ -d "$destination" && "$filename" != "__pycache__" ]]; then
 			cp -r "$file" "$XBIN/pyfiles/"
 			if is_git_bash; then
@@ -917,6 +931,7 @@ instructn() {
 		createRepo) msg="$STRT create a github repo right from your terminal. $ANYWHERE: $DFILENAME";;
 		deleteRepo) msg="$STRT delete a github repo right from your terminal. $ANYWHERE: $DFILENAME";;
 		cloneRepo) msg="$STRT clone repos from github. $ANYWHERE: $DFILENAME";;
+		forkRepo) msg="$STRT fork a remote repo and clone it locally. $ANYWHERE: $DFILENAME";;
 		viewRepos) msg="$STRT view the public repos of any github account. $ANYWHERE: $DFILENAME";;
 		mycompile) msg="$STRT compile your files $EFFT $ANYWHERE: $DFILENAME <filename>";;
 		ctemp) msg="$STRT create default C source file templates $EFFT $ANYWHERE: $DFILENAME <filename>";;
