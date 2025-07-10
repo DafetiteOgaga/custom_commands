@@ -9,7 +9,7 @@
 </h1>
 
 <p align="center">
-  With Custom Commands CLI you can automate and simplify your daily developer tasks across Git, Django, React, Bash, and more.
+  With Custom Commands CLI you can automate and simplify your daily tasks across Git, Django, React, Bash, and more.
   <!-- <br />
   <a href="#usage">View Demo</a>
   ·
