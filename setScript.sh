@@ -442,7 +442,7 @@ get_description() {
 		createRepo) echo "creates a github repository right from CLI" ;;
 		deleteRepo) echo "deletes a github repository right from CLI" ;;
 		cloneRepo) echo "clone a repository with less commands" ;;
-		forkRepo) echo "forks a remote repo and clones it locally" ;;
+		forkRepo) echo "forks a remote repo and clones it locally. Useful for PR" ;;
 		restoreFile) echo "restores file(s) to previous states" ;;
 		viewRepos) echo "displays the list of repos from any account on CLI" ;;
 		updateToken) echo "adds/updates your repo with a new token" ;;
