@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 
 import os, sys, traceback
-from pyfiles.print import quit_program
 try:
-	from .print import print_norm as print_stdout
+	from .print import print_norm as print_stdout, quit_program
 except ImportError:
-	from print import print_norm as print_stdout
+	from print import print_norm as print_stdout, quit_program
 
 def check_for_venv_or_node_modules(directory_path):
 	venv = ['pyvenv.cfg', 'include', 'lib']
@@ -555,7 +554,7 @@ def install_entity(entity: str, djoser: bool=False,):# variable: str=None):
 				# before it (append include to import statement) prevents
 				# it from working
 				# url_description = "\t\t" + "# <- added " + entity
-				urls_line_content = f"    path('', include('{appname}.urls')),     # For {appname} configuration" + \
+				urls_line_content = f"    path('{appname}/', include('{appname}.urls')),     # For {appname} configuration" + \
 									"\n"
 				print('before FOR LOOP')
 				print(f'entity: {entity} and appname: {appname}')
