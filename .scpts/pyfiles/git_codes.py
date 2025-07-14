@@ -1379,7 +1379,7 @@ def merge_to_main_master():
 	# create_or_switch_branch(current_branch_name)
 
 
-def diff(is_main_branch=False):
+def diff(is_main_branch=False, file: str=None):
 	"""display detailed changes on the current/main/master branch compared to
 		its corresponding on the local/remote repository
 
@@ -1389,7 +1389,7 @@ def diff(is_main_branch=False):
 	current_branch_name = view_branch(action=100)
 	main = view_branch(new_branch="main", action=-2)
 	use_branch = main if is_main_branch else current_branch_name
-	git_command = ["git", "diff"] if not is_main_branch else ["git", "diff", f"HEAD..origin/{main}"]
+	git_command = ["git", "diff", file] if file else (["git", "diff", f"HEAD..origin/{main}"] if is_main_branch else ["git", "diff"])
 	if is_main_branch:
 		print_norm(f'current branch: {current_branch_name}')
 		print()
@@ -1412,8 +1412,8 @@ def diff(is_main_branch=False):
 			print_stdout(f'{diff_res.stderr}:stderr', status=1, main=is_main_branch)
 		else:
 			print()
-			print_norm(f"No changes found{f' on remote origin/{main}' if is_main_branch else ''}.")
-			print_norm("Your working directory is in the same state as your last commit.")
+			print_norm(f"No changes found{f' on remote origin/{main}' if is_main_branch else (f' in {os.path.basename(file)}' if file else '')}.")
+			not file and print_norm("Your working tree is squeaky clean .")
 	elif diff_res.returncode > 0:
 		print_norm("Oops! I got:")
 		print_norm("{}".format(print_stdout(diff_res.stderr)))
