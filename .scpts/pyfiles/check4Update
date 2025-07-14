@@ -71,28 +71,28 @@ check4UpdateFunc() {
 
 # ENTRY POINT
 
-NOW=$(date +%s)
-LAST_UPDATE_FILE="$XBIN/lastUpdateTime.txt"
+NOW=$(date +%s) # current time
+LAST_UPDATE_FILE="$XBIN/lastUpdateTime.txt" # last 'try' time
 
-mkdir -p "$(dirname "$LAST_UPDATE_FILE")"
+mkdir -p "$(dirname "$LAST_UPDATE_FILE")" # creates lastUpdateTime if not exist
 
 if [[ ! -f "$LAST_UPDATE_FILE" ]]; then
 	echo "Last update not tracked. Starting tracker."
-	echo "$NOW" > "$LAST_UPDATE_FILE"
+	echo "$NOW" > "$LAST_UPDATE_FILE" # first 'try' time saved
 fi
 
-LAST_CHECK=$(cat "$LAST_UPDATE_FILE")
+LAST_CHECK=$(cat "$LAST_UPDATE_FILE") # gets the last 'try' time
 
 # echo "NOW: $NOW"
 # echo "LAS: $((LAST_CHECK + 86400))"
 # echo "NOW > LAST_CHECK: $(( NOW > LAST_CHECK + 86400 ))"
 
-if (( NOW > LAST_CHECK + 86400 )); then
+if (( NOW > LAST_CHECK + 2592000 )); then # checks if its upto 30days since last try
 	# echo ""
 	# echo "Last update check was more than 24 hours ago."
 	# read ch
 	check4UpdateFunc
-	echo "$NOW" > "$LAST_UPDATE_FILE"
+	echo "$NOW" > "$LAST_UPDATE_FILE" # if last 'try' time is more than 30days, update 'try' time to 'now'
 # else
 # 	echo "Last update check was less than 24 hours ago."
 # 	read ch
