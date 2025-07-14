@@ -2,7 +2,7 @@
 
 import subprocess, sys, os, time, shutil
 from pyfiles.my_prompt import main as prompt_1ch
-from pyfiles.git_codes import clear_staged_and_commit, pull, push, checkPushAccess
+from pyfiles.git_codes import clear_staged_and_commit, pull, push, checkPushAccess, diff
 from pyfiles.print import print_norm, print_stdout
 from pyfiles.subprocessfxn import run_subprocess
 from pyfiles.print import quit_program
@@ -43,7 +43,7 @@ def add_commit(file, arg="arg"):
 		print("::::: {} does not exist in the current directory".format(file))
 		print()
 		print("...................................................")
-		return 1
+		return 1 # moves to the next file
 	
 	displayed_filename = file.split("/")[-1] if "/" in file else file
 	set_default = success_mode = ""
@@ -85,22 +85,33 @@ def add_commit(file, arg="arg"):
 	if arg == "arg" and file not in file_status.stdout:
 		time.sleep(.04)
 		print("::#:: {} has previously been staged and committed or ignored".format(displayed_filename))
-		return 3
+		return 3 # moves to the next file
 	else:
 		print()
 	# displayed_filename = file.split("/")[-1] if "/" in file else file
 	pre_commit_message = set_filename_as_pre_commit_msg(displayed_filename)
 	if not set_default:
-		commit_message = input("Enter a commit message for {} [q] to abort >>> {}".format(displayed_filename, pre_commit_message))
+		commit_message = collect_valid_commit_message(
+				filename=displayed_filename,
+				pre_commit_message=pre_commit_message,
+				oneTime=True # xmodification
+			) # xmodification
+		if commit_message.lower() == "c":
+			changes_in_file = diff(file=file)
+			return 2 # stays on the current file
 		if commit_message.lower() == "pass":
 			print()
 			print(":###: You skipped {} #####".format(displayed_filename))
 			print()
-			return 3
+			return 3 # moves to the next file
 		if commit_message.lower() == "unset commit" and file != "README.md": # xmodification
 			success_mode = set_default_commit_msg("n") # xmodification
 			print_set_commit("unset") # xmodification
-			commit_message = input("Enter a commit message for {} [q] to abort >>> {}".format(displayed_filename, pre_commit_message)) # xmodification
+			commit_message = collect_valid_commit_message(
+					filename=displayed_filename,
+					pre_commit_message=pre_commit_message,
+					oneTime=True # xmodification
+				) # xmodification
 		elif commit_message.lower() == "unset commit" and file == "README.md": # xmodification
 			success_mode = set_default_commit_msg("n") # xmodification
 			print_set_commit("unset") # xmodification
@@ -116,7 +127,7 @@ def add_commit(file, arg="arg"):
 	quit_program(commit_message)
 	if commit_message == "":
 		print("You must provide a commit message for {}. Try again".format(displayed_filename))
-		return 2
+		return 2 # stays on the current file
 		
 	add = run_subprocess(["git", "add", file])
 	if add.returncode != 0:
@@ -154,7 +165,13 @@ def add_commit(file, arg="arg"):
 		quit_program("q")
 	return success_mode
 
-def collect_valid_commit_message(condition: bool = False, commit_message: str = "", filename: str = "", pre_commit_message: str = ""):
+def collect_valid_commit_message(
+    condition: bool = False,
+    commit_message: str = "",
+    filename: str = "",
+    pre_commit_message: str = "",
+    oneTime: bool = False
+    ):
 	"""This function collects a valid commit message from the user.
 
 	Args:
@@ -166,6 +183,10 @@ def collect_valid_commit_message(condition: bool = False, commit_message: str = 
 	Returns:
 		str: commit message
 	"""
+	commit_prompt = "[c] - to see detailed changes made to {}\n[q] - abort operation\nEnter a commit message for {} >>> {}".format(filename, filename, pre_commit_message)
+	if oneTime:
+		commit_message = input(commit_prompt)
+		return commit_message
 	while condition:
 		# print(f"commit message: {commit_message}")
 		if commit_message.lower() == remove_pre_commit: # xmodification
@@ -175,7 +196,7 @@ def collect_valid_commit_message(condition: bool = False, commit_message: str = 
 				print_set_pre_commit("unset") # xmodification
 			else:
 				print_norm("Filename as pre-commit message is not set.") # xmodification
-			commit_message = input("Enter a commit message for {} [q] to abort >>> {}".format(filename, pre_commit_message)) # xmodification
+			commit_message = input(commit_prompt) # xmodification
 		elif commit_message.lower() == add_pre_commit: # xmodification
 			if set_filename: # xmodification
 				print_norm("Filename as pre-commit message exists.") # xmodification
@@ -183,7 +204,7 @@ def collect_valid_commit_message(condition: bool = False, commit_message: str = 
 				# print(f'set_pre_commit_msg with YES')
 				set_pre_commit_msg() # xmodification
 				print_set_pre_commit("set") # xmodification
-			commit_message = input("Enter a commit message for {} [q] to abort >>> {}".format(filename, pre_commit_message)) # xmodification
+			commit_message = input(commit_prompt) # xmodification
 		print()
 		if commit_message.lower() != remove_pre_commit and commit_message.lower() != add_pre_commit:
 			condition = False
