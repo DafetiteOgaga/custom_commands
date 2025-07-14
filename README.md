@@ -426,16 +426,13 @@ Check out our [Contributing Guide](.github/CONTRIBUTING.md) to get started.
   - updateToken
 
 ## Changes
+  - pushfile command now displays additional option to inspect the changes in the currently processing file before staging and committing the changes to git
+  - showDiff command can now take an argument (optional - filename/path_to_file) to inspect the changes made within that file
   - fixed pushfile command to now execute without argument, parsing through all the directories and subdirectories in the given repository and listing the modified, changed, new, deleted, etc files in-turns for staging and commiting before pushing only the committed changes to remote
   - createReactApp - changed the default tags within the head tag of index.html in /public/ to accomodate setup for seo, preview cards for social media, etc
-  - pullFromMain command pulls (rebase) changes from main/master branch and plays it in from of the changes from main/master into the current branch
+  - pullFromMain command pulls (merges) changes from main/master branch and plays it in from of the changes from main/master into the current branch
   - merged mysqlstart, mysqlstop, mysqlrestart and mysql_status commands
    into mysqlOp command
-  - changed rollback to revert2commit command, which is preferred because
-   it reverts to any earlier commit state and still keeps the commit history by undoing all the changes made upto the selected commit and
-   creating a new commit for this revert. Hence, history is not lost or
-   discarded
-  - Added (New) createExpoApp - uses backed up app config setup to create apps after the initial (first downloaded) setup and spins up the local server automatically.
   - [More](.more/changes.md)
 
 
