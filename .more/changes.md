@@ -2,6 +2,8 @@
 This file contains the notable changes made to the Custom Commands project.
 
 ## Changes
+   - pushfile command now displays additional option to inspect the changes in the currently processing file before staging and committing the changes to git
+   - showDiff command can now take an argument (optional - filename/path_to_file) to inspect the changes made within that file
    - fixed pushfile command to now execute without argument, parsing through all the directories and subdirectories in the given repository and listing the modified, changed, new, deleted, etc files in-turns for staging and commiting before pushing only the committed changes to remote
    - createReactApp - changed the default tags within the head tag of index.html in /public/ to accomodate setup for seo, preview cards for social media, etc
    - merged mysqlstart, mysqlstop, mysqlrestart and mysql_status commands
