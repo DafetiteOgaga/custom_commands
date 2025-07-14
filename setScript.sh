@@ -984,7 +984,6 @@ instructn() {
 			sleep 0.1
 			return
 			;;
-		msg="$STRT  $EFFT $ANYWHERE: $DFILENAME";;
 		commitdir) msg="$STRT commit changes in this dir $EFFT $ANYWHERE: $DFILENAME";;
 		commitall) msg="$STRT commit changes in all working tree $EFFT $ANYWHERE: $DFILENAME";;
 		stash) msg="$STRT stash current changes $EFFT $ANYWHERE: $DFILENAME";;
