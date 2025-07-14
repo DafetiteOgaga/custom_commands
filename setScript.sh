@@ -462,7 +462,7 @@ get_description() {
 		cls) echo "clear your screen" ;;
 		authorID) echo "configures your Github Identity(Global and Local)" ;;
 		commitree) echo "displays a tree of your commit history" ;;
-		showDiff) echo "displays detailed content of updates" ;;
+		showDiff) echo "displays detailed content of updates in the repo/file passed" ;;
 		commitdir) echo "commits all the changes in the current dir" ;;
 		commitall) echo "commits all the changes in the working tree" ;;
 		getRepoUserName) echo "prints the username of the current repo" ;;
@@ -977,7 +977,14 @@ instructn() {
 		createPatch) msg="$STRT create patch file $EFFT $ANYWHERE: $DFILENAME <main> <updated>";;
 		revert2commit) msg="$STRT revert to a previous commit $EFFT $ANYWHERE: $DFILENAME";;
 		commitree) msg="$STRT show graphical commit log $EFFT $ANYWHERE: $DFILENAME";;
-		showDiff) msg="$STRT view uncommitted diff $EFFT $ANYWHERE: $DFILENAME";;
+		showDiff)
+			echo -e "$STRT view uncommitted changes in a repository or individual file $EFFT $ANYWHERE:"
+			echo -e "$DFILENAME - to see reposirory wide changes"
+			echo -e "$DFILENAME <filename> - to see changes in a specific file"
+			sleep 0.1
+			return
+			;;
+		msg="$STRT  $EFFT $ANYWHERE: $DFILENAME";;
 		commitdir) msg="$STRT commit changes in this dir $EFFT $ANYWHERE: $DFILENAME";;
 		commitall) msg="$STRT commit changes in all working tree $EFFT $ANYWHERE: $DFILENAME";;
 		stash) msg="$STRT stash current changes $EFFT $ANYWHERE: $DFILENAME";;
