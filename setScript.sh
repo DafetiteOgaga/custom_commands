@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250714.1112"
+VERSIONNUMBER="20250714.1331"
 
 # colors and styles
 RESET="\033[0m"
@@ -984,7 +984,6 @@ instructn() {
 			sleep 0.1
 			return
 			;;
-		msg="$STRT  $EFFT $ANYWHERE: $DFILENAME";;
 		commitdir) msg="$STRT commit changes in this dir $EFFT $ANYWHERE: $DFILENAME";;
 		commitall) msg="$STRT commit changes in all working tree $EFFT $ANYWHERE: $DFILENAME";;
 		stash) msg="$STRT stash current changes $EFFT $ANYWHERE: $DFILENAME";;
