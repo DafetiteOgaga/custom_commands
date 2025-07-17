@@ -5,17 +5,45 @@
 # Custom Commands [![Title badge](https://img.shields.io/badge/Status-Active-brightgreen.svg)](##)
 [![Title badge](https://img.shields.io/badge/Type-CLI-green.svg)](#installation)
 
+### Custom Commands is a modular, cross-platform command-line interface (CLI) toolkit designed to streamline and simplify daily development tasks across multiple programming stacks. Built with Shell, Python, and C, this utility offers a collection of ready-to-use automation scripts that accelerate workflows for web developers, system programmers, and CLI enthusiasts.
+
+### Whether you're working with Git, building web apps in Django or React, compiling C code, or automating Python scripts, Custom Commands provides a unified interface to get things done faster — without repetitive boilerplate or constant context switching.
+
+## Key Features
+- ### Commands: Perform common Git, Django, React, Python, and C operations using short, memorable aliases.
+
+- ### Workflow Automation: Eliminate repetitive tasks with modular shell scripts and logic-based CLI tools.
+
+- ### Python CLI Utilities: Includes tools like Custom Commands, pycode, pyxecute, and ROT13 encoder/decoder.
+
+- ### Django Development Toolkit: Auto-generate URLs, JWT/Djoser setups, migrations, and DRF configurations.
+
+- ### React Utilities: Bootstrap projects, install dev dependencies, and manage packages with a single command.
+
+- ### System Integration: Built to work seamlessly across Unix-based systems and Android (via Termux).
+
+- ### Easy Installation: Just run setScript.sh to install and make commands globally accessible.
+
+---
+### Ideal For
+- ### Developers looking to speed up their full-stack workflow.
+
+- ### Students and freelancers needing a portable toolkit across machines.
+
+- ### Terminal power users who prefer custom scripts over GUIs.
+---
+## Platforms
+[![Platform Badge](https://img.shields.io/badge/Platform-Linux%20%7C%20WSL%20%7C%20Git%20Bash-blue)](####)
+
+- ### Unix, Linux, Windows Subsystem for Linux, Git Bash (Windows)
+
+<br/><br/>
+
 ![Device check Image](.images/intro.jpg)
 ![Main menu page 1](.images/main_menu.jpg)
 ![Main menu page 2](.images/main_menu2.jpg)
 
 ### Note: **You can view all your custom commands by running `custom_commands` on your terminal**
-
-## Platforms
-[![Platform Badge](https://img.shields.io/badge/Platform-Linux%20%7C%20WSL%20%7C%20Git%20Bash-blue)](####)
-
-* Unix, Linux, Windows Subsystem for Linux, Git Bash (Windows)
-<br><br>
 
 ## Installation
 [![Installation badge](https://img.shields.io/badge/Installation-CLI-blueviolet.svg)](########)
