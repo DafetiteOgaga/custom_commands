@@ -16,8 +16,9 @@ if [[ -n "$check" ]]; then
 	fi
 fi
 
-has3=$("./pyfiles/isGitBash" 2>&1)
+path2="$path1/pyfiles"
+python_command=$("$path2/isGitBash" 2>&1)
 # command=$(cat $path1/pymanage)
 # echo "command: $command"
-command="python$has3 manage.py collectstatic --noinput"
+command="$python_command manage.py collectstatic --noinput"
 $command
