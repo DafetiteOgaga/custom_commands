@@ -4,9 +4,7 @@ is_git_bash() {
     [[ "$OSTYPE" == "msys" || "$MSYSTEM" == MINGW* ]]
 }
 if is_git_bash; then
-	echo "x"
+	echo "python"
 else
-	echo "3"
+	echo "python3"
 fi
-
-# python$is_git_bash "--version"
