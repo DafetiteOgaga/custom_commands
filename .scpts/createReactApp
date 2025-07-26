@@ -10,7 +10,7 @@ if [[ -n "$check" ]]; then
 		exit 1
 	fi
 fi
-has3=$("./pyfiles/isGitBash" 2>&1)
+python_command=$("./pyfiles/isGitBash" 2>&1)
 
 # success message
 success() {
@@ -224,7 +224,8 @@ elif [[ "$#" -eq 1 ]]; then
           *target=\"_blank\"&*£*rel=\"noopener noreferrer\"&£*>
           *Install more custom commands&£*</a>&£</p>&"
 		app_js_path="$(find $PWD -name "App.js")"
-		cat "$app_js_path" | python$has3 "$path1/process_more.py" "react" "$line" "$app_js_path"
+		echo "the command is: $python_command $path1/process_more.py"
+		cat "$app_js_path" | "$python_command" "$path1/process_more.py" "react" "$line" "$app_js_path"
 		mkdir "$src/components" # creates components dir in src dir
 		echo "Created components directory in src."
 		mkdir "$src/images" # creates images dir in src dir
