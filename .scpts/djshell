@@ -18,6 +18,7 @@ fi
 
 # command=$(cat $path1/pymanage)
 # echo "command: $command"
-has3=$("./pyfiles/isGitBash" 2>&1)
-command="python$has3 manage.py shell"
+path2="$path1/pyfiles"
+python_command=$("$path2/isGitBash" 2>&1)
+command="$python_command manage.py shell"
 $command
