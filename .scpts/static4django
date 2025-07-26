@@ -16,15 +16,16 @@ if [[ -n "$check" ]]; then
 	fi
 fi
 
-has3=$("./pyfiles/isGitBash" 2>&1)
+path2="$path1/pyfiles"
+python_command=$("$path2/isGitBash" 2>&1)
 if [ "$#" -gt 0 ]; then
 	echo ""
 	echo "This command takes no arguments"
 elif [ "$#" -eq 0 ]; then
 	path1="$path1/pyfiles/configure_settings_py.py"
 	echo ""
-	# $(echo "static" | python$has3 $path1)
-	output="$(echo "static" | python$has3 $path1 2>&1)"
+	# $(echo "static" | "$python_command" "$path1")
+	output="$(echo "static" | "$python_command" "$path1" 2>&1)"
 	echo "$output"
 	echo ""
 	echo "..............................................."
