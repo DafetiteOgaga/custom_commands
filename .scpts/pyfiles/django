@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 path1="$HOME/.xbin/pyfiles"
-has3=$("./pyfiles/isGitBash" 2>&1)
-output=$(2>&1 python$has3 -m django --version)
+python_command=$("$path1/isGitBash" 2>&1)
+output=$(2>&1 "$python_command" -m django --version)
 items=$(ls)
 
 if [[ "$output" == *"No module named django"* ]]; then
@@ -17,7 +17,7 @@ elif [[ "$1" != "project" ]]; then
 	elif [[ "$items" != *"manage.py"* && -n "$1" ]]; then
 		echo "change to the directory containing \"manage.py\""
 	elif [[ "$1" == "pass" ]]; then
-		database="$(python$has3 $path1/check_db.py 2>&1)"
+		database="$("$python_command" "$path1/check_db.py" 2>&1)"
 		if [[ "$database" == *"SQLite database detected"* ]]; then
 			echo "SQLite database detected."
 		elif [[ "$database" == *"MySQL database detected"* ]]; then
@@ -30,7 +30,7 @@ elif [[ "$1" != "project" ]]; then
 			echo "Unknown database detected."
 		fi
 		# echo "$database"
-		mysqlclient="$(python$has3 $path1/check_MySQLdb.py 2>&1)"
+		mysqlclient="$("$python_command" "$path1/check_MySQLdb.py" 2>&1)"
 		# echo "$mysqlclient"
 		if [[ "$mysqlclient" == *"DRF not installed"* ]]; then
 			echo ""
