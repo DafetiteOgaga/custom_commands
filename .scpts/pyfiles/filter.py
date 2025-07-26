@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os, sys
+from print import is_git_bash_sh
 
 input_str = input()
 
@@ -9,7 +10,10 @@ def filterFunc(list_in: str, type: str):
 	list_in = list_in.split()
 	# print(f'type: {type}')
 	# print(f'list_in: {list_in}')
-	list_in = [filename.split(os.sep)[-1] for filename in list_in]
+	isgitBash = is_git_bash_sh()
+	# print(f'isgitBash: {isgitBash}')
+	list_in = [filename.split('/' if isgitBash else os.sep)[-1] for filename in list_in]
+	# print(f'os sep: {os.sep}')
 	# print(f'list_in: {list_in}')
 	files = []
 	type, _ = type.split('-')
