@@ -5,13 +5,14 @@ if [ "$#" = "0" ]; then
     exit 1
 fi
 
+has3=$("./pyfiles/isGitBash" 2>&1)
 make_exe()
 {
 	echo -e "\n========== $argument =========="
 	pycount=$((count + 1))
-	if [[ $(head -n 1 "$argument" | grep -c "#!/usr/bin/env python3") -eq 0 ]]; then
+	if [[ $(head -n 1 "$argument" | grep -c "#!/usr/bin/env python$has3") -eq 0 ]]; then
 		tmpfile=$(mktemp)
-		echo -e "#!/usr/bin/env python3\n" > "$tmpfile"
+		echo -e "#!/usr/bin/env python$has3\n" > "$tmpfile"
 		cat "$argument" >> "$tmpfile"
 
 		mv "$tmpfile" "$argument"

@@ -4,7 +4,8 @@ DBIN="$HOME/.xbin"
 
 pyfiles="pyfiles"
 check4Update="check4Update"
-pymanage="pymanage"
+has3=$("./pyfiles/isGitBash" 2>&1)
+pymanage="python$has3 manage.py "
 C_template="C_template"
 
 dash_line="......................................................"

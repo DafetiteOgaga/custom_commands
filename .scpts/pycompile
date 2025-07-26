@@ -5,8 +5,9 @@ if [ "$#" = "0" ]; then
     exit 1
 fi
 
+has3=$("./pyfiles/isGitBash" 2>&1)
 for argument in "$@" ; do
     echo -e "\n========== $argument =========="
-    python3 -m compileall -b "$argument"
+    python$has3 -m compileall -b "$argument"
     echo -e "Done."
 done

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import time, sys
+import time, sys, platform, os
 # from pyfiles.subprocessfxn import run_subprocess
 from pathlib import Path
 # from pyfiles.verify_repo_new import entry_point
@@ -351,3 +351,11 @@ def backward_search(path=None):
 	print_norm('Change into a repository and try again')
 	print()
 	return True
+
+def is_git_bash_sh():
+	ostype = os.environ.get("OSTYPE", "").lower()
+	mysystem = os.environ.get("MYSYSTEM", "").upper()
+
+	return (
+		ostype == "msys" or mysystem.startswith("MINGW")
+	)

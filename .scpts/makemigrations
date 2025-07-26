@@ -17,8 +17,9 @@ if [[ -n "$check" ]]; then
 fi
 
 echo ""
-command=$(cat $path1/pymanage)
-command+="makemigrations"
+# command=$(cat $path1/pymanage)
+has3=$("./pyfiles/isGitBash" 2>&1)
+command="python$has3 manage.py makemigrations"
 
 if [ "$#" = "0" ]; then
 	$command

@@ -16,7 +16,8 @@ if [[ -n "$check" ]]; then
 	fi
 fi
 
-command=$(cat $path1/pymanage)
+# command=$(cat $path1/pymanage)
 # echo "command: $command"
-command+="shell"
+has3=$("./pyfiles/isGitBash" 2>&1)
+command="python$has3 manage.py shell"
 $command

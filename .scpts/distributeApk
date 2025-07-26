@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+has3=$("./pyfiles/isGitBash" 2>&1)
+
 # 1. download APK from eas build
 # 2. upload APK for distribution via GitHub releases
 # 3. update backend with new version
@@ -65,7 +67,7 @@ if ! eas whoami &> /dev/null; then
 fi
 
 # get latest build url and version number
-buildList=$(eas build:list | python3 "$path1/pyfiles/getEchoOutput.py")
+buildList=$(eas build:list | python$has3 "$path1/pyfiles/getEchoOutput.py")
 read -r version url <<< "$buildList"
 echo "Version: $version"
 echo "URL: $url"

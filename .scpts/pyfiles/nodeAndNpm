@@ -25,18 +25,21 @@ if [[ "$npm_status" != 0 ]]; then
 	echo "Go to => https://nodejs.org/en/download/"
 fi
 
+has3=$("./pyfiles/isGitBash" 2>&1)
 file_list=$(find . -type d \( -name "node_modules" -o -name ".git" \) -prune -o -type f \( -name "index*" -o -name "App*" -o -name "app.json" -o -name "_layout*" -o -name "package.json" \) -print)
 # echo "pwd dir #####: $PWD"
 # echo "file_list: $file_list"
 funcName="$1-Check"
-check=$(echo $file_list | python3 $path1/filter.py $funcName)
-# echo "check #####: $check"
+echo "pwd: $(pwd)"
+echo "the second batch: python $path1/filter.py $funcName"
+check=$(echo $file_list | python $path1/filter.py $funcName)
+echo "check #####"
 
 if [[ "$1" == "dependencies" && "$check" == "True" ]]; then
 	echo ""
 elif [[ "$check" == "True" ]]; then
 	# echo "args: 1: $1"
-	appName=$(echo $file_list | python3 $path1/filter.py $1)
+	appName=$(echo $file_list | python$has3 $path1/filter.py $1)
 	# echo "appName #####: $appName"
 	echo ""
 	echo "Oopsy! cannot install."

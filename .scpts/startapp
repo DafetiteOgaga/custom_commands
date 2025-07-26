@@ -16,8 +16,9 @@ if [[ -n "$check" ]]; then
 	fi
 fi
 
-command=$(cat $path1/pymanage) # move this to pyfiles now
-command+="startapp"
+has3=$("./pyfiles/isGitBash" 2>&1)
+# command=$(cat $path1/pymanage) # move this to pyfiles now
+command="python$has3 manage.py startapp"
 
 if [ "$#" != "1" ]; then
 	echo ""
@@ -32,17 +33,17 @@ elif [ "$#" -eq 1 ]; then
 	# echo "status: $status_code"
 	# echo "run_command: $run_command"
 	# echo "############# from bash #########################"
-	# echo $run_command | python3 $path1/pyfiles/process_more.py django
+	# echo $run_command | python$has3 $path1/pyfiles/process_more.py django
 	# echo "############# end from bash #########################"
 	if [[ "$status_code" == "1" && "$run_command" == *"ModuleNotFoundError"* ]]; then
-		module_error="$(echo $run_command | python3 $path1/pyfiles/process_more.py django)"
+		module_error="$(echo $run_command | python$has3 $path1/pyfiles/process_more.py django)"
 		echo "Oopsi!"
 		echo "You have $module_error configured under INSTALLED_APPS in settings.py"
 		echo "Remove it completely and try again."
 		exit 1
 	fi
 	# echo "222222222222222222"
-	output="$(echo "$1 $0" | python3 $path1/pyfiles/configure_settings_py.py 2>&1)"
+	output="$(echo "$1 $0" | python$has3 $path1/pyfiles/configure_settings_py.py 2>&1)"
 	echo "$output"
 	echo ""
 	echo "..............................................."
@@ -56,17 +57,17 @@ fi
 # 	newvar="django ${run_command}"
 # 	echo "the new var: $newvar"
 # 	echo "############### start #######################"
-# 	module_error="$(echo "$newvar" | python3 $path1/pyfiles/process_more.py)"
+# 	module_error="$(echo "$newvar" | python$has3 $path1/pyfiles/process_more.py)"
 # 	echo "############### new arg #######################"
 # 	exit 5
-# 	# echo "${run_command}django" | python3 $path1/pyfiles/process_more.py
+# 	# echo "${run_command}django" | python$has3 $path1/pyfiles/process_more.py
 # 	# echo "############### at start #######################"
-# 	# echo "django $run_command" | python3 $path1/pyfiles/process_more.py
+# 	# echo "django $run_command" | python$has3 $path1/pyfiles/process_more.py
 # 	# echo "############### at end #######################"
-# 	# echo "$run_command" django | python3 $path1/pyfiles/process_more.py
+# 	# echo "$run_command" django | python$has3 $path1/pyfiles/process_more.py
 # 	# echo "################## end ####################"
 # 	# if [[ "$status_code" == "1" && "$run_command" == *"ModuleNotFoundError"* ]]; then
-# 	# 	module_error="$(echo "$newvar" | python3 $path1/pyfiles/process_more.py)"
+# 	# 	module_error="$(echo "$newvar" | python$has3 $path1/pyfiles/process_more.py)"
 # 	# 	echo "Oopsi!"
 # 	# 	echo "You have not installed $module_error but used it in INSTALLED_APPS"
 # 	# 	echo "Or that this app exists under your INSTALLED_APPS in settings"
@@ -74,7 +75,7 @@ fi
 # 	# 	exit 1
 # 	# fi
 # 	# echo "222222222222222222"
-# 	output="$(echo "$1 $0" | python3 $path1/pyfiles/configure_settings_py.py 2>&1)"
+# 	output="$(echo "$1 $0" | python$has3 $path1/pyfiles/configure_settings_py.py 2>&1)"
 # 	echo "$output"
 # 	echo ""
 # 	echo "..............................................."
