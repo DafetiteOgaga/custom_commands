@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-command_arg="python3 -m venv"
+path2="$HOME/.xbin/pyfiles"
+python_command=$("$path2/isGitBash" 2>&1)
+command_arg="$python_command -m venv"
 if [[ "$#" == "0" || "$#" -gt 1 ]]; then
         read -p "Enter name of virtual environment >>> " name
         command_arg+=" $name"
@@ -12,9 +14,9 @@ fi
 check=$(2>&1 $command_arg)
 echo ""
 if [[ "$check" == *"virtual environment was not created successfully"* ]]; then
-        echo "Install the python3-venv package"
+        echo "Install the $python_command-venv package"
         echo "On Debian/Ubuntu systems, use:"
-        echo "sudo apt install python3-venv"
+        echo "sudo apt install $python_command-venv"
         echo ""
 elif [[ -z "$check" ]]; then
         # echo "check empty"

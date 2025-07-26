@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+is_git_bash() {
+    [[ "$OSTYPE" == "msys" || "$MSYSTEM" == MINGW* ]]
+}
+if is_git_bash; then
+	echo "python"
+else
+	echo "python3"
+fi

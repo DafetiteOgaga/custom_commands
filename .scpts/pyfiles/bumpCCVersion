@@ -7,7 +7,7 @@ sedFunc () {
 }
 
 # use find for dynamic path resolution
-# custom_commands=$(find . -type d -name custom_commands -exec test -d "{}/.git" \; -print)
+# custom_commands=$(find "." -type d -name custom_commands -exec test -d "{}/.git" \; -print)
 
 # use absolute path for clarity
 currDir="$(pwd)"

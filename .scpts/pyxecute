@@ -5,13 +5,16 @@ if [ "$#" = "0" ]; then
     exit 1
 fi
 
+path2="$HOME/.xbin/pyfiles"
+python_command=$("$path2/isGitBash" 2>&1)
+headline="#!/usr/bin/env $python_command"
 make_exe()
 {
 	echo -e "\n========== $argument =========="
 	pycount=$((count + 1))
-	if [[ $(head -n 1 "$argument" | grep -c "#!/usr/bin/env python3") -eq 0 ]]; then
+	if [[ $(head -n 1 "$argument" | grep -c "$headline") -eq 0 ]]; then
 		tmpfile=$(mktemp)
-		echo -e "#!/usr/bin/env python3\n" > "$tmpfile"
+		echo -e "$headline\n" > "$tmpfile"
 		cat "$argument" >> "$tmpfile"
 
 		mv "$tmpfile" "$argument"

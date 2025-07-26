@@ -6,7 +6,7 @@ from pyfiles.check_db import check_database
 from pyfiles.check_MySQLdb import check_mysqldb
 from pyfiles import check_MySQLdb
 from pyfiles.configure_settings_py import find_settings_py as settings
-from pyfiles.print import print_norm as print_stdout, quit_program
+from pyfiles.print import print_norm as print_stdout, quit_program, is_git_bash_sh
 from pyfiles.subprocessfxn import run_subprocess, run_subprocess_cmd_alone
 
 def locator(disp_list: list, manage_py_list: list, migration_list: list):
@@ -129,7 +129,8 @@ def output_func():
 	Returns:
 		str: the django command and args to be executed by the shell
 	"""
-	manage_obj = open(os.path.join(os.environ['HOME'], '.xbin', 'pymanage'))
+	# manage_obj = open(os.path.join(os.environ['HOME'], '.xbin', 'pymanage'))
+	manage_obj = "python3 manage.py "
 	content = manage_obj.readlines()[0]
 	migrate = content + 'migrate'
 	showmigrations = content + 'showmigrations'
@@ -174,7 +175,7 @@ def error_check():
 		str: integers and strings in the order of errors encountered
 	"""
 
-	django = ['python3', '-m', 'django', '--version']
+	django = ['python3', '-m', 'django', '--version'] if not is_git_bash_sh else ['python', '-m', 'django', '--version']
 	check1 = run_subprocess(django)
 	ls = ['ls']
 	check2 = run_subprocess(ls)

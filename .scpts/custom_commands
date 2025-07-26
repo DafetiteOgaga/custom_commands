@@ -4,7 +4,9 @@ DBIN="$HOME/.xbin"
 
 pyfiles="pyfiles"
 check4Update="check4Update"
-pymanage="pymanage"
+path2="$DBIN/pyfiles"
+python_command=$("$path2/isGitBash" 2>&1)
+pymanage="$python_command manage.py "
 C_template="C_template"
 
 dash_line="......................................................"

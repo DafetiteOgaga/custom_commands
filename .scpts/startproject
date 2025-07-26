@@ -16,6 +16,7 @@ if [[ -n "$check" ]]; then
 	fi
 fi
 
+python_command=$("$path1/isGitBash" 2>&1)
 command="django-admin"
 command+=" startproject"
 
@@ -30,7 +31,7 @@ elif [ "$#" -eq 1 ]; then
 	sleep 3
 	pip install -q django-extensions
 	echo ""
-	output1="$(echo "django_extensions" | python3 $path1/configure_settings_py.py 2>&1)"
+	output1="$(echo "django_extensions" | "$python_command" "$path1/configure_settings_py.py" 2>&1)"
 	echo "$output1"
 	echo "Install djangoUrls command and start checking all your configured urls"
 fi

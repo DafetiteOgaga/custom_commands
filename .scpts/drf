@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 path1="$HOME/.xbin"
+path2="$path1/pyfiles"
+python_command=$("$path2/isGitBash" 2>&1)
+
 check=$(2>&1 $path1/pyfiles/django arg)
 if [[ -n "$check" ]]; then
 	echo "$check"
@@ -32,7 +35,7 @@ additonals()
 		echo ""
 		if [[ "$xml" =~ [yY] || "$xml" == "" ]]; then
 			$commandx
-			output2="$(echo "$argument" | python3 $path1 2>&1)"
+			output2="$(echo "$argument" | "$python_command" "$path1" 2>&1)"
 			echo "$output2"
 			echo ""
 			echo "..............................................."
@@ -53,7 +56,7 @@ if [ "$#" -gt 0 ]; then
 elif [ "$#" -eq 0 ]; then
 	path1="$path1/pyfiles/configure_settings_py.py"
 	$command
-	output1="$(echo "rest_framework" | python3 $path1 2>&1)"
+	output1="$(echo "rest_framework" | "$python_command" "$path1" 2>&1)"
 	echo "$output1"
 	echo ""
 	if [[ "$output1" == *"you have a django app installed?"* ]]; then

@@ -3,13 +3,14 @@
 # check if node and npm are installed
 path1="$HOME/.xbin/pyfiles"
 # path1="$HOME/alx/custom_commands/.scpts/pyfiles"
-check="$(2>&1 $path1/nodeAndNpm react)"
+check="$(2>&1 "$path1"/nodeAndNpm react)"
 if [[ -n "$check" ]]; then
 	echo "$check"
 	if [[ "$check" == *"not install"* ]]; then
 		exit 1
 	fi
 fi
+python_command=$("$path1/isGitBash" 2>&1)
 
 # success message
 success() {
@@ -117,8 +118,10 @@ create_sitemap() {
 echo ""
 # command="npm init react-app my_default_app"
 
+tar_file_name="my_default_app.tar.gz" # tar file name
 def_project="$path1/default-react-project" # location of the default project
 my_default_app="$def_project/my_default_app" # location of the default app
+my_default_tar_app="$def_project/$tar_file_name" # location of the .tar.gz file
 new_update=0
 
 # checks if arg was passed
@@ -126,20 +129,47 @@ if [[ "$#" != "1" ]]; then
 	echo ""
 	echo "Enter an app name as argument"
 elif [[ "$#" -eq 1 ]]; then
+	# clears older setups for new one
+	if [[ -d "$def_project" && ! -f "$my_default_tar_app" ]]; then
+		rm -rf "$def_project"
+		echo "Removed older setup in favor of new one ..."
+	fi
+	# echo "$PWD/$1"
+	# exit 0
 	# tries to create react app from default project
 	if [[ -d "$def_project" ]]; then
 		echo "Preparing the ReactApp $1 ..."
 		# exit 0
-		cp -r "$my_default_app/" "$1"
+		# cp -r "$my_default_app/" "$1"
+
+		#### here
+		# echo "creating $1 dir ..."
+		mkdir -p "$1"
+		# echo "copying compressed file into $1"
+		cp -a "$my_default_tar_app" "$1"
+		# echo "changing into $1"
+		# prevDir="$(pwd)"
 		cd "$1"
+		# extracting compressed file
+		echo "extracting cra from backup"
+		echo "Pls, wait ..."
+		# tar -xzf "$tar_file_name"
+		tar -xzf "$tar_file_name" --strip-components=1
+
 		replace_in_place "my_default_app" "${1}" "package.json"
+		replace_in_place "my_default_app" "${1}" "package-lock.json"
 		# sed -i "s|my_default_app|${1}|g" "package.json"
+
+		# remove compressed file
+		# echo "removing compressed file"
+		rm -f "$tar_file_name"
 
 		# inquest for update
 		echo ""
-		echo -n "Checking for updates? [y - to check] >>> "
+		echo -n "Check for updates? [y - to check] >>> "
 		read -n 1 -s -r UPDATE_CHECK
 		if [[ "$UPDATE_CHECK" =~ [yY] ]]; then
+			# checks for update
 			echo "Checking for updates ..."
 			updates="$(2>&1 npm outdated)"
 			# echo "......................................."
@@ -189,9 +219,32 @@ elif [[ "$#" -eq 1 ]]; then
 
 			# update the default project with the latest versions
 			if [[ "$new_update" -eq 1 ]]; then
-				cp -r "node_modules" "$my_default_app/node_modules"
-				cp -r "package.json" "$my_default_app/package.json"
-				replace_in_place "${1}" "my_default_app" "$my_default_app/package.json"
+				# echo "curr dir: $(pwd)"
+				parentDir="$(dirname "$(pwd)")"
+				# echo "parentDir: $parentDir"
+				tempDir="$parentDir/temp_default_app"
+				mkdir -p "$tempDir"
+				# tempDir="$(dirname "$(pwd)")/temp_default_app"
+				# tempDir="$(pwd)/temp_default_app"
+				# echo "tempDir: $tempDir"
+				echo "updating backup with latest changes ..."
+				replace_in_place "${1}" "my_default_app" "package.json"
+				replace_in_place "${1}" "my_default_app" "package-lock.json"
+				# replace_in_place "test12" "my_default_app" "package.json"
+				# replace_in_place "test12" "my_default_app" "package-lock.json"
+				# echo "compressing updated copy ..."
+				# tar -czf "$tempDir/$tar_file_name" "$parentDir/test12" 2>/dev/null # suppressed the output message
+				tar -czf "$tempDir/$tar_file_name" "$parentDir/$1" 2>/dev/null # suppressed the output message
+				# echo "backing up new update ..."
+				cp -a "$tempDir/$tar_file_name" "$def_project/"
+				replace_in_place "my_default_app" "${1}" "package.json"
+				replace_in_place "my_default_app" "${1}" "package-lock.json"
+				# replace_in_place "my_default_app" "test12" "package.json"
+				# replace_in_place "my_default_app" "test12" "package-lock.json"
+				# echo "removing updated compressed backup ..."
+				rm -rf "$tempDir"
+				# cp -r "node_modules" "$my_default_app/node_modules"
+				# cp -r "package.json" "$my_default_app/package.json"
 				# sed -i "s|${1}|my_default_app|g" "$my_default_app/package.json"
 			fi
 		else
@@ -211,33 +264,66 @@ elif [[ "$#" -eq 1 ]]; then
 
 		delete_contents_between_headtag_in_place_in_index "$index" # deletes the contents between the head tag in index.html
 		replace_contents_between_headtag_in_place_in_index "$index" # replaces the contents between the head tag in index.html
-		echo "improved index.html in /public/."
+		echo "fixed index.html in /public/."
 		replace_contents_in_place_in_robots "$robotFile" # replaces the contents in robots.txt
-		echo "improved robots.txt in /public/."
+		echo "fixed robots.txt in /public/."
 		create_sitemap "$sitemap" # creates a sitemap.xml file in the public directory
-		echo "created sitemap.xml in /public/."
+		echo "added sitemap.xml in /public/."
 
-		src="$(2>&1 find . -type d -name "node_modules" -prune -o -type d -name "src" -print)"
+		# add custom commands to App.js
+		src="$(2>&1 find "$PWD/my_default_app" -type d -name "node_modules" -prune -o -type d -name "src" -print)"
+		# line to add to App.js
 		line="£<p>&£*<a&*£*className=\"App-link\"*£
           *href=\"https://github.com/DafetiteOgaga/custom_commands\"*£
           *target=\"_blank\"&*£*rel=\"noopener noreferrer\"&£*>
           *Install more custom commands&£*</a>&£</p>&"
-		app_js_path="$(find $PWD -name "App.js")"
-		cat "$app_js_path" | python3 "$path1/process_more.py" "react" "$line" "$app_js_path"
-		mkdir "$src/components" # creates components dir in src dir
-		echo "Created components directory in src."
-		mkdir "$src/images" # creates images dir in src dir
-		echo "Created images directory in src."
-		echo "Creating copy for future use."
+		# get App.js path
+		app_js_path="$(find "$PWD/my_default_app" -name "App.js")"
+		# add the line to the file
+		cat "$app_js_path" | "$python_command" "$path1/process_more.py" "react" "$line" "$app_js_path"
+		# creates components dir in src dir
+		mkdir -p "$src/components"
+		echo "added components directory in src."
+		# creates images dir in src dir
+		mkdir -p "$src/images"
+		echo "added images directory in src."
+		# creates hooks dir in src dir
+		mkdir -p "$src/hooks"
+		echo "added hooks directory in src."
+		# creates entry dir in src dir
+		mkdir -p "$src/entry"
+		echo "added entry directory in src."
+
 		# creates default project for future use
-		mkdir "$def_project"
-		cp -r "my_default_app" "$my_default_app"
+		echo "Creating a copy that can be used subsequently offline."
+		echo "Pls, wait a little longer ..."
+		currDirectory="$(pwd)"
+		# echo "saving curr path ... $currDirectory"
+		mkdir -p "$def_project"
+		# echo "compressing backup ..."
+		tar -czf "$tar_file_name" "my_default_app"
+		# echo "copying backup ..."
+		cp "$tar_file_name" "$def_project/"
+		# echo "change into destination ..."
+		# cd "$def_project"
+		# echo "extracting backup into destination ..."
+		# tar -xzf "$tar_file_name"
+		# echo "removing compressed backup from destination ..."
+		# rm -f "$tar_file_name"
+		# echo "changed back into project dir ..."
+		# cd "$currDirectory"
+		# echo "removing compressed backup from project dir ..."
+		rm -f "$tar_file_name"
+		# echo "modifying package files ..."
+		# cp -a "my_default_app" "$my_default_app"
 		# npm pkg set name="${1}" # this is believed to do the same thing as sed
 		replace_in_place "my_default_app" "${1}" "my_default_app/package.json" # sets the react app to align with the current name
 		replace_in_place "my_default_app" "${1}" "my_default_app/package-lock.json"
 		# sed -i "s|my_default_app|${1}|g" "my_default_app/package.json" # sets the react app to align with the current name
 		# sed -i "s|my_default_app|${1}|g" "my_default_app/package-lock.json"
+		echo "finalizing ..."
 		mv "my_default_app" "$1"
+		echo "Done."
 	fi
 	success
 fi
