@@ -353,9 +353,8 @@ def backward_search(path=None):
 	return True
 
 def is_git_bash_sh():
-	ostype = os.environ.get("OSTYPE", "").lower()
-	mysystem = os.environ.get("MYSYSTEM", "").upper()
-
-	return (
-		ostype == "msys" or mysystem.startswith("MINGW")
-	)
+    ostype = os.environ.get("OSTYPE", "").lower()
+    msystem = os.environ.get("MSYSTEM", "").upper()
+    # print(f"OSTYPE: {ostype}")
+    # print(f"MSYSTEM: {msystem}")
+    return "msys" in ostype or "mingw" in msystem.lower()
