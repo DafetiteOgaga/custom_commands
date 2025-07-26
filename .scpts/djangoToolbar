@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-has3=$("./pyfiles/isGitBash" 2>&1)
-
 path1="$HOME/.xbin"
 check=$(2>&1 $path1/pyfiles/django arg)
 if [[ -n "$check" ]]; then
@@ -18,6 +16,8 @@ if [[ -n "$check" ]]; then
 	fi
 fi
 
+path2="$path1/pyfiles"
+python_command=$("$path2/isGitBash" 2>&1)
 command="pip3 install django-debug-toolbar"
 
 if [ "$#" -gt 0 ]; then
@@ -27,7 +27,7 @@ elif [ "$#" -eq 0 ]; then
 	path1="$path1/pyfiles/configure_settings_py.py"
 	$command
 	echo ""
-	output="$(echo "debug_toolbar" | python$has3 $path1 2>&1)"
+	output="$(echo "debug_toolbar" | "$python_command" "$path1" 2>&1)"
 	echo "$output"
 	echo ""
 	echo "..............................................."
