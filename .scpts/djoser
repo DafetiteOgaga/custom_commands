@@ -16,7 +16,7 @@ if [[ -n "$check" ]]; then
 	fi
 fi
 
-has3=$("./pyfiles/isGitBash" 2>&1)
+python_command=$("$path1/isGitBash" 2>&1)
 
 command="pip install djoser"
 
@@ -26,7 +26,7 @@ if [ "$#" -gt 0 ]; then
 elif [ "$#" -eq 0 ]; then
 	$command
 	echo ""
-	output="$(echo "djoser" | python$has3 $path1/configure_settings_py.py 2>&1)"
+	output="$(echo "djoser" | "$python_command" "$path1/configure_settings_py.py" 2>&1)"
 	echo "$output"
 	echo ""
 	if [[ "$output" == *"you have a django app installed?"* ]]; then
