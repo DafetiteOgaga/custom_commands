@@ -18,8 +18,9 @@ fi
 
 echo ""
 # command=$(cat $path1/pymanage)
-has3=$("./pyfiles/isGitBash" 2>&1)
-command="python$has3 manage.py makemigrations"
+path2="$path1/pyfiles"
+python_command=$("$path2/isGitBash" 2>&1)
+command="$python_command manage.py makemigrations"
 
 if [ "$#" = "0" ]; then
 	$command
