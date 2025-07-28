@@ -317,6 +317,7 @@ elif [[ "$#" -eq 1 ]]; then
 		# echo "modifying package files ..."
 		# cp -a "my_default_app" "$my_default_app"
 		# npm pkg set name="${1}" # this is believed to do the same thing as sed
+
 		replace_in_place "my_default_app" "${1}" "my_default_app/package.json" # sets the react app to align with the current name
 		replace_in_place "my_default_app" "${1}" "my_default_app/package-lock.json"
 		# sed -i "s|my_default_app|${1}|g" "my_default_app/package.json" # sets the react app to align with the current name
