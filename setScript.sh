@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250729.0221"
+VERSIONNUMBER="20250729.1149"
 
 # colors and styles
 RESET="\033[0m"
@@ -428,7 +428,7 @@ c_scripts=(
 	"myascii" "rot13" "rot47" "guessGame"
 )
 personal_commands=(
-	"getAccessToken" "xbin" "distributeApk:da" "updateResumeCV"
+	"getAccessToken" "freeUpRam_linux" "xbin" "distributeApk:da" "updateResumeCV"
 )
 
 get_description() {
@@ -512,6 +512,7 @@ get_description() {
 		distributeApk) echo "Downloads the apk from eas and updates it to github" ;;
 		updateResumeCV) echo "updates my website and github with my resume" ;;
 		getAccessToken) echo "fetches the access token locally" ;;
+		freeUpRam_linux) echo "frees up ram by clearing unused cached data" ;;
 		myascii) echo "prints a simple version of the ASCII table" ;;
 		rot13) echo "Rot13 Cipher" ;;
 		rot47) echo "Rot47 Cipher" ;;
@@ -936,6 +937,7 @@ instructn() {
 		mycompile) msg="$STRT compile your files $EFFT $ANYWHERE: $DFILENAME <filename>";;
 		ctemp) msg="$STRT create default C source file templates $EFFT $ANYWHERE: $DFILENAME <filename>";;
 		getAccessToken) msg="$STRT fetch your access token $EFFT $ANYWHERE: $DFILENAME <filename>";;
+		freeUpRam_linux) msg="$STRT free up ram memory by clearing unused cached data $EFFT $ANYWHERE: $DFILENAME <filename>";;
 		cls) msg="$STRT clear your screen $EFFT $ANYWHERE: $DFILENAME";;
 		authorID) msg="$STRT configure your GitHub identity globally/locally $EFFT $ANYWHERE: $DFILENAME";;
 		pycodemore) msg="$STRT check your python file with line details $EFFT $ANYWHERE: $DFILENAME <filename(s)>";;
