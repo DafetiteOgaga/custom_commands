@@ -110,6 +110,8 @@ def scan_dir(dir, num_items: int, repo, verify_repo: int=0):
 					print()
 					quit_program("q")
 				break
+	else:
+		num = 0
 	return num, git
 
 def entry_point(action: str=None, verify_repo: int=0):
