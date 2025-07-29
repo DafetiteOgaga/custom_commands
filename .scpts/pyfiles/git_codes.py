@@ -187,33 +187,6 @@ def browse_files():
 	search_repo(root_list, delimiter=delimiter)
 
 
-# def pull():
-# 	"""This function pulls and merges updates from the remote to the local branch
-# 	"""
-
-# 	print()
-# 	print_norm("#### pulling ...################################################")
-# 	pull = run_subprocess(["git", "pull"])
-# 	if pull.returncode == 0:
-# 		print_stdout(pull.stdout)
-# 	elif "You have divergent branches and need to specify how to reconcile them" in pull.stderr\
-# 			and "Need to specify how to reconcile divergent branches" in pull.stderr:
-# 		rebase = run_subprocess_cmd_alone(["git", "config", "pull.rebase", "true"])
-# 		pull = run_subprocess(["git", "pull"])
-# 		if pull.returncode == 0:
-# 			print_stdout(pull.stdout)
-# 		elif pull.stdout:
-# 			print_stdout(pull.stdout)
-# 		elif pull.stderr:
-# 			print_stdout(pull.stderr)
-# 	elif pull.returncode > 0:
-# 		print_stdout(pull.stderr)
-# 	else:
-# 		print_norm("Oops! I got {}".format(pull.stderr))
-# 		quit_program('q')
-# 	print_norm("Pull successful...")
-# 	print()
-
 def print_stashes(arg=''):
 	"""This function prints the list of stashes in the repository
 	"""
@@ -254,29 +227,23 @@ def getUserInput(promptText='Select a choice', allowedEntryArray=None, invalidTe
 		print_norm(invalidText)
 		print()
 
-# def check_for_marker_in_file(file_path):
-# 	"""Check if conflict markers are present in the file."""
-# 	try:
-# 		with open(file_path, 'r') as f:
-# 			content = f.read()
-# 		if any(marker in content for marker in ['<<<<<<<', '=======', '>>>>>>>']):
-# 			return True
-# 		return False
-# 	except Exception as e:
-# 		print(f"Error reading file {file_path}: {e}")
-# 		return False
 ############################################################################
 def get_conflicted_files():
 	code, out, _ = subprocess_for_pull_command("git diff --name-only --diff-filter=U")
 	return out.splitlines() if out else []
 
+def get_file_content_as_list(filepath):
+	with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+		lines = f.readlines()
+	return lines
+
 def resolve_conflict(filepath):
 	conflict_start = '<<<<<<<'
 	conflict_middle = '======='
 	conflict_end = '>>>>>>>'
+	conflict_number = 0
 
-	with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
-		lines = f.readlines()
+	lines = get_file_content_as_list(filepath)
 
 	a_line = get_conflict_label(lines, conflict_start).strip()
 	b_line = get_conflict_label(lines, conflict_end).strip()
@@ -296,12 +263,15 @@ def resolve_conflict(filepath):
 				i += 1
 			i += 1  # Skip the >>>>>>>
 			# print("\nConflict detected in file:", filepath)
-			print_norm(f"{a_line} (A) or {b_line} (B)?")
+			conflict_number += 1
+			print_norm(f"{BOLD}{BLUE}{UNDERLINE}for conflict: {conflict_number}{RESET}")
+			print_norm(f"(A){a_line} or (B){b_line}?")
 			# print(f"B ({b_line}) version:")
-			promptText = "Choose version to keep (A/B) >>> "
+			promptText = "::::: Choose version to keep (A/B) >>> "
 			choice_options = ['a', 'b']
 			invalidText = "Invalid choice. Please enter 'A' or 'B', [q to quit]."
 			choice = getUserInput(promptText=promptText, allowedEntryArray=choice_options, invalidText=invalidText)
+			print()
 			if choice == 'b':
 				resolved.extend(version_b)
 			else:
@@ -314,41 +284,16 @@ def resolve_conflict(filepath):
 		f.writelines(resolved)
 	run_subprocess(['git', 'add', filepath])
 
-
-# def resolve_conflict(file_path, keep='a'):
-	# marker = check_for_marker_in_file(file_path)
-	# # print(f"marker: {marker}")
-	# if marker:
-	# 	# print("❗ Conflict markers in file — cleaning.")
-	# 	success = clean_conflict_markers(file_path, keep=keep)
-	# 	if success:
-	# 		# checkBranch()
-	# 		# print("staging file after cleaning conflict markers...")
-	# 		add_result = run_subprocess(['git', 'add', file_path])
-	# 		if add_result.returncode != 0:
-	# 			print(f'Failed to add {file_path} to staging area')
-	# 			print(f'Error: {add_result.stderr}')
-	# 			return False
-	# 		else:
-	# 			pass
-	# 			# checkBranch()
-	# 			# print(f'Added {file_path} to staging area.')
-	# 	else:
-	# 		return False
-	# # checkBranch()
-	# return True
-
-
 def show_conflict_blocks(filepath):
 	conflict_start = '<<<<<<<'
 	conflict_middle = '======='
 	conflict_end = '>>>>>>>'
+	conflict_number = 0
 
 	try:
 		mid_index = -1
 		strt_index = -1
-		with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
-			lines = f.readlines()
+		lines = get_file_content_as_list(filepath)
 
 		first = get_conflict_label(lines, conflict_start) + ' '
 		second = get_conflict_label(lines, conflict_end) + ' '
@@ -370,37 +315,21 @@ def show_conflict_blocks(filepath):
 				in_conflict = "A"
 				# first = line.split(conflict_start)[-1].strip()
 				strt_index = i + 1
-				print_norm(f"line: {i+1} {stripped_line}")
+				conflict_number += 1
+				print_norm(f"line: {i+1} {stripped_line}	{BOLD}{BLUE} <= {UNDERLINE}conflict: {conflict_number}{RESET}")
 			elif stripped_line.startswith(conflict_middle):
 				in_conflict = "B"
 				mid_index = i + 1
 				print_norm(f"line: {i+1} {stripped_line}")
 			elif stripped_line.startswith(conflict_end):
 				# second = line.split(conflict_end)[-1].strip()
-				print_norm(f"line: {i+1} {stripped_line}	{BOLD}{WHITE} <- end of conflict{RESET}\n")
+				print_norm(f"line: {i+1} {stripped_line}	{BOLD}{ITALIC}{BRIGHT_CYAN} <- {UNDERLINE}end of conflict{RESET}\n")
+				print("\n")
 				in_conflict = False
 			elif in_conflict:
 				print_norm(f"line: {i+1} {stripped_line}")
 		# print(f"mid_index: {mid_index}")
 		# return first, second
-
-	# print(f"\n📝 Conflict in {filepath}:")
-	# with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
-	# 	lines = f.readlines()
-
-	# i = 0
-	# while i < len(lines):
-	# 	if lines[i].startswith("<<<<<<<"):
-	# 		print("======= BEGIN CONFLICT =======")
-	# 		while i < len(lines) and not lines[i].startswith("======="):
-	# 			print(lines[i].rstrip())
-	# 			i += 1
-	# 		print("======= VS =======")
-	# 		while i < len(lines) and not lines[i].startswith(">>>>>>>"):
-	# 			print(lines[i].rstrip())
-	# 			i += 1
-	# 		print("======== END CONFLICT ========")
-	# 	i += 1
 	except FileNotFoundError:
 		print_norm(f"File not found: {filepath}")
 
@@ -612,6 +541,38 @@ def get_conflict_label(lines, marker):
 			conflict_label = line[len(marker):].strip()  # gets text after marker
 			break
 	return conflict_label
+
+# def count_conflicts(filepath):
+# 	conflict_start = '<<<<<<<'
+# 	conflict_middle = '======='
+# 	conflict_end = '>>>>>>>'
+# 	lines = get_file_content_as_list(filepath)
+# 	count = 0
+# 	# start_line_with_conflicts = []
+# 	i = 0
+# 	while i < len(lines):
+# 		if lines[i].startswith(conflict_start):
+# 			has_middle = False
+# 			has_end = False
+# 			# if i < len(lines):
+# 			# 	found_line = lines[i].strip()
+# 			# else:
+# 			# 	found_line = "<empty>"
+# 			i += 1
+# 			while i < len(lines):
+# 				if lines[i].startswith(conflict_middle):
+# 					has_middle = True
+# 				elif lines[i].startswith(conflict_end):
+# 					has_end = True
+# 					break
+# 				i += 1
+# 			if has_middle and has_end:
+# 				count += 1
+# 				# if found_line != "<empty>":
+# 				# 	start_line_with_conflicts.append(f"{count}øŋ{found_line}")
+# 		else:
+# 			i += 1
+# 	return count
 
 def is_binary(file_path):
 	result = run_subprocess(["git", "check-attr", "binary", file_path])
