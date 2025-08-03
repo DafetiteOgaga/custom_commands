@@ -293,6 +293,9 @@ elif [[ "$#" -eq 1 ]]; then
 		# creates entry dir in src dir
 		mkdir -p "$src/entry"
 		echo "added entry directory in src."
+		# remove pre-installed .git directory by CRA
+		rm -rf "my_default_app/.git"
+		echo "cleaned vc dir."
 
 		# creates default project for future use
 		echo "Creating a copy that can be used subsequently offline."
