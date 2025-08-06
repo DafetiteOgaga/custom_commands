@@ -393,7 +393,12 @@ def print_committted_files(files, additional_list=None, mode=None, prompt1=None,
 			else:
 				print("No files were staged and committed.")
 			if additional_list:
-				new_additionals = [addition for addition in additional_list if addition not in files]
+				# print(f'additional_list1: {additional_list}')
+				additional_list = [file.split("/").pop() for file in additional_list]
+				files = [file.split("/").pop() for file in files]
+				# print(f'additional_list2: {additional_list}')
+				# print(f'files: {files}')
+				new_additionals = [addition for addition in additional_list if addition.split("/").pop() not in files]
 				# print(f'new_additionals: {new_additionals}')
 				if new_additionals:
 					print()
@@ -426,7 +431,7 @@ def commit_deleted_files(files, mode=0):
 				print(f"Error adding {file} to staging area: {add_deleted_file.stderr}")
 				continue
 			deleted_file_commit_message = f"Deleted {file.split('/')[-1].strip() if '/' in file else file.strip()}"
-			# print(f"Committed {deleted_filename} with message: {deleted_file_commit_message}")
+			# print(f"Committed {deleted_filename} with message:: {deleted_file_commit_message}")
 			
 			commit_deleted_file = run_subprocess(["git", "commit", "-m", deleted_file_commit_message])
 			if commit_deleted_file.returncode != 0:
