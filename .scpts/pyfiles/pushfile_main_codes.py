@@ -431,7 +431,7 @@ def commit_deleted_files(files, mode=0):
 				print(f"Error adding {file} to staging area: {add_deleted_file.stderr}")
 				continue
 			deleted_file_commit_message = f"Deleted {file.split('/')[-1].strip() if '/' in file else file.strip()}"
-			# print(f"Committed {deleted_filename} with message: {deleted_file_commit_message}")
+			# print(f"Committed {deleted_filename} with message:: {deleted_file_commit_message}")
 			
 			commit_deleted_file = run_subprocess(["git", "commit", "-m", deleted_file_commit_message])
 			if commit_deleted_file.returncode != 0:
