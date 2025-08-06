@@ -393,6 +393,7 @@ def print_committted_files(files, additional_list=None, mode=None, prompt1=None,
 			else:
 				print("No files were staged and committed.")
 			if additional_list:
+				# print(f'additional_list: {additional_list}')
 				new_additionals = [addition for addition in additional_list if addition not in files]
 				# print(f'new_additionals: {new_additionals}')
 				if new_additionals:
