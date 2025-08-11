@@ -11,6 +11,24 @@ if [[ -n "$check" ]]; then
 			"$check" == *"You don't have djangorestframework"* ]]; then
 			exit 1
 		fi
+	elif [[ "$check" == *"You don't have django installed"* ]]; then
+		echo ""
+		read -n 1 -s -r -p "Install django? [y/N] >>> " INSTALL_DJANGO
+		if [[ "$INSTALL_DJANGO" =~ [yY] ]]; then
+			echo ""
+			echo "Installing django..."
+			pip install django
+			echo "exit result: $?"
+			if [[ $? -eq 0 ]]; then
+				echo "Django installed successfully."
+			else
+				echo "Failed to install django. Please check your pip configuration."
+			fi
+		else
+			echo ""
+			echo "Django installation skipped."
+			exit 1
+		fi
 	elif [[ "$check" == *"change to the directory containing"* || "$check" == *"You don't have django installed or"* ]]; then
 		exit 1
 	fi

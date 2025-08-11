@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250806.2345"
+VERSIONNUMBER="20250812.0044"
 
 # colors and styles
 RESET="\033[0m"
@@ -307,7 +307,7 @@ unametokenmaill2() {
 		echo -e "You must provide your Classic Github token to proceed."
 		echo -e ""
 	done
-	
+
 	while [[ -z "$NEMAIL" ]]; do
 		echo -n "Lastly, your Github Email >>> "
 		read NEMAIL

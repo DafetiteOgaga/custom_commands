@@ -7,8 +7,9 @@ items=$(ls)
 
 if [[ "$output" == *"No module named django"* ]]; then
 	echo ""
-	echo "You don't have django installed or check your virtual environment"
-	echo "pip install django"
+	echo "You don't have django installed."
+	# echo "You are probably in a virtual environment"
+	# echo ""
 	echo ""
 elif [[ "$1" != "project" ]]; then
 	if [[ -z "$1" ]]; then
