@@ -307,7 +307,7 @@ unametokenmaill2() {
 		echo -e "You must provide your Classic Github token to proceed."
 		echo -e ""
 	done
-	
+
 	while [[ -z "$NEMAIL" ]]; do
 		echo -n "Lastly, your Github Email >>> "
 		read NEMAIL
