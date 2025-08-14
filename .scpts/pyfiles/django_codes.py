@@ -131,7 +131,8 @@ def output_func():
 	"""
 	# manage_obj = open(os.path.join(os.environ['HOME'], '.xbin', 'pymanage'))
 	manage_obj = "python3 manage.py "
-	content = manage_obj.readlines()[0]
+	# content = manage_obj.readlines()[0]
+	content = manage_obj
 	migrate = content + 'migrate'
 	showmigrations = content + 'showmigrations'
 	sqlmigrate = content + 'sqlmigrate'
