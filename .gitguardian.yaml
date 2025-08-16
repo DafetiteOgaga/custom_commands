@@ -1,0 +1,5 @@
+secret:
+  ignored_matches:
+  - match: 31bbfdc920d850c90bb8dc0910622d07b40ae2abe0ccc6e0491e580888af73ba
+    name: GitHub Personal Access Token - setScript.sh:l.12
+version: 2

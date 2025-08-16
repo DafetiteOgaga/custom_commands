@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250814.1921"
+VERSIONNUMBER="20250816.1018"
 
 # colors and styles
 RESET="\033[0m"
@@ -258,6 +258,7 @@ converPyShebang4gitbash() {
 	# replaces all occurences of the shebang line to tune to gitbash env
 	local file_path="$1" # file path
 	sed -i "s|#!/usr/bin/env python3|#!/usr/bin/env python|g" "$file_path"
+	sed -i "s|\"python3 manage.py \"|\"python manage.py \"|g" "$file_path"
 }
 
 details() {

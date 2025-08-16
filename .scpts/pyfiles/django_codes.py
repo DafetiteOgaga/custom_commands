@@ -176,7 +176,8 @@ def error_check():
 		str: integers and strings in the order of errors encountered
 	"""
 
-	django = ['python3', '-m', 'django', '--version'] if not is_git_bash_sh else ['python', '-m', 'django', '--version']
+	# print(f'is_git_bash_sh: {is_git_bash_sh()}')
+	django = ['python3', '-m', 'django', '--version'] if not is_git_bash_sh() else ['python', '-m', 'django', '--version']
 	check1 = run_subprocess(django)
 	ls = ['ls']
 	check2 = run_subprocess(ls)
