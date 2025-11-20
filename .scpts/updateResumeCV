@@ -20,7 +20,10 @@ except ImportError:
 # Google Drive file ID (the part after /d/ in the sharing URL)
 # https://drive.google.com/file/d/1-tKERAlGdmcCXiYo83fNo6c5LNmSGK3A/view?usp=drive_link
 # https://drive.google.com/file/d/1cAovh0Jm2--nrJE7k1GW3cUPl88LhM9u/view?usp=sharing
-GOOGLE_DRIVE_FILE_ID = [ '1cAovh0Jm2--nrJE7k1GW3cUPl88LhM9u', '1-tKERAlGdmcCXiYo83fNo6c5LNmSGK3A',]
+# https://drive.google.com/file/d/1gDjOWLUwJlkJ0WSw3nMfcDe_X1uBjboT/view?usp=drive_link
+# https://drive.google.com/file/d/1-tKERAlGdmcCXiYo83fNo6c5LNmSGK3A/view?usp=drive_link
+# https://drive.google.com/file/d/1gDjOWLUwJlkJ0WSw3nMfcDe_X1uBjboT/view?usp=drive_link
+GOOGLE_DRIVE_FILE_ID = [ '1cAovh0Jm2--nrJE7k1GW3cUPl88LhM9u', '1gDjOWLUwJlkJ0WSw3nMfcDe_X1uBjboT', ] # '1-tKERAlGdmcCXiYo83fNo6c5LNmSGK3A',]
 
 # GitHub repository details
 REPONAME = 'DafetiteOgaga'
