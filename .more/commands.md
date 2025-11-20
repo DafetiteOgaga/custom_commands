@@ -96,6 +96,7 @@
    * pycode command - a pycodestyle (PEP 8) linter for python programming language
    * pycodemore command - this is pycode but with more details
    * pycompile command - compile python files
+   * generateLogoAssests - Generates industry standard logo assets - especially for designers on the fly who wants to speed up their result driven approach.
 
 ### C commands
    * ctemp command - generates a default source file template for C programming
