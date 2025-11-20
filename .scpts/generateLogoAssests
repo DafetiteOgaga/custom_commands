@@ -57,19 +57,43 @@ def quit(str):
 	if len(str) == 1 and str.lower() == "q":
 		print("\nExiting...")
 		sys.exit(1)
-def main_dir() -> str:
-	"""Creates the MAIN_DIR where the exports will be stored."""
-	# ----------------------------------
-	# main dir
-	# ----------------------------------
-	MAIN_DIR = "builds"
-	EXPORTS_DIR = os.path.join(MAIN_DIR, "exports")
-	os.makedirs(EXPORTS_DIR, exist_ok=True)
-	return MAIN_DIR, EXPORTS_DIR
-def recolor_blue_to_white(svg: str) -> str:
-	"""Replace ONLY fill="#014569" with fill="#FFFFFF", case-insensitive."""
-	pattern = r'fill\s*=\s*["\']{}["\']'.format(BRAND_COLOR)
-	return re.sub(pattern, 'fill="#FFFFFF"', svg, flags=re.I)
+
+def main_dir() -> tuple[str, str]:
+    """
+    Creates the MAIN_DIR where exports will be stored.
+    If the default MAIN_DIR exists, asks user to provide a new name or auto-increments it.
+    Returns: MAIN_DIR path, EXPORTS_DIR path
+    """
+    base_name = "assets_build"
+    main_dir_name = base_name
+    exports_dir = os.path.join(main_dir_name, "exports")
+
+    # Check if it exists
+    while os.path.exists(main_dir_name):
+        print(f"Directory '{main_dir_name}' already exists.")
+        choice = input("Enter a new name for this build or press Enter to auto-generate name >>> ").strip()
+        quit(choice)
+        if choice:
+            main_dir_name = f"{choice}_assests"
+        else:
+            # Auto-increment
+            i = 1
+            while os.path.exists(f"{base_name}_{i}"):
+                i += 1
+            main_dir_name = f"{base_name}_{i}"
+        exports_dir = os.path.join(main_dir_name, "exports")
+
+    os.makedirs(exports_dir, exist_ok=True)
+    print(f"Using main directory: {main_dir_name}")
+    return main_dir_name, exports_dir
+
+def recolor_blue_to_white(svg: str, target_color: str) -> str:
+    """
+    Replace all occurrences of target_color in fill attributes with white.
+    """
+    # Allow optional spaces and either single/double quotes, case-insensitive
+    pattern = r'fill\s*=\s*["\']{}\b["\']'.format(re.escape(target_color))
+    return re.sub(pattern, 'fill="#FFFFFF"', svg, flags=re.I)
 
 def svg_to_png(svg_content: str, scale: float = 1.0) -> Image.Image:
 	"""Render SVG → PNG → PIL Image"""
@@ -93,6 +117,8 @@ def apply_background(img: Image.Image, color):
 
 def export_assets(svg_path: str, BRAND_COLOR: str):
 
+	MAIN_DIR, EXPORTS_DIR = main_dir()
+
 	# Update brand color in background variants
 	BACKGROUND_VARIANTS["brand"] = BRAND_COLOR
 
@@ -104,7 +130,7 @@ def export_assets(svg_path: str, BRAND_COLOR: str):
 
 	# Create folder structure
 	for folder in ["png", "jpg", "webp", "pdf"]:
-		os.makedirs(os.path.join(main_dir()[1], folder), exist_ok=True)
+		os.makedirs(os.path.join(EXPORTS_DIR, folder), exist_ok=True)
 
 	print("Rendering base image from SVG...")
 
@@ -125,7 +151,7 @@ def export_assets(svg_path: str, BRAND_COLOR: str):
 
 				# For brand bg → recolor SVG first
 				svg_used = (
-					recolor_blue_to_white(svg_original)
+					recolor_blue_to_white(svg_original, BRAND_COLOR)
 					if bg_name == "brand"
 					else svg_original
 				)
@@ -148,7 +174,7 @@ def export_assets(svg_path: str, BRAND_COLOR: str):
 				# ------------------------------------
 				for fmt in IMAGE_FORMATS:
 					fmt_upper = "JPEG" if fmt == "jpg" else fmt.upper()
-					folder = os.path.join(main_dir()[1], fmt)
+					folder = os.path.join(EXPORTS_DIR, fmt)
 
 					filename = f"{svg_name}_{size}{suffix}_{bg_name}.{fmt}"
 					path = os.path.join(folder, filename)
@@ -166,13 +192,13 @@ def export_assets(svg_path: str, BRAND_COLOR: str):
 	print("\nGenerating extra industry-standard sizes...")
 
 	for name, size in EXTRA_SIZES.items():
-		svg_used = recolor_blue_to_white(svg_original)
+		svg_used = recolor_blue_to_white(svg_original, BRAND_COLOR)
 		img = svg_to_png(svg_used, scale=(size / 1024 if isinstance(size, int) else 1))
 
 		if isinstance(size, tuple):  # banner sizes
 			img = img.resize(size)
 
-		out = os.path.join(main_dir()[1], "png", f"{svg_name}_{name}.png")
+		out = os.path.join(EXPORTS_DIR, "png", f"{svg_name}_{name}.png")
 		img.save(out, format="PNG")
 		print("✔", out)
 
@@ -181,15 +207,15 @@ def export_assets(svg_path: str, BRAND_COLOR: str):
 	# --------------------------------------
 	print("\nGenerating vector PDF...")
 
-	pdf_path = os.path.join(main_dir()[1], "pdf", f"{svg_name}.pdf")
+	pdf_path = os.path.join(EXPORTS_DIR, "pdf", f"{svg_name}.pdf")
 	cairosvg.svg2pdf(bytestring=svg_original.encode("utf-8"), write_to=pdf_path)
 	print("✔", pdf_path)
 
 	# --------------------------------------
 	# ZIP EXPORTS
 	# --------------------------------------
-	zip_path = os.path.join(main_dir()[0], "exports.zip")
-	shutil.make_archive(base_name=os.path.splitext(zip_path)[0], format="zip", root_dir=main_dir()[1])
+	zip_path = os.path.join(MAIN_DIR, "exports.zip")
+	shutil.make_archive(base_name=os.path.splitext(zip_path)[0], format="zip", root_dir=EXPORTS_DIR)
 
 	print("\nALL EXPORTS COMPLETE ✔")
 	print(f"Compressed version created at: {zip_path} ✔")
