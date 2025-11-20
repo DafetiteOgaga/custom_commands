@@ -1,0 +1,226 @@
+#!/usr/bin/env python3
+
+import os, sys, io, re, shutil, subprocess
+
+def install(package):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+# PIL (pillow)
+try:
+    from PIL import Image
+    # print("Pillow ✔")
+except ModuleNotFoundError:
+    print("Pillow not found. Installing...")
+    install("pillow")
+    from PIL import Image
+
+# cairosvg
+try:
+    import cairosvg
+    # print("CairoSVG ✔")
+except ModuleNotFoundError:
+    print("CairoSVG not found. Installing...")
+    install("cairosvg")
+    import cairosvg
+
+# ----------------------------------
+# CONFIG
+# ----------------------------------
+# BRAND_COLOR = "#014569"
+# BLUE_CONTENT_COLOR = "#014569"    # parts to recolor → white on brand bg
+
+EXPORT_SIZES = [
+	128, 256, 512, 1024, 2048
+]
+
+BACKGROUND_VARIANTS = {
+	"transparent": None,
+	"white": "#FFFFFF",
+	"black": "#000000",
+}
+
+IMAGE_FORMATS = ["png", "jpg", "webp"]
+
+EXTRA_SIZES = {
+	"favicon_32": 32,
+	"favicon_64": 64,
+	"appicon_512": 512,
+	"appicon_1024": 1024,
+	"og_banner": (1200, 630),
+	"twitter_banner": (1500, 500),
+}
+
+# ----------------------------------
+# HELPERS
+# ----------------------------------
+def quit(str):
+	if len(str) == 1 and str.lower() == "q":
+		print("\nExiting...")
+		sys.exit(1)
+def main_dir() -> str:
+	"""Creates the MAIN_DIR where the exports will be stored."""
+	# ----------------------------------
+	# main dir
+	# ----------------------------------
+	MAIN_DIR = "builds"
+	EXPORTS_DIR = os.path.join(MAIN_DIR, "exports")
+	os.makedirs(EXPORTS_DIR, exist_ok=True)
+	return MAIN_DIR, EXPORTS_DIR
+def recolor_blue_to_white(svg: str) -> str:
+	"""Replace ONLY fill="#014569" with fill="#FFFFFF", case-insensitive."""
+	pattern = r'fill\s*=\s*["\']{}["\']'.format(BRAND_COLOR)
+	return re.sub(pattern, 'fill="#FFFFFF"', svg, flags=re.I)
+
+def svg_to_png(svg_content: str, scale: float = 1.0) -> Image.Image:
+	"""Render SVG → PNG → PIL Image"""
+	png_bytes = cairosvg.svg2png(
+		bytestring=svg_content.encode("utf-8"),
+		scale=scale
+	)
+	return Image.open(io.BytesIO(png_bytes)).convert("RGBA")
+
+def apply_background(img: Image.Image, color):
+	"""Apply background while respecting transparency"""
+	if color is None:
+		return img
+	bg = Image.new("RGBA", img.size, color)
+	bg.paste(img, (0, 0), img)
+	return bg
+
+# ----------------------------------
+# MAIN EXPORTER
+# ----------------------------------
+
+def export_assets(svg_path: str, BRAND_COLOR: str):
+
+	# Update brand color in background variants
+	BACKGROUND_VARIANTS["brand"] = BRAND_COLOR
+
+	# Load SVG text
+	with open(svg_path, "r") as f:
+		svg_original = f.read()
+
+	svg_name = os.path.splitext(os.path.basename(svg_path))[0]
+
+	# Create folder structure
+	for folder in ["png", "jpg", "webp", "pdf"]:
+		os.makedirs(os.path.join(main_dir()[1], folder), exist_ok=True)
+
+	print("Rendering base image from SVG...")
+
+	# Render base @1024 for scaling reference
+	base_img = svg_to_png(svg_original, scale=1)
+	base_w, base_h = base_img.size
+
+	# --------------------------------------
+	# MULTI-SIZE EXPORTS
+	# ---------------------------------------
+	print("Generating standard assets...")
+
+	for size in EXPORT_SIZES:
+		for bg_name, bg_color in BACKGROUND_VARIANTS.items():
+
+			for scale, suffix in [(1, ""), (2, "@2x"), (3, "@3x")]:
+				final_size = size * scale
+
+				# For brand bg → recolor SVG first
+				svg_used = (
+					recolor_blue_to_white(svg_original)
+					if bg_name == "brand"
+					else svg_original
+				)
+
+				# Scale factor relative to 1024 base
+				relative_scale = final_size / 1024
+
+				img = svg_to_png(svg_used, scale=relative_scale)
+
+				# Padding (10%)
+				pad = int(final_size * 0.1)
+				padded = Image.new("RGBA", (img.width + pad, img.height + pad), (0, 0, 0, 0))
+				padded.paste(img, (pad // 2, pad // 2))
+
+				# Apply background
+				final_img = apply_background(padded, bg_color)
+
+				# ------------------------------------
+				# Save in formats
+				# ------------------------------------
+				for fmt in IMAGE_FORMATS:
+					fmt_upper = "JPEG" if fmt == "jpg" else fmt.upper()
+					folder = os.path.join(main_dir()[1], fmt)
+
+					filename = f"{svg_name}_{size}{suffix}_{bg_name}.{fmt}"
+					path = os.path.join(folder, filename)
+
+					if fmt == "jpg":
+						final_img.convert("RGB").save(path, format="JPEG", quality=100)
+					else:
+						final_img.save(path, format=fmt_upper)
+
+					print("✔", path)
+
+	# --------------------------------------
+	# EXTRA SIZES (FAVICON, APP ICON, SOCIAL)
+	# --------------------------------------
+	print("\nGenerating extra industry-standard sizes...")
+
+	for name, size in EXTRA_SIZES.items():
+		svg_used = recolor_blue_to_white(svg_original)
+		img = svg_to_png(svg_used, scale=(size / 1024 if isinstance(size, int) else 1))
+
+		if isinstance(size, tuple):  # banner sizes
+			img = img.resize(size)
+
+		out = os.path.join(main_dir()[1], "png", f"{svg_name}_{name}.png")
+		img.save(out, format="PNG")
+		print("✔", out)
+
+	# --------------------------------------
+	# PDF EXPORT
+	# --------------------------------------
+	print("\nGenerating vector PDF...")
+
+	pdf_path = os.path.join(main_dir()[1], "pdf", f"{svg_name}.pdf")
+	cairosvg.svg2pdf(bytestring=svg_original.encode("utf-8"), write_to=pdf_path)
+	print("✔", pdf_path)
+
+	# --------------------------------------
+	# ZIP EXPORTS
+	# --------------------------------------
+	zip_path = os.path.join(main_dir()[0], "exports.zip")
+	shutil.make_archive(base_name=os.path.splitext(zip_path)[0], format="zip", root_dir=main_dir()[1])
+
+	print("\nALL EXPORTS COMPLETE ✔")
+	print(f"Compressed version created at: {zip_path} ✔")
+
+# ----------------------------------
+# CLI
+# ----------------------------------
+if __name__ == "__main__":
+	args = sys.argv
+	len_args = len(args)
+	if len_args > 3:
+		print("Usage: <command> <svg_file> <brand_color>")
+		print("Exactly two arguments are required. Not more, not less.")
+		sys.exit(1)
+	elif len_args < 3:
+		print('Use "q" to quit.')
+		svg_file = input("Enter path to SVG file >>> ").strip()
+		quit(svg_file)
+		BRAND_COLOR = input("Enter your brand color (hex) >>> ").strip()
+		quit(BRAND_COLOR)
+	else:
+		svg_file = sys.argv[1]
+		BRAND_COLOR = sys.argv[2]
+	BRAND_COLOR = BRAND_COLOR.lower()
+	if not os.path.isfile(svg_file):
+		print(f"Error: SVG file not found at {svg_file}")
+		sys.exit(1)
+	if svg_file.split(".")[-1].lower() != "svg":
+			print(f"Error: Not an SVG file: {svg_file}")
+			sys.exit(1)
+	if not re.fullmatch(r"#([0-9a-fA-F]{6})", BRAND_COLOR):
+		print(f"Error: Invalid: check the hex color provided: {BRAND_COLOR}")
+		sys.exit(1)
+	export_assets(svg_file, BRAND_COLOR)

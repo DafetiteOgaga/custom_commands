@@ -1,3 +1,9 @@
 #!/usr/bin/env bash
 
+echo "Freeing up RAM by clearing caches..."
 sudo sync; sudo sysctl -w vm.drop_caches=3
+echo "Clearing temporary files..."
+sudo rm -rf /tmp/*
+sudo mkdir -p /tmp
+sudo chmod 1777 /tmp
+echo "RAM and temporary files cleanup completed."

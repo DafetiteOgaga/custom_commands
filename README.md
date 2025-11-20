@@ -139,7 +139,7 @@ Depending on the command, the usage instruction for that command is provided aft
     <td>cls</td>
     <td></td>
     <td></td>
-    <td></td>
+    <td>generateLogoAssests</td>
     <td>rot47</td>
     <td></td>
   </tr>
@@ -444,6 +444,7 @@ Check out our [Contributing Guide](.github/CONTRIBUTING.md) to get started.
 
 
 ## New
+  - generateLogoAssests
   - forkRepo
   - deleteBranch
   - showDiffOnMain

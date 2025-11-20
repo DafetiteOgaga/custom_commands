@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+set -e
+
+echo "===== Running System Cleanup ====="
+
+echo "[1/8] Cleaning APT cache..."
+sudo apt clean
+sudo apt autoclean
+sudo apt autoremove -y
+
+echo "[2/8] Cleaning journal logs (keeping 3 days)..."
+sudo journalctl --vacuum-time=3d
+
+echo "[3/8] Cleaning system /tmp..."
+sudo rm -rf /tmp/*
+
+echo "[4/8] Cleaning user /tmp..."
+rm -rf ~/tmp/* 2>/dev/null || true
+
+echo "[5/8] Cleaning thumbnail cache..."
+rm -rf ~/.cache/thumbnails/*
+
+# echo "[6/8] Cleaning Snap old revisions..."
+# sudo snap set system refresh.retain=2
+# sudo snap remove --purge $(snap list --all | awk '/disabled/{print $1, $2}')
+echo "[6/8] Cleaning Snap old revisions..."
+# Keep only the current revision of all snaps
+sudo snap set system refresh.retain=2
+# Remove all disabled (old) revisions
+old_snaps=$(snap list --all | awk '/disabled/{print $1, $2}')
+if [ -n "$old_snaps" ]; then
+    echo "$old_snaps" | xargs -r sudo snap remove --purge
+    echo "Old Snap revisions removed."
+else
+    echo "No old Snap revisions to remove."
+fi
+
+echo "[7/8] Cleaning Docker (if installed)..."
+if command -v docker &> /dev/null; then
+    sudo docker system prune -af
+fi
+
+echo "[8/8] Checking for orphaned packages..."
+sudo deborphan | xargs sudo apt purge -y 2>/dev/null || true
+
+echo "===== Cleanup Complete! ====="
+echo "Disk usage after cleanup:"
+df -h /

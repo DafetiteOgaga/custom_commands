@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20250816.1018"
+VERSIONNUMBER="20251120.1048"
 
 # colors and styles
 RESET="\033[0m"
@@ -413,7 +413,7 @@ py_scripts=(
 	"status" "wcount" "logit" "verifyRepo" "showCommitHistory" "printmyEnv"
 	"commitdir" "commitall" "getRepoUserName" "stash" "viewStash"
 	"requirement_txt" "runserver" "migrate" "showmigrations" "sqlmigrate"
-	"clear_commit"
+	"clear_commit" "generateLogoAssests"
 )
 bash_scripts=(
 	"createRepo:cr" "deleteRepo:dr" "cloneRepo:cl" "forkRepo:fr" "viewRepos:vr" "revert2commit"
@@ -430,6 +430,7 @@ c_scripts=(
 )
 personal_commands=(
 	"getAccessToken" "freeUpRam_linux" "xbin" "distributeApk:da" "updateResumeCV"
+	"clearDisk"
 )
 
 get_description() {
@@ -503,6 +504,7 @@ get_description() {
 		ctemp) echo "generates a default C source file template" ;;
 		clear_commit) echo "restores local repo to the same state as the remote" ;;
 		betty) echo "linter command" ;;
+		generateLogoAssests) echo "generates industry standard logo assets (all formats)" ;;
 		pycode) echo "a \"pycodestyle (PEP 8)\" linter" ;;
 		printmyEnv) echo "prints a list of your env paths" ;;
 		showCommitHistory) echo "displays a list of all commits made to the repository" ;;
@@ -514,6 +516,7 @@ get_description() {
 		updateResumeCV) echo "updates my website and github with my resume" ;;
 		getAccessToken) echo "fetches the access token locally" ;;
 		freeUpRam_linux) echo "frees up ram by clearing unused cached data" ;;
+		clearDisk) echo "clears unnecessary files to free up disk space" ;;
 		myascii) echo "prints a simple version of the ASCII table" ;;
 		rot13) echo "Rot13 Cipher" ;;
 		rot47) echo "Rot47 Cipher" ;;
@@ -964,6 +967,14 @@ instructn() {
 			sleep 0.1
 			return
 			;;
+		generateLogoAssests)
+			echo -e "$STRT create industry logo assets dir and compressed version $EFFT $ANYWHERE:"
+			echo -e "$DFILENAME <path to SVG file> <main SVG color> - or simply run:"
+			echo -e "$DFILENAME and follow the prompts"
+			sleep 0.1
+			return
+			;;
+		clearDisk) msg="$STRT clear unnecessary files to free up disk space $EFFT $ANYWHERE: $DFILENAME";;
 		pullFromMain) msg="$STRT pull changes from main/master $EFFT $ANYWHERE: $DFILENAME";;
 		showDiffOnMain) msg="$STRT show diff vs main/master $EFFT $ANYWHERE: $DFILENAME";;
 		pushall) msg="$STRT commit all and push $EFFT $ANYWHERE: $DFILENAME";;
