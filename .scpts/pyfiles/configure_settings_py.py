@@ -433,6 +433,7 @@ def install_entity(entity: str, djoser: bool=False,):# variable: str=None):
 					# app_path = settings_path[1].split(os.sep)[:-1]
 					if "startapp" in entity:
 						print(f'app_path: {app_path}')
+						print("maybee you should not use - or space or any special chars for the name")
 					# print(f'app_files: {app_files}')
 					for file, content in app_files.items():
 						print(f'for file modification: {file} xoxoxoxoxo')
