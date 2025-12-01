@@ -129,7 +129,7 @@ def export_assets(svg_path: str, BRAND_COLOR: str):
 	svg_name = os.path.splitext(os.path.basename(svg_path))[0]
 
 	# Create folder structure
-	for folder in ["png", "jpg", "webp", "pdf"]:
+	for folder in ["png", "jpg", "webp", "pdf", "favicon"]:
 		os.makedirs(os.path.join(EXPORTS_DIR, folder), exist_ok=True)
 
 	print("Rendering base image from SVG...")
@@ -191,16 +191,38 @@ def export_assets(svg_path: str, BRAND_COLOR: str):
 	# --------------------------------------
 	print("\nGenerating extra industry-standard sizes...")
 
+	favicon_pngs = []   # for building favicon.ico (not used yet)
+
 	for name, size in EXTRA_SIZES.items():
 		svg_used = recolor_blue_to_white(svg_original, BRAND_COLOR)
 		img = svg_to_png(svg_used, scale=(size / 1024 if isinstance(size, int) else 1))
 
 		if isinstance(size, tuple):  # banner sizes
 			img = img.resize(size)
+		else:
+			# collect only square PNGs for .ico
+			favicon_pngs.append(img.resize((size, size)))
 
 		out = os.path.join(EXPORTS_DIR, "png", f"{svg_name}_{name}.png")
 		img.save(out, format="PNG")
 		print("✔", out)
+
+	# --------------------------------------
+	# Generate favicon.ico
+	# --------------------------------------
+	print("\nGenerating favicon.ico...")
+
+	ico_sizes = [(16, 16), (32, 32), (48, 48), (64, 64), (80, 80), (96, 96)]
+	favicon_path = os.path.join(EXPORTS_DIR, "favicon")
+
+	for w, h in ico_sizes:
+		resized = base_img.resize((w, h))
+
+		# rename filed to avoid overwriting
+		file_name = f"favicon_{w}x{h}.ico"
+		path = os.path.join(favicon_path, file_name)
+		resized.save(path, format="ICO")
+		print("✔ Saved:", path)
 
 	# --------------------------------------
 	# PDF EXPORT
