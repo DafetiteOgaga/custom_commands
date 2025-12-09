@@ -202,7 +202,7 @@ Depending on the command, the usage instruction for that command is provided aft
     <td>branch</td>
     <td>static4django</td>
     <td></td>
-    <td></td>
+    <td>compressAndResizeFiles</td>
     <td></td>
     <td></td>
     <td></td>
@@ -444,6 +444,7 @@ Check out our [Contributing Guide](.github/CONTRIBUTING.md) to get started.
 
 
 ## New
+  - compressAndResizeFiles
   - generateLogoAssests
   - forkRepo
   - deleteBranch
