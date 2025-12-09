@@ -413,7 +413,7 @@ py_scripts=(
 	"status" "wcount" "logit" "verifyRepo" "showCommitHistory" "printmyEnv"
 	"commitdir" "commitall" "getRepoUserName" "stash" "viewStash"
 	"requirement_txt" "runserver" "migrate" "showmigrations" "sqlmigrate"
-	"clear_commit" "generateLogoAssests"
+	"clear_commit" "generateLogoAssests" "compressAndResizeFiles"
 )
 bash_scripts=(
 	"createRepo:cr" "deleteRepo:dr" "cloneRepo:cl" "forkRepo:fr" "viewRepos:vr" "revert2commit"
@@ -505,6 +505,7 @@ get_description() {
 		clear_commit) echo "restores local repo to the same state as the remote" ;;
 		betty) echo "linter command" ;;
 		generateLogoAssests) echo "generates industry standard logo assets (all formats)" ;;
+		compressAndResizeFiles) echo "compresses and/or resizes image files" ;;
 		pycode) echo "a \"pycodestyle (PEP 8)\" linter" ;;
 		printmyEnv) echo "prints a list of your env paths" ;;
 		showCommitHistory) echo "displays a list of all commits made to the repository" ;;
@@ -971,6 +972,13 @@ instructn() {
 			echo -e "$STRT create industry logo assets dir and compressed version $EFFT $ANYWHERE:"
 			echo -e "$DFILENAME <path to SVG file> <main SVG color> - or simply run:"
 			echo -e "$DFILENAME and follow the prompts"
+			sleep 0.1
+			return
+			;;
+		compressAndResizeFiles)
+			echo -e "$STRT compress, resize image files $EFFT $ANYWHERE:"
+			echo -e "$DFILENAME"
+			echo -e "Note: this command will compress/resize image files in the dir where it is invoked."
 			sleep 0.1
 			return
 			;;
