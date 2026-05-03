@@ -82,6 +82,7 @@
    * createPatch command - creates a .patch file
    * printmyEnv command - prints a list of your env paths
    * setEnv command - sets environment variable for all sessions
+   * compressAndResizeFiles command - compresses and resizes image files accordingly
 
 ### MySQL commands
    * mysqlOp - starts, stops, restarts and checks the status of MySQL server

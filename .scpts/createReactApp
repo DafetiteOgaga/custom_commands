@@ -257,6 +257,7 @@ elif [[ "$#" -eq 1 ]]; then
 
 		# npm init react-app my_default_app # old command
 		npx create-react-app my_default_app
+		# npm install react-refresh --save-dev
 
 		index="my_default_app/public/index.html"
 		robotFile="my_default_app/public/robots.txt"
@@ -276,11 +277,27 @@ elif [[ "$#" -eq 1 ]]; then
 		line="£<p>&£*<a&*£*className=\"App-link\"*£
           *href=\"https://github.com/DafetiteOgaga/custom_commands\"*£
           *target=\"_blank\"&*£*rel=\"noopener noreferrer\"&£*>
-          *Install more custom commands&£*</a>&£</p>&"
+          *Install more custom commands&£*</a>&£</p>&
+			£<p>&£
+          *To turn this React App into a PWA <br/>
+			Goto: .../src/index.js and enable service worker registration&£*&£</p>&"
+		service_worker_line="import * as serviceWorkerRegistration from './serviceWorkerRegistration';+++
+					// If you want your app to work offline and load faster, you can change
+					// unregister() to register() below. Note this comes with some pitfalls.
+					// Learn more about service workers: https://cra.link/PWA
+					serviceWorkerRegistration.unregister();"
 		# get App.js path
 		app_js_path="$(find "$PWD/my_default_app" -name "App.js")"
 		# add the line to the file
 		cat "$app_js_path" | "$python_command" "$path1/process_more.py" "react" "$line" "$app_js_path"
+		# get Index.js path
+		index_js_path="$(find "$PWD/my_default_app/src" -name "index.js")"
+		echo "the index_js_path: $index_js_path"
+		# add the line to the file
+		cat "$index_js_path" | "$python_command" "$path1/process_more.py" "react" "$service_worker_line" "$index_js_path"
+		echo "adding service worker files"
+		cp "$path1/cra/service-worker.js" "$src/"
+		cp "$path1/cra/serviceWorkerRegistration.js" "$src/"
 		# creates components dir in src dir
 		mkdir -p "$src/components"
 		echo "added components directory in src."
