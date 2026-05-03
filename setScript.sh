@@ -386,14 +386,14 @@ copy_cmd_scripts_based_on_filetypes() {
 	case "$FILETYPE" in
 		"bashscript"|"pyscript"|"personal")
 			# copies the content
-			cp "$SCPTS/$DFILENAME" "$XBIN/$DFILENAME"
+			cp -r "$SCPTS/$DFILENAME" "$XBIN/$DFILENAME"
 			;;
 		"cfile")
 			# copies the content
 			if [[ "$WHICH" =~ [p] ]]; then
-				cp "$SCPTS/phone/$DFILENAME" "$XBIN/$DFILENAME"
+				cp -r "$SCPTS/phone/$DFILENAME" "$XBIN/$DFILENAME"
 			elif [[ "$WHICH" =~ [c] ]]; then
-				cp "$SCPTS/pc/$DFILENAME" "$XBIN/$DFILENAME"
+				cp -r "$SCPTS/pc/$DFILENAME" "$XBIN/$DFILENAME"
 			fi
 		;;
 	# fi
@@ -738,7 +738,7 @@ opertn() {
 				# special command (exclusively to ctemp command)
 				mkdir -p "$XBIN/pyfiles"
 				echo -e "custom commands" >  "$XBIN/C_template.c"
-				cp "$SCPTS/C_template.c" "$XBIN/C_template.c"
+				cp -r "$SCPTS/C_template.c" "$XBIN/C_template.c"
 				main_copy_command_script_fxn
 				;;
 			[1-9][0-9][0-9][0-9])
@@ -759,22 +759,27 @@ update_setup_scripts_in_pyfiles() {
 		filename=$(basename "$file")
 		destination="$XBIN/pyfiles/$filename"
 		# echo "filename: $filename"
-		if [[ -f "$destination" ]]; then
+		if [[ -f "$destination" && -d "$file" ]]; then
 			# preserve the set_filename line if it exists in pushfile_main_codes.py
 			if [[ "$filename" == "pushfile_main_codes.py" ]] && grep -q "^set_filename =" "$destination"; then
 				line="$(grep "^set_filename =" "$destination")"
 				lineKey="1"
 				# echo "Found the line $line in $destination"
 			fi
-			cp "$file" "$destination"
+			# echo "SRC: $file ($( [ -d "$file" ] && echo dir || echo file ))"
+			# echo "DST: $destination ($( [ -d "$destination" ] && echo dir || echo file ))"
+			cp -r "$file" "$destination"
 			if [[ -n "$lineKey" ]]; then
 				# echo "Reinserted $line into $destination"
 				sed -i "s|^set_filename =.*|$line|" "$destination"
 				lineKey=""
 			fi
 		elif [[ -d "$destination" && "$filename" != "__pycache__" ]]; then
+			# echo "its a dir"
+			# echo "file: $file"
 			cp -r "$file" "$XBIN/pyfiles/"
 			if is_git_bash; then
+				# echo "its gitbash"
 				for file in "$XBIN/pyfiles/"*; do
 					# Skip unwanted directories
 					[[ "$(basename "$file")" == "__pycache__" || "$(basename "$file")" == "expoDefaults" ]] && continue
@@ -790,7 +795,7 @@ update_setup_scripts_in_pyfiles() {
 			if [[ "$filename" != "__pycache__" ]]; then
 				# echo "no no no"
 				echo "custom commands" > "$destination"
-				cp "$file" "$destination"
+				cp -r "$file" "$destination"
 			# else
 			# 	echo "skipping ..."
 			fi
@@ -826,7 +831,7 @@ update_changes() {
 			# echo "tokenkey: $tokenKey"
 
 			# Copy the file
-			cp "$source" "$destination"
+			cp -r "$source" "$destination"
 
 			# Reinsert the tokenKey into the file after copy
 			if [[ -n "$tokenKey" ]]; then
@@ -850,9 +855,9 @@ main_copy_command_script_fxn() {
 	if [[ ! -f "$XBIN/pymanage" || ! -f "$XBIN/configure_settings_py.py" ]]; then
 		# echo "start making xbin dir ..."
 		mkdir -p "$XBIN/pyfiles"
-		cp "$SCPTS/pymanage" "$XBIN/pymanage"
-		cp "$SCPTS/pyfiles/configure_settings_py.py" "$XBIN/pyfiles/configure_settings_py.py"
-		cp "$SCPTS/pyfiles/check_db.py" "$XBIN/pyfiles/check_db.py"
+		cp -r "$SCPTS/pymanage" "$XBIN/pymanage"
+		cp -r "$SCPTS/pyfiles/configure_settings_py.py" "$XBIN/pyfiles/configure_settings_py.py"
+		cp -r "$SCPTS/pyfiles/check_db.py" "$XBIN/pyfiles/check_db.py"
 		# check_db.py
 		if is_git_bash; then
 			converPyShebang4gitbash "$XBIN/pymanage"
@@ -862,8 +867,14 @@ main_copy_command_script_fxn() {
 		# echo "end making xbin dir ..."
 	fi
 	if [[ ! -d "$XBIN/pyfiles/expoDefaults" && "$DFILENAME"=="createExpoApp" ]]; then
+		# echo "making expo dir"
 		mkdir -p "$XBIN/pyfiles/expoDefaults"
 		cp -r "$SCPTS/pyfiles/expoDefaults" "$XBIN/pyfiles/"
+	fi
+	if [[ ! -d "$XBIN/pyfiles/cra" && "$DFILENAME"=="createReactApp" ]]; then
+		# echo "making cra dir"
+		mkdir -p "$XBIN/pyfiles/cra"
+		cp -r "$SCPTS/pyfiles/cra" "$XBIN/pyfiles/"
 	fi
 	update_setup_scripts_in_pyfiles
 	sleep 0.1
@@ -891,7 +902,7 @@ main_copy_command_script_fxn() {
 
 	#...creating custom_commands to view all commands.................. #
 	echo "custom commands" > "$XBIN/custom_commands"
-	cp "$SCPTS/custom_commands" "$XBIN/custom_commands"
+	cp -r "$SCPTS/custom_commands" "$XBIN/custom_commands"
 	chmod +x "$XBIN/custom_commands"
 }
 
@@ -907,7 +918,7 @@ install_betty_linter_command() {
 	if [[ "$WHICH" =~ [p] ]]; then
 		echo -e ""
 		git clone https://github.com/DafetiteOgaga/betty_wrapper.git
-		cp betty_wrapper/phone-betty.sh betty_wrapper/phone-install.sh Betty
+		cp -r betty_wrapper/phone-betty.sh betty_wrapper/phone-install.sh Betty
 		echo -e ""
 		cd Betty
 
@@ -1100,8 +1111,9 @@ if [[ -f "$UPDATEPATH" ]];
 else
 	# creates the tracker setup
 	mkdir -p "$XBIN"
+	# echo "new custom command"
 	echo "custom commands" > "$XBIN/check4Update"
-	cp "$SCPTS/pyfiles/check4Update" "$XBIN/check4Update"
+	cp -r "$SCPTS/pyfiles/check4Update" "$XBIN/check4Update"
 	chmod +x "$XBIN/check4Update"
 fi
 
