@@ -1,0 +1,215 @@
+#!/usr/bin/env bash
+
+# Kindly supply your Github Username and Personal Access Token(without the "ghp_").
+IGITHUBUSERNAME="YOUR_GITHUB_USERNAME"
+IGITHUBACCESSTOKEN="YOUR_PERSONAL_ACCESS_TOKEN"
+IGITHUBEMAIL="YOUR_REGISTERED_GITHUB_EMAIL"
+GUSERNAME="$IGITHUBUSERNAME"
+GTOKEN="$IGITHUBACCESSTOKEN"
+GEMAIL="$IGITHUBEMAIL"
+
+# --------------------------------
+# 1. Check dependencies
+# --------------------------------
+
+if ! command -v curl >/dev/null 2>&1; then
+    echo "curl is not installed."
+
+    if command -v apt-get >/dev/null 2>&1; then
+        read -r -p "Install curl now? (Y/N): " INSTALL_CURL
+
+        if [[ "$INSTALL_CURL" =~ ^[Yy]$ ]]; then
+            sudo apt-get update && sudo apt-get install -y curl
+
+            if ! command -v curl >/dev/null 2>&1; then
+                echo "curl installation failed. Exiting."
+                exit 1
+            fi
+        else
+            echo "Installation cancelled."
+            exit 1
+        fi
+    else
+        echo "This script currently supports automatic installation through apt-get."
+        exit 1
+    fi
+fi
+
+# --------------------------------
+# 2. Get GitHub token securely
+# --------------------------------
+# ##################################
+# ##################################
+# ##################################
+
+API="https://api.github.com"
+API_VERSION="2022-11-28"
+
+# --------------------------------
+# 3. Common API request function
+# --------------------------------
+
+github_request() {
+    local METHOD="$1"
+    local ENDPOINT="$2"
+
+    curl -sS -L \
+        -X "$METHOD" \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer ghp_$GTOKEN" \
+        -H "X-GitHub-Api-Version: $API_VERSION" \
+        -w '\n%{http_code}' \
+        "$API$ENDPOINT"
+}
+
+# --------------------------------
+# 4. Verify authenticated account
+# --------------------------------
+
+echo
+echo "Checking the account: \"$GUSERNAME\" on GitHub..."
+
+RESPONSE=$(github_request GET "/user")
+HTTP_STATUS="${RESPONSE##*$'\n'}"
+BODY="${RESPONSE%$'\n'*}"
+
+if [[ "$HTTP_STATUS" != "200" ]]; then
+    echo "GitHub authentication failed. HTTP status: $HTTP_STATUS"
+    echo "$BODY" | jq -r '.message // .' 2>/dev/null
+    exit 1
+fi
+
+GITHUB_USERNAME=$(echo "$BODY" | jq -r '.login')
+
+echo "Authenticated as: $GITHUB_USERNAME"
+
+# --------------------------------
+# 5. Retrieve invitations
+# --------------------------------
+
+echo
+echo "Checking repository invitations..."
+
+RESPONSE=$(github_request GET "/user/repository_invitations?per_page=100")
+HTTP_STATUS="${RESPONSE##*$'\n'}"
+INVITES="${RESPONSE%$'\n'*}"
+
+if [[ "$HTTP_STATUS" != "200" ]]; then
+    echo "Could not retrieve invitations. HTTP status: $HTTP_STATUS"
+    echo "$INVITES" | jq -r '.message // .' 2>/dev/null
+    exit 1
+fi
+
+if ! echo "$INVITES" | jq -e 'type == "array"' >/dev/null; then
+    echo "Unexpected response from GitHub:"
+    echo "$INVITES" | jq .
+    exit 1
+fi
+
+TOTAL=$(echo "$INVITES" | jq 'length')
+ACTIVE=$(echo "$INVITES" | jq '[.[] | select(.expired != true)] | length')
+EXPIRED=$(echo "$INVITES" | jq '[.[] | select(.expired == true)] | length')
+
+echo
+echo "Total invitations: $TOTAL"
+echo "Active invitations: $ACTIVE"
+echo "Expired invitations: $EXPIRED"
+
+if [[ "$ACTIVE" -eq 0 ]]; then
+    echo
+    echo "You have no active repository invitations."
+    exit 0
+fi
+
+# --------------------------------
+# 6. Inspect and process invitations
+# --------------------------------
+
+echo
+echo "========== ACTIVE INVITATIONS =========="
+
+while IFS= read -r INVITE; do
+
+    ID=$(echo "$INVITE" | jq -r '.id')
+    REPO=$(echo "$INVITE" | jq -r '.repository.full_name')
+    INVITER=$(echo "$INVITE" | jq -r '.inviter.login')
+    PERMISSION=$(echo "$INVITE" | jq -r '.permissions')
+    CREATED=$(echo "$INVITE" | jq -r '.created_at')
+    LINK=$(echo "$INVITE" | jq -r '.html_url')
+
+    CREATED_FORMATTED=$(date -d "$CREATED" '+%d %B %Y, %H:%M %Z' 2>/dev/null || echo "$CREATED")
+
+    echo
+    echo "----------------------------------------"
+    echo "Repository : $REPO"
+    echo "Invited by : $INVITER"
+    echo "Permission : $PERMISSION"
+    echo "Created    : $CREATED_FORMATTED"
+    echo "Status     : Active (GitHub reports not expired)"
+    echo "Expiry date: Not supplied by GitHub API"
+    echo "Invitation : $LINK"
+    echo "ID         : $ID"
+    echo "----------------------------------------"
+
+    while true; do
+
+        read -r -p "Choose: [A]ccept / [D]ecline / [I]gnore / [Q]uit: " ACTION </dev/tty
+
+        case "$ACTION" in
+            [Aa])
+                METHOD="PATCH"
+                ACTION_NAME="accept"
+                break
+                ;;
+
+            [Dd])
+                METHOD="DELETE"
+                ACTION_NAME="decline"
+                break
+                ;;
+
+            [Ii])
+                echo "Invitation ignored."
+                METHOD=""
+                break
+                ;;
+
+            [Qq])
+                echo "Leaving remaining invitations untouched."
+                exit 0
+                ;;
+
+            *)
+                sleep 10
+                echo "Invalid choice. Enter A, D, I or Q. entered: $ACTION"
+                ;;
+        esac
+    done
+
+    if [[ -z "$METHOD" ]]; then
+        continue
+    fi
+
+    read -r -p "Confirm that you want to $ACTION_NAME this invitation? (Y/N): " CONFIRM </dev/tty
+
+    if [[ ! "$CONFIRM" =~ ^[Yy]$ ]]; then
+        echo "Action cancelled. Invitation left untouched."
+        continue
+    fi
+
+    RESULT=$(github_request "$METHOD" "/user/repository_invitations/$ID")
+    RESULT_STATUS="${RESULT##*$'\n'}"
+    RESULT_BODY="${RESULT%$'\n'*}"
+
+    if [[ "$RESULT_STATUS" == "204" ]]; then
+        echo "Success! Invitation $ACTION_NAME accepted by GitHub."
+    else
+        echo "GitHub could not complete the action."
+        echo "HTTP status: $RESULT_STATUS"
+        echo "$RESULT_BODY" | jq -r '.message // .' 2>/dev/null
+    fi
+
+done < <(echo "$INVITES" | jq -c '.[] | select(.expired != true)')
+
+echo
+echo "Invitation check completed."
