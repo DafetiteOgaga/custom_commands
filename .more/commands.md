@@ -12,6 +12,7 @@
    * pushall command - similar to "push" command but it stages and commits all changes in the working in one operation
    * createRepo command - creates a github repository right from the command line without having to enter your details everytime
    * cloneRepo command - displays the list of repositories and clone them from any account right from the command line. Collaboration has never been more interesting!
+   * gitCollab command - lets you check, accept and reject github collaboration requests
    * forkRepo command - it forks the remote repo, clones in locally for
    you.
    * deleteRepo command - deletes a github repository right from the command line.<br>
@@ -71,6 +72,7 @@
    * dependencyDevReact command - installs dependencies in development
    * updateReactPackagez command - updates React packages to their latest versions
    * dependencyDevReact command - installs dev-dependencies
+   * compileTs2js command - compiles typescript into javascript files, installs and configures typescript for compilations if its not. Note: this command is made for razor pages
 
 ### Shell commands
    * pyxecute - prepends the python3 shebang line to your script and gives it the execute permission
