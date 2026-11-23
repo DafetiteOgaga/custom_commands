@@ -146,7 +146,7 @@ Depending on the command, the usage instruction for that command is provided aft
   <tr>
     <td>deleteRepo</td>
     <td>requirement_txt</td>
-    <td></td>
+    <td>compileTs2js</td>
     <td>wcount</td>
     <td></td>
     <td></td>
@@ -429,6 +429,17 @@ Depending on the command, the usage instruction for that command is provided aft
     <td></td>
     <td></td>
   </tr>
+  <tr>
+    <td>gitCollab</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
 
 </table>
 
@@ -444,16 +455,16 @@ Check out our [Contributing Guide](.github/CONTRIBUTING.md) to get started.
 
 
 ## New
+  - gitCollab
+  - compileTs2js
   - compressAndResizeFiles
   - generateLogoAssests
   - forkRepo
   - deleteBranch
   - showDiffOnMain
   - pullFromMain
-  - revert2commit
   - createExpoApp
   - createReactApp
-  - updateToken
 
 ## Changes
   - pushfile command now displays additional option to inspect the changes in the currently processing file before staging and committing the changes to git

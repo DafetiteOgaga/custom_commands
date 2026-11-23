@@ -19,7 +19,7 @@ XBIN="$HOME/.xbin"
 DBIN=".xbin"
 SCPTS=".scpts"
 UINPUT="$6"
-VERSIONNUMBER="20260503.1844"
+VERSIONNUMBER="20261123.1019"
 
 # colors and styles
 RESET="\033[0m"
@@ -271,7 +271,7 @@ details() {
 }
 
 unametokenmaill2() {
-	# collects user details to createRepo, cloneRepo, forkRepo, deleteRepo, viewRepo and distributeApk commands
+	# collects user details to createRepo, cloneRepo, gitCollab forkRepo, deleteRepo, viewRepo and distributeApk commands
 	while [[ -z "$NUSERNAME" ]]; do
 		echo -n "Kindly Enter your Github Username >>> "
 		read NUSERNAME
@@ -325,7 +325,7 @@ unametokenmaill2() {
 }
 
 unametokenmaill() {
-	# populates the user details to createRepo, cloneRepo, forkRepo, deleteRepo, viewRepo and distributeApk commands
+	# populates the user details to createRepo, cloneRepo, gitCollab, forkRepo, deleteRepo, viewRepo and distributeApk commands
 	if [[ "$NUSERNAME" && "$NTOKEN" && "$NEMAIL" ]]; then
 		echo -e "Hey! I still have your details"
 		while [[ "$VALS" != [yYnN] ]]; do
@@ -416,8 +416,8 @@ py_scripts=(
 	"clear_commit" "generateLogoAssests" "compressAndResizeFiles"
 )
 bash_scripts=(
-	"createRepo:cr" "deleteRepo:dr" "cloneRepo:cl" "forkRepo:fr" "viewRepos:vr" "revert2commit"
-	"pyxecute" "shxecute" "jsxecute" "restoreFile" "currfol" "cls" "authorID"
+	"createRepo:cr" "deleteRepo:dr" "cloneRepo:cl" "gitCollab:gc" "forkRepo:fr" "viewRepos:vr" "revert2commit"
+	"pyxecute" "shxecute" "jsxecute" "restoreFile" "currfol" "cls" "authorID" "compileTs2js"
 	"createPatch" "createReactApp" "createExpoApp" "dependenciesReact"
 	"updateReactPackagez" "dependencyDevReact" "py3venv" "startproject" "startapp"
 	"djangoUrls" "makemigrations" "django" "djshell" "mkandmigrate" "collectstatic"
@@ -433,6 +433,7 @@ personal_commands=(
 	"clearDisk"
 )
 
+# handles the descriptions displayed for each commands accordingly
 get_description() {
 	case "$1" in
 		push) echo "stage, commit/updates local/remote repo" ;;
@@ -444,6 +445,8 @@ get_description() {
 		createRepo) echo "creates a github repository right from CLI" ;;
 		deleteRepo) echo "deletes a github repository right from CLI" ;;
 		cloneRepo) echo "clone a repository with less commands" ;;
+		gitCollab) echo "check, accept and reject github collaboration requests" ;;
+		compileTs2js) echo "compiles, configures and installs ts in razor pages to js" ;;
 		forkRepo) echo "forks a remote repo and clones it locally. Useful for PR" ;;
 		restoreFile) echo "restores file(s) to previous states" ;;
 		viewRepos) echo "displays the list of repos from any account on CLI" ;;
@@ -580,6 +583,8 @@ category() {
 				new_value=55555
 			elif [[ "$btype" == "ct" ]]; then
 				new_value=44444
+			elif [[ "$btype" == "gc" ]]; then
+				new_value=88888
 			fi
 		elif [[ "$type" == "c" ]]; then
 			# c scripts
@@ -645,7 +650,7 @@ options() {
 	#....tags............................. #
 	# assign the type of file in based on the new value index
 	case "$new_value" in
-		2[0-9][0-9][0-9]|11111|22222|33333|44444|55555|66666|77777)
+		2[0-9][0-9][0-9]|11111|22222|33333|44444|55555|66666|77777|88888)
 			# 2000 - 2999 and 11111, 22222, 33333, 44444, 55555, 66666, 77777
 			FILETYPE="bashscript"
 			;;
@@ -730,7 +735,7 @@ opertn() {
 		# copies the command code into .xbin/ and based on the
 		# new value index, copies the command script accordingly
 		case "$new_value" in
-			11111|22222|33333|55555|66666|77777)
+			11111|22222|33333|55555|66666|77777|88888)
 				# special commands (requires username/token/email)
 				unametokenmaill
 				;;
@@ -948,6 +953,8 @@ instructn() {
 		createRepo) msg="$STRT create a github repo right from your terminal. $ANYWHERE: $DFILENAME";;
 		deleteRepo) msg="$STRT delete a github repo right from your terminal. $ANYWHERE: $DFILENAME";;
 		cloneRepo) msg="$STRT clone repos from github. $ANYWHERE: $DFILENAME";;
+		gitCollab) msg="$STRT check, accept and reject collaborations from github. $ANYWHERE: $DFILENAME";;
+		compileTs2js) msg="$STRT compile, install and configure TS in razor pages to js. $ANYWHERE: $DFILENAME";;
 		forkRepo) msg="$STRT fork a remote repo and clone it locally. $ANYWHERE: $DFILENAME";;
 		viewRepos) msg="$STRT view the public repos of any github account. $ANYWHERE: $DFILENAME";;
 		mycompile) msg="$STRT compile your files $EFFT $ANYWHERE: $DFILENAME <filename>";;

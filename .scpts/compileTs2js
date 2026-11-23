@@ -1,0 +1,206 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+# --------------------------------------------------
+# 1. Move to the directory containing this script
+# --------------------------------------------------
+
+PROJECT_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
+cd "$PROJECT_ROOT"
+
+# --------------------------------------------------
+# 2. Create and enter the Typescript directory
+# --------------------------------------------------
+
+if [[ ! -d "Typescript" ]]; then
+    # echo "Creating Typescript directory..."
+    NOTHING=""
+
+    if ! mkdir -p "Typescript"; then
+        echo "Failed to create Typescript directory."
+        exit 1
+    fi
+fi
+
+if ! cd "Typescript"; then
+    echo "Could not enter Typescript directory."
+    exit 1
+fi
+
+echo "Working directory: $(pwd)"
+
+# --------------------------------------------------
+# 3. Check Node.js and npm
+# --------------------------------------------------
+
+if ! command -v node >/dev/null 2>&1; then
+    echo "Node.js is not installed. Cannot continue."
+    exit 1
+fi
+
+if ! command -v npm >/dev/null 2>&1; then
+    echo "npm is not installed. Cannot continue."
+    exit 1
+fi
+
+# --------------------------------------------------
+# 4. Check for local TypeScript installation
+# --------------------------------------------------
+
+FRESH_INSTALL=false
+
+if [[ -x "node_modules/.bin/tsc" ]]; then
+    # echo "Local TypeScript installation detected."
+    NOTHING=""
+else
+    echo "TypeScript is not installed locally."
+
+    read -r -p "Do you want to install TypeScript? (Y/N): " INSTALL_ANSWER
+
+    if [[ ! "$INSTALL_ANSWER" =~ ^[Yy]([Ee][Ss])?$ ]]; then
+        echo "Installation declined. Operation aborted."
+        exit 0
+    fi
+
+    echo "Installing locally..."
+
+    if ! npm install --save-dev typescript; then
+        echo "TypeScript installation failed."
+        exit 1
+    fi
+
+    if [[ ! -x "node_modules/.bin/tsc" ]]; then
+        echo "TypeScript installation completed, but the compiler was not found."
+        exit 1
+    fi
+
+    FRESH_INSTALL=true
+    echo "TypeScript installed successfully."
+fi
+
+# --------------------------------------------------
+# 5. Check and initialize tsconfig.json
+# --------------------------------------------------
+
+if [[ -f "tsconfig.json" ]]; then
+
+    # echo "Existing tsconfig.json detected."
+    # echo "Skipping initialization and preserving existing configuration."
+    NOTHING=""
+
+else
+
+    echo "tsconfig.json not found. Generating/Initializing TypeScript..."
+
+    if ! ./node_modules/.bin/tsc --init; then
+        echo "TypeScript initialization failed."
+        exit 1
+    fi
+
+    if [[ ! -s "tsconfig.json" ]]; then
+        echo "tsconfig.json could not be created successfully."
+        exit 1
+    fi
+
+    echo "successful."
+
+    # --------------------------------------------------
+    # 6. Configure only after a fresh installation
+    # --------------------------------------------------
+
+    if [[ "$FRESH_INSTALL" == true ]]; then
+
+        echo "Configuring TypeScript compiler settings..."
+
+        if ! node <<'NODE'
+const fs = require("fs");
+
+const file = "tsconfig.json";
+let content = fs.readFileSync(file, "utf8");
+
+const settings = {
+    rootDir: ".",
+    outDir: "../wwwroot/js",
+    module: "ESNext"
+};
+
+for (const [key, value] of Object.entries(settings)) {
+
+    const pattern = new RegExp(
+        `^(\\s*)(?://\\s*)?"${key}"\\s*:\\s*.*$`,
+        "m"
+    );
+
+    const replacement = `$1"${key}": ${JSON.stringify(value)},`;
+
+    if (!pattern.test(content)) {
+        console.error(`Could not find the ${key} setting in tsconfig.json.`);
+        process.exit(1);
+    }
+
+    content = content.replace(pattern, replacement);
+}
+
+fs.writeFileSync(file, content, "utf8");
+
+console.log("successful.");
+NODE
+        then
+            echo "Failed to configure tsconfig.json."
+            exit 1
+        fi
+
+    else
+
+        # echo "Existing TypeScript installation detected."
+        # echo "Default configuration preserved."
+        NOTHING=""
+
+    fi
+
+fi
+
+# --------------------------------------------------
+# 7. Check for TypeScript files
+# --------------------------------------------------
+
+TS_FILES_FOUND=false
+
+if find . -maxdepth 1 -type f -name "*.ts" -print -quit | grep -q .; then
+    TS_FILES_FOUND=true
+fi
+
+if [[ "$TS_FILES_FOUND" == false ]]; then
+
+    echo "No ts files found. Creating index.ts..."
+
+    if ! touch "index.ts"; then
+        echo "Could not create index.ts."
+        exit 1
+    fi
+
+else
+
+    # echo "Existing TypeScript files detected."
+    # echo "No existing files will be overwritten."
+    NOTHING=""
+
+fi
+
+# --------------------------------------------------
+# 8. Compile TypeScript into JavaScript
+# --------------------------------------------------
+
+echo "Compiling tss..."
+
+if ./node_modules/.bin/tsc; then
+    # echo "TypeScript compilation completed successfully."
+    NOTHING=""
+else
+    echo "TypeScript compilation failed. Check the errors above."
+    exit 1
+fi
+
+echo "Done."
