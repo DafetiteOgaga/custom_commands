@@ -66,6 +66,9 @@
    * djangoUrls command - displays the list and details of all configured urls in your django project.
    * collectstatic command - collects static files to the staticfiles dir for production in django applications.
 
+### Razor Pages command
+   * runRazor command - installs, configure and launch razor pages projects
+
 ### Javascript commands
    * createReactApp command - creates a React application and installs dependencies
    * createExpoApp command - creates an Expo mobile application, dependencies from the initial copy (i.e saving you installation time) and spin up the server automatically.
