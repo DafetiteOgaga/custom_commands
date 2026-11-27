@@ -416,14 +416,15 @@ py_scripts=(
 	"clear_commit" "generateLogoAssests" "compressAndResizeFiles"
 )
 bash_scripts=(
-	"createRepo:cr" "deleteRepo:dr" "cloneRepo:cl" "gitCollab:gc" "forkRepo:fr" "viewRepos:vr" "revert2commit"
-	"pyxecute" "shxecute" "jsxecute" "restoreFile" "currfol" "cls" "authorID" "compileTs2js"
-	"createPatch" "createReactApp" "createExpoApp" "dependenciesReact"
-	"updateReactPackagez" "dependencyDevReact" "py3venv" "startproject" "startapp"
-	"djangoUrls" "makemigrations" "django" "djshell" "mkandmigrate" "collectstatic"
-	"djangoToolbar" "drf" "djoser" "jwtDjango" "static4django" "mongoOp"
-	"mongoVersion" "mysqlOp" "mysqlversion" "mysqlshell" "ctemp:ct" "betty"
-	"pycode" "mycompile" "pycompile" "setEnv" "pycodemore" "commitree"
+	"createRepo:cr" "deleteRepo:dr" "cloneRepo:cl" "gitCollab:gc" "forkRepo:fr"
+	"viewRepos:vr" "runRazor" "revert2commit" "pyxecute" "shxecute" "jsxecute" "restoreFile"
+	"currfol" "cls" "authorID" "compileTs2js" "createPatch" "createReactApp"
+	"createExpoApp" "dependenciesReact" "updateReactPackagez" "dependencyDevReact"
+	"py3venv" "startproject" "startapp" "djangoUrls" "makemigrations" "django"
+	"djshell" "mkandmigrate" "collectstatic" "djangoToolbar" "drf" "djoser"
+	"jwtDjango" "static4django" "mongoOp" "mongoVersion" "mysqlOp" "mysqlversion"
+	"mysqlshell" "ctemp:ct" "betty" "pycode" "mycompile" "pycompile" "setEnv"
+	"pycodemore" "commitree"
 )
 c_scripts=(
 	"myascii" "rot13" "rot47" "guessGame"
@@ -490,6 +491,7 @@ get_description() {
 		static4django) echo "configures the STATIC_DIRS in settings.py" ;;
 		startproject) echo "installs a new django project" ;;
 		startapp) echo "installs and configures apps for django projects" ;;
+		runRazor) echo "installs, configures and launches Razor Pages projects" ;;
 		djangoUrls) echo "used to check and monitor configured urls in django projects" ;;
 		runserver) echo "spin up the django development server from any directory" ;;
 		makemigrations) echo "performs the makemigrations process" ;;
@@ -1091,6 +1093,7 @@ instructn() {
 		deleteBranch) msg="$STRT delete local + remote branches $EFFT $ANYWHERE: $DFILENAME";;
 		xbin) msg="$STRT open .xbin in file explorer $EFFT $ANYWHERE: $DFILENAME";;
 		updateResumeCV) msg="$STRT upload latest CV from Drive to GitHub $EFFT $ANYWHERE: $DFILENAME";;
+		runRazor) msg="$STRT install, configure and launch Razor Pages projects $EFFT $ANYWHERE: $DFILENAME";;
 		djangoUrls) msg="$STRT check all Django urls $EFFT $ANYWHERE: $DFILENAME";;
 		setEnv) msg="$STRT set a permanent env variable $EFFT $ANYWHERE: $DFILENAME";;
 		collectstatic) msg="$STRT collect static files for prod $EFFT $ANYWHERE: $DFILENAME";;
