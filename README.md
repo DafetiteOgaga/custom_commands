@@ -18,6 +18,8 @@
 
 - #### Django Development Toolkit: Auto-generate URLs, JWT/Djoser setups, migrations, and DRF configurations.
 
+- #### Razor Pages Toolkit: Installs, configures and launch Razor Pages projects.
+
 - #### React Utilities: Bootstrap projects, install dev dependencies, and manage packages with a single command.
 
 - #### System Integration: Built to work seamlessly across Unix-based systems and Android (via Termux).
@@ -80,6 +82,7 @@ Depending on the command, the usage instruction for that command is provided aft
   <tr>
     <td><strong>Git commands</strong></td>
     <td><strong>Django commands</strong></td>
+    <td><strong>Razor Pages</strong></td>
     <td><strong>Javascript commands</strong></td>
     <td><strong>Shell commands</strong></td>
     <td><strong>MySQL commands</strong></td>
@@ -91,6 +94,7 @@ Depending on the command, the usage instruction for that command is provided aft
   <tr>
     <td>push</td>
     <td>startproject</td>
+    <td>runRazor</td>
     <td>createReactApp</td>
     <td>pyxecute</td>
     <td>mysqlOp</td>
@@ -102,6 +106,7 @@ Depending on the command, the usage instruction for that command is provided aft
   <tr>
     <td>pull</td>
     <td>startapp</td>
+    <td></td>
     <td>dependencyDevReact</td>
     <td>shxecute</td>
     <td>mysqlversion</td>
@@ -113,6 +118,7 @@ Depending on the command, the usage instruction for that command is provided aft
   <tr>
     <td>pushfile</td>
     <td>runserver</td>
+    <td></td>
     <td>dependenciesReact</td>
     <td>jsxecute</td>
     <td>mysqlshell</td>
@@ -124,6 +130,7 @@ Depending on the command, the usage instruction for that command is provided aft
   <tr>
     <td>pushall</td>
     <td>makemigrations</td>
+    <td></td>
     <td>updateReactPackagez</td>
     <td>currfol</td>
     <td></td>
@@ -135,6 +142,7 @@ Depending on the command, the usage instruction for that command is provided aft
   <tr>
     <td>createRepo</td>
     <td>migrate</td>
+    <td></td>
     <td>createExpoApp</td>
     <td>cls</td>
     <td></td>
@@ -146,6 +154,7 @@ Depending on the command, the usage instruction for that command is provided aft
   <tr>
     <td>deleteRepo</td>
     <td>requirement_txt</td>
+    <td></td>
     <td>compileTs2js</td>
     <td>wcount</td>
     <td></td>
@@ -158,6 +167,7 @@ Depending on the command, the usage instruction for that command is provided aft
     <td>cloneRepo</td>
     <td>drf</td>
     <td></td>
+    <td></td>
     <td>createPatch</td>
     <td></td>
     <td></td>
@@ -168,6 +178,7 @@ Depending on the command, the usage instruction for that command is provided aft
   <tr>
     <td>restoreFile</td>
     <td>djoser</td>
+    <td></td>
     <td></td>
     <td>printmyEnv</td>
     <td></td>
@@ -180,6 +191,7 @@ Depending on the command, the usage instruction for that command is provided aft
     <td>viewRepos</td>
     <td>jwtDjango</td>
     <td></td>
+    <td></td>
     <td>setEnv</td>
     <td></td>
     <td></td>
@@ -191,6 +203,7 @@ Depending on the command, the usage instruction for that command is provided aft
     <td>gitignore</td>
     <td>djangoToolbar</td>
     <td></td>
+    <td></td>
     <td>distributeApk</td>
     <td></td>
     <td></td>
@@ -201,6 +214,7 @@ Depending on the command, the usage instruction for that command is provided aft
   <tr>
     <td>branch</td>
     <td>static4django</td>
+    <td></td>
     <td></td>
     <td>compressAndResizeFiles</td>
     <td></td>
@@ -219,10 +233,12 @@ Depending on the command, the usage instruction for that command is provided aft
     <td></td>
     <td></td>
     <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>status</td>
     <td>mkandmigrate</td>
+    <td></td>
     <td></td>
     <td></td>
     <td></td>
@@ -241,10 +257,12 @@ Depending on the command, the usage instruction for that command is provided aft
     <td></td>
     <td></td>
     <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>authorID</td>
     <td>sqlmigrate</td>
+    <td></td>
     <td></td>
     <td></td>
     <td></td>
@@ -263,10 +281,12 @@ Depending on the command, the usage instruction for that command is provided aft
     <td></td>
     <td></td>
     <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>showDiff</td>
     <td>djangoUrls</td>
+    <td></td>
     <td></td>
     <td></td>
     <td></td>
@@ -285,9 +305,11 @@ Depending on the command, the usage instruction for that command is provided aft
     <td></td>
     <td></td>
     <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>commitall</td>
+    <td></td>
     <td></td>
     <td></td>
     <td></td>
@@ -307,9 +329,11 @@ Depending on the command, the usage instruction for that command is provided aft
     <td></td>
     <td></td>
     <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>viewStash</td>
+    <td></td>
     <td></td>
     <td></td>
     <td></td>
@@ -329,9 +353,11 @@ Depending on the command, the usage instruction for that command is provided aft
     <td></td>
     <td></td>
     <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>clear_commit</td>
+    <td></td>
     <td></td>
     <td></td>
     <td></td>
@@ -351,9 +377,11 @@ Depending on the command, the usage instruction for that command is provided aft
     <td></td>
     <td></td>
     <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>verifyRepo</td>
+    <td></td>
     <td></td>
     <td></td>
     <td></td>
@@ -373,9 +401,11 @@ Depending on the command, the usage instruction for that command is provided aft
     <td></td>
     <td></td>
     <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>updateToken</td>
+    <td></td>
     <td></td>
     <td></td>
     <td></td>
@@ -395,9 +425,11 @@ Depending on the command, the usage instruction for that command is provided aft
     <td></td>
     <td></td>
     <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>showDiffOnMain</td>
+    <td></td>
     <td></td>
     <td></td>
     <td></td>
@@ -417,6 +449,7 @@ Depending on the command, the usage instruction for that command is provided aft
     <td></td>
     <td></td>
     <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>forkRepo</td>
@@ -428,9 +461,11 @@ Depending on the command, the usage instruction for that command is provided aft
     <td></td>
     <td></td>
     <td></td>
+    <td></td>
   </tr>
   <tr>
     <td>gitCollab</td>
+    <td></td>
     <td></td>
     <td></td>
     <td></td>
@@ -455,9 +490,9 @@ Check out our [Contributing Guide](.github/CONTRIBUTING.md) to get started.
 
 
 ## New
+  - runRazor
   - gitCollab
   - compileTs2js
-  - compressAndResizeFiles
   - generateLogoAssests
   - forkRepo
   - deleteBranch
